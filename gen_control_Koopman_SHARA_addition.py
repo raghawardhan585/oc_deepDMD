@@ -87,7 +87,7 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 # Explicitly mentioning the training routine
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
+                        'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
                         'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 45}
@@ -1475,7 +1475,7 @@ while good_start == 0 and try_num < max_tries:
 ### Write Vars to Checkpoint Files/MetaFiles
 # Creating a folder for saving the objects of the current run
 FOLDER_NAME = '_current_run_saved_files/RUN_' + str(RUN_NUMBER)
-if os.path.exits(FOLDER_NAME):
+if os.path.exists(FOLDER_NAME):
     shutil.rmtree(FOLDER_NAME)
 os.mkdir(FOLDER_NAME)
 
