@@ -1189,7 +1189,7 @@ if len(sys.argv)>1:
   if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
       DEVICE_NAME = '/cpu:0'
 if len(sys.argv)>2:
-  RUN_NUMBER = np.int(sys.argv[3])
+  RUN_NUMBER = np.int(sys.argv[2])
 
 # if len(sys.argv)>1:
 #   data_suffix = sys.argv[1];
