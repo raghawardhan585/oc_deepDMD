@@ -36,7 +36,7 @@ import shutil
 import pandas as pd
 
 DEVICE_NAME = '/cpu:0'
-REMOVE_PREVIOUS_RUNDATA = False
+RUN_NUMBER = 0
 
 ### Process Control Flags : User Defined (dev-note: run as a separate instance of code?)
 # with_control = 1;  # This activates the closed-loop deep Koopman learning algorithm; requires input and state data, historical model parameter.  Now it is specified along with the dataset file path below.
@@ -90,16 +90,16 @@ dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00
                         'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
+                        'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
 
 ###  ------------------------------ Define Neural Network Hyperparameters ------------------------------
 
@@ -1063,30 +1063,6 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_p
 #   plt.close();
 #   return all_histories,good_start;
 
-# Functions for storing the data
-def remove_past_run_data():
-    FOLDER_NAME = '_current_run_saved_files'
-    if os.path.exists(FOLDER_NAME):
-        shutil.rmtree(FOLDER_NAME)  # Delete the folder and all the contents inside it
-    os.mkdir(FOLDER_NAME)  # Recreate the folder
-    return
-
-def generate_next_run_directory():
-    main_folder = '_current_run_saved_files'
-    highest_run_number = -1
-    if os.path.exists(main_folder):
-        list_folders = os.listdir(main_folder)
-        for items in os.listdir(main_folder):
-            if str(items[0:4]) == 'RUN_':
-                highest_run_number = np.max([highest_run_number, int(items[4:])])
-            else:
-                list_folders.remove(items)
-    else:
-        os.mkdir(main_folder)
-    FOLDER_NAME = main_folder + '/RUN_' + str(highest_run_number + 1)
-    os.mkdir(FOLDER_NAME)
-    return FOLDER_NAME
-
 # # # END HELPER FUNCTIONS # # #
 
 
@@ -1213,10 +1189,7 @@ if len(sys.argv)>1:
   if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
       DEVICE_NAME = '/cpu:0'
 if len(sys.argv)>2:
-  REMOVE_PREVIOUS_RUNDATA= sys.argv[2]
-  if REMOVE_PREVIOUS_RUNDATA not in ['True','False']:
-      REMOVE_PREVIOUS_RUNDATA = False
-
+  RUN_NUMBER = np.int(sys.argv[3])
 
 # if len(sys.argv)>1:
 #   data_suffix = sys.argv[1];
@@ -1501,9 +1474,10 @@ while good_start == 0 and try_num < max_tries:
         print(test_accuracy);
 ### Write Vars to Checkpoint Files/MetaFiles
 # Creating a folder for saving the objects of the current run
-if REMOVE_PREVIOUS_RUNDATA:
-    remove_past_run_data()
-FOLDER_NAME = generate_next_run_directory()
+FOLDER_NAME = '_current_run_saved_files/RUN_' + str(RUN_NUMBER)
+if os.path.exits(FOLDER_NAME):
+    shutil.rmtree(FOLDER_NAME)
+os.mkdir(FOLDER_NAME)
 
 Kx_num = sess.run(Kx)
 Wx_list_num = [sess.run(W_temp) for W_temp in Wx_list]
