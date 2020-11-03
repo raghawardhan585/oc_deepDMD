@@ -1213,7 +1213,7 @@ if len(sys.argv)>1:
   if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
       DEVICE_NAME = '/cpu:0'
 if len(sys.argv)>2:
-  REMOVE_PREVIOUS_RUNDATA= np.int(sys.argv[2])
+  REMOVE_PREVIOUS_RUNDATA= sys.argv[2]
   if REMOVE_PREVIOUS_RUNDATA not in ['True','False']:
       REMOVE_PREVIOUS_RUNDATA = False
 
@@ -1573,7 +1573,7 @@ for items in list(dict_predictions.keys()):
     all_tf_var_names.append(items)
     tf.compat.v1.add_to_collection(items, dict_predictions[items])
 
-save_path = saver.save(sess, data_suffix + '.ckpt')
+# save_path = saver.save(sess, data_suffix + '.ckpt')
 saver_path_curr = saver.save(sess, FOLDER_NAME + '/' + data_suffix + '.ckpt')
 with open(FOLDER_NAME + '/all_tf_var_names.pickle', 'wb') as handle:
     pickle.dump(all_tf_var_names,handle)
