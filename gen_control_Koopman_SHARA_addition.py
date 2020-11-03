@@ -1330,7 +1330,7 @@ while good_start == 0 and try_num < max_tries:
         print("\n Initialization attempt number: ") + repr(try_num);
         print("\n \t Initializing Tensorflow Residual ELU Network with ") + repr(n_x_nn_inputs) + (
             " inputs and ") + repr(n_x_nn_outputs) + (" outputs and ") + repr(len(x_hidden_vars_list)) + (" layers");
-    with tf.device('/gpu:0'):
+    with tf.device('/GPU:0'):
         dict_feed = {}
         dict_psi = {}
         dict_K ={}
