@@ -1,0 +1,431 @@
+[INFO] Number of total samples: 290
+[INFO] Observable dimension of a sample: 2
+[INFO] Xp.shape (E-DMD): (290, 2)
+[INFO] Yf.shape (E-DMD): (290, 2)
+Number of training snapshots: 145
+Number of validation snapshots: 58
+Number of test snapshots: 87
+[INFO] STATE - hidden_vars_list: array([10, 10,  5])
+[INFO] INPUT - hidden_vars_list: []
+[INFO] MIX STATE n INPUT - hidden_vars_list: []
+Kx initiation done!
+Training begins now!
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Regularization Coefficient : 0.0
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  50000
+Batch Size   :  45
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.00058236974
+                   Validation error:  0.0031008753
+Eigen values: 
+[1.         0.90835905 0.1661652  1.140074   1.0066893  1.0066893
+ 0.7824094  0.3797454 ]
+[COMP] The identified Koopman operator is UNSTABLE with  3 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00031293966
+                   Validation error:  0.0032622437
+Eigen values: 
+[1.         0.89303577 0.13932025 0.36396977 1.2059057  1.2059057
+ 0.83129257 0.83129257]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  0.00028884874
+                   Validation error:  0.0031026907
+Eigen values: 
+[1.         0.87744623 0.11804967 0.3580327  1.2195051  1.2195051
+ 0.8296071  0.8296071 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  0.00026994557
+                   Validation error:  0.002848595
+Eigen values: 
+[1.         0.8626216  0.10091133 0.35045588 1.2281392  1.2281392
+ 0.830382   0.830382  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  0.0002536692
+                   Validation error:  0.002588596
+Eigen values: 
+[1.         0.8488129  0.08727431 0.3420147  1.2369869  1.2369869
+ 0.8308574  0.8308574 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  0.00024021286
+                   Validation error:  0.0023457124
+Eigen values: 
+[1.         0.8360076  0.07657192 1.244775   1.244775   0.33342782
+ 0.8310933  0.8310933 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  0.00022968145
+                   Validation error:  0.0021363222
+Eigen values: 
+[1.         0.8243073  0.06821542 0.32524106 1.2506183  1.2506183
+ 0.8311524  0.8311524 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  0.00022169811
+                   Validation error:  0.0019681575
+Eigen values: 
+[1.         0.81382227 0.06159987 1.2543377  1.2543377  0.3178675
+ 0.83106065 0.83106065]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  0.0002156006
+                   Validation error:  0.0018394735
+Eigen values: 
+[1.         0.80454403 0.0561929  1.2562255  1.2562255  0.31154045
+ 0.8308557  0.8308557 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  0.00021075316
+                    Validation error:  0.0017426932
+Eigen values: 
+[1.         0.79633355 0.05158501 1.2566966  1.2566966  0.30631918
+ 0.8305878  0.8305878 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  0.0002066987
+                    Validation error:  0.0016692008
+Eigen values: 
+[1.         0.7889987  0.04747312 0.30216062 1.2561473  1.2561473
+ 0.8251024  0.8355305 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  0.00020314715
+                    Validation error:  0.0016115637
+Eigen values: 
+[1.         0.782354   0.04365466 1.254885   1.254885   0.29897243
+ 0.8222923  0.8378172 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  0.00019990267
+                    Validation error:  0.0015641525
+Eigen values: 
+[1.         0.7761985  0.03999656 0.29665056 1.2531226  1.2531226
+ 0.82040447 0.8392245 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  0.00019680816
+                    Validation error:  0.0015228802
+Eigen values: 
+[1.         0.7703728  0.03638821 0.29511267 1.2510389  1.2510389
+ 0.81894195 0.8402593 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  0.00019367578
+                    Validation error:  0.0014845894
+Eigen values: 
+[1.         0.76471204 0.03274387 0.294296   1.2487364  1.2487364
+ 0.8177991  0.84102845]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  0.00019023546
+                    Validation error:  0.0014475599
+Eigen values: 
+[1.         0.7590553  0.0289748  0.29415137 1.2462764  1.2462764
+ 0.8169916  0.84156555]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  0.00018616447
+                    Validation error:  0.0014095401
+Eigen values: 
+[1.         0.7531459  0.02504553 0.29464749 1.2438064  1.2438064
+ 0.81725425 0.8414288 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  0.00018139435
+                    Validation error:  0.0013642026
+Eigen values: 
+[1.         0.7467805  0.02102472 0.2957669  1.2415386  1.2415386
+ 0.8185044  0.8408875 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  0.00017688923
+                    Validation error:  0.0013354038
+Eigen values: 
+[1.         0.7382087  0.01617148 0.2972323  1.2384279  1.2384279
+ 0.81825554 0.8417543 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  0.00018085398
+                    Validation error:  0.0012554983
+Eigen values: 
+[1.         0.7306803  0.01164834 0.29908654 1.2359746  1.2359746
+ 0.81811506 0.84225076]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  21000  |   Training error:  0.00017419395
+                    Validation error:  0.0012343063
+Eigen values: 
+[1.         0.7229897  0.00692775 0.3012253  1.2331184  1.2331184
+ 0.8157909  0.8446347 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  22000  |   Training error:  0.00018361906
+                    Validation error:  0.0011785759
+Eigen values: 
+[1.         0.71615005 0.0024642  0.30350444 1.2306848  1.2306848
+ 0.8150007  0.8454519 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  23000  |   Training error:  0.00018840964
+                    Validation error:  0.001139041
+Eigen values: 
+[1.         0.70974654 0.00183952 0.3058609  1.2284044  1.2284044
+ 0.8142873  0.84628165]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  24000  |   Training error:  0.00019500611
+                    Validation error:  0.0011019302
+Eigen values: 
+[1.         0.7037515  0.00601896 0.30827734 1.2260834  1.2260834
+ 0.813717   0.8469321 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  25000  |   Training error:  0.00019498104
+                    Validation error:  0.001070221
+Eigen values: 
+[1.         0.69815147 0.01006029 0.31073153 1.223706   1.223706
+ 0.81313705 0.8476079 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  26000  |   Training error:  0.0001912077
+                    Validation error:  0.0010402253
+Eigen values: 
+[1.         0.6929448  0.01393842 0.31320068 1.2213658  1.2213658
+ 0.8127529  0.8481562 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  27000  |   Training error:  0.00018954401
+                    Validation error:  0.0010094116
+Eigen values: 
+[1.         0.68810683 0.01767444 0.3156869  1.2190245  1.2190245
+ 0.8126226  0.84847814]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  28000  |   Training error:  0.00018654957
+                    Validation error:  0.0009789943
+Eigen values: 
+[1.         0.6836093  0.02128125 0.3181929  1.2167103  1.2167103
+ 0.8126691  0.84866446]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  29000  |   Training error:  0.00018334923
+                    Validation error:  0.0009484476
+Eigen values: 
+[1.         0.6794315  0.02478217 0.32072738 1.2144369  1.2144369
+ 0.81288683 0.84871334]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  30000  |   Training error:  0.00017964675
+                    Validation error:  0.00091779046
+Eigen values: 
+[1.         0.6755582  0.02820276 0.32329896 1.2122208  1.2122208
+ 0.81323606 0.84865963]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  31000  |   Training error:  0.00017544476
+                    Validation error:  0.0008870199
+Eigen values: 
+[1.         0.67198503 0.03156557 0.32591608 1.2100722  1.2100722
+ 0.8136906  0.8485235 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  32000  |   Training error:  0.0001707485
+                    Validation error:  0.0008561319
+Eigen values: 
+[1.         0.6687032  0.0349019  0.3285857  1.2080039  1.2080039
+ 0.81423956 0.8483147 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  33000  |   Training error:  0.00016556731
+                    Validation error:  0.00082517846
+Eigen values: 
+[1.         0.6657028  0.03823775 0.33130726 1.2060206  1.2060206
+ 0.8148404  0.8480703 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  34000  |   Training error:  0.00015989908
+                    Validation error:  0.0007943409
+Eigen values: 
+[1.         0.66298354 0.04159276 0.3340738  1.2041227  1.2041227
+ 0.81543064 0.8478423 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  35000  |   Training error:  0.00015384603
+                    Validation error:  0.0007638636
+Eigen values: 
+[1.         0.6605599  0.04499967 0.33687618 1.2023208  1.2023208
+ 0.8158897  0.84771353]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  36000  |   Training error:  0.00014743673
+                    Validation error:  0.0007337523
+Eigen values: 
+[1.        0.6584078 0.0484781 0.3397027 1.2005817 1.2005817 0.8162208
+ 0.8476881]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  37000  |   Training error:  0.00014073259
+                    Validation error:  0.00070411304
+Eigen values: 
+[1.         0.6564911  0.05203397 0.34253842 1.1988586  1.1988586
+ 0.8164244  0.847775  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  38000  |   Training error:  0.0001338359
+                    Validation error:  0.0006751038
+Eigen values: 
+[1.         0.65477306 0.0556636  0.3453668  1.1971048  1.1971048
+ 0.81649435 0.8479844 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  39000  |   Training error:  0.00012683272
+                    Validation error:  0.0006469044
+Eigen values: 
+[1.         0.6532187  0.05935374 0.34816867 1.1952716  1.1952716
+ 0.8164357  0.848311  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  40000  |   Training error:  0.00011981545
+                    Validation error:  0.00061967556
+Eigen values: 
+[1.         0.65179324 0.06309643 0.35092884 1.1933172  1.1933172
+ 0.81625843 0.848749  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  41000  |   Training error:  0.000112857066
+                    Validation error:  0.00059357955
+Eigen values: 
+[1.         0.6504672  0.06687345 0.35363594 1.1912005  1.1912005
+ 0.8159658  0.84929293]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  42000  |   Training error:  0.00010604108
+                    Validation error:  0.00056870363
+Eigen values: 
+[1.         0.6492149  0.07066799 0.3562819  1.1888918  1.1888918
+ 0.81556773 0.84993315]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  43000  |   Training error:  9.942748e-05
+                    Validation error:  0.0005450962
+Eigen values: 
+[1.         0.648012   0.07445087 0.35886416 1.1863589  1.1863589
+ 0.8150731  0.85066384]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  44000  |   Training error:  9.307788e-05
+                    Validation error:  0.000522841
+Eigen values: 
+[1.         0.64684135 0.07819867 0.36138028 1.1835779  1.1835779
+ 0.8144938  0.85147244]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  45000  |   Training error:  8.7047636e-05
+                    Validation error:  0.0005019616
+Eigen values: 
+[1.         0.64568746 0.08189014 0.36383456 1.1805353  1.1805353
+ 0.81384104 0.852348  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  46000  |   Training error:  8.135607e-05
+                    Validation error:  0.00048246013
+Eigen values: 
+[1.         0.6445285  0.08551046 0.36623108 1.1772207  1.1772207
+ 0.81309783 0.8533032 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  47000  |   Training error:  7.596796e-05
+                    Validation error:  0.000464369
+Eigen values: 
+[1.         0.64336306 0.08902416 0.36857018 1.1736389  1.1736389
+ 0.8122647  0.8543387 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  48000  |   Training error:  7.094538e-05
+                    Validation error:  0.0004477388
+Eigen values: 
+[1.         0.64220935 0.09240013 0.37085524 1.1698003  1.1698003
+ 0.81138456 0.8554183 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  49000  |   Training error:  6.630126e-05
+                    Validation error:  0.0004325311
+Eigen values: 
+[1.         0.6410607  0.09564516 0.37309828 1.1657093  1.1657093
+ 0.8104558  0.85654193]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  50000  |   Training error:  6.1996136e-05
+                    Validation error:  0.00041867277
+Eigen values: 
+[1.         0.6399085  0.09876066 0.37530968 1.161381   1.161381
+ 0.80947    0.8577164 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 6.1996136e-05
+Current Validation Error      : 0.00041867277
+Eigen values: 
+[1.         0.6399085  0.09876066 0.37530968 1.161381   1.161381
+ 0.80947    0.8577164 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.3
+Regularization Coefficient : 0.0
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  5000
+Batch Size   :  45
+--------------------------------------
+Epoch No:  1000  |   Training error:  3.5354416e-05
+                   Validation error:  0.00044413863
+Eigen values: 
+[1.         0.63903475 0.10054044 0.37721634 1.1618316  1.1618316
+ 0.80887854 0.8587323 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  3.37482e-05
+                   Validation error:  0.00042666006
+Eigen values: 
+[1.         0.63829553 0.10229103 0.37907866 1.1615564  1.1615564
+ 0.8081802  0.85950094]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  3.2294643e-05
+                   Validation error:  0.0004132092
+Eigen values: 
+[1.         0.63758254 0.1040283  0.3809385  1.1607391  1.1607391
+ 0.80728704 0.86039007]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  3.0965766e-05
+                   Validation error:  0.00040225973
+Eigen values: 
+[1.         0.636848   0.10572571 0.382758   1.1595356  1.1595356
+ 0.8063423  0.8613074 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  2.9750103e-05
+                   Validation error:  0.00039306568
+Eigen values: 
+[1.         0.63612944 0.10733021 0.38453734 1.1607698  1.1552982
+ 0.80541044 0.86220413]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 2.9750103e-05
+Current Validation Error      : 0.00039306568
+Eigen values: 
+[1.         0.63612944 0.10733021 0.38453734 1.1607698  1.1552982
+ 0.80541044 0.86220413]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+SUCCESSFULLY HERE
+[INFO] Initialization was successful: True
