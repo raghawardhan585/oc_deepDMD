@@ -1534,10 +1534,10 @@ print('----- Run Info ----')
 print('------ ------ -----')
 print(pd.DataFrame(dict_run_info))
 print('------ ------ -----')
-if (not phase_space_stitching) and (not with_control):
-    file_obj_phase = open('phase_space_stitching/raws/Kmatrix_file.pickle', 'wb');
-    pickle.dump([Kx_num], file_obj_phase);
-    file_obj_phase.close();
+# if (not phase_space_stitching) and (not with_control):
+#     file_obj_phase = open('phase_space_stitching/raws/Kmatrix_file.pickle', 'wb');
+#     pickle.dump([Kx_num], file_obj_phase);
+#     file_obj_phase.close();
 
 saver = tf.compat.v1.train.Saver()
 
