@@ -35,6 +35,7 @@ import os
 import shutil
 import pandas as pd
 
+DEVICE_NAME = '/cpu:0'
 REMOVE_PREVIOUS_RUNDATA = False
 
 ### Process Control Flags : User Defined (dev-note: run as a separate instance of code?)
@@ -588,7 +589,7 @@ def Deep_Output_KIC_Objective_v2(all_psiXp, all_psiXf, Kx, all_psiUp, Ku, all_ps
 def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_state_and_control=0,with_output=0):
     dict_predictions ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
-    regularization_penalty = tf.norm(dict_K['KxT'], axis=[-2, -1], ord=2)
+    regularization_penalty = 0; #tf.norm(dict_K['KxT'], axis=[-2, -1], ord=2)
 
     if with_control:
         psiXf_predicted = psiXf_predicted + tf.matmul(dict_psi['upT'], dict_K['KuT'])
@@ -1206,7 +1207,17 @@ if pre_examples_switch == 14:
 
 ## CMD Line Argument (Override) Inputs:
 
-# import sys
+import sys
+if len(sys.argv)>1:
+  DEVICE_NAME = sys.argv[1]
+  if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+      DEVICE_NAME = '/cpu:0'
+if len(sys.argv)>2:
+  REMOVE_PREVIOUS_RUNDATA= np.int(sys.argv[2])
+  if REMOVE_PREVIOUS_RUNDATA not in ['True','False']:
+      REMOVE_PREVIOUS_RUNDATA = False
+
+
 # if len(sys.argv)>1:
 #   data_suffix = sys.argv[1];
 # if len(sys.argv)>2:
@@ -1330,7 +1341,7 @@ while good_start == 0 and try_num < max_tries:
         print("\n Initialization attempt number: ") + repr(try_num);
         print("\n \t Initializing Tensorflow Residual ELU Network with ") + repr(n_x_nn_inputs) + (
             " inputs and ") + repr(n_x_nn_outputs) + (" outputs and ") + repr(len(x_hidden_vars_list)) + (" layers");
-    with tf.device('/GPU:0'):
+    with tf.device(DEVICE_NAME):
         dict_feed = {}
         dict_psi = {}
         dict_K ={}
