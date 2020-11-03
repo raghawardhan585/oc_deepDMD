@@ -87,19 +87,19 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 # Explicitly mentioning the training routine
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 45}
+                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 45}
+                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 45 }
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 45 }
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+ls_dict_training_params.append(dict_training_params)
 
 ###  ------------------------------ Define Neural Network Hyperparameters ------------------------------
 
