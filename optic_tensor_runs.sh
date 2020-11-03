@@ -11,6 +11,6 @@ python3 gen_control_Koopman_SHARA_addition.py '/gpu:0' False > Run_info/Run_8.tx
 python3 gen_control_Koopman_SHARA_addition.py '/gpu:1' False > Run_info/Run_9.txt &
 python3 gen_control_Koopman_SHARA_addition.py '/gpu:2' False > Run_info/Run_10.txt &
 python3 gen_control_Koopman_SHARA_addition.py '/gpu:3' False > Run_info/Run_11.txt &
-Echo "Running all sessions"
+echo "Running all sessions"
 wait
 echo "All sessions are complete"
