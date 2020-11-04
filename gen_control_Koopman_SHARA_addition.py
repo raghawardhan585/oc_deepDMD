@@ -86,20 +86,18 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
 # Explicitly mentioning the training routine
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
+dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 45}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),
-                        'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 45}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 45 }
+# ls_dict_training_params.append(dict_training_params)
 
 ###  ------------------------------ Define Neural Network Hyperparameters ------------------------------
 
@@ -1185,11 +1183,26 @@ if pre_examples_switch == 14:
 
 import sys
 if len(sys.argv)>1:
-  DEVICE_NAME = sys.argv[1]
-  if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
-      DEVICE_NAME = '/cpu:0'
+    DEVICE_NAME = sys.argv[1]
+    if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+        DEVICE_NAME = '/cpu:0'
 if len(sys.argv)>2:
-  RUN_NUMBER = np.int(sys.argv[2])
+    data_suffix = sys.argv[2]
+if len(sys.argv) > 3:
+    with_control = np.int(sys.argv[3])
+if len(sys.argv)>4:
+    with_output = np.int(sys.argv[4])
+if len(sys.argv)>5:
+    mix_state_and_control = np.int(sys.argv[5])
+if len(sys.argv)>6:
+    RUN_NUMBER = np.int(sys.argv[6])
+if len(sys.argv)>7:
+    x_deep_dict_size = np.int(sys.argv[7])
+if len(sys.argv)>8:
+    x_max_nn_layers = np.int(sys.argv[8])
+if len(sys.argv)>9:
+    x_max_nn_nodes_limit = np.int(sys.argv[9])
+    x_min_nn_nodes_limit = x_max_nn_nodes_limit
 
 # if len(sys.argv)>1:
 #   data_suffix = sys.argv[1];
@@ -1474,7 +1487,20 @@ while good_start == 0 and try_num < max_tries:
         print(test_accuracy);
 ### Write Vars to Checkpoint Files/MetaFiles
 # Creating a folder for saving the objects of the current run
-FOLDER_NAME = '_current_run_saved_files/RUN_' + str(RUN_NUMBER)
+try:
+    try:
+        SYS_NO = np.int(data_suffix[7])
+    except:
+        try:
+            SYS_NO = np.int(data_suffix[7:9])
+        except:
+            try:
+                SYS_NO = np.int(data_suffix[7:10])
+            except:
+                SYS_NO = 'GetError!'
+    FOLDER_NAME = '_current_run_saved_files/SYS_' + str(SYS_NO) + '_RUN_' + str(RUN_NUMBER)
+except:
+    FOLDER_NAME = '_current_run_saved_files/RUN_unknown'
 if os.path.exists(FOLDER_NAME):
     shutil.rmtree(FOLDER_NAME)
 os.mkdir(FOLDER_NAME)
