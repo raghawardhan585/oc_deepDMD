@@ -1187,7 +1187,8 @@ if len(sys.argv)>1:
     if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
         DEVICE_NAME = '/cpu:0'
 if len(sys.argv)>2:
-    data_suffix = sys.argv[2]
+    SYSTEM_NO = sys.argv[2]
+    data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 if len(sys.argv) > 3:
     with_control = np.int(sys.argv[3])
 if len(sys.argv)>4:
@@ -1488,17 +1489,7 @@ while good_start == 0 and try_num < max_tries:
 ### Write Vars to Checkpoint Files/MetaFiles
 # Creating a folder for saving the objects of the current run
 try:
-    try:
-        SYS_NO = np.int(data_suffix[7])
-    except:
-        try:
-            SYS_NO = np.int(data_suffix[7:9])
-        except:
-            try:
-                SYS_NO = np.int(data_suffix[7:10])
-            except:
-                SYS_NO = 'GetError!'
-    FOLDER_NAME = '_current_run_saved_files/SYS_' + str(SYS_NO) + '_RUN_' + str(RUN_NUMBER)
+    FOLDER_NAME = '_current_run_saved_files/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(RUN_NUMBER)
 except:
     FOLDER_NAME = '_current_run_saved_files/RUN_unknown'
 if os.path.exists(FOLDER_NAME):
