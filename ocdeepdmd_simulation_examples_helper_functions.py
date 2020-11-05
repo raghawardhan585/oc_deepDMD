@@ -200,7 +200,7 @@ def transfer_current_ocDeepDMD_run_files():
                     break
             break
     # Find HIGHEST RUN NUMBER
-    destination_folder = 'System_' + str(SYSTEM_NUMBER)
+    destination_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NUMBER)
     current_run_no = -1
     for items in os.listdir(destination_folder):
         if items[0:4] == 'RUN_':
@@ -258,3 +258,78 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
     with open(run_folder_name + '/run_info.pickle','rb') as handle:
         df_run_info = pd.DataFrame(pickle.load(handle))
     return dict_params, data_Scaler, ls_all_indices, dict_indexed_data, dict_DATA, df_train_learning_curves,df_run_info
+
+def inverse_transform_X(X_in,SYSTEM_NUMBER):
+    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+        TheScaler = pickle.load(handle)
+    if 'X Scale' in TheScaler.keys():
+        X_out = TheScaler['X Scale'].inverse_transform(X_in)
+    else:
+        X_out = X_in
+    return X_out
+
+def inverse_transform_Y(Y_in,SYSTEM_NUMBER):
+    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+        TheScaler = pickle.load(handle)
+    if 'Y Scale' in TheScaler.keys():
+        Y_out = TheScaler['Y Scale'].inverse_transform(Y_in)
+    else:
+        Y_out = Y_in
+    return Y_out
+
+def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
+    dict_DATA_OUT = {}
+    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+        TheScaler = pickle.load(handle)
+    for item in dict_DATA_IN.keys():
+        if item in ['Xp','Xf','X']:
+            if 'X Scale' in TheScaler.keys():
+                dict_DATA_OUT[item] = TheScaler['X Scale'].transform(dict_DATA_IN[item])
+            else:
+                dict_DATA_OUT[item] = dict_DATA_IN[item]
+        elif item in ['Yp', 'Yf','Y']:
+            if 'Y Scale' in TheScaler.keys():
+                dict_DATA_OUT[item] = TheScaler['Y Scale'].transform(dict_DATA_IN[item])
+            else:
+                dict_DATA_OUT[item] = dict_DATA_IN[item]
+    return dict_DATA_OUT
+
+
+# def model_prediction(dict_indexed_data, SYSTEM_NUMBER):
+#     dict_model_pred_one_step = {}
+#     dict_model_pred_n_step = {}
+#     for data_index in dict_indexed_data.keys():
+#         dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
+#         X = dict_DATA_i['X']
+#         n_base_states = X.shape[1]
+#         # Initiation
+#         psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[0:1, :]})
+#         psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X})
+#         psiX_est = copy.deepcopy(psiX)
+#         for i in range(0, X.shape[0] - 1):
+#             psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+#             if with_u:
+#                 psiupT = dict_params['psiupT'].eval(feed_dict={dict_params['upT_feed']: U[i:i + 1, :]})
+#                 psixfT_i = psixfT_est_i + np.matmul(psiupT, dict_params['KuT_num'])
+#                 if with_xu:
+#                     psixupT = dict_params['psixupT'].eval(
+#                         feed_dict={dict_params['xupT_feed']: np.concatenate([X[i:i + 1, :], U[i:i + 1, :]], axis=1)})
+#                     psixfT_i = psixfT_est_i + np.matmul(psixupT, dict_params['KxuT_num'])
+#             psiX_est[i + 1, :] = psixfT_i
+#             if one_step_pred:
+#                 psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[i + 1:i + 2, :]})
+#             else:
+#                 psixpT_i = psixfT_i
+#         Y = dict_DATA_i['Y']
+#         Y_est = np.matmul(psiX_est, dict_params['WhT_num'])
+#
+#         dict_model_pred_one_step[data_index] = {}
+#         dict_model_pred_n_step[data_index] = {}
+#         dict_model_pred_results['psiX_transformed'] = psiX
+#         dict_model_pred_results['psiX_est_transformed'] = psiX_est
+#         dict_model_pred_results['X'] = inverse_transform_X(psiX[:, 0:n_base_states], SYSTEM_NUMBER)
+#         dict_model_pred_results['X_est'] = inverse_transform_X(psiX_est[:, 0:n_base_states], SYSTEM_NUMBER)
+#         dict_model_pred_results['Y'] = inverse_transform_Y(Y, SYSTEM_NUMBER)
+#         dict_model_pred_results['Y_est'] = inverse_transform_Y(Y_est, SYSTEM_NUMBER)
+#     return dict_model_pred_results
+
