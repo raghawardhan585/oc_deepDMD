@@ -331,10 +331,10 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
             psixpT_i = psixfT_i
         Y_est_n_step = np.matmul(psiX_est_n_step, dict_params['WhT_num'])
         dict_indexed_data_predictions[data_index] = {}
-        dict_indexed_data_predictions[data_index]['X'] = X
+        dict_indexed_data_predictions[data_index]['X'] = dict_indexed_data[data_index]['X']
         dict_indexed_data_predictions[data_index]['X_est_one_step'] = inverse_transform_X(psiX_est_one_step[:, 0:n_base_states], SYSTEM_NUMBER)
         dict_indexed_data_predictions[data_index]['X_est_n_step'] = inverse_transform_X(psiX_est_n_step[:, 0:n_base_states], SYSTEM_NUMBER)
-        dict_indexed_data_predictions[data_index]['Y'] = Y
+        dict_indexed_data_predictions[data_index]['Y'] = dict_indexed_data[data_index]['Y']
         dict_indexed_data_predictions[data_index]['Y_est_one_step'] = inverse_transform_Y(Y_est_one_step, SYSTEM_NUMBER)
         dict_indexed_data_predictions[data_index]['Y_est_n_step'] = inverse_transform_Y(Y_est_n_step, SYSTEM_NUMBER)
         dict_indexed_data_predictions[data_index]['psiX'] = psiX
@@ -351,18 +351,22 @@ def observables_and_eigenfunctions(dict_params,sampling_resolution):
     eigval, L_eigvec = np.linalg.eig(dict_params['KxT_num']) # These are the left eigenvectors of K
     # Eigenfunctions are given by psixT*L_eigvec
     # AT*W = W*LAMBDA ==> psixT[k+1] = psixT[k]*K = [psixT[k]*W] * LAMBDA *inv(W)
-
     # Extracting info about number of states by using a dummy transformation
     psiXpT_trial = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: np.zeros(shape=(1, 2))})
     n_LiftedStates = psiXpT_trial.shape[1]
-    psi_T = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
-    PHI_T = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
+    # Getting the observables and eigenfunctions
+    PSI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
+    PHI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
     for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
         x1_i = X1[i, j]
         x2_i = X2[i, j]
         psiXT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: np.array([[x1_i, x2_i]])})
-        psi_T[i, j, :] = psiXT_i.reshape(-1)
-        PHI_T[i, j, :] = np.matmul(psiXT_i,L_eigvec).reshape(-1)
+        PSI[i, j, :] = psiXT_i.reshape(-1)
+        PHI[i, j, :] = np.matmul(psiXT_i,L_eigvec).reshape(-1)
+    # PSI[:,:,i] gives the i-th observable
+    # PHI[:,:,i] gives the i-th eigenfunction
+    dict_out = {'X1':X1, 'X2':X2, 'observables': PSI, 'eigenfunctions':PHI}
+    return dict_out
 
 
 
