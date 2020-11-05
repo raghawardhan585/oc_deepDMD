@@ -10,6 +10,8 @@ import random
 import os
 import shutil
 import tensorflow as tf
+import copy
+import itertools
 
 def scale_train_data(dict_DATA_IN,method ='standard'):
     dict_DATA_OUT = {}
@@ -115,6 +117,7 @@ def data_gen_sys_1_2(sys_params, N_CURVES,SYSTEM_NO):
         dict_indexed_data[i]= sim_sys_1_2(sys_params)
         plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
     plt.plot(X0[:,0],X0[:,1],'*')
+    plt.show()
     # Sorting into deep DMD format
     Xp = np.empty((0,2))
     Xf = np.empty((0,2))
@@ -131,22 +134,28 @@ def data_gen_sys_1_2(sys_params, N_CURVES,SYSTEM_NO):
     dict_DATA,dict_Scaler,_ = scale_train_data(dict_DATA_RAW,'min max')
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    LETS_STORE = True
     if os.path.exists(storage_folder):
         get_input = input('Do you wanna delete the existing system[y/n]? ')
         if get_input == 'y':
             shutil.rmtree(storage_folder)
             os.mkdir(storage_folder)
-            with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
-                pickle.dump(dict_DATA,handle)
-            with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_SimulatedData.pickle', 'wb') as handle:
-                pickle.dump(dict_indexed_data,handle)
-            with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_OrderedIndices.pickle', 'wb') as handle:
-                pickle.dump(ls_all_indices,handle)
-            with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_DataScaler.pickle', 'wb') as handle:
-                pickle.dump(dict_Scaler,handle)
-            # Store the data in Koopman
-            with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
-                pickle.dump(dict_DATA,handle)
+        else:
+            LETS_STORE = False
+    else:
+        os.mkdir(storage_folder)
+    if LETS_STORE:
+        with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
+            pickle.dump(dict_DATA,handle)
+        with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_SimulatedData.pickle', 'wb') as handle:
+            pickle.dump(dict_indexed_data,handle)
+        with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_OrderedIndices.pickle', 'wb') as handle:
+            pickle.dump(ls_all_indices,handle)
+        with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_DataScaler.pickle', 'wb') as handle:
+            pickle.dump(dict_Scaler,handle)
+        # Store the data in Koopman
+        with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
+            pickle.dump(dict_DATA,handle)
     return
 
 def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERATIONS_PER_GPU,NO_OF_ITERATIONS_IN_CPU):
@@ -204,7 +213,7 @@ def transfer_current_ocDeepDMD_run_files():
     current_run_no = -1
     for items in os.listdir(destination_folder):
         if items[0:4] == 'RUN_':
-            current_run_no = np.max([current_run_no, items[4:]])
+            current_run_no = np.max([current_run_no, int(items[4:])])
     current_run_no = current_run_no + 1
     # Transfer the files
     for items in list(set(os.listdir(source_folder)) - {'.DS_Store'}):
@@ -215,16 +224,18 @@ def transfer_current_ocDeepDMD_run_files():
     return
 
 def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
-    sys_folder_name = 'System_' + str(SYSTEM_NO)
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     run_folder_name = sys_folder_name + '/RUN_' + str(RUN_NO)
-    with open(sys_folder_name+'/'+sys_folder_name+'_DataScaler.pickle','rb') as handle:
-        data_Scaler = pickle.load(handle)
-    with open(sys_folder_name+'/'+sys_folder_name+'_OrderedIndices.pickle','rb') as handle:
+    # The Scaler is called upon when required and hence is not required
+    # with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_DataScaler.pickle','rb') as handle:
+    #     data_Scaler = pickle.load(handle)
+    with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_OrderedIndices.pickle','rb') as handle:
         ls_all_indices = pickle.load(handle)
-    with open(sys_folder_name+'/'+sys_folder_name+'_SimulatedData.pickle','rb') as handle:
+    with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_SimulatedData.pickle','rb') as handle:
         dict_indexed_data = pickle.load(handle) # No scaling appplied here
-    with open(sys_folder_name+'/'+sys_folder_name+'_ocDeepDMDdata.pickle','rb') as handle:
-        dict_DATA = pickle.load(handle) # Scaled data
+    # Data used in oc_deepDMD is not required here unless we want to train again
+    # with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_ocDeepDMDdata.pickle','rb') as handle:
+    #     dict_DATA = pickle.load(handle) # Scaled data
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
     saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
     dict_params = {}
@@ -257,10 +268,10 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
         df_train_learning_curves = pd.DataFrame(pickle.load(handle))
     with open(run_folder_name + '/run_info.pickle','rb') as handle:
         df_run_info = pd.DataFrame(pickle.load(handle))
-    return dict_params, data_Scaler, ls_all_indices, dict_indexed_data, dict_DATA, df_train_learning_curves,df_run_info
+    return dict_params,  ls_all_indices, dict_indexed_data,  df_train_learning_curves,df_run_info #, data_Scaler, dict_DATA
 
 def inverse_transform_X(X_in,SYSTEM_NUMBER):
-    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+    with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
         TheScaler = pickle.load(handle)
     if 'X Scale' in TheScaler.keys():
         X_out = TheScaler['X Scale'].inverse_transform(X_in)
@@ -269,7 +280,7 @@ def inverse_transform_X(X_in,SYSTEM_NUMBER):
     return X_out
 
 def inverse_transform_Y(Y_in,SYSTEM_NUMBER):
-    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+    with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
         TheScaler = pickle.load(handle)
     if 'Y Scale' in TheScaler.keys():
         Y_out = TheScaler['Y Scale'].inverse_transform(Y_in)
@@ -279,7 +290,7 @@ def inverse_transform_Y(Y_in,SYSTEM_NUMBER):
 
 def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
     dict_DATA_OUT = {}
-    with open('System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+    with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
         TheScaler = pickle.load(handle)
     for item in dict_DATA_IN.keys():
         if item in ['Xp','Xf','X']:
@@ -295,41 +306,65 @@ def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
     return dict_DATA_OUT
 
 
-# def model_prediction(dict_indexed_data, SYSTEM_NUMBER):
-#     dict_model_pred_one_step = {}
-#     dict_model_pred_n_step = {}
-#     for data_index in dict_indexed_data.keys():
-#         dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
-#         X = dict_DATA_i['X']
-#         n_base_states = X.shape[1]
-#         # Initiation
-#         psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[0:1, :]})
-#         psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X})
-#         psiX_est = copy.deepcopy(psiX)
-#         for i in range(0, X.shape[0] - 1):
-#             psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
-#             if with_u:
-#                 psiupT = dict_params['psiupT'].eval(feed_dict={dict_params['upT_feed']: U[i:i + 1, :]})
-#                 psixfT_i = psixfT_est_i + np.matmul(psiupT, dict_params['KuT_num'])
-#                 if with_xu:
-#                     psixupT = dict_params['psixupT'].eval(
-#                         feed_dict={dict_params['xupT_feed']: np.concatenate([X[i:i + 1, :], U[i:i + 1, :]], axis=1)})
-#                     psixfT_i = psixfT_est_i + np.matmul(psixupT, dict_params['KxuT_num'])
-#             psiX_est[i + 1, :] = psixfT_i
-#             if one_step_pred:
-#                 psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[i + 1:i + 2, :]})
-#             else:
-#                 psixpT_i = psixfT_i
-#         Y = dict_DATA_i['Y']
-#         Y_est = np.matmul(psiX_est, dict_params['WhT_num'])
-#
-#         dict_model_pred_one_step[data_index] = {}
-#         dict_model_pred_n_step[data_index] = {}
-#         dict_model_pred_results['psiX_transformed'] = psiX
-#         dict_model_pred_results['psiX_est_transformed'] = psiX_est
-#         dict_model_pred_results['X'] = inverse_transform_X(psiX[:, 0:n_base_states], SYSTEM_NUMBER)
-#         dict_model_pred_results['X_est'] = inverse_transform_X(psiX_est[:, 0:n_base_states], SYSTEM_NUMBER)
-#         dict_model_pred_results['Y'] = inverse_transform_Y(Y, SYSTEM_NUMBER)
-#         dict_model_pred_results['Y_est'] = inverse_transform_Y(Y_est, SYSTEM_NUMBER)
-#     return dict_model_pred_results
+def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
+    dict_indexed_data_predictions = {}
+    for data_index in dict_indexed_data.keys():
+        dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
+        X = dict_DATA_i['X']
+        Y = dict_DATA_i['Y']
+        n_base_states = X.shape[1]
+        psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X})
+        # One Step Prediction ----------------------
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[0:1, :]})
+        psiX_est_one_step = copy.deepcopy(psiX)
+        for i in range(0, X.shape[0] - 1):
+            psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+            psiX_est_one_step[i + 1, :] = psixfT_i
+            psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[i + 1:i + 2, :]})
+        Y_est_one_step = np.matmul(psiX_est_one_step, dict_params['WhT_num'])
+        # N Step Prediction ----------------------
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X[0:1, :]})
+        psiX_est_n_step = copy.deepcopy(psiX)
+        for i in range(0, X.shape[0] - 1):
+            psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+            psiX_est_n_step[i + 1, :] = psixfT_i
+            psixpT_i = psixfT_i
+        Y_est_n_step = np.matmul(psiX_est_n_step, dict_params['WhT_num'])
+        dict_indexed_data_predictions[data_index] = {}
+        dict_indexed_data_predictions[data_index]['X'] = X
+        dict_indexed_data_predictions[data_index]['X_est_one_step'] = inverse_transform_X(psiX_est_one_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['X_est_n_step'] = inverse_transform_X(psiX_est_n_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['Y'] = Y
+        dict_indexed_data_predictions[data_index]['Y_est_one_step'] = inverse_transform_Y(Y_est_one_step, SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['Y_est_n_step'] = inverse_transform_Y(Y_est_n_step, SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['psiX'] = psiX
+        dict_indexed_data_predictions[data_index]['psiX_est_one_step'] = psiX_est_one_step
+        dict_indexed_data_predictions[data_index]['psiX_est_n_step'] = psiX_est_n_step
+    return dict_indexed_data_predictions
+
+def observables_and_eigenfunctions(dict_params,sampling_resolution):
+    # psi --- observables
+    # phi --- eigenfunctions
+    x1 = np.arange(0, 1 + sampling_resolution, sampling_resolution)
+    x2 = np.arange(0, 1 + sampling_resolution, sampling_resolution)
+    X1, X2 = np.meshgrid(x1, x2)
+    eigval, L_eigvec = np.linalg.eig(dict_params['KxT_num']) # These are the left eigenvectors of K
+    # Eigenfunctions are given by psixT*L_eigvec
+    # AT*W = W*LAMBDA ==> psixT[k+1] = psixT[k]*K = [psixT[k]*W] * LAMBDA *inv(W)
+
+    # Extracting info about number of states by using a dummy transformation
+    psiXpT_trial = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: np.zeros(shape=(1, 2))})
+    n_LiftedStates = psiXpT_trial.shape[1]
+    psi_T = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
+    PHI_T = np.zeros(shape=(X1.shape[0], X1.shape[1], n_LiftedStates))
+    for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+        x1_i = X1[i, j]
+        x2_i = X2[i, j]
+        psiXT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: np.array([[x1_i, x2_i]])})
+        psi_T[i, j, :] = psiXT_i.reshape(-1)
+        PHI_T[i, j, :] = np.matmul(psiXT_i,L_eigvec).reshape(-1)
+
+
+
+
 
