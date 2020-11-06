@@ -5,6 +5,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+
+colors = [[0.68627453, 0.12156863, 0.16470589],
+          [0.96862745, 0.84705883, 0.40000001],
+          [0.83137256, 0.53333336, 0.6156863],
+          [0.03529412, 0.01960784, 0.14509805],
+          [0.90980393, 0.59607846, 0.78039217],
+          [0.69803923, 0.87843138, 0.72941178],
+          [0.20784314, 0.81568629, 0.89411765]];
+colors = np.asarray(colors);  # defines a color palette
+
+
+
 SYSTEM_NO = 1
 
 
@@ -49,9 +61,37 @@ for N_obs in unique_n_observables:
         dict_valid_error_std[N_obs][N_nod] = df_n_nod_filter.loc[:, 'training_error'].std()
 
 
+df_train_error_mean = pd.DataFrame(dict_train_error_mean).sort_index().T.sort_index()
+df_train_error_std = pd.DataFrame(dict_train_error_std).sort_index().T.sort_index()
+df_valid_error_mean = pd.DataFrame(dict_valid_error_mean).sort_index().T.sort_index()
+df_valid_error_std = pd.DataFrame(dict_valid_error_std).sort_index().T.sort_index()
+
+leg_entries = []
+for i in df_train_error_mean.columns:
+    leg_entries.append(str(int(i)) + ' nodes')
 
 plt.figure()
-plt.plot
+# plt.plot(df_train_error_mean.index,df_train_error_mean)
+for i in df_train_error_mean.columns:
+    plt.errorbar(df_train_error_mean.index,df_train_error_mean.loc[:,i], yerr =df_train_error_std.loc[:,i],uplims=True, lolims=True)
+
+plt.title('Training Error')
+plt.xlabel('Number of observables')
+plt.xticks(df_train_error_mean.index,df_train_error_mean.index)
+plt.ylabel('Error')
+plt.legend(leg_entries)
+plt.show()
+
+plt.figure()
+# plt.plot(df_valid_error_mean.index,df_valid_error_mean)
+for i in df_valid_error_mean.columns:
+    plt.errorbar(df_valid_error_mean.index,df_valid_error_mean.loc[:,i], yerr =df_valid_error_std.loc[:,i],uplims=True, lolims=True)
+plt.title('Validation Error')
+plt.xlabel('Number of observables')
+plt.xticks(df_valid_error_mean.index,df_valid_error_mean.index)
+plt.ylabel('Error')
+plt.legend(leg_entries)
+plt.show()
 
 
 
