@@ -17,7 +17,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 
-SYSTEM_NO = 1
+SYSTEM_NO = 2
 
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
