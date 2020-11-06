@@ -167,28 +167,31 @@ def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERA
         bash_exec.write(
             '# Gen syntax: [interpreter] [code.py] [device] [sys_no] [with_u] [with_y] [mix_xu] [run_no] [dict_size] [nn_layers] [nn_nodes] [write_to_file] \n')
         if DEVICE_TO_RUN_ON in ['optictensor', 'goldentensor']:
-            RUN_NO = 0
-            for i in dict_run_conditions.keys():
-                if i in [0, 1, 2, 3]:
-                    for j in range(NO_OF_ITERATIONS_PER_GPU):
-                        general_run = 'python3 gen_control_Koopman_SHARA_addition.py \'/gpu:' + str(i) + '\' ' + str(
-                            SYSTEM_NO) + ' 0 1 0 '
-                        run_params = str(RUN_NO)
-                        for items in dict_run_conditions[i].keys():
-                            run_params = run_params + ' ' + str(dict_run_conditions[i][items])
-                        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(RUN_NO) + '.txt &\n'
-                        bash_exec.write(general_run + run_params + write_to_file)
-                        RUN_NO = RUN_NO + 1
-                elif i == 4:
-                    for j in range(NO_OF_ITERATIONS_IN_CPU):
-                        general_run = 'python3 gen_control_Koopman_SHARA_addition.py \'/cpu:0\' ' + str(
-                            SYSTEM_NO) + ' 0 1 0 '
-                        run_params = str(RUN_NO)
-                        for items in dict_run_conditions[i].keys():
-                            run_params = run_params + ' ' + str(dict_run_conditions[i][items])
-                        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(RUN_NO) + '.txt &\n'
-                        bash_exec.write(general_run + run_params + write_to_file)
-                        RUN_NO = RUN_NO + 1
+            ls_gpu = [0,1,2,3]
+        elif DEVICE_TO_RUN_ON == 'microtensor':
+            ls_gpu = [0, 1]
+        RUN_NO = 0
+        for i in dict_run_conditions.keys():
+            if i in ls_gpu:
+                for j in range(NO_OF_ITERATIONS_PER_GPU):
+                    general_run = 'python3 gen_control_Koopman_SHARA_addition.py \'/gpu:' + str(i) + '\' ' + str(
+                        SYSTEM_NO) + ' 0 1 0 '
+                    run_params = str(RUN_NO)
+                    for items in dict_run_conditions[i].keys():
+                        run_params = run_params + ' ' + str(dict_run_conditions[i][items])
+                    write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(RUN_NO) + '.txt &\n'
+                    bash_exec.write(general_run + run_params + write_to_file)
+                    RUN_NO = RUN_NO + 1
+            elif i == np.max(ls_gpu)+1:
+                for j in range(NO_OF_ITERATIONS_IN_CPU):
+                    general_run = 'python3 gen_control_Koopman_SHARA_addition.py \'/cpu:0\' ' + str(
+                        SYSTEM_NO) + ' 0 1 0 '
+                    run_params = str(RUN_NO)
+                    for items in dict_run_conditions[i].keys():
+                        run_params = run_params + ' ' + str(dict_run_conditions[i][items])
+                    write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(RUN_NO) + '.txt &\n'
+                    bash_exec.write(general_run + run_params + write_to_file)
+                    RUN_NO = RUN_NO + 1
         bash_exec.write('echo "Running all sessions" \n')
         bash_exec.write('wait \n')
         bash_exec.write('echo "All sessions are complete" \n')
