@@ -23,7 +23,7 @@ SYSTEM_NO = 2
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # Make a predictions folder
-if os.path.exists(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_Predictions'):
+if os.path.exists(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_Predictions.pickle'):
     with open('processed_runs.pickle','rb') as handle:
         processed_runs = pickle.load(handle)
 else:
