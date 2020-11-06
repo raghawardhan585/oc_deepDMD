@@ -105,13 +105,22 @@ def sim_sys_1_2(sys_params):
     return dict_DATA
 
 def data_gen_sys_1_2(sys_params, N_CURVES,SYSTEM_NO):
+    # Create a folder for the system and store the data
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        get_input = input('Do you wanna delete the existing system[y/n]? ')
+        if get_input == 'y':
+            shutil.rmtree(storage_folder)
+            os.mkdir(storage_folder)
+        else:
+            return
+    else:
+        os.mkdir(storage_folder)
     # Simulation
     dict_indexed_data = {}
     plt.figure()
     X0 = np.empty(shape=(0,2))
     for i in range(N_CURVES):
-        r = np.random.uniform(5., 10.)
-        theta = np.random.uniform(0., 2 * np.pi)
         sys_params['x0'] = generate_2state_initial_condition()
         X0 = np.concatenate([X0,sys_params['x0']],axis=0)
         dict_indexed_data[i]= sim_sys_1_2(sys_params)
@@ -123,39 +132,29 @@ def data_gen_sys_1_2(sys_params, N_CURVES,SYSTEM_NO):
     Xf = np.empty((0,2))
     Yp = np.empty((0,1))
     Yf = np.empty((0,1))
-    ls_all_indices = np.arange(N_CURVES)
-    random.shuffle(ls_all_indices)
+    ls_all_indices = np.arange(int(np.ceil(2/3*N_CURVES))) # We take 2/3rd of the data - The training and validation set
+    # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
     for i in ls_all_indices:
         Xp = np.concatenate([Xp,dict_indexed_data[i]['X'][0:-1,:]],axis=0)
         Xf = np.concatenate([Xf,dict_indexed_data[i]['X'][1:,:]],axis=0)
         Yp = np.concatenate([Yp,dict_indexed_data[i]['Y'][0:-1,:]],axis=0)
         Yf = np.concatenate([Yf,dict_indexed_data[i]['Y'][1:,:]],axis=0)
     dict_DATA_RAW = {'Xp': Xp, 'Xf': Xf, 'Yp': Yp, 'Yf': Yf}
-    dict_DATA,dict_Scaler,_ = scale_train_data(dict_DATA_RAW,'min max')
-    # Create a folder for the system and store the data
-    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
-    LETS_STORE = True
-    if os.path.exists(storage_folder):
-        get_input = input('Do you wanna delete the existing system[y/n]? ')
-        if get_input == 'y':
-            shutil.rmtree(storage_folder)
-            os.mkdir(storage_folder)
-        else:
-            LETS_STORE = False
-    else:
-        os.mkdir(storage_folder)
-    if LETS_STORE:
-        with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
-            pickle.dump(dict_DATA,handle)
-        with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_SimulatedData.pickle', 'wb') as handle:
-            pickle.dump(dict_indexed_data,handle)
-        with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_OrderedIndices.pickle', 'wb') as handle:
-            pickle.dump(ls_all_indices,handle)
-        with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_DataScaler.pickle', 'wb') as handle:
-            pickle.dump(dict_Scaler,handle)
-        # Store the data in Koopman
-        with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
-            pickle.dump(dict_DATA,handle)
+    n_train = int(np.ceil(len(dict_DATA_RAW['Xp'])/2)) # Segregate half of data as training
+    dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train], 'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
+    _,dict_Scaler,_ = scale_train_data(dict_DATA_TRAIN_RAW,'min max')
+    with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_DataScaler.pickle', 'wb') as handle:
+        pickle.dump(dict_Scaler,handle)
+    dict_DATA = scale_data_using_existing_scaler_folder(dict_DATA_RAW,SYSTEM_NO)
+    with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
+        pickle.dump(dict_DATA,handle)
+    with open(storage_folder + '/System_'+ str(SYSTEM_NO) + '_SimulatedData.pickle', 'wb') as handle:
+        pickle.dump(dict_indexed_data,handle)
+    with open(storage_folder + '/System_'+ str(SYSTEM_NO) +'_OrderedIndices.pickle', 'wb') as handle:
+        pickle.dump(ls_all_indices,handle) # Only training and validation indices are stored
+    # Store the data in Koopman
+    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
+        pickle.dump(dict_DATA,handle)
     return
 
 def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERATIONS_PER_GPU,NO_OF_ITERATIONS_IN_CPU):

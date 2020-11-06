@@ -78,7 +78,7 @@ valid_error_threshold = 1e-6;
 test_error_threshold = 1e-6;
 DISPLAY_SAMPLE_RATE_EPOCH = 1000
 TRAIN_PERCENT = 50
-VALID_PERCENT = 20
+# VALID_PERCENT = 20
 # WEIGHT_OUTPUT_OBJECTIVE = 0.5
 # Deep Learning Metaparameters ###
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
@@ -897,170 +897,6 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_p
             print('---------------------------------------------------------------------------------------------------')
     return all_histories, good_start, epoch_i
 
-
-# def train_net(u_all_training,y_all_training,mean_diff_nocovar,optimizer,u_control_all_training=None,Output_p_batch=None,Output_f_batch=None,valid_error_thres=1e-2,test_error_thres=1e-2,max_iters=100000,step_size_val=0.01):
-#   iter = 0;
-#   samplerate = 10;
-#   good_start = 1;
-#   valid_error = 100.0;
-#   test_error = 100.0;
-#   training_error_history_nocovar = [];
-#   validation_error_history_nocovar = [];
-#   test_error_history_nocovar = [];
-#
-#   training_error_history_withcovar = [];
-#   validation_error_history_withcovar = [];
-#   test_error_history_withcovar = [];
-#
-#   covar_actual = compute_covarmat_v2(u_all_training,y_all_training);
-#   covar_model_history = [];
-#   covar_diff_history = [];
-#   print('Training Starts now')
-#   while (((test_error>test_error_thres) or (valid_error > valid_error_thres)) and iter < max_iters):
-#     iter+=1;
-#     all_ind = set(np.arange(0,len(u_all_training)));
-#     select_ind = np.random.randint(0,len(u_all_training),size=batch_size); # select indices for training
-#     valid_ind = list(all_ind -set(select_ind))[0:batch_size];  # select indices for validation
-#     select_ind_test = list(all_ind - set(valid_ind) - set(select_ind))[0:batch_size]; # select indices for test
-#     u_batch =[];
-#     u_control_batch = [];
-#     y_batch = [];
-#     u_valid = [];
-#     u_control_valid = [];
-#     y_valid = [];
-#     u_test_train = [];
-#     u_control_train = [];
-#     y_test_train= [];
-#     u_control_test_train = [];
-#     output_batch_p = [];
-#     output_batch_valid_p = [];
-#     output_batch_test_train_p = [];
-#     output_batch_f = [];
-#     output_batch_valid_f = [];
-#     output_batch_test_train_f = [];
-#
-#     for j in range(0,len(select_ind)):
-#       u_batch.append(u_all_training[select_ind[j]]);
-#       y_batch.append(y_all_training[select_ind[j]]);
-#       if with_control:
-#           u_control_batch.append(u_control_all_training[select_ind[j]]);
-#       if with_output:
-#           output_batch_p.append(Output_p_batch[select_ind[j]]);
-#           output_batch_f.append(Output_f_batch[select_ind[j]]);
-#
-#     for k in range(0,len(valid_ind)):
-#       u_valid.append(u_all_training[valid_ind[k]]);
-#       y_valid.append(y_all_training[valid_ind[k]]);
-#       if with_control:
-#           u_control_valid.append(u_control_all_training[valid_ind[k]]);
-#
-#       if with_output:
-#           output_batch_valid_p.append(Output_p_batch[valid_ind[k]]);
-#           output_batch_valid_f.append(Output_f_batch[valid_ind[k]]);
-#
-#
-#     for k in range(0,len(select_ind_test)):
-#       u_test_train.append(u_all_training[select_ind_test[k]]);
-#       y_test_train.append(y_all_training[select_ind_test[k]]);
-#       if with_control:
-#           u_control_test_train.append(u_control_all_training[select_ind_test[k]]);
-#       if with_output:
-#           output_batch_test_train_p.append(Output_p_batch[select_ind_test[k]]);
-#           output_batch_test_train_f.append(Output_f_batch[select_ind_test[k]]);
-#
-#
-#
-#     if with_control and (not with_output):
-#       optimizer.run(feed_dict={yp_feed:u_batch,yf_feed:y_batch,u_control:u_control_batch,step_size:step_size_val});
-#       valid_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid,u_control:u_control_valid});
-#       test_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train,u_control:u_control_test_train});
-#
-#     if with_control and with_output:
-#       optimizer.run(feed_dict={yp_feed:u_batch,yf_feed:y_batch,u_control:u_control_batch,step_size:step_size_val,yp_feed:output_batch_p,yf_feed:output_batch_f});
-#       train_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_batch,yf_feed:y_batch,u_control:u_control_batch,step_size:step_size_val,yp_feed:output_batch_p,yf_feed:output_batch_f});
-#       valid_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid,u_control:u_control_valid,yp_feed:output_batch_valid_p,yf_feed:output_batch_valid_f});
-#       test_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train,u_control:u_control_test_train,yp_feed:output_batch_test_train_p,yf_feed:output_batch_test_train_f});
-#
-#
-#     if (not with_control) and (not with_output):
-#       optimizer.run(feed_dict={yp_feed:u_batch,yf_feed:y_batch,step_size:step_size_val});
-#       valid_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid});
-#       test_error = mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train});
-#
-#
-#
-#     if iter%samplerate==0:
-#       if with_control and (not with_output):
-#         training_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_batch,yf_feed:y_batch,u_control:u_control_batch}));
-#         validation_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid,u_control:u_control_valid}));
-#         test_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train,u_control:u_control_test_train}));
-#       if with_control and with_output:
-#         training_error_history_nocovar.append(train_error);
-#         validation_error_history_nocovar.append(valid_error);
-#         test_error_history_nocovar.append(test_error);
-#
-#       if (not with_control) and (not with_output):
-#         training_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_batch,yf_feed:y_batch}));
-#         validation_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid}));
-#         test_error_history_nocovar.append(mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train}));
-#
-#
-#       if (iter%10==0) or (iter==1):
-#         plt.close();
-#         if plot_deep_basis:
-#           fig_hand = expose_deep_basis(psiypz_list,num_bas_obs,x_deep_dict_size,iter,yp_feed);
-#           fig_hand = quick_nstep_predict(Y_p_old,u_control_all_training,with_control,num_bas_obs,iter);
-#
-#         if with_control and (not with_output):
-#           print ("step %d , validation error %g"%(iter, mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid,u_control:u_control_valid})));
-#           print ("step %d , test error %g"%(iter, mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train,u_control:u_control_test_train})));
-#
-#         if with_control and with_output:
-#           print ("step %d , validation error %g"%(iter, valid_error));
-#           print ("step %d , test error %g"%(iter, test_error));
-#
-#             #print ( test_synthesis(sess.run(Kx).T,sess.run(Ku).T ))
-#         if (not with_control) and (not with_output):
-#           print ("step %d , validation error %g"%(iter, mean_diff_nocovar.eval(feed_dict={yp_feed:u_valid,yf_feed:y_valid})));
-#           print ("step %d , test error %g"%(iter, mean_diff_nocovar.eval(feed_dict={yp_feed:u_test_train,yf_feed:y_test_train})));
-#
-#     if ((iter>20000) and iter%10) :
-#
-#       valid_gradient = np.gradient(np.asarray(validation_error_history_nocovar[np.int(iter/samplerate*3/10):]) );
-#       mu_gradient = np.mean(valid_gradient);
-#
-#       if ((iter <1000) and (mu_gradient >= 5e-1)): # eventually update this to be 1/10th the mean of batch data, or mean of all data handed as input param to func
-#         good_start = 0; # if after 10,000 iterations validation error is still above 1e0, initialization was poor.
-#         print("Terminating model refinement loop with gradient:") + repr(mu_gradient) + ", validation error after " + repr(iter) + " epochs:  " + repr(valid_error);
-#         iter = max_iters; # terminate while loop and return histories
-#
-#
-#
-#     # if iter > 10000 and with_control:
-#     #   At = None;
-#       #At = sess.run(Kx).T;
-#       #Bt = sess.run(Ku).T;
-#       #ctrb_rank = np.linalg.matrix_rank(control.ctrb(At,Bt));
-#       #if debug_splash:
-#       #  print(repr(ctrb_rank) + " : " + repr(control.ctrb(At,Bt).shape[0]));
-#
-#       #if ctrb_rank == control.ctrb(At,Bt).shape[0] and test_error_history_nocovar[-1] <1e-5:
-#       #   iter=max_iters;
-#
-#   all_histories = [training_error_history_nocovar, validation_error_history_nocovar,test_error_history_nocovar, \
-#                   training_error_history_withcovar,validation_error_history_withcovar,test_error_history_withcovar,covar_actual,covar_diff_history,covar_model_history];
-#
-#   plt.close();
-#   x = np.arange(0,len(validation_error_history_nocovar),1);
-#   plt.plot(x,training_error_history_nocovar,label='train. err.');
-#   plt.plot(x,validation_error_history_nocovar,label='valid. err.');
-#   plt.plot(x,test_error_history_nocovar,label='test err.');
-#   #plt.gca().set_yscale('log');
-#   plt.savefig('all_error_history.pdf');
-#
-#   plt.close();
-#   return all_histories,good_start;
-
 # # # END HELPER FUNCTIONS # # #
 
 
@@ -1166,7 +1002,8 @@ if pre_examples_switch == 12:
 if pre_examples_switch == 13:
     # data_suffix = 'Pputida_GrowthHarness_RNAseq_DeepDMD.pickle'#'SIM1SHARA_Combinatorial_Promoters_with_input';#'X8SS_Pputida_RNASeqDATA.pickle';
     # data_suffix = 'oc_deepDMD_FeedForwardLoopSystem.pickle'
-    data_suffix = 'oc_deepDMD_ClosedKoopmanSystem.pickle'
+    # data_suffix = 'oc_deepDMD_ClosedKoopmanSystem.pickle'
+    data_suffix = 'System_2_ocDeepDMDdata.pickle'
     with_control = 0;
     with_output = 1;
     mix_state_and_control = 0;
@@ -1244,46 +1081,47 @@ print("[INFO] Yf.shape (E-DMD): " + repr(Xf.shape));
 ## Train/Test Split for Benchmarking Forecasting Later
 
 num_trains = np.int(len(Xp) * TRAIN_PERCENT / 100)
-num_valids = np.int(len(Xp) * VALID_PERCENT / 100)
+# num_valids = np.int(len(Xp) * VALID_PERCENT / 100)
 train_indices = np.arange(0, num_trains, 1)
-valid_indices = np.arange(num_trains,num_trains+num_valids,1)
-test_indices = np.arange(num_trains+num_valids, len(Xp), 1)
+valid_indices = np.arange(num_trains,len(Xp),1)
+# valid_indices = np.arange(num_trains,num_trains+num_valids,1)
+# test_indices = np.arange(num_trains+num_valids, len(Xp), 1)
 dict_train = {}
 dict_valid = {}
-dict_test = {}
+# dict_test = {}
 dict_train['Xp'] = Xp[train_indices]
 dict_valid['Xp'] = Xp[valid_indices]
-dict_test['Xp'] = Xp[test_indices]
+# dict_test['Xp'] = Xp[test_indices]
 dict_train['Xf'] = Xf[train_indices]
 dict_valid['Xf'] = Xf[valid_indices]
-dict_test['Xf'] = Xf[test_indices]
+# dict_test['Xf'] = Xf[test_indices]
 
 if with_control:
     dict_train['Up'] = Up[train_indices]
     dict_valid['Up'] = Up[valid_indices]
-    dict_test['Up'] = Up[test_indices]
+    # dict_test['Up'] = Up[test_indices]
 
 if with_output:
     dict_train['Yp'] = Yp[train_indices]
     dict_valid['Yp'] = Yp[valid_indices]
-    dict_test['Yp'] = Yp[test_indices]
+    # dict_test['Yp'] = Yp[test_indices]
 
     dict_train['Yf'] = Yf[train_indices]
     dict_valid['Yf'] = Yf[valid_indices]
-    dict_test['Yf'] = Yf[test_indices]
+    # dict_test['Yf'] = Yf[test_indices]
 
 
 
 # Display info
 print("Number of training snapshots: " + repr(len(train_indices)));
 print("Number of validation snapshots: " + repr(len(valid_indices)));
-print("Number of test snapshots: " + repr(len(test_indices)));
-if debug_splash:
-    print("[DEBUG] Xp_test.shape (E-DMD) ") + repr(dict_test['Xp'].shape);
-    print("[DEBUG] Xf_test.shape (E-DMD) ") + repr(dict_test['Xf'].shape);
-    if with_control:
-        print("[DEBUG] U_train.shape (E-DMD) ") + repr(dict_train['Up'].shape);
-    # print("[INFO] up_all_training.shape: ") + repr(Up.shape);
+# print("Number of test snapshots: " + repr(len(test_indices)));
+# if debug_splash:
+#     print("[DEBUG] Xp_test.shape (E-DMD) ") + repr(dict_test['Xp'].shape);
+#     print("[DEBUG] Xf_test.shape (E-DMD) ") + repr(dict_test['Xf'].shape);
+#     if with_control:
+#         print("[DEBUG] U_train.shape (E-DMD) ") + repr(dict_train['Up'].shape);
+#     # print("[INFO] up_all_training.shape: ") + repr(Up.shape);
 
 ## Begin Sweep
 # for n_depth_reciprocal in range(0,1):#max_depth-2): #2
@@ -1464,28 +1302,34 @@ while good_start == 0 and try_num < max_tries:
                        dict_feed['regularization_lambda']: regularization_lambda_val}
     feed_dict_valid = {xp_feed: dict_valid['Xp'], xf_feed: dict_valid['Xf'],
                        dict_feed['regularization_lambda']: regularization_lambda_val}
-    feed_dict_test = {xp_feed: dict_test['Xp'], xf_feed: dict_test['Xf'],
-                      dict_feed['regularization_lambda']: regularization_lambda_val}
+    # feed_dict_test = {xp_feed: dict_test['Xp'], xf_feed: dict_test['Xf'],
+    #                   dict_feed['regularization_lambda']: regularization_lambda_val}
     if with_control:
         feed_dict_train[up_feed] = dict_train['Up']
         feed_dict_valid[up_feed] = dict_valid['Up']
-        feed_dict_test[up_feed] = dict_test['Up']
+        # feed_dict_test[up_feed] = dict_test['Up']
         if mix_state_and_control:
             feed_dict_train[xup_feed] = np.concatenate([dict_train['Xp'], dict_train['Up']], axis=1)
-            feed_dict_test[xup_feed] = np.concatenate([dict_test['Xp'], dict_test['Up']], axis=1)
+            feed_dict_valid[xup_feed] = np.concatenate([dict_valid['Xp'], dict_valid['Up']], axis=1)
+            # feed_dict_test[xup_feed] = np.concatenate([dict_test['Xp'], dict_test['Up']], axis=1)
     if with_output:
         feed_dict_train[yf_feed] = dict_train['Yf']
-        feed_dict_test[yf_feed] = dict_test['Yf']
+        feed_dict_valid[yf_feed] = dict_valid['Yf']
+        # feed_dict_test[yf_feed] = dict_test['Yf']
         feed_dict_train[yp_feed] = dict_train['Yp']
-        feed_dict_test[yp_feed] = dict_test['Yp']
-    train_accuracy = deep_koopman_loss.eval(feed_dict=feed_dict_train)
-    test_accuracy = deep_koopman_loss.eval(feed_dict=feed_dict_test)
+        feed_dict_valid[yp_feed] = dict_valid['Yp']
+        # feed_dict_test[yp_feed] = dict_test['Yp']
+    train_error = deep_koopman_loss.eval(feed_dict=feed_dict_train)
+    valid_error = deep_koopman_loss.eval(feed_dict=feed_dict_valid)
+    # test_error = deep_koopman_loss.eval(feed_dict=feed_dict_test)
 
     if debug_splash:
         print("[Result]: Training Error: ");
-        print(train_accuracy);
-        print("[Result]: Test Error : ");
-        print(test_accuracy);
+        print(train_error);
+        print("[Result]: Validation Error: ");
+        print(valid_error);
+        # print("[Result]: Test Error : ");
+        # print(test_error);
 ### Write Vars to Checkpoint Files/MetaFiles
 # Creating a folder for saving the objects of the current run
 try:
@@ -1641,8 +1485,9 @@ print("[INFO] Koopman_dim:" + repr(Kx_num.shape))
 #   feed_dict_test[yp_feed] = Out_p_test
 # training_error = accuracy.eval(feed_dict = feed_dict_train)
 # test_error = accuracy.eval(feed_dict=feed_dict_test)
-print('%s%f' % ('[COMP] Training error: ', train_accuracy));
-print('%s%f' % ('[COMP] Test error: ', test_accuracy));
+print('%s%f' % ('[COMP] Training error: ', train_error));
+print('%s%f' % ('[COMP] Validation error: ', valid_error));
+# print('%s%f' % ('[COMP] Test error: ', test_error));
 estimate_K_stability(Kx)
 
 
