@@ -169,7 +169,7 @@ def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERA
         if DEVICE_TO_RUN_ON in ['optictensor', 'goldentensor']:
             ls_gpu = [0,1,2,3]
         elif DEVICE_TO_RUN_ON == 'microtensor':
-            ls_gpu = [0, 1]
+            ls_gpu = [-1]
         RUN_NO = 0
         for i in dict_run_conditions.keys():
             if i in ls_gpu:
