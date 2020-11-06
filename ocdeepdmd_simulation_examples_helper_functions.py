@@ -196,6 +196,9 @@ def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERA
         bash_exec.write('wait \n')
         bash_exec.write('echo "All sessions are complete" \n')
         bash_exec.write('echo "=======================================================" \n')
+        # bash_exec.write('cd .. \n')
+        # bash_exec.write('mv -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files ')
+        # bash_exec.write('mv -a oc_deepDMD/Run_info/ Run_info  ')
     return
 
 def transfer_current_ocDeepDMD_run_files():
