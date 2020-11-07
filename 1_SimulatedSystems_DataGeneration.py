@@ -69,7 +69,7 @@ NO_OF_ITERATIONS_IN_CPU = 5
 
 dict_run_conditions = {}
 # MICROTENSOR CPU RUN
-dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':5,'x_nn_nodes':15}
+dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':5,'x_nn_nodes':12}
 # Runs
 # dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':6}
 # dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':9}
