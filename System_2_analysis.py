@@ -36,10 +36,11 @@ for folder in os.listdir(sys_folder_name):
     if folder[0:4] == 'RUN_': # It is a RUN folder
         ls_all_run_indices.append(int(folder[4:]))
 ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
-
+print('RUNS TO PROCESS - ',ls_unprocessed_runs)
 
 
 for run in ls_unprocessed_runs:
+    print('RUN: ', run)
     dict_predictions[run]={}
     sess = tf.InteractiveSession()
     dict_params, _, dict_indexed_data, __, ___ = oc.get_all_run_info(SYSTEM_NO, run, sess)
