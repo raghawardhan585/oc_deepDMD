@@ -16,7 +16,6 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
 colors = np.asarray(colors);  # defines a color palette
 
 
-
 SYSTEM_NO = 2
 
 
