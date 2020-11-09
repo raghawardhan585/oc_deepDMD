@@ -12,6 +12,7 @@ import shutil
 import tensorflow as tf
 import copy
 import itertools
+from scipy.integrate import odeint
 
 def scale_train_data(dict_DATA_IN,method ='standard'):
     dict_DATA_OUT = {}
@@ -376,6 +377,17 @@ def observables_and_eigenfunctions(dict_params,sampling_resolution):
     # PHI[:,:,i] gives the i-th eigenfunction
     dict_out = {'X1':X1, 'X2':X2, 'observables': PSI, 'eigenfunctions':PHI}
     return dict_out
+
+
+# Incoherent Feed forward loop with a reporter as output
+
+def iffl_system(x,t,gamma_1,gamma_2,k_1,k_2n,k_2d):
+    x1dot = - gamma_1 * x[0] + k_1
+    x2dot = - gamma_2 * x[1] + k_2n/(k_2d + x[0])
+    return np.array([x1dot,x2dot])
+
+# def gen_data_iffl_system():
+
 
 
 
