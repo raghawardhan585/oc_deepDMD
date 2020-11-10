@@ -19,57 +19,74 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.20784314, 0.81568629, 0.89411765]];
 colors = np.asarray(colors);  # defines a color palette
 
-# ==========================
-## System 1 Data Generation
-# ==========================
-# System Parameters
-A = np.array([[0.86,0.],[0.8,0.4]])
-gamma = 0
-# Simulation Parameters
-N_data_points = 30
-N_CURVES = 10
-sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-SYSTEM_NO = 1
-oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
-
-# ==========================
-## System 2 Data Generation
-# ==========================
-# System Parameters
-A = np.array([[0.86,0.],[0.8,0.4]])
-gamma = -0.9
-# Simulation Parameters
-N_data_points = 30
-N_CURVES = 60
-sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-SYSTEM_NO = 2
-oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
-
 # # ==========================
-# # System 3 [Yet to be written]
+# ## System 1 Data Generation
 # # ==========================
 # # System Parameters
 # A = np.array([[0.86,0.],[0.8,0.4]])
-# gamma = 0.4
+# gamma = 0
 # # Simulation Parameters
 # N_data_points = 30
 # N_CURVES = 10
 # sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
+# SYSTEM_NO = 1
+# oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
+#
+# # ==========================
+# ## System 2 Data Generation
+# # ==========================
+# # System Parameters
+# A = np.array([[0.86,0.],[0.8,0.4]])
+# gamma = -0.9
+# # Simulation Parameters
+# N_data_points = 30
+# N_CURVES = 60
+# sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 # SYSTEM_NO = 2
-# oc.data_gen_sys_1_2(N_data_points, N_CURVES, SYSTEM_NO)
+# oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
+#
+# # ==========================
+# ## System 3 - Activator Repressor CLock - 4state system
+# ==========================
+# System Parameters
+gamma_A = 1.
+gamma_B = 0.5
+delta_A = 1.
+delta_B = 1.
+alpha_A0= 0.04
+alpha_B0= 0.004
+alpha_A = 250.
+alpha_B = 30.
+K_A = 1.
+K_B = 1.
+kappa_A = 1.
+kappa_B = 1.
+n = 2.
+m = 4.
+k_3n = 3.
+k_3d = 1.08
+sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
+# Simulation Parameters
+sampling_time = 0.1
+simulation_time = 30
+N_CURVES = 60
+
+sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES}
+SYSTEM_NO = 3
+oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 
 ## Bash Script Generator
 
 DEVICE_TO_RUN_ON = 'microtensor'
 # DEVICE_TO_RUN_ON = 'optictensor'
 # DEVICE_TO_RUN_ON = 'goldentensor'
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 2
-NO_OF_ITERATIONS_PER_GPU = 5
-NO_OF_ITERATIONS_IN_CPU = 5
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 3
+NO_OF_ITERATIONS_PER_GPU = 3
+NO_OF_ITERATIONS_IN_CPU = 3
 
 dict_run_conditions = {}
 # MICROTENSOR CPU RUN
-dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':18}
+dict_run_conditions[0] = {'x_dict_size':7,'x_nn_layers':3,'x_nn_nodes':15}
 # dict_run_conditions[1] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':9}
 # dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
 # dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
@@ -79,10 +96,10 @@ dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':18}
 
 # dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
 # Runs
-# dict_run_conditions[0] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':18}
-# dict_run_conditions[1] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
-# dict_run_conditions[2] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':6}
-# dict_run_conditions[3] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
+# dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':4,'x_nn_nodes':10}
+# dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':4,'x_nn_nodes':15}
+# dict_run_conditions[2] = {'x_dict_size':7,'x_nn_layers':3,'x_nn_nodes':5}
+# dict_run_conditions[3] = {'x_dict_size':7,'x_nn_layers':3,'x_nn_nodes':10}
 
 # dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
 
