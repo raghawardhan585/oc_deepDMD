@@ -77,17 +77,17 @@ oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 
 ## Bash Script Generator
 
-# DEVICE_TO_RUN_ON = 'microtensor'
+DEVICE_TO_RUN_ON = 'microtensor'
 # DEVICE_TO_RUN_ON = 'optictensor'
-DEVICE_TO_RUN_ON = 'goldentensor'
+# DEVICE_TO_RUN_ON = 'goldentensor'
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 3
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 1
 
 dict_run_conditions = {}
 # MICROTENSOR CPU RUN
-# dict_run_conditions[0] = {'x_dict_size':7,'x_nn_layers':4,'x_nn_nodes':10}
-# dict_run_conditions[1] = {'x_dict_size':7,'x_nn_layers':4,'x_nn_nodes':5}
+dict_run_conditions[0] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':15}
+dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
 # dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
 # dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
 # dict_run_conditions[4] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':18}
@@ -97,10 +97,10 @@ dict_run_conditions = {}
 # dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
 # Runs
 # Golden tensor
-dict_run_conditions[0] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':5}
-dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':10}
-dict_run_conditions[2] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':15}
-dict_run_conditions[3] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
+# dict_run_conditions[0] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':5}
+# dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':10}
+# dict_run_conditions[2] = {'x_dict_size':8,'x_nn_layers':3,'x_nn_nodes':15}
+# dict_run_conditions[3] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
 
 # Optic tensor
 # dict_run_conditions[0] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':10}
