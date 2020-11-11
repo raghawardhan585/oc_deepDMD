@@ -128,8 +128,8 @@ sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_D
 
 # generate_predictions_pickle_file(SYSTEM_NO)
 # generate_dict_error(SYSTEM_NO)
-# with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
-#     dict_predictions = pickle.load(handle)
+with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
+    dict_predictions = pickle.load(handle)
 with open(sys_folder_name + '/dict_error.pickle','rb') as handle:
     dict_error = pickle.load(handle)
 
@@ -160,37 +160,42 @@ else:
 ## Optimal Run Results
 SYSTEM_NO = 2
 ls_test_runs = list(range(40,60))
+def plot_fit_XY(dict_run):
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_optrun.pickle','rb') as handle:
     dict_optrun = pickle.load(handle)
 fig_height = 1
 fig_width = 2
-f,ax = plt.subplots(7,6,sharex=True,figsize = (fig_width*6,fig_height*7))
-i = 0
-# dict_optrun = dict_predictions[opt_run]
-for row_i in range(7):
-    for col_i in list(range(0,6,2)):
-        # Plot states and outputs
-        n_states = dict_optrun[ls_test_runs[i]]['X'].shape[1]
-        for j in range(n_states):
-            ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X'][:,j],'.',color = colors[j])
-            ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x_'+str(j+1) )
-        ax[row_i, col_i].legend()
-        for j in range(dict_optrun[ls_test_runs[i]]['Y'].shape[1]):
-            ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
-            ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y_'+str(j+1))
-        ax[row_i, col_i+1].legend()
-        # ax[row_i, col_i].title('X,Y')
-        # Plot the observables
-        # for j in range(dict_optrun[ls_test_runs[i]]['psiX'].shape[1]):
-        #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)])
-        #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],label ='x_'+str(j+1) )
-        # ax[row_i, col_i].title('observables')
-        i = i+1
-        if i == len(ls_test_runs):
-            break
 
-f.show()
+plot_params['individual_fig_height'] = 1
+plot_params['individual_fig_width'] = 2
+
+def plot_fit_XY(dict_run,plot_params):
+    f,ax = plt.subplots(7,6,sharex=True,figsize = (fig_width*6,fig_height*7))
+    i = 0
+    # dict_optrun = dict_predictions[opt_run]
+    for row_i in range(7):
+        for col_i in list(range(0,6,2)):
+            # Plot states and outputs
+            n_states = dict_optrun[ls_test_runs[i]]['X'].shape[1]
+            for j in range(n_states):
+                ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X'][:,j],'.',color = colors[j])
+                ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x_'+str(j+1) )
+            ax[row_i, col_i].legend()
+            for j in range(dict_optrun[ls_test_runs[i]]['Y'].shape[1]):
+                ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y_'+str(j+1))
+            ax[row_i, col_i+1].legend()
+            # ax[row_i, col_i].title('X,Y')
+            # Plot the observables
+            # for j in range(dict_optrun[ls_test_runs[i]]['psiX'].shape[1]):
+            #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)])
+            #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],label ='x_'+str(j+1) )
+            # ax[row_i, col_i].title('observables')
+            i = i+1
+            if i == len(ls_test_runs):
+                break
+    f.show()
 
 ## Plotting the observables
 plot_params={}
