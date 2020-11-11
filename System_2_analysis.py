@@ -68,7 +68,7 @@ def get_error(ls_indices,dict_XY):
     # J_error = np.mean(J_error)
     return J_error
 
-def generate_dict_error(SYSTEM_NO):
+def generate_df_error(SYSTEM_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
         SYSTEM_NO)
     ls_train_runs = list(range(20))
@@ -83,17 +83,45 @@ def generate_dict_error(SYSTEM_NO):
         dict_error[run_no]['train'] = get_error(ls_train_runs,dict_predictions[run_no])
         dict_error[run_no]['valid'] = get_error(ls_valid_runs, dict_predictions[run_no])
         dict_error[run_no]['test'] = get_error(ls_test_runs, dict_predictions[run_no])
+    df_error = pd.DataFrame(dict_error).T
     # Save the file
-    if os.path.exists(sys_folder_name + '/dict_error.pickle'):
-        ip = input('Do you wanna write over the dict_error file[y/n]?')
+    if os.path.exists(sys_folder_name + '/df_error.pickle'):
+        ip = input('Do you wanna write over the df_error file[y/n]?')
         if ip == 'y':
-            shutil.rmtree(sys_folder_name + '/dict_error.pickle')
-            with open(sys_folder_name + '/dict_error.pickle', 'wb') as handle:
-                pickle.dump(dict_error, handle)
+            shutil.rmtree(sys_folder_name + '/df_error.pickle')
+            with open(sys_folder_name + '/df_error.pickle', 'wb') as handle:
+                pickle.dump(df_error, handle)
     else:
-        with open(sys_folder_name + '/dict_error.pickle','wb') as handle:
-            pickle.dump(dict_error,handle)
+        with open(sys_folder_name + '/df_error.pickle','wb') as handle:
+            pickle.dump(df_error,handle)
     return
+
+def plot_fit_XY(dict_run,plot_params,ls_runs):
+    f,ax = plt.subplots(7,6,sharex=True,figsize = (plot_params['individual_fig_width']*6,plot_params['individual_fig_height']*7))
+    i = 0
+    for row_i in range(7):
+        for col_i in list(range(0,6,2)):
+            # Plot states and outputs
+            n_states = dict_run[ls_runs[i]]['X'].shape[1]
+            for j in range(n_states):
+                ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
+                ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x_'+str(j+1) )
+            ax[row_i, col_i].legend()
+            for j in range(dict_optrun[ls_runs[i]]['Y'].shape[1]):
+                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y_'+str(j+1))
+            ax[row_i, col_i+1].legend()
+            # ax[row_i, col_i].title('X,Y')
+            # Plot the observables
+            # for j in range(dict_run[ls_test_runs[i]]['psiX'].shape[1]):
+            #     ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)])
+            #     ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],label ='x_'+str(j+1) )
+            # ax[row_i, col_i].title('observables')
+            i = i+1
+            if i == len(ls_runs):
+                break
+    f.show()
+    return f
 
 def plot_observables(dict_run):
     # x horizontal y vertical
@@ -130,18 +158,23 @@ sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_D
 # generate_dict_error(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
     dict_predictions = pickle.load(handle)
-with open(sys_folder_name + '/dict_error.pickle','rb') as handle:
-    dict_error = pickle.load(handle)
+with open(sys_folder_name + '/df_error.pickle','rb') as handle:
+    df_error = pickle.load(handle)
 
 
-df_error = pd.DataFrame(dict_error).T
-df_e = df_error.loc[df_error.train<5]
-plt.figure()
-plt.plot(df_e.index,df_e.iloc[:,0:2].sum(axis=1))
-plt.legend(['Training Error', 'Validation Error'])
-plt.xlabel('Run Number')
-plt.ylabel('log(max(error))')
-plt.show()
+# df_e = df_error.loc[df_error.train<5]
+# plt.figure()
+# plt.plot(df_e.index,df_e.iloc[:,0:2].sum(axis=1))
+# plt.legend(['Training Error', 'Validation Error'])
+# plt.xlabel('Run Number')
+# plt.ylabel('log(max(error))')
+# plt.show()
+## Get the optimal run for the given number of observables
+
+N_OBSERVABLES = 2
+
+
+
 ##
 df_training_plus_validation = df_error.train + df_error.valid
 
@@ -160,48 +193,25 @@ else:
 ## Optimal Run Results
 SYSTEM_NO = 2
 ls_test_runs = list(range(40,60))
-def plot_fit_XY(dict_run):
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_optrun.pickle','rb') as handle:
     dict_optrun = pickle.load(handle)
-fig_height = 1
-fig_width = 2
 
+
+
+## Plotting the fit of the required indices
+plot_params ={}
 plot_params['individual_fig_height'] = 1
 plot_params['individual_fig_width'] = 2
+f1 = plot_fit_XY(dict_optrun,plot_params,ls_test_runs)
 
-def plot_fit_XY(dict_run,plot_params):
-    f,ax = plt.subplots(7,6,sharex=True,figsize = (fig_width*6,fig_height*7))
-    i = 0
-    # dict_optrun = dict_predictions[opt_run]
-    for row_i in range(7):
-        for col_i in list(range(0,6,2)):
-            # Plot states and outputs
-            n_states = dict_optrun[ls_test_runs[i]]['X'].shape[1]
-            for j in range(n_states):
-                ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X'][:,j],'.',color = colors[j])
-                ax[row_i,col_i].plot(dict_optrun[ls_test_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x_'+str(j+1) )
-            ax[row_i, col_i].legend()
-            for j in range(dict_optrun[ls_test_runs[i]]['Y'].shape[1]):
-                ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
-                ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y_'+str(j+1))
-            ax[row_i, col_i+1].legend()
-            # ax[row_i, col_i].title('X,Y')
-            # Plot the observables
-            # for j in range(dict_optrun[ls_test_runs[i]]['psiX'].shape[1]):
-            #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)])
-            #     ax[row_i,col_i+1].plot(dict_optrun[ls_test_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],label ='x_'+str(j+1) )
-            # ax[row_i, col_i].title('observables')
-            i = i+1
-            if i == len(ls_test_runs):
-                break
-    f.show()
+
 
 ## Plotting the observables
 plot_params={}
 plot_params['xy_label_font_size']=15
 plot_params['individual_fig_width']=15
 plot_params['individual_fig_height']=15
-f = plot_observables(dict_optrun,plot_params)
+f2 = plot_observables(dict_optrun,plot_params)
 
 
