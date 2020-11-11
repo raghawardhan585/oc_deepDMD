@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 import tensorflow as tf
 import ocdeepdmd_simulation_examples_helper_functions as oc
+import shutil
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -18,7 +19,10 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 SYSTEM_NO = 2
-
+ls_train_runs = list(range(20))
+ls_valid_runs = list(range(20,40))
+ls_test_runs = list(range(40,60))
+N_VALID_RUNS = 20
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # Make a predictions folder
@@ -58,7 +62,52 @@ for run in ls_unprocessed_runs:
 
 with open(sys_folder_name + '/dict_predictions.pickle','wb') as handle:
     pickle.dump(dict_predictions,handle)
+##
+def get_error(ls_indices,dict_XY):
+    J_error = np.empty(shape=(0,1))
+    for i in ls_indices:
+        all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
+        all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
+        J_error = np.append(J_error, np.mean(all_errors))
+    J_error = np.log10(np.max(J_error))
+    # J_error = np.mean(J_error)
+    return J_error
 
+dict_error = {}
+for run_no in dict_predictions.keys():
+    print(run_no)
+    dict_error[run_no] ={}
+    dict_error[run_no]['train'] = get_error(ls_train_runs,dict_predictions[run_no])
+    dict_error[run_no]['valid'] = get_error(ls_valid_runs, dict_predictions[run_no])
+    dict_error[run_no]['test'] = get_error(ls_test_runs, dict_predictions[run_no])
+
+
+if os.path.exists(sys_folder_name + '/dict_error.pickle'):
+    ip = input('Do you wanna write over the dict_error file[y/n]?')
+    if ip == 'y':
+        shutil.rmtree(sys_folder_name + '/dict_error.pickle')
+        with open(sys_folder_name + '/dict_error.pickle', 'wb') as handle:
+            pickle.dump(dict_error, handle)
+else:
+    with open(sys_folder_name + '/dict_error.pickle','wb') as handle:
+        pickle.dump(dict_error,handle)
+##
+SYSTEM_NO = 2
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/dict_error.pickle','rb') as handle:
+    dict_error = pickle.load(handle)
+df_error = pd.DataFrame(dict_error).T
+df_e = df_error.loc[df_error.train<5]
+plt.figure()
+plt.plot(df_e.index,df_e.iloc[:,0:2].sum(axis=1))
+plt.legend(['Training Error', 'Validation Error'])
+plt.xlabel('Run Number')
+plt.ylabel('log(max(error))')
+plt.show()
+##
+df_training_plus_validation = df_error.train + df_error.valid
+
+opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
 
 
 
