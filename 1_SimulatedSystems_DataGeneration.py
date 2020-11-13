@@ -103,10 +103,10 @@ dict_run_conditions = {}
 # dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':5}
 
 # Optic tensor
-dict_run_conditions[0] = {'x_dict_size':2,'x_nn_layers':7,'x_nn_nodes':5}
-dict_run_conditions[1] = {'x_dict_size':2,'x_nn_layers':7,'x_nn_nodes':10}
-dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':7,'x_nn_nodes':15}
-dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':10}
+dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':5}
+dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':10}
+dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':15}
+dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':10}
 
 
 # dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
