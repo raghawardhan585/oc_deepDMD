@@ -86,7 +86,7 @@ NO_OF_ITERATIONS_IN_CPU = 3
 
 dict_run_conditions = {}
 # MICROTENSOR CPU RUN
-dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':15}
+dict_run_conditions[0] = {'x_dict_size':4,'x_nn_layers':4,'x_nn_nodes':15}
 # dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
 # dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
 # dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
@@ -97,16 +97,16 @@ dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':15}
 # dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
 # Runs
 # Golden tensor
-# dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':5}
-# dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':10}
-# dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':15}
-# dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':5}
+# dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':7,'x_nn_nodes':5}
+# dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':7,'x_nn_nodes':10}
+# dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':7,'x_nn_nodes':15}
+# dict_run_conditions[3] = {'x_dict_size':4,'x_nn_layers':4,'x_nn_nodes':5}
 
 # Optic tensor
-# dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':5}
-# dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':10}
-# dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':5,'x_nn_nodes':15}
-# dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':10}
+# dict_run_conditions[0] = {'x_dict_size':4,'x_nn_layers':3,'x_nn_nodes':5}
+# dict_run_conditions[1] = {'x_dict_size':4,'x_nn_layers':3,'x_nn_nodes':10}
+# dict_run_conditions[2] = {'x_dict_size':4,'x_nn_layers':3,'x_nn_nodes':15}
+# dict_run_conditions[3] = {'x_dict_size':4,'x_nn_layers':4,'x_nn_nodes':10}
 
 
 # dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
