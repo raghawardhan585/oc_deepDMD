@@ -3,7 +3,6 @@
 ### Import Packages
 import pickle  # for data I/O
 import warnings
-
 warnings.simplefilter(action='ignore', category=FutureWarning)
 # Math Packages
 import numpy as np
@@ -86,17 +85,17 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
 # Explicitly mentioning the training routine
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 1000 }
+dict_training_params = {'step_size_val': 0.1, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 100 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+dict_training_params = {'step_size_val': 0.08, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+dict_training_params = {'step_size_val': 0.05, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+dict_training_params = {'step_size_val': 0.01, 'regularization_lambda_val': 0, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 200 }
 ls_dict_training_params.append(dict_training_params)
 
 ###  ------------------------------ Define Neural Network Hyperparameters ------------------------------
@@ -128,11 +127,11 @@ best_width = x_min_nn_nodes_limit
 sess = tf.InteractiveSession()
 
 
-def reg_term(Wlist):
-    output = tf.reduce_sum(tf.abs(Wlist[0]));
-    for k in range(1, len(Wlist)):
-        output += tf.reduce_sum(tf.abs(Wlist[k]));
-    return output;
+# def reg_term(Wlist):
+#     output = tf.reduce_sum(tf.abs(Wlist[0]));
+#     for k in range(1, len(Wlist)):
+#         output += tf.reduce_sum(tf.abs(Wlist[k]));
+#     return output;
 
 
 # def quick_nstep_predict(Y_p_old,u_control_all_training,with_control,num_bas_obs,iter):
@@ -206,18 +205,18 @@ def reg_term(Wlist):
 #       Output_Mat[i,j] = compute_covar(Y[:,i],U[:,j]);
 #   return Output_Mat;
 
-def compute_covarmat_v2(U, Y):
-    # Written by Shara
-    # The compute_covarmat and compute_covar create a lot of downtime when dealing with data of large number of states
-    # Both these functions are compiled into one function to improve the time of the code
-    # I have verified that both methods yield the same answer
-    U = np.asarray(U)
-    Y = np.asarray(Y)
-    if U.shape[0] != Y.shape[0]:
-        print('')
-        return np.inf
-    else:
-        return np.matmul((U - np.mean(U, axis=0)).T, Y - np.mean(Y, axis=0)) / U.shape[0]
+# def compute_covarmat_v2(U, Y):
+#     # Written by Shara
+#     # The compute_covarmat and compute_covar create a lot of downtime when dealing with data of large number of states
+#     # Both these functions are compiled into one function to improve the time of the code
+#     # I have verified that both methods yield the same answer
+#     U = np.asarray(U)
+#     Y = np.asarray(Y)
+#     if U.shape[0] != Y.shape[0]:
+#         print('')
+#         return np.inf
+#     else:
+#         return np.matmul((U - np.mean(U, axis=0)).T, Y - np.mean(Y, axis=0)) / U.shape[0]
 
 
 # def gen_random_unitary(sq_matrix_dim,sc_factor=1.0):
@@ -429,7 +428,6 @@ def initialize_Wblist(n_u, hv_list):
         else:
             W_list.append(weight_variable([hv_list[k - 1], hv_list[k]]));
             b_list.append(bias_variable([hv_list[k]]));
-
     return W_list, b_list;
 
 

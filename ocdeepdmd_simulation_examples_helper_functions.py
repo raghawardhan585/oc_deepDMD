@@ -14,6 +14,15 @@ import copy
 import itertools
 from scipy.integrate import odeint
 
+colors = [[0.68627453, 0.12156863, 0.16470589],
+          [0.96862745, 0.84705883, 0.40000001],
+          [0.83137256, 0.53333336, 0.6156863],
+          [0.03529412, 0.01960784, 0.14509805],
+          [0.90980393, 0.59607846, 0.78039217],
+          [0.69803923, 0.87843138, 0.72941178],
+          [0.20784314, 0.81568629, 0.89411765]];
+colors = np.asarray(colors);  # defines a color palette
+
 # Help to store data for oc_deepDMD
 def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
     # Sorting into deep DMD format
@@ -284,8 +293,35 @@ def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
 
 # ----------------------------------------------------------------------------------------------------------------
 # SYSTEMS FOR DATA GENERATION
-# ----------------------------------------------------------------------------------------------------------------
-
+## ----------------------------------------------------------------------------------------------------------------
+def plot_training_valid_test_states(SYSTEM_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+        dict_DATA = pickle.load(handle)
+    n_states = len(dict_DATA[0]['X'][0])
+    n_curves = len(dict_DATA)
+    N_curves_split = int(np.ceil(n_curves/3))
+    f,ax = plt.subplots(2,3,sharex=True)
+    for i in range(0,N_curves_split):
+        for j in range(n_states):
+            ax[j, 0].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+        # ax[0,0].plot(dict_DATA[i]['X'][:,0],color=colors[0])
+        # ax[1,0].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
+    ax[0,0].set_title('Training Data')
+    for i in range(N_curves_split,2*N_curves_split):
+        for j in range(n_states):
+            ax[j, 1].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+        # ax[0,1].plot(dict_DATA[i]['X'][:,0],color=colors[0])
+        # ax[1,1].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
+    ax[0,1].set_title('Validation Data')
+    for i in range(2*N_curves_split,n_curves):
+        for j in range(n_states):
+            ax[j, 2].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+        # ax[0,2].plot(dict_DATA[i]['X'][:,0],color=colors[0])
+        # ax[1,2].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
+    ax[0,2].set_title('Test Data')
+    f.show()
+    return
 
 def generate_2state_initial_condition():
     r = np.random.uniform(5.,10.)

@@ -16,7 +16,7 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
 colors = np.asarray(colors);  # defines a color palette
 
 
-SYSTEM_NO = 3
+SYSTEM_NO = 2
 
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -38,26 +38,81 @@ for items in os.listdir(sys_folder_name):
 df_trend_data = pd.DataFrame(dict_trend_data).T.sort_index()
 
 # n_layers is constant
-N_LAYERS = 3
-unique_n_observables = df_trend_data.n_observables.unique()
-unique_n_nodes = df_trend_data.n_nodes.unique()
+N_LAYERS = 5
+ls_all_columns = list(set(df_trend_data.columns) - {'n_layers'})
+df_trend_data_const_nlayers = df_trend_data[df_trend_data.n_layers.isin([N_LAYERS])].loc[:,ls_all_columns]
+
+unique_n_observables = df_trend_data_const_nlayers.n_observables.unique()
+unique_n_nodes = df_trend_data_const_nlayers.n_nodes.unique()
+##
+# dict_train_error_mean = {}
+# dict_train_error_std = {}
+# dict_valid_error_mean = {}
+# dict_valid_error_std = {}
+# for N_obs in unique_n_observables:
+#     dict_train_error_mean[N_obs] = {}
+#     dict_train_error_std[N_obs] = {}
+#     dict_valid_error_mean[N_obs] = {}
+#     dict_valid_error_std[N_obs] = {}
+#     for N_nod in unique_n_nodes:
+#         df_n_obs_filter = df_trend_data[df_trend_data.n_observables.isin([N_obs])]
+#         df_n_nod_filter = df_n_obs_filter[df_n_obs_filter.n_nodes.isin([N_nod])]
+#         dict_train_error_mean[N_obs][N_nod] = df_n_nod_filter.loc[:,'training_error'].mean()
+#         dict_train_error_std[N_obs][N_nod] = df_n_nod_filter.loc[:, 'training_error'].std()
+#         dict_valid_error_mean[N_obs][N_nod] = df_n_nod_filter.loc[:, 'validation_error'].mean()
+#         dict_valid_error_std[N_obs][N_nod] = df_n_nod_filter.loc[:, 'training_error'].std()
+#
+#
+# df_train_error_mean = pd.DataFrame(dict_train_error_mean).sort_index().T.sort_index()
+# df_train_error_std = pd.DataFrame(dict_train_error_std).sort_index().T.sort_index()
+# df_valid_error_mean = pd.DataFrame(dict_valid_error_mean).sort_index().T.sort_index()
+# df_valid_error_std = pd.DataFrame(dict_valid_error_std).sort_index().T.sort_index()
+#
+# leg_entries = []
+# for i in df_train_error_mean.columns:
+#     leg_entries.append(str(int(i)) + ' nodes')
+#
+# plt.figure()
+# # plt.plot(df_train_error_mean.index,df_train_error_mean)
+# for i in df_train_error_mean.columns:
+#     plt.errorbar(df_train_error_mean.index,df_train_error_mean.loc[:,i], yerr =df_train_error_std.loc[:,i],uplims=True, lolims=True)
+#
+# plt.title('Training Error')
+# plt.xlabel('Number of observables')
+# plt.xticks(df_train_error_mean.index,df_train_error_mean.index)
+# plt.ylabel('Error')
+# plt.legend(leg_entries)
+# plt.show()
+#
+# plt.figure()
+# # plt.plot(df_valid_error_mean.index,df_valid_error_mean)
+# for i in df_valid_error_mean.columns:
+#     plt.errorbar(df_valid_error_mean.index,df_valid_error_mean.loc[:,i], yerr =df_valid_error_std.loc[:,i],uplims=True, lolims=True)
+# plt.title('Validation Error')
+# plt.xlabel('Number of observables')
+# plt.xticks(df_valid_error_mean.index,df_valid_error_mean.index)
+# plt.ylabel('Error')
+# plt.legend(leg_entries)
+# plt.show()
+
+##
 
 dict_train_error_mean = {}
 dict_train_error_std = {}
 dict_valid_error_mean = {}
 dict_valid_error_std = {}
-for N_obs in unique_n_observables:
-    dict_train_error_mean[N_obs] = {}
-    dict_train_error_std[N_obs] = {}
-    dict_valid_error_mean[N_obs] = {}
-    dict_valid_error_std[N_obs] = {}
-    for N_nod in unique_n_nodes:
-        df_n_obs_filter = df_trend_data[df_trend_data.n_observables.isin([N_obs])]
-        df_n_nod_filter = df_n_obs_filter[df_n_obs_filter.n_nodes.isin([N_nod])]
-        dict_train_error_mean[N_obs][N_nod] = df_n_nod_filter.loc[:,'training_error'].mean()
-        dict_train_error_std[N_obs][N_nod] = df_n_nod_filter.loc[:, 'training_error'].std()
-        dict_valid_error_mean[N_obs][N_nod] = df_n_nod_filter.loc[:, 'validation_error'].mean()
-        dict_valid_error_std[N_obs][N_nod] = df_n_nod_filter.loc[:, 'training_error'].std()
+for N_nodes in unique_n_nodes:
+    dict_train_error_mean[N_nodes] = {}
+    dict_train_error_std[N_nodes] = {}
+    dict_valid_error_mean[N_nodes] = {}
+    dict_valid_error_std[N_nodes] = {}
+    df_n_nodes_filter = df_trend_data_const_nlayers[df_trend_data_const_nlayers.n_nodes.isin([N_nodes])]
+    for N_obs in unique_n_observables:
+        df_n_obs_filter = df_n_nodes_filter[df_n_nodes_filter.n_observables.isin([N_obs])]
+        dict_train_error_mean[N_nodes][N_obs]= df_n_obs_filter.loc[:,'training_error'].mean()
+        dict_train_error_std[N_nodes][N_obs] = df_n_obs_filter.loc[:, 'training_error'].std()
+        dict_valid_error_mean[N_nodes][N_obs] = df_n_obs_filter.loc[:, 'validation_error'].mean()
+        dict_valid_error_std[N_nodes][N_obs] = df_n_obs_filter.loc[:, 'training_error'].std()
 
 
 df_train_error_mean = pd.DataFrame(dict_train_error_mean).sort_index().T.sort_index()
@@ -67,15 +122,15 @@ df_valid_error_std = pd.DataFrame(dict_valid_error_std).sort_index().T.sort_inde
 
 leg_entries = []
 for i in df_train_error_mean.columns:
-    leg_entries.append(str(int(i)) + ' nodes')
+    leg_entries.append(str(int(i)) + ' observables')
 
 plt.figure()
 # plt.plot(df_train_error_mean.index,df_train_error_mean)
 for i in df_train_error_mean.columns:
-    plt.errorbar(df_train_error_mean.index,df_train_error_mean.loc[:,i], yerr =df_train_error_std.loc[:,i],uplims=True, lolims=True)
+    plt.errorbar(df_train_error_mean.index,df_train_error_mean.loc[:,i], yerr =df_train_error_std.loc[:,i], capsize=i+1, fmt='*-')
 
 plt.title('Training Error')
-plt.xlabel('Number of observables')
+plt.xlabel('Number of nodes')
 plt.xticks(df_train_error_mean.index,df_train_error_mean.index)
 plt.ylabel('Error')
 plt.legend(leg_entries)
@@ -84,14 +139,10 @@ plt.show()
 plt.figure()
 # plt.plot(df_valid_error_mean.index,df_valid_error_mean)
 for i in df_valid_error_mean.columns:
-    plt.errorbar(df_valid_error_mean.index,df_valid_error_mean.loc[:,i], yerr =df_valid_error_std.loc[:,i],uplims=True, lolims=True)
+    plt.errorbar(df_valid_error_mean.index,df_valid_error_mean.loc[:,i], yerr =df_valid_error_std.loc[:,i], capsize=i+1, fmt='*-')
 plt.title('Validation Error')
-plt.xlabel('Number of observables')
+plt.xlabel('Number of nodes')
 plt.xticks(df_valid_error_mean.index,df_valid_error_mean.index)
 plt.ylabel('Error')
 plt.legend(leg_entries)
 plt.show()
-
-
-
-

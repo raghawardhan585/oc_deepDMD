@@ -61,20 +61,17 @@ def generate_predictions_pickle_file(SYSTEM_NO):
     ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
     print('RUNS TO PROCESS - ',ls_unprocessed_runs)
     # Updating the dictionary of predictions
-    for run in ls_unprocessed_runs[0:5]:
+    for run in ls_unprocessed_runs:
         print('RUN: ', run)
         dict_predictions[run]={}
         sess = tf.InteractiveSession()
         dict_params, _, dict_indexed_data, __, ___ = oc.get_all_run_info(SYSTEM_NO, run, sess)
-        # try:
-        #     sampling_resolution = 0.01
-        #     dict_psi_phi = oc.observables_and_eigenfunctions(dict_params, sampling_resolution)
-        #     dict_predictions[run]['X1'] = dict_psi_phi['X1']
-        #     dict_predictions[run]['X2'] = dict_psi_phi['X2']
-        #     dict_predictions[run]['observables'] = dict_psi_phi['observables']
-        #     dict_predictions[run]['eigenfunctions'] = dict_psi_phi['eigenfunctions']
-        # except:
-        #     print('Cannot find the eigenfunctions and observables as the number of base states is not equal to 2')
+        sampling_resolution = 0.01
+        dict_psi_phi = oc.observables_and_eigenfunctions(dict_params, sampling_resolution)
+        dict_predictions[run]['X1'] = dict_psi_phi['X1']
+        dict_predictions[run]['X2'] = dict_psi_phi['X2']
+        dict_predictions[run]['observables'] = dict_psi_phi['observables']
+        dict_predictions[run]['eigenfunctions'] = dict_psi_phi['eigenfunctions']
         dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
         for curve_no in dict_intermediate.keys():
             dict_predictions[run][curve_no] = dict_intermediate[curve_no]
@@ -88,8 +85,8 @@ def generate_predictions_pickle_file(SYSTEM_NO):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
-        all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
+        all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
+        # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(all_errors))
     # J_error = np.log10(np.max(J_error))
@@ -153,10 +150,8 @@ def plot_fit_XY(dict_run,plot_params,ls_runs):
 
 def plot_observables(dict_run,plot_params):
     # x horizontal y vertical
-    # n_x = int(np.ceil(np.sqrt(dict_run['observables'].shape[2])))
-    # n_y = int(np.ceil(dict_run['observables'].shape[2]/n_x))
-    n_x = dict_run['observables'].shape[2]
-    n_y = 1
+    n_x = int(np.ceil(np.sqrt(dict_run['observables'].shape[2])))
+    n_y = int(np.ceil(dict_run['observables'].shape[2]/n_x))
     fig = plt.figure(figsize=(plot_params['individual_fig_width']*n_x,plot_params['individual_fig_height']*n_y))
     for i in range(dict_run['observables'].shape[2]):
         ax = fig.add_subplot(n_y,n_x, i + 1, projection='3d')
@@ -191,24 +186,16 @@ ls_test_curves = list(range(40,60))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 
 # generate_predictions_pickle_file(SYSTEM_NO)
-generate_df_error(SYSTEM_NO)
-# generate_hyperparameter_dataframe(SYSTEM_NO)
+# generate_df_error(SYSTEM_NO)
 # with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
 #     dict_predictions = pickle.load(handle)
 # with open(sys_folder_name + '/df_error.pickle','rb') as handle:
 #     df_error = pickle.load(handle)
 
 
-# df_e = df_error.loc[df_error.train<5]
-# plt.figure()
-# plt.plot(df_e.index,df_e.iloc[:,0:2].sum(axis=1))
-# plt.legend(['Training Error', 'Validation Error'])
-# plt.xlabel('Run Number')
-# plt.ylabel('log(max(error))')
-# plt.show()
 ## Get the optimal run for the given number of observables
 SYSTEM_NO = 2
-N_OBSERVABLES = 3
+N_OBSERVABLES = 4
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
     df_hyperparameters = pickle.load(handle)
@@ -217,7 +204,6 @@ ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
 df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
-# df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
 dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
@@ -229,9 +215,9 @@ dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
 
 ## Plotting the fit of the required indices
 plot_params ={}
-plot_params['individual_fig_height'] = 2
-plot_params['individual_fig_width'] = 2.4
-f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves)
+plot_params['individual_fig_height'] = 1
+plot_params['individual_fig_width'] = 2
+f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves)
 
 
 
