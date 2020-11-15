@@ -61,20 +61,20 @@ def generate_predictions_pickle_file(SYSTEM_NO):
     ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
     print('RUNS TO PROCESS - ',ls_unprocessed_runs)
     # Updating the dictionary of predictions
-    for run in ls_unprocessed_runs[0:5]:
+    for run in ls_unprocessed_runs:
         print('RUN: ', run)
         dict_predictions[run]={}
         sess = tf.InteractiveSession()
         dict_params, _, dict_indexed_data, __, ___ = oc.get_all_run_info(SYSTEM_NO, run, sess)
-        # try:
-        #     sampling_resolution = 0.01
-        #     dict_psi_phi = oc.observables_and_eigenfunctions(dict_params, sampling_resolution)
-        #     dict_predictions[run]['X1'] = dict_psi_phi['X1']
-        #     dict_predictions[run]['X2'] = dict_psi_phi['X2']
-        #     dict_predictions[run]['observables'] = dict_psi_phi['observables']
-        #     dict_predictions[run]['eigenfunctions'] = dict_psi_phi['eigenfunctions']
-        # except:
-        #     print('Cannot find the eigenfunctions and observables as the number of base states is not equal to 2')
+        try:
+            sampling_resolution = 0.01
+            dict_psi_phi = oc.observables_and_eigenfunctions(dict_params, sampling_resolution)
+            dict_predictions[run]['X1'] = dict_psi_phi['X1']
+            dict_predictions[run]['X2'] = dict_psi_phi['X2']
+            dict_predictions[run]['observables'] = dict_psi_phi['observables']
+            dict_predictions[run]['eigenfunctions'] = dict_psi_phi['eigenfunctions']
+        except:
+            print('Cannot find the eigenfunctions and observables as the number of base states is not equal to 2')
         dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
         for curve_no in dict_intermediate.keys():
             dict_predictions[run][curve_no] = dict_intermediate[curve_no]
@@ -184,7 +184,7 @@ def get_prediction_data(SYSTEM_NO,RUN_NO):
         dict_predictions = pickle.load(handle)
     return dict_predictions[RUN_NO]
 ## MAIN
-SYSTEM_NO = 2
+SYSTEM_NO = 4
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
@@ -207,7 +207,7 @@ generate_df_error(SYSTEM_NO)
 # plt.ylabel('log(max(error))')
 # plt.show()
 ## Get the optimal run for the given number of observables
-SYSTEM_NO = 2
+SYSTEM_NO = 4
 N_OBSERVABLES = 3
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
