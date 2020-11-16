@@ -190,8 +190,8 @@ ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 
-# generate_predictions_pickle_file(SYSTEM_NO)
-generate_df_error(SYSTEM_NO)
+generate_predictions_pickle_file(SYSTEM_NO)
+# generate_df_error(SYSTEM_NO)
 # generate_hyperparameter_dataframe(SYSTEM_NO)
 # with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
 #     dict_predictions = pickle.load(handle)
@@ -216,8 +216,8 @@ df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERV
 ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
-df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
-# df_error_const_obs = df_error
+# df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
+df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
 dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)

@@ -603,8 +603,8 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
     dict_predictions['xfT_accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE_x, SST_x))) * 100
     # Dealing with Output
     if with_output:
-        Yf_predicted = tf.matmul(psiXf_predicted, dict_K['WhT'])
-        # Yf_predicted = tf.matmul(dict_psi['xfT'], dict_K['WhT'])
+        # Yf_predicted = tf.matmul(psiXf_predicted, dict_K['WhT'])
+        Yf_predicted = tf.matmul(dict_psi['xfT'], dict_K['WhT'])
         Yf_prediction_error = dict_feed['yfT'] - Yf_predicted
         all_prediction_error = tf.concat([all_prediction_error, Yf_prediction_error], 1)
         # regularization_penalty = regularization_penalty + tf.norm(Wh, axis=[-2,-1], ord=2)
