@@ -104,6 +104,7 @@ def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERA
         # bash_exec.write('rm -R Run_info ')
         # bash_exec.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files ')
         # bash_exec.write('cp -a oc_deepDMD/Run_info/ Run_info  ')
+        # bash_exec.write('cd oc_deepDMD/  ')
         # cp -a _current_run_saved_files/ oc_deepDMD/_current_run_saved_files
         # cp -a Run_info/ oc_deepDMD/Run_info
     return
