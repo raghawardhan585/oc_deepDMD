@@ -184,7 +184,43 @@ def transfer_current_ocDeepDMD_run_files():
     return
 
 
+def plot_training_runs(SYSTEM_NO,ls_run_no,plot_params):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    # Check that the given list of runs is in the folder
+    for run_no in ls_run_no:
+        if not os.path.exists(sys_folder_name + '/RUN_' + str(run_no)):
+            print('[WARNING] RUN_',run_no,' folder does not exist!')
+            ls_run_no.remove(run_no)
+    # Print the training curves for the runs
+    N_runs = len(ls_run_no)
+    n_x = int(np.ceil(np.sqrt(N_runs)))
+    n_y = int(np.ceil(N_runs/n_x))
+    fig = plt.figure(figsize=(plot_params['individual_fig_width'] * n_x, plot_params['individual_fig_height'] * n_y))
+    for run_no in ls_run_no:
+        # Open the run folder
+        with open(sys_folder_name + '/RUN_' + str(run_no) + '/run_info.pickle', 'rb') as handle:
+            df_run_info = pd.DataFrame(pickle.load(handle))
 
+
+        # ax = fig.add_subplot(n_y, n_x, i + 1, projection='3d')
+        # ax.plot_surface(dict_run['X1'], dict_run['X2'], dict_run['observables'][:, :, i], cmap=cm.coolwarm, linewidth=0,
+        #                 antialiased=False)
+        # ax.set_xlim(0, 1)
+        # ax.set_ylim(0, 1)
+        # # if np.sum(dict_optrun['observables'][:, :, i]) == 0:
+        # #     ax.set_title('$\psi_{}$'.format(i + 1) + '(x) = 0')
+        # # else:
+        # #     ax.set_title('$\psi_{}$'.format(i + 1) + '(x)')
+        # # ax.title.set_fontsize(9)
+        # ax.grid(False)
+        # ax.set_xlabel('x1')
+        # ax.set_ylabel('x2')
+        # ax.xaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+        # ax.yaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+        # ax.set_xticks([0, 0.5, 1])
+        # ax.set_yticks([0, 0.5, 1])
+    fig.show()
+    return fig
 # ----------------------------------------------------------------------------------------------------------------
 # SCALING FUNCTIONS
 # ----------------------------------------------------------------------------------------------------------------
