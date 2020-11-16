@@ -61,7 +61,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 ###  Deep Learning Optimization Parameters ###
 
-lambda_output_weight = 0.6;
+lambda_output_weight = 0.7;
 step_size_val = 0.5  # .025;
 regularization_lambda_val = 0
 
