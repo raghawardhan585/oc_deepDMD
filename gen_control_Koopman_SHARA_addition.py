@@ -61,7 +61,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 ###  Deep Learning Optimization Parameters ###
 
-lambd = 0.00000;
+lambda_output_weight = 0.6;
 step_size_val = 0.5  # .025;
 regularization_lambda_val = 0
 
@@ -594,7 +594,7 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
             psiXf_predicted = psiXf_predicted + tf.matmul(dict_psi['xupT'], dict_K['KxuT'])
             # regularization_penalty = regularization_penalty + tf.norm(dict_K['KxuT'], axis=[-2, -1], ord=2)
 
-
+    psi_Xf_prediction_error = dict_psi['xfT'] - psiXf_predicted
     all_prediction_error = dict_psi['xfT'] - psiXf_predicted
     SST_x = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
     SSE_x = tf.math.reduce_sum(tf.math.square(all_prediction_error), axis=0)
@@ -619,12 +619,13 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
     else:
         SST = SST_x
         SSE = SSE_x
+        Yf_prediction_error = 0
         dict_predictions['yfT'] = 0
         dict_predictions['yfT_error'] = 0
         dict_predictions['yft_accuracy'] = 0
         dict_predictions['model_accuracy'] = dict_predictions['xfT_accuracy']
-
-    tf_koopman_loss = tf.math.reduce_mean(tf.math.square(all_prediction_error)) + tf.math.multiply(dict_feed['regularization_lambda'], regularization_penalty)
+    tf_koopman_loss = (1-lambda_output_weight)*tf.math.reduce_mean(tf.math.square(psi_Xf_prediction_error)) + lambda_output_weight*tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    # tf_koopman_loss = tf.math.reduce_mean(tf.math.square(all_prediction_error)) + tf.math.multiply(dict_feed['regularization_lambda'], regularization_penalty)
     # tf_koopman_loss = tf.math.reduce_max(tf.math.reduce_mean(tf.math.square(prediction_error_all),0)) + tf.math.multiply(regularization_lambda,regularization_penalty)
     tf_koopman_accuracy = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
     optimizer = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(tf_koopman_loss)
