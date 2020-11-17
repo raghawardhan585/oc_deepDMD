@@ -24,13 +24,6 @@ test_error_threshold = 1e-6;
 
 ##  Deep Learning Optimization Parameters ##
 
-step_size_val = 0.5  # .025;
-
-batch_size = 400  # 30#900;
-eval_size = batch_size;
-add_bias = True
-
-use_crelu = 0;
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 1000
@@ -130,8 +123,9 @@ def initialize_tensorflow_graph(param_list,Wh1,y_feed):
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
     psiX = tf.concat([u, z_list[-1][:,0:param_list['x_observables']]], axis=1)
     psiX = tf.concat([psiX, tf.ones(shape=(tf.shape(psiX)[0], 1))], axis=1)
-    y = tf.concat([psiX, y_feed - tf.matmul(psiX,Wh1)], axis=1)
-    y = tf.concat([y, z_list[-1][:,param_list['x_observables']:]], axis=1)
+    y = psiX
+    # y = tf.concat([psiX, y_feed - tf.matmul(psiX,Wh1)], axis=1)
+    # y = tf.concat([y, z_list[-1][:,param_list['x_observables']:]], axis=1)
     result = sess.run(tf.global_variables_initializer())
     return z_list, y, u
 
@@ -203,16 +197,17 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
     dict_hp['y MSE validation'] = validation_y_MSE
     return dict_hp
 
-def state_dynamics_objective(dict_feed,dict_psi,dict_K):
+def objective_func(dict_feed,dict_psi,dict_K):
+    dict_model_perf_metrics ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
     Yf_prediction_error = dict_feed['yfT'] - tf.matmul(dict_psi['xfT'], dict_K['WhT'])
-    tf_koopman_loss = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) + tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
-    optimizer = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(tf_koopman_loss)
+    dict_model_perf_metrics ['loss_fn'] = tf.math.reduce_mean(dict_K['KxT']) #tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) #+ tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics ['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
 
     # Mean Squared Error
-    x_MSE = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
-    y_MSE = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics ['x_MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    dict_model_perf_metrics ['y_MSE'] = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
     # Accuracy computation
     SST_x = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
     SSE_x = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
@@ -220,9 +215,7 @@ def state_dynamics_objective(dict_feed,dict_psi,dict_K):
     SSE_y = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
     SST = tf.concat([SST_x, SST_y], axis=0)
     SSE = tf.concat([SSE_x, SSE_y], axis=0)
-    model_accuracy_percent = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
-
-    dict_model_perf_metrics ={'loss_fn': tf_koopman_loss, 'optimizer': optimizer, 'accuracy': model_accuracy_percent, 'x_MSE': x_MSE, 'y_MSE':y_MSE}
+    dict_model_perf_metrics ['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
     return dict_model_perf_metrics
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info = {}):
@@ -249,7 +242,7 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
     # Initialization
     # -----------------------------
     N_train_samples = len(dict_train['Xp'])
-    runs_per_epoch = int(np.ceil(N_train_samples / batch_size))
+    runs_per_epoch = int(np.ceil(N_train_samples / dict_run_params['batch_size']))
     epoch_i = 0
     training_error = 100
     validation_error = 100
@@ -264,10 +257,10 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
         random.shuffle(all_train_indices)
         for run_i in range(runs_per_epoch):
             if run_i != runs_per_epoch - 1:
-                train_indices = all_train_indices[run_i * batch_size:(run_i + 1) * batch_size]
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']:(run_i + 1) * dict_run_params['batch_size']]
             else:
                 # Last run with the residual data
-                train_indices = all_train_indices[run_i * batch_size: N_train_samples]
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']: N_train_samples]
             feed_dict_train_curr = {dict_feed['xpT']: dict_train['Xp'][train_indices], dict_feed['xfT']: dict_train['Xf'][train_indices],dict_feed['ypT']: dict_train['Yp'][train_indices], dict_feed['yfT']: dict_train['Yf'][train_indices], dict_feed['step_size']: dict_run_params['step_size_val']}
             dict_model_metrics['optimizer'].run(feed_dict=feed_dict_train_curr)
         # After training 1 epoch
@@ -401,16 +394,18 @@ with tf.device(DEVICE_NAME):
     last_col = tf.constant(np.zeros(shape=(x_deep_dict_size + num_bas_obs, 1)), dtype=tf.dtypes.float32)
     last_col = tf.concat([last_col, [[1.]]], axis=0)
     KxT_11 = tf.concat([KxT_11, last_col], axis=1)
-    KxT_12 = tf.constant(np.zeros(shape=(y_deep_dict_size + num_outputs, x_deep_dict_size + num_bas_obs+1)), dtype=tf.dtypes.float32)
-    KxT_1 = tf.concat([KxT_11,KxT_12],axis=0)
-    KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + num_outputs + 1, y_deep_dict_size + num_outputs])
-    KxT = tf.concat([KxT_1, KxT_2], axis=1)
+    # KxT_12 = tf.constant(np.zeros(shape=(y_deep_dict_size + num_outputs, x_deep_dict_size + num_bas_obs+1)), dtype=tf.dtypes.float32)
+    # KxT_1 = tf.concat([KxT_11,KxT_12],axis=0)
+    # KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + num_outputs + 1, y_deep_dict_size + num_outputs])
+    # KxT = tf.concat([KxT_1, KxT_2], axis=1)
+    KxT = KxT_11
     # Wh definition
     yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
     yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
     Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1, num_outputs])
     Wh2T = tf.concat([tf.constant(np.identity(num_outputs), dtype=tf.dtypes.float32),tf.constant(np.zeros(shape=(y_deep_dict_size,num_outputs)), dtype=tf.dtypes.float32)],axis=0)
-    WhT = tf.concat([Wh1T,Wh2T],axis=0)
+    # WhT = tf.concat([Wh1T,Wh2T],axis=0)
+    WhT = Wh1T
     # Initialize the hidden layers
     Wx_list, bx_list = initialize_Wblist(num_bas_obs, x_hidden_vars_list)
     x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list, 'x_observables':x_deep_dict_size, 'y_observables':y_deep_dict_size, 'W_list': Wx_list, 'b_list': bx_list,
@@ -427,7 +422,7 @@ with tf.device(DEVICE_NAME):
     dict_K['WhT'] = WhT
     dict_feed['step_size'] = tf.placeholder(tf.float32, shape=[])
     sess.run(tf.global_variables_initializer())
-    dict_model_metrics = state_dynamics_objective(dict_feed, dict_psi, dict_K)
+    dict_model_metrics = objective_func(dict_feed, dict_psi, dict_K)
     print('Training begins now!')
     all_histories, dict_run_info = static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics)
     print('---   TRAINING COMPLETE   ---')

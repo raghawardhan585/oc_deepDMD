@@ -1067,7 +1067,7 @@ if len(sys.argv)>9:
 # if len(sys.argv)>7 and with_control:
 #   plot_deep_basis = np.int(sys.argv[7]);
 #
-
+##
 data_file = data_directory + data_suffix
 Xp, Xf, Up, Yp, Yf = load_pickle_data(data_file, with_control, with_output)
 
@@ -1166,7 +1166,7 @@ else:
 print("[INFO] STATE - hidden_vars_list: " + repr(x_hidden_vars_list))
 print("[INFO] INPUT - hidden_vars_list: " + repr(u_hidden_vars_list))
 print("[INFO] MIX STATE n INPUT - hidden_vars_list: " + repr(xu_hidden_vars_list))
-
+##
 good_start = 0
 max_tries = 1
 try_num = 0
