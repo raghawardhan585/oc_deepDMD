@@ -126,8 +126,8 @@ oc.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE
 oc.transfer_current_ocDeepDMD_run_files()
 
 ##
-SYSTEM_NO = 4
-ls_run_no = list(range(108,134))
+SYSTEM_NO = 5
+ls_run_no = list(range(0,9))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
