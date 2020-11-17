@@ -106,10 +106,6 @@ def initialize_Wblist(n_u, hv_list):
         b_list.append(bias_variable([hv_list[k]]))
     return W_list, b_list
 def initialize_tensorflow_graph(param_list,Wh1,y_feed):
-    x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list,
-                     'x_observables': x_deep_dict_size, 'y_observables': y_deep_dict_size, 'W_list': Wx_list,
-                     'b_list': bx_list,
-                     'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net}
     # res_net = param_list['res_net'] --- This variable is not used!
     # TODO - remove the above variable if not required at all
     # u is the input of the neural network
@@ -124,7 +120,7 @@ def initialize_tensorflow_graph(param_list,Wh1,y_feed):
     if param_list['activation flag'] == 3:  # tanh
         z_list.append(tf.nn.dropout(tf.nn.tanh(tf.matmul(u, param_list['W_list'][0]) + param_list['b_list'][0]), param_list['keep_prob']))
     # PROPAGATION & TERMINATION
-    for k in range(0, n_depth):
+    for k in range(1, n_depth):
         prev_layer_output = tf.matmul(z_list[k - 1], param_list['W_list'][k]) + param_list['b_list'][k]
         if param_list['activation flag'] == 1: # RELU
             z_list.append(tf.nn.dropout(tf.nn.relu(prev_layer_output), param_list['keep_prob']));
@@ -132,10 +128,10 @@ def initialize_tensorflow_graph(param_list,Wh1,y_feed):
             z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
         if param_list['activation flag'] == 3: # tanh
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
-    psiX = tf.concat([u, z_list[-1][0:param_list['x_observables']]], axis=1)
-    psiX = tf.concat([psiX, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
-    y = tf.concat([psiX, y_feed - tf.matmul(Wh1,psiX)], axis=1)
-    y = tf.concat([y, z_list[-1][param_list['x_observables']:]], axis=1)
+    psiX = tf.concat([u, z_list[-1][:,0:param_list['x_observables']]], axis=1)
+    psiX = tf.concat([psiX, tf.ones(shape=(tf.shape(psiX)[0], 1))], axis=1)
+    y = tf.concat([psiX, y_feed - tf.matmul(psiX,Wh1)], axis=1)
+    y = tf.concat([y, z_list[-1][:,param_list['x_observables']:]], axis=1)
     result = sess.run(tf.global_variables_initializer())
     return z_list, y, u
 
@@ -231,7 +227,7 @@ def state_dynamics_objective(dict_feed,dict_psi,dict_K):
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info = {}):
     feed_dict_train = {dict_feed['xpT']: dict_train['Xp'],dict_feed['xfT']: dict_train['Xf'],dict_feed['ypT']: dict_train['Yp'],dict_feed['yfT']: dict_train['Yf']}
-    feed_dict_valid = {dict_feed['xpT']: dict_valid['Xp'],dict_valid['xfT']: dict_valid['Xf'],dict_feed['ypT']: dict_valid['Yp'],dict_valid['yfT']: dict_valid['Yf']}
+    feed_dict_valid = {dict_feed['xpT']: dict_valid['Xp'],dict_feed['xfT']: dict_valid['Xf'],dict_feed['ypT']: dict_valid['Yp'],dict_feed['yfT']: dict_valid['Yf']}
     # --------
     try :
         run_info_index = list(dict_run_info.keys())[-1]
