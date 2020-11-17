@@ -123,9 +123,8 @@ def initialize_tensorflow_graph(param_list,Wh1,y_feed):
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
     psiX = tf.concat([u, z_list[-1][:,0:param_list['x_observables']]], axis=1)
     psiX = tf.concat([psiX, tf.ones(shape=(tf.shape(psiX)[0], 1))], axis=1)
-    y = psiX
-    # y = tf.concat([psiX, y_feed - tf.matmul(psiX,Wh1)], axis=1)
-    # y = tf.concat([y, z_list[-1][:,param_list['x_observables']:]], axis=1)
+    y = tf.concat([psiX, y_feed - tf.matmul(psiX,Wh1)], axis=1)
+    y = tf.concat([y, z_list[-1][:,param_list['x_observables']:]], axis=1)
     result = sess.run(tf.global_variables_initializer())
     return z_list, y, u
 
@@ -202,8 +201,9 @@ def objective_func(dict_feed,dict_psi,dict_K):
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
     Yf_prediction_error = dict_feed['yfT'] - tf.matmul(dict_psi['xfT'], dict_K['WhT'])
-    dict_model_perf_metrics ['loss_fn'] = tf.math.reduce_mean(dict_K['KxT']) #tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) #+ tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
-    dict_model_perf_metrics ['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
+    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(dict_K['KxT']) #tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) #+ tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
+    # optimizer = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
 
     # Mean Squared Error
     dict_model_perf_metrics ['x_MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
@@ -216,6 +216,7 @@ def objective_func(dict_feed,dict_psi,dict_K):
     SST = tf.concat([SST_x, SST_y], axis=0)
     SSE = tf.concat([SSE_x, SSE_y], axis=0)
     dict_model_perf_metrics ['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
+    sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info = {}):
@@ -380,7 +381,7 @@ print("Number of training snapshots: " + repr(len(train_indices)))
 print("Number of validation snapshots: " + repr(len(valid_indices)))
 print("[INFO] STATE - hidden_vars_list: " + repr(x_hidden_vars_list))
 
-
+##
 # ============================
 # LEARNING THE STATE DYNAMICS
 # ============================

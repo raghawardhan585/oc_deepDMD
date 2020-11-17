@@ -122,7 +122,7 @@ oc.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE
 
 ## Transfering the files to the required deepDMD run files
 # This is more for organizing all the runs for a single system in a single folder
-
+# import ocdeepdmd_simulation_examples_helper_functions as oc
 oc.transfer_current_ocDeepDMD_run_files()
 
 ##
