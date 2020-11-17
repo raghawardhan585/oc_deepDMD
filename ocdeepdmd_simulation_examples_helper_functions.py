@@ -133,12 +133,16 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
         psixfT = tf.get_collection('psixfT')[0]
         xpT_feed = tf.get_collection('xpT_feed')[0]
         xfT_feed = tf.get_collection('xfT_feed')[0]
+        ypT_feed = tf.get_collection('ypT_feed')[0]
+        yfT_feed = tf.get_collection('yfT_feed')[0]
         KxT = tf.get_collection('KxT')[0]
         KxT_num = sess.run(KxT)
         dict_params['psixpT'] = psixpT
         dict_params['psixfT'] = psixfT
         dict_params['xpT_feed'] = xpT_feed
         dict_params['xfT_feed'] =  xfT_feed
+        dict_params['ypT_feed'] = ypT_feed
+        dict_params['yfT_feed'] = yfT_feed
         dict_params['KxT_num'] =  KxT_num
     except:
         print('State info not found')
@@ -494,17 +498,17 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
         X_scaled = dict_DATA_i['X']
         Y_scaled = dict_DATA_i['Y']
         n_base_states = X_scaled.shape[1]
-        psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled})
+        psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled, dict_params['yfT_feed']: Y_scaled})
         # One Step Prediction ----------------------
-        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :]})
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :],dict_params['ypT_feed']: Y_scaled[0:1, :]})
         psiX_est_one_step = copy.deepcopy(psiX)
         for i in range(0, X_scaled.shape[0] - 1):
             psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
             psiX_est_one_step[i + 1, :] = psixfT_i
-            psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[i + 1:i + 2, :]})
+            psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[i + 1:i + 2, :], dict_params['ypT_feed']: Y_scaled[i + 1:i + 2, :]})
         Y_est_one_step = np.matmul(psiX_est_one_step, dict_params['WhT_num'])
         # N Step Prediction ----------------------
-        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :]})
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :], dict_params['ypT_feed']: Y_scaled[0:1, :]})
         psiX_est_n_step = copy.deepcopy(psiX)
         for i in range(0, X_scaled.shape[0] - 1):
             psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
