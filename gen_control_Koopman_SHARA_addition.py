@@ -61,7 +61,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 ###  Deep Learning Optimization Parameters ###
 
-lambda_output_weight = 0.7;
+lambda_output_weight = 0.8;
 step_size_val = 0.5  # .025;
 regularization_lambda_val = 0
 
@@ -843,7 +843,7 @@ def dynamic_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, dict_
                         print('*** Enter the parameters again ***')
             all_histories, good_start, n_epochs_run = train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_psi, dict_K, deep_koopman_loss, optimizer, dict_run_params, all_histories)
 
-            dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,deep_koopman_loss, dict_predictions['model_accuracy'],n_epochs_run, dict_run_params)
+            dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,deep_koopman_loss, dict_predictions,n_epochs_run, dict_run_params)
             print('Training Error  :', dict_run_info[run_info_index]['training error'])
             print('Validation Error  :', dict_run_info[run_info_index]['validation error'])
             estimate_K_stability(Kx, True)
