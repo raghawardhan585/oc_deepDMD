@@ -238,7 +238,15 @@ df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERV
 ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
-ls_runs_const_obs = list(range(0,18))
+ls_runs_const_obs = list(range(18,37))
+
+# Check is
+ls_all_runs = list(df_hyperparameters.index)
+for items in ls_runs_const_obs:
+    if items not in ls_all_runs:
+        ls_runs_const_obs.remove(items)
+
+
 df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
 # df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
@@ -254,8 +262,8 @@ dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
 plot_params['individual_fig_height'] = 2
 plot_params['individual_fig_width'] = 2.4
-f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
-# f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves)
+f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
+# f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
 ##
 dict_run = dict_predictions_opt_run
 ls_runs = ls_test_curves
