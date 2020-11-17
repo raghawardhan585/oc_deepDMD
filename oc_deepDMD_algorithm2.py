@@ -105,11 +105,15 @@ def initialize_Wblist(n_u, hv_list):
         W_list.append(weight_variable([hv_list[k - 1], hv_list[k]]))
         b_list.append(bias_variable([hv_list[k]]))
     return W_list, b_list
-def initialize_tensorflow_graph(param_list):
+def initialize_tensorflow_graph(param_list,Wh1):
+    x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list,
+                     'x_observables': x_deep_dict_size, 'y_observables': y_deep_dict_size, 'W_list': Wx_list,
+                     'b_list': bx_list,
+                     'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net}
     # res_net = param_list['res_net'] --- This variable is not used!
     # TODO - remove the above variable if not required at all
     # u is the input of the neural network
-    u = tf.placeholder(tf.float32, shape=[None,param_list['no of base observables']]);  # state/input node,# inputs = dim(input) , None indicates batch size can be any size
+    u = tf.placeholder(tf.float32, shape=[None,param_list['n_base_states']]);  # state/input node,# inputs = dim(input) , None indicates batch size can be any size
     z_list = [];
     n_depth = len(param_list['hidden_var_list']);
     # INITIALIZATION
@@ -128,13 +132,11 @@ def initialize_tensorflow_graph(param_list):
             z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
         if param_list['activation flag'] == 3: # tanh
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
-    if param_list['include state']:
-        y = tf.concat([u, z_list[-1]], axis=1);  # [TODO] in the most general function signature, allow for default option with state/input inclusion
-    else:
-        y = z_list[-1]
-    if param_list['add bias']:
-        y = tf.concat([y, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
-    result = sess.run(tf.global_variables_initializer());
+    y = tf.concat([u, z_list[-1][0:param_list['x_observables']]], axis=1)
+    y = tf.concat([y, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
+    y = tf.concat([y, z_list[-1][0:param_list['x_observables']]], axis=1)
+    y = tf.concat([y, z_list[-1][param_list['x_observables']:]], axis=1)
+    result = sess.run(tf.global_variables_initializer())
     return z_list, y, u
 
 def get_variable_value(variable_name, prev_variable_value, reqd_data_type, lower_bound=0):
@@ -392,9 +394,9 @@ with tf.device(DEVICE_NAME):
     Wh = tf.concat([Wh1,Wh2],axis=0)
     # Initialize the hidden layers
     Wx_list, bx_list = initialize_Wblist(num_bas_obs, x_hidden_vars_list)
-    x_params_list = {'no of base observables': num_bas_obs, 'hidden_var_list': x_hidden_vars_list, 'W_list': Wx_list, 'b_list': bx_list,
+    x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list, 'x_observables':x_deep_dict_size, 'y_observables':y_deep_dict_size, 'W_list': Wx_list, 'b_list': bx_list,
                      'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net, 'include state': True, 'add bias': add_bias}
-    psixpz_list, psixp, xp_feed = initialize_tensorflow_graph(x_params_list)
+    psixpz_list, psixp, xp_feed = initialize_tensorflow_graph(x_params_list,Wh1)
     psixfz_list, psixf, xf_feed = initialize_tensorflow_graph(x_params_list)
 
     print('Kx initiation done!')
