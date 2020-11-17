@@ -85,7 +85,7 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
 # Explicitly mentioning the training routine
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 100}
+dict_training_params = {'step_size_val': 00.5, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'regularization_lambda_val': 0.00, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
@@ -771,11 +771,11 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, dict
     dict_hp['x MSE training'] = training_x_MSE
     dict_hp['x MSE validation'] = validation_x_MSE
     dict_hp['y MSE training'] = training_y_MSE
-    dict_hp['y MSE training'] = validation_y_MSE
+    dict_hp['y MSE validation'] = validation_y_MSE
     return dict_hp
 
 
-def static_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, ls_dict_training_params, deep_koopman_loss, optimizer, dict_predictions,  all_histories = {'train error': [],'validation error': []}, dict_run_info = {}):
+def static_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, ls_dict_training_params, deep_koopman_loss, optimizer, dict_predictions,  all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info = {}):
     feed_dict_train = get_fed_dict(dict_feed, dict_train,ls_dict_training_params[0]['with_u'],ls_dict_training_params[0]['with_xu'],ls_dict_training_params[0]['with_y'])
     feed_dict_valid = get_fed_dict(dict_feed, dict_valid,ls_dict_training_params[0]['with_u'],ls_dict_training_params[0]['with_xu'],ls_dict_training_params[0]['with_y'])
     # --------
@@ -810,7 +810,7 @@ def get_fed_dict(dict_feed,dict_data,with_u,with_xu,with_y):
         fed_dict[dict_feed['yfT']] = dict_data['Yf']
     return fed_dict
 
-def dynamic_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, dict_run_params, deep_koopman_loss, optimizer, dict_predictions, all_histories = {'train error': [], 'validation error': []}, dict_run_info={}):
+def dynamic_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, dict_run_params, deep_koopman_loss, optimizer, dict_predictions, all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info={}):
     # For evaluating how the hyperparameters performed with that training
     feed_dict_train = get_fed_dict(dict_feed,dict_train,dict_run_params['with_u'],dict_run_params['with_xu'],dict_run_params['with_y'])
     feed_dict_valid = get_fed_dict(dict_feed, dict_valid,dict_run_params['with_u'],dict_run_params['with_xu'],dict_run_params['with_y'])
@@ -854,7 +854,7 @@ def dynamic_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, dict_
             good_start = 0
     return all_histories, good_start, dict_run_info
 
-def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_psi, dict_K, loss_func,optimizer, dict_run_params, all_histories={'train error': [], 'validation error': []},iterative_optimization = False):
+def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_psi, dict_K, loss_func,optimizer, dict_run_params, all_histories):
     # -----------------------------
     # Initialization
     # -----------------------------
@@ -896,6 +896,10 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_p
         validation_error = loss_func.eval(feed_dict=feed_dict_valid)
         all_histories['train error'].append(training_error)
         all_histories['validation error'].append(validation_error)
+        all_histories['x train MSE'].append(dict_predictions['psiXfT_MSE'].eval(feed_dict=feed_dict_train))
+        all_histories['x valid MSE'].append(dict_predictions['psiXfT_MSE'].eval(feed_dict=feed_dict_valid))
+        all_histories['y train MSE'].append(dict_predictions['YfT_MSE'].eval(feed_dict=feed_dict_train))
+        all_histories['y valid MSE'].append(dict_predictions['YfT_MSE'].eval(feed_dict=feed_dict_valid))
         if np.mod(epoch_i, DISPLAY_SAMPLE_RATE_EPOCH) == 0:
             print('Epoch No: ', epoch_i, ' |   Training error: ', training_error)
             print('Validation error: '.rjust(len('Epoch No: ' + str(epoch_i) + ' |   Validation error: ')),validation_error)
@@ -1009,7 +1013,7 @@ if pre_examples_switch == 13:
     # data_suffix = 'Pputida_GrowthHarness_RNAseq_DeepDMD.pickle'#'SIM1SHARA_Combinatorial_Promoters_with_input';#'X8SS_Pputida_RNASeqDATA.pickle';
     # data_suffix = 'oc_deepDMD_FeedForwardLoopSystem.pickle'
     # data_suffix = 'oc_deepDMD_ClosedKoopmanSystem.pickle'
-    data_suffix = 'System_2_ocDeepDMDdata.pickle'
+    data_suffix = 'System_4_ocDeepDMDdata.pickle'
     with_control = 0;
     with_output = 1;
     mix_state_and_control = 0;
