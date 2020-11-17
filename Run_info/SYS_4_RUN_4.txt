@@ -1,0 +1,925 @@
+[INFO] Number of total samples: 1160
+[INFO] Observable dimension of a sample: 2
+[INFO] Xp.shape (E-DMD): (1160, 2)
+[INFO] Yf.shape (E-DMD): (1160, 2)
+Number of training snapshots: 580
+Number of validation snapshots: 580
+[INFO] STATE - hidden_vars_list: array([10, 10, 10, 10, 10,  3])
+[INFO] INPUT - hidden_vars_list: []
+[INFO] MIX STATE n INPUT - hidden_vars_list: []
+Kx initiation done!
+Training begins now!
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Regularization Coefficient : 0.0
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.00050349976
+                   Validation error:  0.00042860268
+Eigen values: 
+[1.         0.32455668 1.0377609  1.0377609  0.7599229  0.4815357 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.0005065026
+                   Validation error:  0.00051349244
+Eigen values: 
+[1.         0.26552513 1.1309707  0.9584531  0.88172114 0.56023866]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.0005065026
+Current Validation Error      : 0.00051349244
+Eigen values: 
+[1.         0.26552513 1.1309707  0.9584531  0.88172114 0.56023866]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.3
+Regularization Coefficient : 0.0
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  20000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.00017474267
+                   Validation error:  0.00022398501
+Eigen values: 
+[1.         0.22242557 1.1356148  0.9263331  0.9263331  0.58821505]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00015179343
+                   Validation error:  0.00019432802
+Eigen values: 
+[1.         0.18226177 1.1323113  0.9269553  0.9269553  0.61487615]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  0.00013070529
+                   Validation error:  0.00016244457
+Eigen values: 
+[1.         0.14665715 1.1260723  0.924541   0.924541   0.6420498 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  0.00013990479
+                   Validation error:  0.00016320289
+Eigen values: 
+[1.         0.11536997 1.1186368  0.6705687  0.9197567  0.9197567 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  0.000118763404
+                   Validation error:  0.00014241967
+Eigen values: 
+[1.         0.08721562 1.1101202  0.6997722  0.9139621  0.9139621 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  0.00010022627
+                   Validation error:  0.00012244382
+Eigen values: 
+[1.         0.06109416 1.1015207  0.7286661  0.9072357  0.9072357 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  0.00011249425
+                   Validation error:  0.00013910858
+Eigen values: 
+[1.         0.03605325 1.0927438  0.7580291  0.8992098  0.8992098 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  0.00012413715
+                   Validation error:  0.00014518834
+Eigen values: 
+[1.         0.01264266 1.0822216  0.7859951  0.91339403 0.8714006 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  7.6576114e-05
+                   Validation error:  9.455333e-05
+Eigen values: 
+[1.         0.00967856 1.0664648  0.93566453 0.82626426 0.82626426]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  8.02324e-05
+                    Validation error:  9.997243e-05
+Eigen values: 
+[1.         0.03039212 1.0338488  0.97281426 0.8244258  0.8244258 ]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  8.0124664e-05
+                    Validation error:  0.000100065205
+Eigen values: 
+[1.         0.04965545 1.00686    1.00686    0.821136   0.821136  ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  7.525078e-05
+                    Validation error:  9.198913e-05
+Eigen values: 
+[1.         0.06891839 1.0090785  1.0090785  0.81729996 0.81729996]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  6.432521e-05
+                    Validation error:  8.3015286e-05
+Eigen values: 
+[1.         0.08888261 1.0097299  1.0097299  0.81400424 0.81400424]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  0.00012328543
+                    Validation error:  0.0001468168
+Eigen values: 
+[1.         0.10933881 1.0078455  1.0078455  0.81168073 0.81168073]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  4.9188347e-05
+                    Validation error:  6.428384e-05
+Eigen values: 
+[1.         0.13057692 1.004009   1.004009   0.8101614  0.8101614 ]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  3.8219092e-05
+                    Validation error:  5.2899297e-05
+Eigen values: 
+[1.         0.15232424 0.9987952  0.9987952  0.80941075 0.80941075]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  3.493917e-05
+                    Validation error:  4.9343136e-05
+Eigen values: 
+[1.         0.1744396  0.99260885 0.99260885 0.8087063  0.8087063 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  3.864641e-05
+                    Validation error:  5.307697e-05
+Eigen values: 
+[1.         0.19679353 0.9858643  0.9858643  0.808252   0.808252  ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  3.073233e-05
+                    Validation error:  4.5422683e-05
+Eigen values: 
+[1.         0.21858563 0.9790522  0.9790522  0.80756384 0.80756384]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  3.1963318e-05
+                    Validation error:  4.5951027e-05
+Eigen values: 
+[1.         0.23997909 0.9721358  0.9721358  0.807022   0.807022  ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 3.1963318e-05
+Current Validation Error      : 4.5951027e-05
+Eigen values: 
+[1.         0.23997909 0.9721358  0.9721358  0.807022   0.807022  ]
+[COMP] The identified Koopman operator is STABLE
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.1
+Regularization Coefficient : 0
+Train Error Threshold      :  1e-07
+Validation Error Threshold :  1e-07
+Maximum number of Epochs   :  50000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  2.797865e-05
+                   Validation error:  4.2344836e-05
+Eigen values: 
+[1.         0.24685335 0.9699028  0.9699028  0.80657387 0.80657387]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  2.7309572e-05
+                   Validation error:  4.157222e-05
+Eigen values: 
+[1.         0.25369185 0.967726   0.967726   0.80622494 0.80622494]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  2.670153e-05
+                   Validation error:  4.089235e-05
+Eigen values: 
+[1.         0.26068756 0.9654486  0.9654486  0.80592805 0.80592805]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  2.6125792e-05
+                   Validation error:  4.034891e-05
+Eigen values: 
+[1.         0.26784492 0.96316695 0.96316695 0.8055798  0.8055798 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  2.5589892e-05
+                   Validation error:  3.9774335e-05
+Eigen values: 
+[1.         0.27486408 0.9608439  0.9608439  0.8052996  0.8052996 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  2.5062996e-05
+                   Validation error:  3.9132872e-05
+Eigen values: 
+[1.         0.28187597 0.9585293  0.9585293  0.80497134 0.80497134]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  2.4593039e-05
+                   Validation error:  3.8730424e-05
+Eigen values: 
+[1.         0.28892988 0.95617586 0.95617586 0.8047085  0.8047085 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  2.4154833e-05
+                   Validation error:  3.8326154e-05
+Eigen values: 
+[1.         0.29578817 0.95384693 0.95384693 0.8044376  0.8044376 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  2.3666122e-05
+                   Validation error:  3.7780264e-05
+Eigen values: 
+[1.        0.3025802 0.9515695 0.9515695 0.8041399 0.8041399]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  2.3245106e-05
+                    Validation error:  3.7310398e-05
+Eigen values: 
+[1.         0.30932742 0.9492924  0.9492924  0.8038447  0.8038447 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  2.2843924e-05
+                    Validation error:  3.6955338e-05
+Eigen values: 
+[1.        0.3160043 0.9470766 0.9470766 0.8034979 0.8034979]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  2.2449429e-05
+                    Validation error:  3.6647893e-05
+Eigen values: 
+[1.         0.32263523 0.9447307  0.9447307  0.8033051  0.8033051 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  2.207576e-05
+                    Validation error:  3.6376594e-05
+Eigen values: 
+[1.         0.3291607  0.9425459  0.9425459  0.80297184 0.80297184]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  2.1727377e-05
+                    Validation error:  3.6046506e-05
+Eigen values: 
+[1.         0.33554795 0.9404213  0.9404213  0.8026217  0.8026217 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  2.138385e-05
+                    Validation error:  3.5669887e-05
+Eigen values: 
+[1.         0.34193978 0.9383175  0.9383175  0.8022602  0.8022602 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  2.1116062e-05
+                    Validation error:  3.5426023e-05
+Eigen values: 
+[1.         0.34822702 0.93623686 0.93623686 0.8019246  0.8019246 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  2.0746429e-05
+                    Validation error:  3.5147154e-05
+Eigen values: 
+[1.        0.3543893 0.9342472 0.9342472 0.8015323 0.8015323]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  2.0435415e-05
+                    Validation error:  3.504382e-05
+Eigen values: 
+[1.        0.3604872 0.932252  0.932252  0.8011094 0.8011094]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  2.0140866e-05
+                    Validation error:  3.486088e-05
+Eigen values: 
+[1.         0.36648604 0.930264   0.930264   0.8007397  0.8007397 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  1.9859408e-05
+                    Validation error:  3.4523837e-05
+Eigen values: 
+[1.         0.37236086 0.9283231  0.9283231  0.8003584  0.8003584 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  21000  |   Training error:  1.9590725e-05
+                    Validation error:  3.4396024e-05
+Eigen values: 
+[1.         0.37824714 0.9264745  0.9264745  0.7998937  0.7998937 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  22000  |   Training error:  1.9334675e-05
+                    Validation error:  3.4245204e-05
+Eigen values: 
+[1.         0.38399503 0.9246083  0.9246083  0.7995026  0.7995026 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  23000  |   Training error:  1.9080831e-05
+                    Validation error:  3.4007528e-05
+Eigen values: 
+[1.         0.38964894 0.92289305 0.92289305 0.78944457 0.808692  ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  24000  |   Training error:  1.8868326e-05
+                    Validation error:  3.380794e-05
+Eigen values: 
+[1.         0.39514947 0.92112213 0.92112213 0.7847222  0.81271964]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  25000  |   Training error:  1.8611485e-05
+                    Validation error:  3.359881e-05
+Eigen values: 
+[1.         0.4005445  0.9194571  0.9194571  0.78074193 0.8159187 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  26000  |   Training error:  1.8391553e-05
+                    Validation error:  3.3506127e-05
+Eigen values: 
+[1.         0.4059375  0.9177667  0.9177667  0.81827104 0.77759326]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  27000  |   Training error:  1.8190807e-05
+                    Validation error:  3.3430188e-05
+Eigen values: 
+[1.         0.4112416  0.9160395  0.9160395  0.82010144 0.77509284]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  28000  |   Training error:  1.796727e-05
+                    Validation error:  3.3167533e-05
+Eigen values: 
+[1.         0.4165281  0.9144932  0.9144932  0.82217354 0.77205145]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  29000  |   Training error:  1.7787366e-05
+                    Validation error:  3.314313e-05
+Eigen values: 
+[1.         0.42155057 0.9129152  0.9129152  0.82379144 0.76971465]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  30000  |   Training error:  1.7614348e-05
+                    Validation error:  3.2980624e-05
+Eigen values: 
+[1.         0.42655858 0.9114069  0.9114069  0.82532775 0.76729894]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  31000  |   Training error:  1.7417373e-05
+                    Validation error:  3.287099e-05
+Eigen values: 
+[1.         0.43152824 0.90992105 0.90992105 0.82687473 0.7648419 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  32000  |   Training error:  1.720318e-05
+                    Validation error:  3.2664382e-05
+Eigen values: 
+[1.         0.43639177 0.90845215 0.90845215 0.82816976 0.76271486]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  33000  |   Training error:  1.7048671e-05
+                    Validation error:  3.255618e-05
+Eigen values: 
+[1.         0.44112387 0.90707177 0.90707177 0.8295628  0.760369  ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  34000  |   Training error:  1.6862541e-05
+                    Validation error:  3.2409098e-05
+Eigen values: 
+[1.         0.44595173 0.9056156  0.9056156  0.8305921  0.75843775]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  35000  |   Training error:  1.6719941e-05
+                    Validation error:  3.2149514e-05
+Eigen values: 
+[1.         0.45053264 0.9043269  0.9043269  0.83176976 0.75630885]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  36000  |   Training error:  1.6535992e-05
+                    Validation error:  3.2031472e-05
+Eigen values: 
+[1.        0.4550107 0.902973  0.902973  0.8327673 0.7544784]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  37000  |   Training error:  1.641622e-05
+                    Validation error:  3.190563e-05
+Eigen values: 
+[1.         0.45948166 0.90164846 0.90164846 0.83374256 0.7526324 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  38000  |   Training error:  1.6240381e-05
+                    Validation error:  3.175721e-05
+Eigen values: 
+[1.         0.46385488 0.90038866 0.90038866 0.83468807 0.75076795]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  39000  |   Training error:  1.6115908e-05
+                    Validation error:  3.1513788e-05
+Eigen values: 
+[1.         0.46817032 0.89918643 0.89918643 0.8355792  0.74885833]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  40000  |   Training error:  1.5946622e-05
+                    Validation error:  3.1539297e-05
+Eigen values: 
+[1.         0.47243965 0.8980416  0.8980416  0.8365187  0.74683565]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  41000  |   Training error:  1.5839945e-05
+                    Validation error:  3.1640873e-05
+Eigen values: 
+[1.         0.47664756 0.8968442  0.8968442  0.83728755 0.74509346]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  42000  |   Training error:  1.5728143e-05
+                    Validation error:  3.1556356e-05
+Eigen values: 
+[1.         0.48073304 0.89571065 0.89571065 0.8380992  0.74326706]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  43000  |   Training error:  1.5586415e-05
+                    Validation error:  3.1414587e-05
+Eigen values: 
+[1.         0.48477408 0.89448917 0.89448917 0.8387771  0.7416317 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  44000  |   Training error:  1.5424022e-05
+                    Validation error:  3.1130927e-05
+Eigen values: 
+[1.         0.488769   0.89340454 0.89340454 0.8395434  0.7397904 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  45000  |   Training error:  1.53931e-05
+                    Validation error:  3.12994e-05
+Eigen values: 
+[1.         0.49266052 0.8923175  0.8923175  0.8402253  0.7380695 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  46000  |   Training error:  1.518552e-05
+                    Validation error:  3.0891075e-05
+Eigen values: 
+[1.         0.49649802 0.8912657  0.8912657  0.8408921  0.73635936]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  47000  |   Training error:  1.5092004e-05
+                    Validation error:  3.0764226e-05
+Eigen values: 
+[1.         0.50021416 0.8902434  0.8902434  0.8415752  0.73462325]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  48000  |   Training error:  1.5007912e-05
+                    Validation error:  3.059324e-05
+Eigen values: 
+[1.         0.5039085  0.88923967 0.88923967 0.84217924 0.73292965]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  49000  |   Training error:  1.4853899e-05
+                    Validation error:  3.0665622e-05
+Eigen values: 
+[1.         0.50756115 0.8882086  0.8882086  0.8427369  0.73133975]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  50000  |   Training error:  1.4746458e-05
+                    Validation error:  3.0469142e-05
+Eigen values: 
+[1.        0.511236  0.8872546 0.8872546 0.8433165 0.729563 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 1.4746458e-05
+Current Validation Error      : 3.0469142e-05
+Eigen values: 
+[1.        0.511236  0.8872546 0.8872546 0.8433165 0.729563 ]
+[COMP] The identified Koopman operator is STABLE
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.08
+Regularization Coefficient : 0
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  20000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  1.4675304e-05
+                   Validation error:  3.0523694e-05
+Eigen values: 
+[1.         0.5140368  0.88649774 0.88649774 0.8437442  0.72824806]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  1.4580205e-05
+                   Validation error:  3.0299292e-05
+Eigen values: 
+[1.         0.5168454  0.88576204 0.88576204 0.8441621  0.72690433]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  1.4499237e-05
+                   Validation error:  3.0295683e-05
+Eigen values: 
+[1.        0.5195968 0.8850242 0.8850242 0.8445813 0.7256135]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  1.4414887e-05
+                   Validation error:  3.021843e-05
+Eigen values: 
+[1.         0.5223189  0.88426316 0.88426316 0.8449741  0.72438055]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  1.4343419e-05
+                   Validation error:  3.0132149e-05
+Eigen values: 
+[1.         0.52498424 0.88361275 0.88361275 0.84536386 0.72300607]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  1.4262425e-05
+                   Validation error:  3.0032592e-05
+Eigen values: 
+[1.         0.5277094  0.8828904  0.8828904  0.84575933 0.72168064]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  1.4194866e-05
+                   Validation error:  2.9981242e-05
+Eigen values: 
+[1.         0.53029644 0.88218546 0.88218546 0.8461364  0.7204329 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  1.4118374e-05
+                   Validation error:  2.990813e-05
+Eigen values: 
+[1.         0.5329427  0.8814643  0.8814643  0.8464701  0.71916485]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  1.4047068e-05
+                   Validation error:  2.9748946e-05
+Eigen values: 
+[1.         0.53545517 0.8808034  0.8808034  0.8468443  0.7178981 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  1.3975862e-05
+                    Validation error:  2.9785231e-05
+Eigen values: 
+[1.         0.5380413  0.88010997 0.88010997 0.8471737  0.71664673]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  1.3905064e-05
+                    Validation error:  2.9614379e-05
+Eigen values: 
+[1.         0.54050416 0.87947553 0.87947553 0.8474991  0.71539104]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  1.3835632e-05
+                    Validation error:  2.9644001e-05
+Eigen values: 
+[1.         0.5430532  0.87878895 0.87878895 0.8478081  0.7141372 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  1.3768307e-05
+                    Validation error:  2.950467e-05
+Eigen values: 
+[1.        0.5454664 0.878164  0.878164  0.8481023 0.7128843]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  1.3718974e-05
+                    Validation error:  2.9532835e-05
+Eigen values: 
+[1.         0.54784954 0.8775709  0.8775709  0.84841794 0.7115608 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  1.3651505e-05
+                    Validation error:  2.9290455e-05
+Eigen values: 
+[1.        0.5502287 0.876954  0.876954  0.8487089 0.7102694]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  1.3582896e-05
+                    Validation error:  2.936035e-05
+Eigen values: 
+[1.         0.55271626 0.8763246  0.8763246  0.8490048  0.70895076]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  1.3512674e-05
+                    Validation error:  2.9288225e-05
+Eigen values: 
+[1.         0.5551442  0.87573594 0.87573594 0.8493145  0.70758605]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  1.3451619e-05
+                    Validation error:  2.9183262e-05
+Eigen values: 
+[1.         0.55751544 0.8751159  0.8751159  0.84959143 0.70630664]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  1.3396675e-05
+                    Validation error:  2.907063e-05
+Eigen values: 
+[1.         0.5598129  0.87454873 0.87454873 0.84987074 0.70498925]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  1.3333518e-05
+                    Validation error:  2.902539e-05
+Eigen values: 
+[1.         0.56221133 0.873944   0.873944   0.85011005 0.7036799 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 1.3333518e-05
+Current Validation Error      : 2.902539e-05
+Eigen values: 
+[1.         0.56221133 0.873944   0.873944   0.85011005 0.7036799 ]
+[COMP] The identified Koopman operator is STABLE
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.05
+Regularization Coefficient : 0
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  20000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  1.32981495e-05
+                   Validation error:  2.9062314e-05
+Eigen values: 
+[1.         0.5636973  0.8735987  0.8735987  0.8502669  0.70282066]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  1.3261038e-05
+                   Validation error:  2.897012e-05
+Eigen values: 
+[1.         0.5651394  0.8732371  0.8732371  0.8504254  0.70198876]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  1.3224018e-05
+                   Validation error:  2.8959086e-05
+Eigen values: 
+[1.         0.5665692  0.8728535  0.8728535  0.85058594 0.7011996 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  1.3192219e-05
+                   Validation error:  2.8948081e-05
+Eigen values: 
+[1.         0.5679658  0.87250733 0.87250733 0.8507544  0.70039815]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  1.3153766e-05
+                   Validation error:  2.888056e-05
+Eigen values: 
+[1.         0.5694126  0.87212926 0.87212926 0.85089046 0.6995833 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  1.3118626e-05
+                   Validation error:  2.8814056e-05
+Eigen values: 
+[1.         0.57080686 0.87177855 0.87177855 0.8510012  0.6987385 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  1.3085037e-05
+                   Validation error:  2.8789675e-05
+Eigen values: 
+[1.         0.57226646 0.8714163  0.8714163  0.85113436 0.69791216]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  1.3051549e-05
+                   Validation error:  2.8729924e-05
+Eigen values: 
+[1.         0.5736881  0.87107617 0.87107617 0.851267   0.69708383]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  1.3018833e-05
+                   Validation error:  2.8749353e-05
+Eigen values: 
+[1.        0.5750691 0.8707507 0.8707507 0.8514021 0.6962262]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  1.2983067e-05
+                    Validation error:  2.8666807e-05
+Eigen values: 
+[1.         0.5764656  0.87039655 0.87039655 0.85155076 0.69540197]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  1.2949898e-05
+                    Validation error:  2.862653e-05
+Eigen values: 
+[1.         0.57789207 0.87004673 0.87004673 0.85168266 0.69454163]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  1.2917486e-05
+                    Validation error:  2.8557679e-05
+Eigen values: 
+[1.         0.5792202  0.8697358  0.8697358  0.8518242  0.69369924]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  1.2887054e-05
+                    Validation error:  2.8556691e-05
+Eigen values: 
+[1.         0.86939263 0.86939263 0.58068186 0.69279927 0.85193753]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  1.2852526e-05
+                    Validation error:  2.8505714e-05
+Eigen values: 
+[1.         0.8690718  0.8690718  0.5820657  0.6919402  0.85206985]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  1.282632e-05
+                    Validation error:  2.8469996e-05
+Eigen values: 
+[1.         0.8687484  0.8687484  0.5834572  0.69106704 0.8521878 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  1.278875e-05
+                    Validation error:  2.8406132e-05
+Eigen values: 
+[1.         0.8684613  0.8684613  0.5847888  0.69017583 0.8523179 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  1.2757963e-05
+                    Validation error:  2.8341683e-05
+Eigen values: 
+[1.        0.8681244 0.8681244 0.5862284 0.6892588 0.8524314]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  1.2726581e-05
+                    Validation error:  2.8361603e-05
+Eigen values: 
+[1.         0.86776656 0.86776656 0.58773154 0.6883235  0.8525443 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  1.2698302e-05
+                    Validation error:  2.8308074e-05
+Eigen values: 
+[1.         0.8674244  0.8674244  0.58917874 0.6874084  0.85265404]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  1.2670694e-05
+                    Validation error:  2.8250197e-05
+Eigen values: 
+[1.         0.86710864 0.86710864 0.59058744 0.6864912  0.85278004]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 1.2670694e-05
+Current Validation Error      : 2.8250197e-05
+Eigen values: 
+[1.         0.86710864 0.86710864 0.59058744 0.6864912  0.85278004]
+[COMP] The identified Koopman operator is STABLE
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.01
+Regularization Coefficient : 0
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  20000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  1.2659045e-05
+                   Validation error:  2.829975e-05
+Eigen values: 
+[1.         0.8670509  0.8670509  0.5908852  0.68629587 0.85280335]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  1.2653027e-05
+                   Validation error:  2.8277902e-05
+Eigen values: 
+[1.         0.8669922  0.8669922  0.5911618  0.68611073 0.8528258 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  1.2646939e-05
+                   Validation error:  2.8263166e-05
+Eigen values: 
+[1.         0.8669332  0.8669332  0.5914331  0.6859266  0.85284364]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  1.2641153e-05
+                   Validation error:  2.824482e-05
+Eigen values: 
+[1.         0.8668814  0.8668814  0.591682   0.6857506  0.85287064]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  1.2634933e-05
+                   Validation error:  2.8264018e-05
+Eigen values: 
+[1.         0.86680764 0.86680764 0.5920009  0.6855548  0.852885  ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  1.26289315e-05
+                   Validation error:  2.825648e-05
+Eigen values: 
+[1.         0.8667487  0.8667487  0.5922799  0.6853687  0.85290927]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  1.262305e-05
+                   Validation error:  2.8231187e-05
+Eigen values: 
+[1.         0.8666906  0.8666906  0.59254175 0.68518806 0.85293376]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  1.2616963e-05
+                   Validation error:  2.8239352e-05
+Eigen values: 
+[1.         0.8666319  0.8666319  0.5928353  0.68499386 0.8529568 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  1.2611159e-05
+                   Validation error:  2.8241511e-05
+Eigen values: 
+[1.         0.8665709  0.8665709  0.5931191  0.68480265 0.8529775 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  1.2605274e-05
+                    Validation error:  2.8203343e-05
+Eigen values: 
+[1.         0.8665135  0.8665135  0.5933874  0.68461484 0.8529991 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  11000  |   Training error:  1.2599153e-05
+                    Validation error:  2.8221526e-05
+Eigen values: 
+[1.         0.8664431  0.8664431  0.59370023 0.6844155  0.8530167 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  12000  |   Training error:  1.2593549e-05
+                    Validation error:  2.8191793e-05
+Eigen values: 
+[1.         0.8663802  0.8663802  0.59398836 0.6842257  0.8530365 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  13000  |   Training error:  1.2587656e-05
+                    Validation error:  2.8208262e-05
+Eigen values: 
+[1.        0.8663235 0.8663235 0.5942637 0.6840372 0.8530568]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  14000  |   Training error:  1.2581926e-05
+                    Validation error:  2.8182501e-05
+Eigen values: 
+[1.         0.86626977 0.86626977 0.5945518  0.6838358  0.85307914]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  15000  |   Training error:  1.2575469e-05
+                    Validation error:  2.8194258e-05
+Eigen values: 
+[1.         0.86620975 0.86620975 0.59484005 0.68364006 0.85310185]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  16000  |   Training error:  1.2569652e-05
+                    Validation error:  2.8202152e-05
+Eigen values: 
+[1.         0.8661366  0.8661366  0.595154   0.68343973 0.85311925]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  17000  |   Training error:  1.2563664e-05
+                    Validation error:  2.8167426e-05
+Eigen values: 
+[1.         0.86607826 0.86607826 0.5954122  0.6832522  0.8531429 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  18000  |   Training error:  1.25577635e-05
+                    Validation error:  2.814967e-05
+Eigen values: 
+[1.         0.86601955 0.86601955 0.5956846  0.6830674  0.85316086]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  19000  |   Training error:  1.2551894e-05
+                    Validation error:  2.8173985e-05
+Eigen values: 
+[1.         0.8659373  0.8659373  0.59602904 0.68285197 0.8531814 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Epoch No:  20000  |   Training error:  1.2545972e-05
+                    Validation error:  2.8150343e-05
+Eigen values: 
+[1.         0.8658751  0.8658751  0.5963065  0.68266374 0.8531988 ]
+[COMP] The identified Koopman operator is STABLE
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 1.2545972e-05
+Current Validation Error      : 2.8150343e-05
+Eigen values: 
+[1.         0.8658751  0.8658751  0.5963065  0.68266374 0.8531988 ]
+[COMP] The identified Koopman operator is STABLE
+SUCCESSFULLY HERE
+[INFO] Initialization was successful: True
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                                  0  ...                        5
+x_hidden_variable_list      [10, 10, 10, 10, 10, 3]  ...  [10, 10, 10, 10, 10, 3]
+u_hidden_variable_list                           []  ...                       []
+xu_hidden_variable_list                          []  ...                       []
+activation flag                                   2  ...                        2
+activation function                             elu  ...                      elu
+no of epochs                                   2000  ...                    20000
+batch size                                      100  ...                      100
+step size                                       0.5  ...                     0.01
+regularization coefficient                        0  ...                        0
+training error                          0.000506503  ...               1.2546e-05
+validation error                        0.000513492  ...              2.81503e-05
+r^2 training accuracy                        99.409  ...                   99.811
+r^2 validation accuracy                     99.0272  ...                  99.8312
+x MSE training                           0.00133126  ...              9.66712e-05
+x MSE validation                         0.00163711  ...              8.46533e-05
+y MSE training                          0.000414863  ...              3.19873e-06
+y MSE validation                        0.000388647  ...              2.18722e-05
+
+[17 rows x 6 columns]
+------ ------ -----
+[INFO] Koopman_dim:(6, 6)
+[COMP] Training error: 0.000013
+[COMP] Validation error: 0.000028
+Eigen values: 
+[1.         0.8658751  0.8658751  0.5963065  0.68266374 0.8531988 ]
+[COMP] The identified Koopman operator is STABLE
