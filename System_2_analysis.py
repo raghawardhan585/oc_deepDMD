@@ -124,32 +124,54 @@ def generate_df_error(SYSTEM_NO):
             pickle.dump(df_error,handle)
     return
 
-def plot_fit_XY(dict_run,plot_params,ls_runs):
-    f,ax = plt.subplots(7,6,sharex=True,figsize = (plot_params['individual_fig_width']*6,plot_params['individual_fig_height']*7))
+def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
+    n_rows = 7
+    if observables:
+         n_cols = 9
+         graphs_per_run = 3
+    else:
+        n_cols = 6
+        graphs_per_run = 2
+    f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
     i = 0
-    for row_i in range(7):
-        for col_i in list(range(0,6,2)):
-            # Plot states and outputs
-            n_states = dict_run[ls_runs[i]]['X'].shape[1]
-            for j in range(n_states):
-                ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
-                ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x_'+str(j+1) )
-            ax[row_i, col_i].legend()
-            for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
-                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
-                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y_'+str(j+1))
-            ax[row_i, col_i+1].legend()
-            # ax[row_i, col_i].title('X,Y')
-            # Plot the observables
-            # for j in range(dict_run[ls_test_runs[i]]['psiX'].shape[1]):
-            #     ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)])
-            #     ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],label ='x_'+str(j+1) )
-            # ax[row_i, col_i].title('observables')
+    for row_i in range(n_rows):
+        for col_i in list(range(0,n_cols,graphs_per_run)):
+            if scaled:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
+                for j in range(n_states):
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[j])
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
+                                          label='x' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i].legend()
+                for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
+                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
+                                              label='y' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i + 1].legend()
+            else:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X'].shape[1]
+                for j in range(n_states):
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
+                ax[row_i, col_i].legend()
+                for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
+                ax[row_i, col_i+1].legend()
+            if observables:
+                # Plot the observables
+                for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
+                    ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)],linewidth = int(j/7+1))
+                    ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],linewidth = int(j/7+1),label ='x_'+str(j+1) )
+                ax[row_i, col_i+2].legend()
             i = i+1
             if i == len(ls_runs):
                 break
     f.show()
     return f
+
 
 def plot_observables(dict_run,plot_params):
     # x horizontal y vertical
@@ -184,15 +206,15 @@ def get_prediction_data(SYSTEM_NO,RUN_NO):
         dict_predictions = pickle.load(handle)
     return dict_predictions[RUN_NO]
 ## MAIN
-SYSTEM_NO = 4
+SYSTEM_NO = 5
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 
 generate_predictions_pickle_file(SYSTEM_NO)
-# generate_df_error(SYSTEM_NO)
-# generate_hyperparameter_dataframe(SYSTEM_NO)
+generate_df_error(SYSTEM_NO)
+generate_hyperparameter_dataframe(SYSTEM_NO)
 # with open(sys_folder_name + '/dict_predictions.pickle', 'rb') as handle:
 #     dict_predictions = pickle.load(handle)
 # with open(sys_folder_name + '/df_error.pickle','rb') as handle:
@@ -207,7 +229,7 @@ generate_predictions_pickle_file(SYSTEM_NO)
 # plt.ylabel('log(max(error))')
 # plt.show()
 ## Get the optimal run for the given number of observables
-SYSTEM_NO = 4
+SYSTEM_NO = 5
 N_OBSERVABLES = 3
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
@@ -216,7 +238,7 @@ df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERV
 ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
-ls_runs_const_obs = list(range(108,134))
+ls_runs_const_obs = list(range(0,18))
 df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
 # df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
@@ -232,10 +254,61 @@ dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
 plot_params['individual_fig_height'] = 2
 plot_params['individual_fig_width'] = 2.4
-# f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves)
-f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves)
+f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
+# f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves)
+##
+dict_run = dict_predictions_opt_run
+ls_runs = ls_test_curves
+scaled = True
+observables = False
 
+##
 
+n_rows = 7
+if observables:
+     n_cols = 9
+     graphs_per_run = 3
+else:
+    n_cols = 6
+    graphs_per_run = 2
+f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
+i = 0
+for row_i in range(n_rows):
+    for col_i in list(range(0,n_cols,graphs_per_run)):
+        if scaled:
+            # Plot states and outputs
+            n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
+            for j in range(n_states):
+                ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[j])
+                ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
+                                      label='x' + str(j + 1)+ '[scaled]')
+            ax[row_i, col_i].legend()
+            for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
+                ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
+                                          label='y' + str(j + 1)+ '[scaled]')
+            ax[row_i, col_i + 1].legend()
+        else:
+            # Plot states and outputs
+            n_states = dict_run[ls_runs[i]]['X'].shape[1]
+            for j in range(n_states):
+                ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
+                ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
+            ax[row_i, col_i].legend()
+            for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
+            ax[row_i, col_i+1].legend()
+        if observables:
+            # Plot the observables
+            for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
+                ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)],linewidth = int(j/7+1))
+                ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],linewidth = int(j/7+1),label ='x_'+str(j+1) )
+            ax[row_i, col_i+2].legend()
+        i = i+1
+        if i == len(ls_runs):
+            break
+f.show()
 
 ## Plotting the observables
 plot_params={}
