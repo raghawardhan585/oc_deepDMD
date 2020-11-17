@@ -599,7 +599,8 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
     SST_x = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
     SSE_x = tf.math.reduce_sum(tf.math.square(all_prediction_error), axis=0)
     dict_predictions['xfT'] = psiXf_predicted
-    dict_predictions['xfT_error'] = dict_psi['xfT'] - psiXf_predicted
+    dict_predictions['xfT_error'] = psi_Xf_prediction_error
+    dict_predictions['psiXfT_MSE'] = tf.math.reduce_mean(tf.math.square(psi_Xf_prediction_error))
     dict_predictions['xfT_accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE_x, SST_x))) * 100
     # Dealing with Output
     if with_output:
@@ -616,6 +617,7 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
         dict_predictions['yfT_error'] = Yf_prediction_error
         dict_predictions['yfT_accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE_y, SST_y))) * 100
         dict_predictions['model_accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
+        dict_predictions['YfT_MSE'] = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
     else:
         SST = SST_x
         SSE = SSE_x
@@ -624,6 +626,7 @@ def Deep_Output_KIC_Objective_v3(dict_feed,dict_psi,dict_K, with_control=0, mix_
         dict_predictions['yfT_error'] = 0
         dict_predictions['yft_accuracy'] = 0
         dict_predictions['model_accuracy'] = dict_predictions['xfT_accuracy']
+        dict_predictions['YfT_MSE'] = 0
     tf_koopman_loss = (1-lambda_output_weight)*tf.math.reduce_mean(tf.math.square(psi_Xf_prediction_error)) + lambda_output_weight*tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
     # tf_koopman_loss = tf.math.reduce_mean(tf.math.square(all_prediction_error)) + tf.math.multiply(dict_feed['regularization_lambda'], regularization_penalty)
     # tf_koopman_loss = tf.math.reduce_max(tf.math.reduce_mean(tf.math.square(prediction_error_all),0)) + tf.math.multiply(regularization_lambda,regularization_penalty)
@@ -736,13 +739,15 @@ def display_train_params(dict_run_params):
     return
 
 
-def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, r2_accuracy, n_epochs_run, dict_run_params):
+def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, dict_predictions, n_epochs_run, dict_run_params):
     training_error = error_func.eval(feed_dict=feed_dict_train)
     validation_error = error_func.eval(feed_dict=feed_dict_valid)
-    # test_error = error_func.eval(feed_dict=feed_dict_test)
-    training_accuracy = r2_accuracy.eval(feed_dict=feed_dict_train)
-    validation_accuracy = r2_accuracy.eval(feed_dict=feed_dict_valid)
-    # test_accuracy = r2_accuracy.eval(feed_dict=feed_dict_test)
+    training_accuracy = dict_predictions['model_accuracy'].eval(feed_dict=feed_dict_train)
+    validation_accuracy = dict_predictions['model_accuracy'].eval(feed_dict=feed_dict_valid)
+    training_x_MSE = dict_predictions['psiXfT_MSE'].eval(feed_dict=feed_dict_train)
+    validation_x_MSE = dict_predictions['psiXfT_MSE'].eval(feed_dict=feed_dict_valid)
+    training_y_MSE = dict_predictions['YfT_MSE'].eval(feed_dict=feed_dict_train)
+    validation_y_MSE = dict_predictions['YfT_MSE'].eval(feed_dict=feed_dict_valid)
     dict_hp = {}
     dict_hp['x_hidden_variable_list'] = x_hidden_vars_list
     dict_hp['u_hidden_variable_list'] = u_hidden_vars_list
@@ -761,10 +766,12 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, r2_a
     dict_hp['regularization coefficient'] = dict_run_params['regularization_lambda_val']
     dict_hp['training error'] = training_error
     dict_hp['validation error'] = validation_error
-    # dict_hp['test error'] = test_error
     dict_hp['r^2 training accuracy'] = training_accuracy
     dict_hp['r^2 validation accuracy'] = validation_accuracy
-    # dict_hp['r^2 test accuracy'] = test_accuracy
+    dict_hp['x MSE training'] = training_x_MSE
+    dict_hp['x MSE validation'] = validation_x_MSE
+    dict_hp['y MSE training'] = training_y_MSE
+    dict_hp['y MSE training'] = validation_y_MSE
     return dict_hp
 
 
@@ -782,7 +789,7 @@ def static_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, ls_dic
                                                                deep_koopman_loss, optimizer,dict_train_params_i,all_histories)
         feed_dict_train.update({dict_feed['regularization_lambda']: dict_train_params_i['regularization_lambda_val']})
         feed_dict_valid.update({dict_feed['regularization_lambda']: dict_train_params_i['regularization_lambda_val']})
-        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,deep_koopman_loss, dict_predictions['model_accuracy'],n_epochs_run, dict_train_params_i)
+        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,deep_koopman_loss, dict_predictions,n_epochs_run, dict_train_params_i)
         print('Current Training Error  :', dict_run_info[run_info_index]['training error'])
         print('Current Validation Error      :', dict_run_info[run_info_index]['validation error'])
         # print('Current Training Accuracy  :', dict_run_info[run_info_index]['r^2 training accuracy'])
