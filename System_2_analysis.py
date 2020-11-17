@@ -88,8 +88,8 @@ def generate_predictions_pickle_file(SYSTEM_NO):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
-        all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
+        all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
+        # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(all_errors))
     # J_error = np.log10(np.max(J_error))
@@ -216,7 +216,7 @@ df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERV
 ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
-ls_runs_const_obs = list(range(81,107))
+ls_runs_const_obs = list(range(108,134))
 df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
 # df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid

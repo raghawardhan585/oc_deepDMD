@@ -42,9 +42,16 @@ gamma = -0.9
 N_data_points = 30
 N_CURVES = 60
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-SYSTEM_NO = 4
+SYSTEM_NO = 5
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 oc.plot_training_valid_test_states(4)
+# ##
+# with open('koopman_data/System_4_ocdeepDMDdata.pickle','rb') as handle:
+#     a = pickle.load(handle)
+# plt.figure()
+# plt.plot(a['Yp'])
+# plt.plot(a['Xp'])
+# plt.show()
 # ==========================
 ## System 3 - Activator Repressor CLock - 4state system
 # ==========================
@@ -77,16 +84,16 @@ oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 
 ## Bash Script Generator
 
-# DEVICE_TO_RUN_ON = 'microtensor'
+DEVICE_TO_RUN_ON = 'microtensor'
 # DEVICE_TO_RUN_ON = 'optictensor'
-DEVICE_TO_RUN_ON = 'goldentensor'
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 4
-NO_OF_ITERATIONS_PER_GPU = 3
-NO_OF_ITERATIONS_IN_CPU = 3
+# DEVICE_TO_RUN_ON = 'goldentensor'
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 5
+NO_OF_ITERATIONS_PER_GPU = 2
+NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_run_conditions = {}
 # MICROTENSOR CPU RUN
-# dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':9,'x_nn_nodes':15}
+dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':9,'x_nn_nodes':15}
 # dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
 # dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
 # dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
@@ -97,10 +104,10 @@ dict_run_conditions = {}
 # dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
 # Runs
 # Golden tensor
-dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':5}
-dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':10}
-dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':15}
-dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':9,'x_nn_nodes':5}
+# dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':5}
+# dict_run_conditions[1] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':10}
+# dict_run_conditions[2] = {'x_dict_size':3,'x_nn_layers':3,'x_nn_nodes':15}
+# dict_run_conditions[3] = {'x_dict_size':3,'x_nn_layers':9,'x_nn_nodes':5}
 
 # Optic tensor
 # dict_run_conditions[0] = {'x_dict_size':3,'x_nn_layers':6,'x_nn_nodes':5}
@@ -119,11 +126,12 @@ oc.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE
 oc.transfer_current_ocDeepDMD_run_files()
 
 ##
-ls_run_no = list(range(108,135))
+SYSTEM_NO = 4
+ls_run_no = list(range(108,134))
 plot_params ={}
-plot_params['xy_label_font_size']=15
-plot_params['individual_fig_width']=15
-plot_params['individual_fig_height']=15
+plot_params['xy_label_font_size']=9
+plot_params['individual_fig_width']=2
+plot_params['individual_fig_height']=2
 oc.plot_training_runs(SYSTEM_NO,ls_run_no,plot_params)
 
 

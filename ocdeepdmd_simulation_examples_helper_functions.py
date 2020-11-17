@@ -43,7 +43,8 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
     n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
     dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
                            'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
-    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
+    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
+    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
         pickle.dump(dict_Scaler, handle)
     dict_DATA = scale_data_using_existing_scaler_folder(dict_DATA_RAW, SYSTEM_NO)
@@ -58,6 +59,7 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
               'wb') as handle:
         pickle.dump(dict_DATA, handle)
     return
+
 def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERATIONS_PER_GPU,NO_OF_ITERATIONS_IN_CPU):
     with open('/Users/shara/Desktop/oc_deepDMD/' + str(DEVICE_TO_RUN_ON) + '_run.sh', 'w') as bash_exec:
         bash_exec.write('#!/bin/bash \n')
@@ -196,14 +198,16 @@ def plot_training_runs(SYSTEM_NO,ls_run_no,plot_params):
     n_x = int(np.ceil(np.sqrt(N_runs)))
     n_y = int(np.ceil(N_runs/n_x))
     fig = plt.figure(figsize=(plot_params['individual_fig_width'] * n_x, plot_params['individual_fig_height'] * n_y))
-    i =0
+    i =1
     for run_no in ls_run_no:
         # Open the run folder
         with open(sys_folder_name + '/RUN_' + str(run_no) + '/all_histories.pickle', 'rb') as handle:
             df_run_info = pd.DataFrame(pickle.load(handle))
         ax = fig.add_subplot(n_y, n_x, i)
-        ax.plot(df_run_info.index*1000,df_run_info.loc['x train MSE'],color = colors[0])
-        ax.plot(df_run_info.index * 1000, df_run_info.loc['y train MSE'], color=colors[0])
+        i=i+1
+        ax.plot(df_run_info.index*1000,np.log10(df_run_info.loc[:,'x train MSE']),color = colors[0],label = 'x')
+        ax.plot(df_run_info.index * 1000, np.log10(df_run_info.loc[:,'y train MSE']), color=colors[1],label = 'y')
+        # ax.legend()
         ax.set_xlabel('# Epochs')
         ax.set_ylabel('Mean squared Error')
         ax.xaxis.label.set_fontsize(plot_params['xy_label_font_size'])
@@ -350,7 +354,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
     return
 
 def generate_2state_initial_condition():
-    r = np.random.uniform(5.,10.)
+    r = np.random.uniform(9.,10.)
     theta = np.random.uniform(0.,2*np.pi)
     return np.array([[r*np.cos(theta),r*np.sin(theta)]])
 

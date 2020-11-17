@@ -54,16 +54,16 @@ best_test_error = np.inf
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 1000 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 100000, 'batch_size': 1000 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 2000 }
+# ls_dict_training_params.append(dict_training_params)
 
 sess = tf.InteractiveSession()
 
@@ -105,7 +105,7 @@ def initialize_Wblist(n_u, hv_list):
         W_list.append(weight_variable([hv_list[k - 1], hv_list[k]]))
         b_list.append(bias_variable([hv_list[k]]))
     return W_list, b_list
-def initialize_tensorflow_graph(param_list,Wh1):
+def initialize_tensorflow_graph(param_list,Wh1,y_feed):
     x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list,
                      'x_observables': x_deep_dict_size, 'y_observables': y_deep_dict_size, 'W_list': Wx_list,
                      'b_list': bx_list,
@@ -132,9 +132,9 @@ def initialize_tensorflow_graph(param_list,Wh1):
             z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
         if param_list['activation flag'] == 3: # tanh
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
-    y = tf.concat([u, z_list[-1][0:param_list['x_observables']]], axis=1)
-    y = tf.concat([y, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
-    y = tf.concat([y, z_list[-1][0:param_list['x_observables']]], axis=1)
+    psiX = tf.concat([u, z_list[-1][0:param_list['x_observables']]], axis=1)
+    psiX = tf.concat([psiX, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
+    y = tf.concat([psiX, y_feed - tf.matmul(Wh1,psiX)], axis=1)
     y = tf.concat([y, z_list[-1][param_list['x_observables']:]], axis=1)
     result = sess.run(tf.global_variables_initializer())
     return z_list, y, u
@@ -175,15 +175,17 @@ def display_train_params(dict_run_params):
     print('Batch Size   : ', dict_run_params['batch_size'])
     print('--------------------------------------')
     return
-def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, r2_accuracy, n_epochs_run, dict_run_params):
-    training_error = error_func.eval(feed_dict=feed_dict_train)
-    validation_error = error_func.eval(feed_dict=feed_dict_valid)
-    training_accuracy = r2_accuracy.eval(feed_dict=feed_dict_train)
-    validation_accuracy = r2_accuracy.eval(feed_dict=feed_dict_valid)
+def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metrics, n_epochs_run, dict_run_params):
+    training_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
+    validation_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
+    training_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_train)
+    validation_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_valid)
+    training_x_MSE = dict_model_metrics['x_MSE'].eval(feed_dict=feed_dict_train)
+    validation_x_MSE = dict_model_metrics['x_MSE'].eval(feed_dict=feed_dict_valid)
+    training_y_MSE = dict_model_metrics['y_MSE'].eval(feed_dict=feed_dict_train)
+    validation_y_MSE = dict_model_metrics['y_MSE'].eval(feed_dict=feed_dict_valid)
     dict_hp = {}
     dict_hp['x_hidden_variable_list'] = x_hidden_vars_list
-    # dict_hp['u_hidden_variable_list'] = u_hidden_vars_list
-    # dict_hp['xu_hidden_variable_list'] = xu_hidden_vars_list
     dict_hp['activation flag'] = activation_flag
     dict_hp['activation function'] = None
     if activation_flag == 1:
@@ -197,25 +199,39 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, error_func, r2_a
     dict_hp['step size'] = dict_run_params['step_size_val']
     dict_hp['training error'] = training_error
     dict_hp['validation error'] = validation_error
-    # dict_hp['test error'] = test_error
     dict_hp['r^2 training accuracy'] = training_accuracy
     dict_hp['r^2 validation accuracy'] = validation_accuracy
-    # dict_hp['r^2 test accuracy'] = test_accuracy
+    dict_hp['x MSE training'] = training_x_MSE
+    dict_hp['x MSE validation'] = validation_x_MSE
+    dict_hp['y MSE training'] = training_y_MSE
+    dict_hp['y MSE validation'] = validation_y_MSE
     return dict_hp
 
 def state_dynamics_objective(dict_feed,dict_psi,dict_K):
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
+    Yf_prediction_error = dict_feed['yfT'] - tf.matmul(dict_psi['xfT'], dict_K['WhT'])
+    tf_koopman_loss = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) + tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    optimizer = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(tf_koopman_loss)
+
+    # Mean Squared Error
+    x_MSE = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    y_MSE = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    # Accuracy computation
     SST_x = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
     SSE_x = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-    psiXf_accuracy_percent = (1 - tf.math.reduce_max(tf.divide(SSE_x, SST_x))) * 100
-    tf_koopman_loss = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
-    optimizer = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(tf_koopman_loss)
-    return tf_koopman_loss, optimizer, psiXf_accuracy_percent
+    SST_y = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']), axis=0)
+    SSE_y = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
+    SST = tf.concat([SST_x, SST_y], axis=0)
+    SSE = tf.concat([SSE_x, SSE_y], axis=0)
+    model_accuracy_percent = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
 
-def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, deep_koopman_loss, optimizer, model_accuracy_percent, all_histories = {'train error': [],'validation error': []}, dict_run_info = {}):
-    feed_dict_train = {dict_feed['xpT']: dict_train['Xp'],dict_feed['xfT']: dict_train['Xf']}
-    feed_dict_valid = {dict_feed['xpT']: dict_valid['Xp'],dict_valid['xfT']: dict_valid['Xf']}
+    dict_model_perf_metrics ={'loss_fn': tf_koopman_loss, 'optimizer': optimizer, 'accuracy': model_accuracy_percent, 'x_MSE': x_MSE, 'y_MSE':y_MSE}
+    return dict_model_perf_metrics
+
+def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories = {'train error': [], 'validation error': [],'x train MSE':[],'x valid MSE':[],'y train MSE':[],'y valid MSE':[]}, dict_run_info = {}):
+    feed_dict_train = {dict_feed['xpT']: dict_train['Xp'],dict_feed['xfT']: dict_train['Xf'],dict_feed['ypT']: dict_train['Yp'],dict_feed['yfT']: dict_train['Yf']}
+    feed_dict_valid = {dict_feed['xpT']: dict_valid['Xp'],dict_valid['xfT']: dict_valid['Xf'],dict_feed['ypT']: dict_valid['Yp'],dict_valid['yfT']: dict_valid['Yf']}
     # --------
     try :
         run_info_index = list(dict_run_info.keys())[-1]
@@ -223,15 +239,16 @@ def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params,
         run_info_index = 0
     for dict_train_params_i in ls_dict_training_params:
         display_train_params(dict_train_params_i)
-        all_histories, n_epochs_run = train_net_v2(dict_train,feed_dict_train, feed_dict_valid, dict_feed, deep_koopman_loss, optimizer,dict_train_params_i,all_histories)
-        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,deep_koopman_loss, model_accuracy_percent,n_epochs_run, dict_train_params_i)
+        all_histories, n_epochs_run = train_net_v2(dict_train,feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics, dict_train_params_i, all_histories)
+        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,dict_model_metrics,n_epochs_run, dict_train_params_i)
         print('Current Training Error  :', dict_run_info[run_info_index]['training error'])
         print('Current Validation Error      :', dict_run_info[run_info_index]['validation error'])
-        estimate_K_stability(Kx)
+        estimate_K_stability(KxT)
         run_info_index += 1
     return all_histories, dict_run_info
 
-def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, loss_func,optimizer, dict_run_params, all_histories):
+def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics, dict_run_params, all_histories):
+
     # -----------------------------
     # Initialization
     # -----------------------------
@@ -255,13 +272,17 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, loss_f
             else:
                 # Last run with the residual data
                 train_indices = all_train_indices[run_i * batch_size: N_train_samples]
-            feed_dict_train_curr = {dict_feed['xpT']: dict_train['Xp'][train_indices], dict_feed['xfT']: dict_train['Xf'][train_indices], dict_feed['step_size']: dict_run_params['step_size_val']}
-            optimizer.run(feed_dict=feed_dict_train_curr)
+            feed_dict_train_curr = {dict_feed['xpT']: dict_train['Xp'][train_indices], dict_feed['xfT']: dict_train['Xf'][train_indices],dict_feed['ypT']: dict_train['Yp'][train_indices], dict_feed['yfT']: dict_train['Yf'][train_indices], dict_feed['step_size']: dict_run_params['step_size_val']}
+            dict_model_metrics['optimizer'].run(feed_dict=feed_dict_train_curr)
         # After training 1 epoch
-        training_error = loss_func.eval(feed_dict=feed_dict_train)
-        validation_error = loss_func.eval(feed_dict=feed_dict_valid)
+        training_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
+        validation_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
         all_histories['train error'].append(training_error)
         all_histories['validation error'].append(validation_error)
+        all_histories['x train MSE'].append(dict_model_metrics['x_MSE'].eval(feed_dict=feed_dict_train))
+        all_histories['x valid MSE'].append(dict_model_metrics['x_MSE'].eval(feed_dict=feed_dict_valid))
+        all_histories['y train MSE'].append(dict_model_metrics['y_MSE'].eval(feed_dict=feed_dict_train))
+        all_histories['y valid MSE'].append(dict_model_metrics['y_MSE'].eval(feed_dict=feed_dict_valid))
         if np.mod(epoch_i, DISPLAY_SAMPLE_RATE_EPOCH) == 0:
             print('Epoch No: ', epoch_i, ' |   Training error: ', training_error)
             print('Validation error: '.rjust(len('Epoch No: ' + str(epoch_i) + ' |   Validation error: ')),validation_error)
@@ -364,10 +385,10 @@ x_hidden_vars_list[-1] = x_deep_dict_size  + y_deep_dict_size # The last hidden 
 # Display info
 print("[INFO] Number of total samples: " + repr(num_all_samples))
 print("[INFO] Observable dimension of a sample: " + repr(num_bas_obs))
-print("[INFO] Xp.shape (E-DMD): " + repr(Xp.shape));
-print("[INFO] Yf.shape (E-DMD): " + repr(Xf.shape));
-print("Number of training snapshots: " + repr(len(train_indices)));
-print("Number of validation snapshots: " + repr(len(valid_indices)));
+print("[INFO] Xp.shape (E-DMD): " + repr(Xp.shape))
+print("[INFO] Yf.shape (E-DMD): " + repr(Xf.shape))
+print("Number of training snapshots: " + repr(len(train_indices)))
+print("Number of validation snapshots: " + repr(len(valid_indices)))
 print("[INFO] STATE - hidden_vars_list: " + repr(x_hidden_vars_list))
 
 
@@ -389,104 +410,42 @@ with tf.device(DEVICE_NAME):
     KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + num_outputs + 1, y_deep_dict_size + num_outputs])
     KxT = tf.concat([KxT_1, KxT_2], axis=1)
     # Wh definition
-    Wh1 = weight_variable([x_deep_dict_size + num_bas_obs + 1, num_outputs])
-    Wh2 = tf.concat([tf.constant(np.identity(num_outputs), dtype=tf.dtypes.float32),tf.constant(np.zeros(shape=(y_deep_dict_size,num_outputs)), dtype=tf.dtypes.float32)],axis=0)
-    Wh = tf.concat([Wh1,Wh2],axis=0)
+    yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1, num_outputs])
+    Wh2T = tf.concat([tf.constant(np.identity(num_outputs), dtype=tf.dtypes.float32),tf.constant(np.zeros(shape=(y_deep_dict_size,num_outputs)), dtype=tf.dtypes.float32)],axis=0)
+    WhT = tf.concat([Wh1T,Wh2T],axis=0)
     # Initialize the hidden layers
     Wx_list, bx_list = initialize_Wblist(num_bas_obs, x_hidden_vars_list)
     x_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x_hidden_vars_list, 'x_observables':x_deep_dict_size, 'y_observables':y_deep_dict_size, 'W_list': Wx_list, 'b_list': bx_list,
-                     'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net, 'include state': True, 'add bias': add_bias}
-    psixpz_list, psixp, xp_feed = initialize_tensorflow_graph(x_params_list,Wh1)
-    psixfz_list, psixf, xf_feed = initialize_tensorflow_graph(x_params_list)
-
-    print('Kx initiation done!')
+                     'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net}
+    psixpz_list, psixp, xp_feed = initialize_tensorflow_graph(x_params_list,Wh1T,yp_feed)
+    psixfz_list, psixf, xf_feed = initialize_tensorflow_graph(x_params_list,Wh1T,yf_feed)
     dict_feed ['xpT'] = xp_feed
     dict_feed ['xfT'] = xf_feed
+    dict_feed['ypT'] = yp_feed
+    dict_feed['yfT'] = yf_feed
     dict_psi ['xpT'] = psixp
     dict_psi['xfT'] = psixf
     dict_K['KxT'] = KxT
+    dict_K['WhT'] = WhT
     dict_feed['step_size'] = tf.placeholder(tf.float32, shape=[])
     sess.run(tf.global_variables_initializer())
-    deep_koopman_loss, optimizer, psiXf_accuracy_percent = state_dynamics_objective(dict_feed, dict_psi, dict_K)
+    dict_model_metrics = state_dynamics_objective(dict_feed, dict_psi, dict_K)
     print('Training begins now!')
-    all_histories, dict_run_info = static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, deep_koopman_loss, optimizer,psiXf_accuracy_percent)
+    all_histories, dict_run_info = static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics)
     print('---   TRAINING COMPLETE   ---')
-unstable = estimate_K_stability(Kx)
-if unstable:
-    exit()
-training_error_history_nocovar = all_histories['train error'];
-validation_error_history_nocovar = all_histories['validation error'];
-feed_dict_train = {xp_feed: dict_train['Xp'], xf_feed: dict_train['Xf']}
-feed_dict_valid = {xp_feed: dict_valid['Xp'], xf_feed: dict_valid['Xf']}
-train_error = deep_koopman_loss.eval(feed_dict=feed_dict_train)
-valid_error = deep_koopman_loss.eval(feed_dict=feed_dict_valid)
-
-
-# # Display the results of training the dynamics
-#
-# # ============================
-# # LEARNING THE OUTPUT DYNAMICS [Nothing to train - Maybe tensorflow is not required]
-# # ============================
-# # Wh identified by least squares
-# psiXp_num_train = psixp.eval(feed_dict = {dict_feed['xpT']:dict_train['Xp']})
-# psiXp_num_valid = psixp.eval(feed_dict = {dict_feed['xpT']:dict_valid['Xp']})
-# psiXf_num_train = psixf.eval(feed_dict = {dict_feed['xfT']:dict_train['Xf']})
-# psiXf_num_valid = psixf.eval(feed_dict = {dict_feed['xfT']:dict_valid['Xf']})
-# Yf_train = dict_train['Yf']
-# Yf_valid = dict_valid['Yf']
-# Wh1 = least_squares_soln_by_inverse(psiXf_num_train,Yf_train)
-# Wh2 = least_squares_soln_by_svd(psiXf_num_train,Yf_train,psiXf_num_valid,Yf_valid)
-# Wh1_err = np.mean(np.append(np.square(Yf_train - psiXf_num_train @ Wh1),np.square(Yf_valid - psiXf_num_valid @ Wh1)))
-# Wh2_err = np.mean(np.append(np.square(Yf_train - psiXf_num_train @ Wh2),np.square(Yf_valid - psiXf_num_valid @ Wh2)))
-# Wh = Wh1
-# Wh_err = Wh1_err
-# if Wh1_err > Wh2_err:
-#     Wh = Wh2
-#     Wh_err = Wh2_err
-# print('Error in output equation = ', Wh_err)
-#
-# # ============================
-# # LEARNING THE ERROR DYNAMICS
-# # ============================
-# # Getting the error data
-# dict_train['ep'] = dict_train['Yp'] - psiXp_num_train @ Wh
-# dict_train['ef'] = dict_train['Yf'] - psiXf_num_train @ Wh
-# dict_valid['ep'] = dict_valid['Yp'] - psiXp_num_valid @ Wh
-# dict_valid['ef'] = dict_valid['Yf'] - psiXf_num_valid @ Wh
-# # Hidden layer list
-# e_hidden_vars_list = np.asarray([n_e_nn_nodes] * n_e_nn_layers)
-# e_hidden_vars_list[-1] = e_deep_dict_size # The last hidden layer being declared as the output
-# print("[INFO] OUTPUT ERROR - hidden_vars_list: " + repr(e_hidden_vars_list))
-# e_num_bas_obs = len(dict_train['ep'][0])
-# with tf.device(DEVICE_NAME):
-#     We_list, be_list = initialize_Wblist(e_num_bas_obs, e_hidden_vars_list)
-#     e_params_list = {'no of base observables': e_num_bas_obs, 'hidden_var_list': e_hidden_vars_list, 'W_list': We_list, 'b_list': be_list,
-#                      'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net, 'include state': True, 'add bias': False}
-#     psiepz_list, psiep, ep_feed = initialize_tensorflow_graph(e_params_list)
-#     psiefz_list, psief, ef_feed = initialize_tensorflow_graph(e_params_list)
-#     # Kx definition
-#     Kx2 = weight_variable([x_deep_dict_size + num_bas_obs, x_deep_dict_size + num_bas_obs])
-#
-#     print('Kx initiation done!')
-#     dict_feed ['xpT'] = xp_feed;
-#     dict_feed ['xfT'] = xf_feed;
-#     dict_psi ['xpT'] = psixp;
-#     dict_psi['xfT'] = psixf;
-#     dict_K['KxT'] = Kx;
-#     dict_feed['step_size'] = tf.placeholder(tf.float32, shape=[])
-#     sess.run(tf.global_variables_initializer())
-#     deep_koopman_loss, optimizer, psiXf_accuracy_percent = state_dynamics_objective(dict_feed, dict_psi, dict_K)
-#     print('Training begins now!')
-#     all_histories, dict_run_info = static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, deep_koopman_loss, optimizer,psiXf_accuracy_percent)
-#     print('---   TRAINING COMPLETE   ---')
-#
-
-
-
-
+estimate_K_stability(KxT)
+feed_dict_train = {xp_feed: dict_train['Xp'], xf_feed: dict_train['Xf'], yp_feed:dict_train['Yp'], yf_feed:dict_train['Yf'] }
+feed_dict_valid = {xp_feed: dict_valid['Xp'], xf_feed: dict_valid['Xf'], yp_feed:dict_valid['Yp'], yf_feed:dict_valid['Yf']}
+train_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
+valid_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
 
 # Saving the results of the run
 
 
 
+
+
+##
 
