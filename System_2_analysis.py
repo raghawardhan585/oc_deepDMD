@@ -216,7 +216,7 @@ df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERV
 ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error.pickle','rb') as handle:
     df_error = pickle.load(handle)
-ls_runs_const_obs = list(range(81,107))
+ls_runs_const_obs = list(range(81,83))
 df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
 # df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid

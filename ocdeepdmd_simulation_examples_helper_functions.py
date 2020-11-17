@@ -200,6 +200,7 @@ def plot_training_runs(SYSTEM_NO,ls_run_no,plot_params):
         # Open the run folder
         with open(sys_folder_name + '/RUN_' + str(run_no) + '/run_info.pickle', 'rb') as handle:
             df_run_info = pd.DataFrame(pickle.load(handle))
+        np.cumsum(df_run_info.loc['no of epochs', :]),
 
 
         # ax = fig.add_subplot(n_y, n_x, i + 1, projection='3d')
