@@ -462,95 +462,104 @@ with tf.device(DEVICE_NAME):
     print('---   STATE TRAINING COMPLETE   ---')
 
 
-    # ==============
-    # RUN 2
-    # ==============
-    # Hidden layer creation
-    x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
-    x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
-    Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
-    x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
-                      'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                      'res_net': res_net}
-    # Data Required
-    psix1p_num = psix1p.eval(feed_dict={xp_feed: Xp})
-    psix1f_num = psix1f.eval(feed_dict={xf_feed: Xf})
-    dict_train2 = {'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
-    dict_valid2 = {'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[train_indices]}
-    # K Variables
-    Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
-    # Feed Variable Definition
-    yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
-    yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
-    psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
-    psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
-    # Psi variables
-    psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
-    psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
-    psix12f_concat = tf.concat([psix1f_feed, psix2f],axis=1)
-    # Objective Function Variables
-    dict_feed2 = {'psix1fT': psix1f_feed, 'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
-    dict_psi2 = {'xfT': psix12f_concat}
-    dict_K2 = {'WhT': Wh1T}
-    # Second optimization
-    dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
-    all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2, ls_dict_training_params2,dict_model2_metrics,x_params_list =x2_params_list)
-    print('---   OUTPUT TRAINING COMPLETE   ---')
-
-    # ==============
-    # RUN 3
-    # ==============
-    # Hidden layer creation
-    x3_hidden_vars_list = np.asarray([n_xy_nn_nodes] * n_xy_nn_layers)
-    x3_hidden_vars_list[-1] = xy_deep_dict_size  # The last hidden layer being declared as the output
-    Wx3_list, bx3_list = initialize_Wblist(num_bas_obs, x3_hidden_vars_list)
-    x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list,
-                      'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                      'res_net': res_net}
-    # Data Required
-    psix2p_num = psix2p.eval(feed_dict={xp_feed: Xp})
-    psix2f_num = psix2f.eval(feed_dict={xf_feed: Xf})
-    dict_train3 = {'Xp': Xp[train_indices], 'Xf': Xf[train_indices], 'psiX1p': psix1p_num[train_indices], 'psiX2p': psix2p_num[train_indices],'psiX2f': psix2f_num[train_indices]}
-    dict_valid3 = {'Xp': Xp[valid_indices], 'Xf': Xf[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'psiX2p': psix2p_num[valid_indices],'psiX2f': psix2f_num[valid_indices]}
-    # K Variables
-    KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + xy_deep_dict_size + 1, y_deep_dict_size + xy_deep_dict_size])
-    # Feed variables
-    psix2p_feed = tf.placeholder(tf.float32, shape=[None, psix2p_num.shape[1]])
-    psix2f_feed = tf.placeholder(tf.float32, shape=[None, psix2f_num.shape[1]])
-    # Psi variables
-    psix3pz_list, psix3p = initialize_tensorflow_graph(x3_params_list, xp_feed)
-    psix3fz_list, psix3f = initialize_tensorflow_graph(x3_params_list, xf_feed)
-
-    psix123p_concat = tf.concat([psix1p_feed, psix2p_feed, psix3p],axis=1)
-    psix23f_concat = tf.concat([psix2f_feed, psix3f],axis=1)
-    # Objective Function variables
-    dict_feed3 = {'psix1pT': psix1p_feed, 'psix2pT': psix2p_feed, 'psix2fT': psix2f_feed, 'xpT': xp_feed, 'xfT': xf_feed, 'step_size': step_size_feed}
-    dict_psi3 = {'xpT': psix123p_concat, 'xfT': psix23f_concat}
-    dict_K3 = {'KxT': KxT_2}
-    # Third optimization
-    dict_model3_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi3, dict_K3)
-    all_histories3, dict_run_info3 = static_train_net(dict_train3, dict_valid3, dict_feed3, ls_dict_training_params3,dict_model3_metrics,x_params_list =x3_params_list)
-    print('---   OUTPUT COMPENSATED STATE TRAINING COMPLETE   ---')
+    # # ==============
+    # # RUN 2
+    # # ==============
+    # # Hidden layer creation
+    # x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
+    # x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
+    # Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
+    # x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
+    #                   'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+    #                   'res_net': res_net}
+    # # Data Required
+    # psix1p_num = psix1p.eval(feed_dict={xp_feed: Xp})
+    # psix1f_num = psix1f.eval(feed_dict={xf_feed: Xf})
+    # dict_train2 = {'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
+    # dict_valid2 = {'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[train_indices]}
+    # # K Variables
+    # Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
+    # # Feed Variable Definition
+    # yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    # yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    # psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
+    # psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
+    # # Psi variables
+    # psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
+    # psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
+    # psix12f_concat = tf.concat([psix1f_feed, psix2f],axis=1)
+    # # Objective Function Variables
+    # dict_feed2 = {'psix1fT': psix1f_feed, 'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
+    # dict_psi2 = {'xfT': psix12f_concat}
+    # dict_K2 = {'WhT': Wh1T}
+    # # Second optimization
+    # dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
+    # all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2, ls_dict_training_params2,dict_model2_metrics,x_params_list =x2_params_list)
+    # print('---   OUTPUT TRAINING COMPLETE   ---')
+    #
+    # # ==============
+    # # RUN 3
+    # # ==============
+    # # Hidden layer creation
+    # x3_hidden_vars_list = np.asarray([n_xy_nn_nodes] * n_xy_nn_layers)
+    # x3_hidden_vars_list[-1] = xy_deep_dict_size  # The last hidden layer being declared as the output
+    # Wx3_list, bx3_list = initialize_Wblist(num_bas_obs, x3_hidden_vars_list)
+    # x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list,
+    #                   'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+    #                   'res_net': res_net}
+    # # Data Required
+    # psix2p_num = psix2p.eval(feed_dict={xp_feed: Xp})
+    # psix2f_num = psix2f.eval(feed_dict={xf_feed: Xf})
+    # dict_train3 = {'Xp': Xp[train_indices], 'Xf': Xf[train_indices], 'psiX1p': psix1p_num[train_indices], 'psiX2p': psix2p_num[train_indices],'psiX2f': psix2f_num[train_indices]}
+    # dict_valid3 = {'Xp': Xp[valid_indices], 'Xf': Xf[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'psiX2p': psix2p_num[valid_indices],'psiX2f': psix2f_num[valid_indices]}
+    # # K Variables
+    # KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + xy_deep_dict_size + 1, y_deep_dict_size + xy_deep_dict_size])
+    # # Feed variables
+    # psix2p_feed = tf.placeholder(tf.float32, shape=[None, psix2p_num.shape[1]])
+    # psix2f_feed = tf.placeholder(tf.float32, shape=[None, psix2f_num.shape[1]])
+    # # Psi variables
+    # psix3pz_list, psix3p = initialize_tensorflow_graph(x3_params_list, xp_feed)
+    # psix3fz_list, psix3f = initialize_tensorflow_graph(x3_params_list, xf_feed)
+    #
+    # psix123p_concat = tf.concat([psix1p_feed, psix2p_feed, psix3p],axis=1)
+    # psix23f_concat = tf.concat([psix2f_feed, psix3f],axis=1)
+    # # Objective Function variables
+    # dict_feed3 = {'psix1pT': psix1p_feed, 'psix2pT': psix2p_feed, 'psix2fT': psix2f_feed, 'xpT': xp_feed, 'xfT': xf_feed, 'step_size': step_size_feed}
+    # dict_psi3 = {'xpT': psix123p_concat, 'xfT': psix23f_concat}
+    # dict_K3 = {'KxT': KxT_2}
+    # # Third optimization
+    # dict_model3_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi3, dict_K3)
+    # all_histories3, dict_run_info3 = static_train_net(dict_train3, dict_valid3, dict_feed3, ls_dict_training_params3,dict_model3_metrics,x_params_list =x3_params_list)
+    # print('---   OUTPUT COMPENSATED STATE TRAINING COMPLETE   ---')
     #----------------------------------------------------------------------------------------------------------------------------------
     # Post RUNS
-    # Saving all the runs
-    all_histories = {1: all_histories1, 2: all_histories2, 3: all_histories3}
-    dict_run_info = {1: dict_run_info1, 2: dict_run_info2, 3: dict_run_info3}
-    # Concatenating the psi to a single variable
-    psixp = tf.concat([psix1p,psix2p,psix3p],axis=1)
-    psixf = tf.concat([psix1f, psix2f, psix3f], axis=1)
+
+    # TO COMMENT LATER
+    all_histories = all_histories1
+    dict_run_info = dict_run_info1
+    psixp = psix1p
+    psixf = psix1f
+    KxT = KxT_11
+    dict_K = {'KxT': KxT}
+    dict_feed = {'xpT': xp_feed, 'xfT': xf_feed}
+
+    # # Saving all the runs
+    # all_histories = {1: all_histories1, 2: all_histories2, 3: all_histories3}
+    # dict_run_info = {1: dict_run_info1, 2: dict_run_info2, 3: dict_run_info3}
+    # # Concatenating the psi to a single variable
+    # psixp = tf.concat([psix1p,psix2p,psix3p],axis=1)
+    # psixf = tf.concat([psix1f, psix2f, psix3f], axis=1)
     dict_psi = {'xpT': psixp, 'xfT': psixf}
 
-    # Concatenating Ks to a single variable
-    KxT_12 = tf.constant(np.zeros(shape=(y_deep_dict_size + xy_deep_dict_size, x_deep_dict_size + num_bas_obs + 1)),dtype=tf.dtypes.float32)
-    KxT_1 = tf.concat([KxT_11, KxT_12], axis=0)
-    KxT = tf.concat([KxT_1, KxT_2], axis=1)
-    Wh2T = tf.constant(np.zeros(shape=(xy_deep_dict_size, num_outputs)), dtype=tf.dtypes.float32)
-    WhT = tf.concat([Wh1T, Wh2T], axis=0)
-    dict_K = {'KxT': KxT, 'WhT': WhT}
+    # # Concatenating Ks to a single variable
+    # KxT_12 = tf.constant(np.zeros(shape=(y_deep_dict_size + xy_deep_dict_size, x_deep_dict_size + num_bas_obs + 1)),dtype=tf.dtypes.float32)
+    # KxT_1 = tf.concat([KxT_11, KxT_12], axis=0)
+    # KxT = tf.concat([KxT_1, KxT_2], axis=1)
+    # Wh2T = tf.constant(np.zeros(shape=(xy_deep_dict_size, num_outputs)), dtype=tf.dtypes.float32)
+    # WhT = tf.concat([Wh1T, Wh2T], axis=0)
+    # dict_K = {'KxT': KxT, 'WhT': WhT}
 
-    dict_feed ={'xpT': xp_feed, 'xfT': xf_feed, 'ypT': yp_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
-    # sess.run(tf.global_variables_initializer())
+    # dict_feed ={'xpT': xp_feed, 'xfT': xf_feed, 'ypT': yp_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
 
 estimate_K_stability(KxT)
 # feed_dict_train, feed_dict_valid = get_fed_dict(dict_train, dict_valid, dict_feed)
@@ -611,5 +620,5 @@ print('------ ------ -----')
 
 # Saving the hyperparameters
 dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes}
-with open(FOLDER_NAME + '/dict_hyperparameters.pickle') as handle:
+with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)

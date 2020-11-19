@@ -127,9 +127,9 @@ dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 
 
 ## Plotting the fit of the required indices
-SYSTEM_NO = 5
-opt_run = 1
-dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
+# SYSTEM_NO = 5
+# opt_run = 1
+# dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
 plot_params['individual_fig_height'] = 5 #2
 plot_params['individual_fig_width'] = 4#2.4
