@@ -161,7 +161,7 @@ ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 SYSTEM_NO = 5
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_run_indices = list(range(18,40))
+ls_process_run_indices = list(range(18,24))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
