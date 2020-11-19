@@ -147,7 +147,7 @@ with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperpara
 ## OUTPUT STUFF
 # Runs error plot
 SYSTEM_NO = 5
-ls_run_no = list(range(40,62))
+ls_run_no = list(range(18,24))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
