@@ -91,3 +91,4 @@ seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRIT
 
 ##
 
+seq.transfer_current_ocDeepDMD_run_files()
