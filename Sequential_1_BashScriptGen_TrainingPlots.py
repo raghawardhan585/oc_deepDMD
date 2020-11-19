@@ -142,3 +142,23 @@ f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=
 ##
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
+
+## OUTPUT STUFF
+ls_train_curves = list(range(20))
+ls_valid_curves = list(range(20,40))
+ls_test_curves = list(range(40,60))
+SYSTEM_NO = 5
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+ls_process_run_indices = list(range(18,24))
+seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
+seq.generate_df_error_output(SYSTEM_NO)
+with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
+    df_error = pickle.load(handle)
+df_training_plus_validation = df_error.train + df_error.valid
+opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
+dict_predictions_opt_run = seq.get_prediction_data_output(SYSTEM_NO,opt_run)
+plot_params ={}
+plot_params['individual_fig_height'] = 5 #2
+plot_params['individual_fig_width'] = 4#2.4
+f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True)
+# f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False)

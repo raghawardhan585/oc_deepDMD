@@ -226,6 +226,133 @@ def generate_predictions_pickle_file(SYSTEM_NO,state_only = False):
     return
 
 
+def get_all_run_info_output(SYSTEM_NO,RUN_NO,sess):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+    # The Scaler is called upon when required and hence is not required
+    # with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_DataScaler.pickle','rb') as handle:
+    #     data_Scaler = pickle.load(handle)
+    with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_OrderedIndices.pickle','rb') as handle:
+        ls_all_indices = pickle.load(handle)
+    with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_SimulatedData.pickle','rb') as handle:
+        dict_indexed_data = pickle.load(handle) # No scaling appplied here
+    # Data used in oc_deepDMD is not required here unless we want to train again
+    # with open(sys_folder_name+'/System_'+str(SYSTEM_NO)+'_ocDeepDMDdata.pickle','rb') as handle:
+    #     dict_DATA = pickle.load(handle) # Scaled data
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    try:
+        psixfT = tf.get_collection('psixfT')[0]
+        xfT_feed = tf.get_collection('xfT_feed')[0]
+        yfT_feed = tf.get_collection('yfT_feed')[0]
+        WhT = tf.get_collection('WhT')[0];
+        WhT_num = sess.run(WhT)
+        dict_params['psixfT'] = psixfT
+        dict_params['yfT_feed'] = yfT_feed
+        dict_params['xfT_feed'] = xfT_feed
+        dict_params['WhT_num'] = WhT_num
+    except:
+        print('No output info found')
+    return dict_params,  ls_all_indices, dict_indexed_data
+
+def output_equation_predictions(dict_indexed_data, dict_params, SYSTEM_NUMBER):
+    dict_indexed_data_predictions = {}
+    for data_index in dict_indexed_data.keys():
+        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
+        X_scaled = dict_DATA_i['X']
+        Y_scaled = dict_DATA_i['Y']
+        psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled})
+        Y_pred = np.matmul(psiX, dict_params['WhT_num'])
+        dict_indexed_data_predictions[data_index] = {}
+        dict_indexed_data_predictions[data_index]['Y'] = dict_DATA_i['Y']
+        dict_indexed_data_predictions[data_index]['Y_pred'] = oc.inverse_transform_Y(Y_pred, SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['Y_scaled'] = Y_scaled
+        dict_indexed_data_predictions[data_index]['Y_scaled_pred'] = Y_pred
+    return dict_indexed_data_predictions
+
+def generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    # Make a predictions folder if one doesn't exist
+    dict_predictions_SEQUENTIAL_OUTPUT = {}
+    # Scan all folders to get all Run Indices
+    for i in ls_process_run_indices:
+        run_folder_name = sys_folder_name+'/Sequential/RUN_' + str(i)
+        if os.path.exists(run_folder_name):
+            print('RUN: ', i)
+            dict_predictions_SEQUENTIAL_OUTPUT[i] = {}
+            sess = tf.InteractiveSession()
+            dict_params, _, dict_indexed_data = get_all_run_info_output(SYSTEM_NO, i, sess)
+            dict_intermediate = output_equation_predictions(dict_indexed_data, dict_params, SYSTEM_NO)
+            for curve_no in dict_intermediate.keys():
+                dict_predictions_SEQUENTIAL_OUTPUT[i][curve_no] = dict_intermediate[curve_no]
+            tf.reset_default_graph()
+            sess.close()
+        else:
+            print('RUN: ', i, ' doesn\'t exist!!!')
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL_OUTPUT.pickle','wb') as handle:
+        pickle.dump(dict_predictions_SEQUENTIAL_OUTPUT,handle)
+    return
+
+def get_error_output(ls_indices,dict_Y):
+    J_error = np.empty(shape=(0,1))
+    for i in ls_indices:
+        all_errors = np.square(dict_Y[i]['Y'] - dict_Y[i]['Y_pred'])
+        J_error = np.append(J_error, np.mean(all_errors))
+    # J_error = np.log10(np.max(J_error))
+    J_error = np.mean(J_error)
+    return J_error
+
+def generate_df_error_output(SYSTEM_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    ls_train_curves = list(range(20))
+    ls_valid_curves = list(range(20, 40))
+    ls_test_curves = list(range(40, 60))
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL_OUTPUT.pickle', 'rb') as handle:
+        dict_predictions = pickle.load(handle)
+    dict_error = {}
+    for run_no in dict_predictions.keys():
+        print(run_no)
+        dict_error[run_no] = {}
+        dict_error[run_no]['train'] = get_error_output(ls_train_curves,dict_predictions[run_no])
+        dict_error[run_no]['valid'] = get_error_output(ls_valid_curves, dict_predictions[run_no])
+        dict_error[run_no]['test'] = get_error_output(ls_test_curves, dict_predictions[run_no])
+    df_error_SEQUENTIAL = pd.DataFrame(dict_error).T
+    # Save the file
+    with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','wb') as handle:
+        pickle.dump(df_error_SEQUENTIAL,handle)
+    return
+
+def get_prediction_data_output(SYSTEM_NO,RUN_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL_OUTPUT.pickle', 'rb') as handle:
+        dict_predictions = pickle.load(handle)
+    return dict_predictions[RUN_NO]
+
+def plot_fit_Y(dict_run,plot_params,ls_runs,scaled=False):
+    n_rows = 4
+    n_cols = 5
+    graphs_per_run = 1
+    f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
+    i = 0
+    for row_i in range(n_rows):
+        for col_i in list(range(0,n_cols,graphs_per_run)):
+            if scaled:
+                for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[j])
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled_pred'][:, j], color=colors[j],label='y' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i].legend()
+            else:
+                for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[j])
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y_pred'][:, j], color=colors[j],label ='y'+str(j+1))
+                ax[row_i, col_i].legend()
+            i = i+1
+            if i == len(ls_runs):
+                break
+    f.show()
+    return f
+
 
 def generate_df_error(SYSTEM_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
