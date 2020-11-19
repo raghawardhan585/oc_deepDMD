@@ -211,7 +211,8 @@ def generate_predictions_pickle_file(SYSTEM_NO):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
+        # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
+        all_errors = np.square(dict_XY[i]['psiX'][:,0:5] - dict_XY[i]['psiX_est_n_step'][:,0:5])
         # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(all_errors))
@@ -245,3 +246,57 @@ def generate_df_error(SYSTEM_NO):
         with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','wb') as handle:
             pickle.dump(df_error_SEQUENTIAL,handle)
     return
+
+def get_prediction_data(SYSTEM_NO,RUN_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+        dict_predictions = pickle.load(handle)
+    return dict_predictions[RUN_NO]
+
+def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
+    n_rows = 7
+    if observables:
+         n_cols = 9
+         graphs_per_run = 3
+    else:
+        n_cols = 6
+        graphs_per_run = 2
+    f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
+    i = 0
+    for row_i in range(n_rows):
+        for col_i in list(range(0,n_cols,graphs_per_run)):
+            if scaled:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
+                for j in range(n_states):
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[j])
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
+                                          label='x' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i].legend()
+                for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
+                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
+                                              label='y' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i + 1].legend()
+            else:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X'].shape[1]
+                for j in range(n_states):
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
+                ax[row_i, col_i].legend()
+                for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
+                ax[row_i, col_i+1].legend()
+            if observables:
+                # Plot the observables
+                for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
+                    ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)],linewidth = int(j/7+1))
+                    ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],linewidth = int(j/7+1),label ='x_'+str(j+1) )
+                ax[row_i, col_i+2].legend()
+            i = i+1
+            if i == len(ls_runs):
+                break
+    f.show()
+    return f
