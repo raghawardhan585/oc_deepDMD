@@ -533,6 +533,39 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
         dict_indexed_data_predictions[data_index]['psiX_est_n_step'] = psiX_est_n_step
     return dict_indexed_data_predictions
 
+def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER):
+    dict_indexed_data_predictions = {}
+    for data_index in dict_indexed_data.keys():
+        dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
+        X_scaled = dict_DATA_i['X']
+        n_base_states = X_scaled.shape[1]
+        psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled})
+        # One Step Prediction ----------------------
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :]})
+        psiX_est_one_step = copy.deepcopy(psiX)
+        for i in range(0, X_scaled.shape[0] - 1):
+            psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+            psiX_est_one_step[i + 1, :] = psixfT_i
+            psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[i + 1:i + 2, :]})
+        # N Step Prediction ----------------------
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :]})
+        psiX_est_n_step = copy.deepcopy(psiX)
+        for i in range(0, X_scaled.shape[0] - 1):
+            psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+            psiX_est_n_step[i + 1, :] = psixfT_i
+            psixpT_i = psixfT_i
+        dict_indexed_data_predictions[data_index] = {}
+        dict_indexed_data_predictions[data_index]['X'] = dict_indexed_data[data_index]['X']
+        dict_indexed_data_predictions[data_index]['X_est_one_step'] = inverse_transform_X(psiX_est_one_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['X_est_n_step'] = inverse_transform_X(psiX_est_n_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['X_scaled'] = X_scaled
+        dict_indexed_data_predictions[data_index]['X_scaled_est_one_step'] = psiX_est_one_step[:, 0:n_base_states]
+        dict_indexed_data_predictions[data_index]['X_scaled_est_n_step'] = psiX_est_n_step[:, 0:n_base_states]
+        dict_indexed_data_predictions[data_index]['psiX'] = psiX
+        dict_indexed_data_predictions[data_index]['psiX_est_one_step'] = psiX_est_one_step
+        dict_indexed_data_predictions[data_index]['psiX_est_n_step'] = psiX_est_n_step
+    return dict_indexed_data_predictions
+
 def observables_and_eigenfunctions(dict_params,sampling_resolution):
     # psi --- observables
     # phi --- eigenfunctions

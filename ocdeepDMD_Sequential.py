@@ -53,16 +53,16 @@ best_test_error = np.inf
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
 ls_dict_training_params2 = []
@@ -359,34 +359,34 @@ data_suffix = 'System_5_ocDeepDMDdata.pickle'
 
 # CMD Line Argument (Override) Inputs:
 # TODO - Rearrange this section
-import sys
-if len(sys.argv)>1:
-    DEVICE_NAME = sys.argv[1]
-    if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
-        DEVICE_NAME = '/cpu:0'
-if len(sys.argv)>2:
-    SYSTEM_NO = sys.argv[2]
-    data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
-if len(sys.argv) > 3:
-    RUN_NUMBER = np.int(sys.argv[3])
-if len(sys.argv) > 4:
-    x_deep_dict_size = np.int(sys.argv[4])
-if len(sys.argv)>5:
-    n_x_nn_layers = np.int(sys.argv[5])
-if len(sys.argv)>6:
-    n_x_nn_nodes = np.int(sys.argv[6])
-if len(sys.argv) > 7:
-    y_deep_dict_size = np.int(sys.argv[7])
-if len(sys.argv)>8:
-    n_y_nn_layers = np.int(sys.argv[8])
-if len(sys.argv)>9:
-    n_y_nn_nodes = np.int(sys.argv[9])
-if len(sys.argv) > 10:
-    xy_deep_dict_size = np.int(sys.argv[10])
-if len(sys.argv)>11:
-    n_xy_nn_layers = np.int(sys.argv[11])
-if len(sys.argv)>12:
-    n_xy_nn_nodes = np.int(sys.argv[12])
+# import sys
+# if len(sys.argv)>1:
+#     DEVICE_NAME = sys.argv[1]
+#     if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+#         DEVICE_NAME = '/cpu:0'
+# if len(sys.argv)>2:
+#     SYSTEM_NO = sys.argv[2]
+#     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+# if len(sys.argv) > 3:
+#     RUN_NUMBER = np.int(sys.argv[3])
+# if len(sys.argv) > 4:
+#     x_deep_dict_size = np.int(sys.argv[4])
+# if len(sys.argv)>5:
+#     n_x_nn_layers = np.int(sys.argv[5])
+# if len(sys.argv)>6:
+#     n_x_nn_nodes = np.int(sys.argv[6])
+# if len(sys.argv) > 7:
+#     y_deep_dict_size = np.int(sys.argv[7])
+# if len(sys.argv)>8:
+#     n_y_nn_layers = np.int(sys.argv[8])
+# if len(sys.argv)>9:
+#     n_y_nn_nodes = np.int(sys.argv[9])
+# if len(sys.argv) > 10:
+#     xy_deep_dict_size = np.int(sys.argv[10])
+# if len(sys.argv)>11:
+#     n_xy_nn_layers = np.int(sys.argv[11])
+# if len(sys.argv)>12:
+#     n_xy_nn_nodes = np.int(sys.argv[12])
 
 data_file = data_directory + data_suffix
 Xp, Xf, Yp, Yf = load_pickle_data(data_file)

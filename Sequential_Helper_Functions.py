@@ -30,7 +30,7 @@ def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
         # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
-        all_errors = np.square(dict_XY[i]['psiX'][:,0:5] - dict_XY[i]['psiX_est_one_step'][:,0:5])
+        all_errors = np.square(dict_XY[i]['psiX'][:,0:5] - dict_XY[i]['psiX_est_n_step'][:,0:5])
         # all_errors = np.square(dict_XY[i]['psiX'][:, 0:5] - dict_XY[i]['psiX_est_n_step'][:, 0:5])
         # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
@@ -111,20 +111,20 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
         psixfT = tf.get_collection('psixfT')[0]
         xpT_feed = tf.get_collection('xpT_feed')[0]
         xfT_feed = tf.get_collection('xfT_feed')[0]
-        ypT_feed = tf.get_collection('ypT_feed')[0]
-        yfT_feed = tf.get_collection('yfT_feed')[0]
         KxT = tf.get_collection('KxT')[0]
         KxT_num = sess.run(KxT)
         dict_params['psixpT'] = psixpT
         dict_params['psixfT'] = psixfT
         dict_params['xpT_feed'] = xpT_feed
         dict_params['xfT_feed'] =  xfT_feed
-        dict_params['ypT_feed'] = ypT_feed
-        dict_params['yfT_feed'] = yfT_feed
         dict_params['KxT_num'] =  KxT_num
     except:
         print('State info not found')
     try:
+        ypT_feed = tf.get_collection('ypT_feed')[0]
+        yfT_feed = tf.get_collection('yfT_feed')[0]
+        dict_params['ypT_feed'] = ypT_feed
+        dict_params['yfT_feed'] = yfT_feed
         WhT = tf.get_collection('WhT')[0];
         WhT_num = sess.run(WhT)
         dict_params['WhT_num'] = WhT_num
@@ -180,7 +180,7 @@ def transfer_current_ocDeepDMD_run_files():
         current_run_no = current_run_no + 1
     return
 
-def generate_predictions_pickle_file(SYSTEM_NO):
+def generate_predictions_pickle_file(SYSTEM_NO,state_only = False):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     # Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle'):
@@ -212,7 +212,10 @@ def generate_predictions_pickle_file(SYSTEM_NO):
             dict_predictions_SEQUENTIAL[run]['eigenfunctions'] = dict_psi_phi['eigenfunctions']
         except:
             print('Cannot find the eigenfunctions and observables as the number of base states is not equal to 2')
-        dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
+        if state_only:
+            dict_intermediate = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO)
+        else:
+            dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
         for curve_no in dict_intermediate.keys():
             dict_predictions_SEQUENTIAL[run][curve_no] = dict_intermediate[curve_no]
         tf.reset_default_graph()
@@ -274,14 +277,17 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
                 n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
                 for j in range(n_states):
                     ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[j])
-                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_one_step'][:, j], color=colors[j],
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
                                           label='x' + str(j + 1)+ '[scaled]')
                 ax[row_i, col_i].legend()
-                for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
-                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
-                    ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_one_step'][:, j], color=colors[n_states + j],
-                                              label='y' + str(j + 1)+ '[scaled]')
-                ax[row_i, col_i + 1].legend()
+                try:
+                    for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                        ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
+                        ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
+                                                  label='y' + str(j + 1)+ '[scaled]')
+                    ax[row_i, col_i + 1].legend()
+                except:
+                    print('No output to plot')
             else:
                 # Plot states and outputs
                 n_states = dict_run[ls_runs[i]]['X'].shape[1]
@@ -289,10 +295,13 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
                     ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
                     ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
                 ax[row_i, col_i].legend()
-                for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
-                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
-                    ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
-                ax[row_i, col_i+1].legend()
+                try:
+                    for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                        ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
+                        ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
+                    ax[row_i, col_i+1].legend()
+                except:
+                    print('No output to plot')
             if observables:
                 # Plot the observables
                 for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
