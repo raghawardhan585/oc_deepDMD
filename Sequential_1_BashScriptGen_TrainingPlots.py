@@ -95,34 +95,43 @@ seq.generate_df_error(SYSTEM_NO)
 
 ## Get the optimal run for the given number of observables
 
-dict_filter_criteria={}
-dict_filter_criteria['x'] = {'obs':[],}
+# dict_filter_criteria={}
+# dict_filter_criteria['x'] = {'obs':[],}
 
 
 
 SYSTEM_NO = 5
-N_OBSERVABLES = 3
+# N_OBSERVABLES = 3
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
-    df_hyperparameters = pickle.load(handle)
-df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERVABLES]
-ls_runs_const_obs = list(df_hyp_const_obs.index)
-with open(sys_folder_name + '/df_error.pickle','rb') as handle:
+# with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
+#     df_hyperparameters = pickle.load(handle)
+# df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERVABLES]
+# ls_runs_const_obs = list(df_hyp_const_obs.index)
+with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
-ls_runs_const_obs = list(range(56,57))
+# ls_runs_const_obs = list(range(19))
 
 # Check is
-ls_all_runs = list(df_hyperparameters.index)
-for items in ls_runs_const_obs:
-    if items not in ls_all_runs:
-        ls_runs_const_obs.remove(items)
+# ls_all_runs = list(df_hyperparameters.index)
+# for items in ls_runs_const_obs:
+#     if items not in ls_all_runs:
+#         ls_runs_const_obs.remove(items)
 
 
-df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
-# df_error_const_obs = df_error
+# df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
+df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
 # opt_run = 37
-dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
+dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 
 
+## Plotting the fit of the required indices
+plot_params ={}
+plot_params['individual_fig_height'] = 2
+plot_params['individual_fig_width'] = 2.4
+ls_train_curves = list(range(20))
+ls_valid_curves = list(range(20,40))
+ls_test_curves = list(range(40,60))
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=False)
+# f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=False)
