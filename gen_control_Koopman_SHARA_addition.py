@@ -860,7 +860,7 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_p
     # -----------------------------
     good_start = 1
     N_train_samples = len(dict_train['Xp'])
-    runs_per_epoch = int(np.ceil(N_train_samples / batch_size))
+    runs_per_epoch = int(np.ceil(N_train_samples / dict_run_params['batch_size']))
     epoch_i = 0
     training_error = 100
     validation_error = 100
@@ -875,10 +875,10 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_p
         random.shuffle(all_train_indices)
         for run_i in range(runs_per_epoch):
             if run_i != runs_per_epoch - 1:
-                train_indices = all_train_indices[run_i * batch_size:(run_i + 1) * batch_size]
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']:(run_i + 1) * dict_run_params['batch_size']]
             else:
                 # Last run with the residual data
-                train_indices = all_train_indices[run_i * batch_size: N_train_samples]
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']: N_train_samples]
             dict_train_i = {'Xp': dict_train['Xp'][train_indices], 'Xf': dict_train['Xf'][train_indices]}
             if dict_run_params['with_u']:
                 dict_train_i['Up'] = dict_train['Up'][train_indices]
@@ -1296,11 +1296,11 @@ while good_start == 0 and try_num < max_tries:
         all_histories, good_start, dict_run_info = static_train_net(dict_train, dict_valid, dict_feed, dict_psi, dict_K, ls_dict_training_params, deep_koopman_loss, optimizer, dict_predictions)
         # except:
         #     print('[INFO] No static training done!')
-        dict_run_params = {'step_size_val': step_size_val, 'regularization_lambda_val': regularization_lambda_val,
-                           'train_error_threshold': train_error_threshold,
-                           'valid_error_threshold': valid_error_threshold, 'max_epochs': max_epochs,
-                           'batch_size': batch_size, 'with_u': with_control, 'with_y': with_output,
-                           'with_xu': mix_state_and_control}
+        # dict_run_params = {'step_size_val': step_size_val, 'regularization_lambda_val': regularization_lambda_val,
+        #                    'train_error_threshold': train_error_threshold,
+        #                    'valid_error_threshold': valid_error_threshold, 'max_epochs': max_epochs,
+        #                    'batch_size': batch_size, 'with_u': with_control, 'with_y': with_output,
+        #                    'with_xu': mix_state_and_control}
         print('SUCCESSFULLY HERE')
         # all_histories, good_start, dict_run_info = dynamic_train_net(dict_train, dict_valid, dict_feed, dict_psi,dict_K, dict_run_params, deep_koopman_loss, optimizer, dict_predictions,all_histories,dict_run_info)
         # # # all_histories,good_start  = train_net(up_all_training,uf_all_training,deep_koopman_loss,optimizer,U_train,Out_p_train,Out_f_train,valid_error_threshold,test_error_threshold,max_iters,step_size_val);
