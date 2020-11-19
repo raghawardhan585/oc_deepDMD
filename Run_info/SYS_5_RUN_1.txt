@@ -1,0 +1,86 @@
+[INFO] Number of total samples: 1160
+[INFO] Observable dimension of a sample: 2
+[INFO] Xp.shape (E-DMD): (1160, 2)
+[INFO] Yf.shape (E-DMD): (1160, 2)
+Number of training snapshots: 580
+Number of validation snapshots: 580
+---------    TRAINING BEGINS   ---------
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  5000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  7.556688e-05
+                   Validation error:  0.000120571705
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  7.591483e-06
+                   Validation error:  5.7337627e-05
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  2.9596535e-05
+                   Validation error:  6.5233726e-05
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  7.5164986e-05
+                   Validation error:  0.0001096632
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  4.8298693e-06
+                   Validation error:  2.9282677e-05
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 4.8298693e-06
+Current Validation Error      : 2.9282677e-05
+---   STATE TRAINING COMPLETE   ---
+---   OUTPUT TRAINING COMPLETE   ---
+---   OUTPUT COMPENSATED STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.         0.7022972  0.7022972  0.47901842 0.3595423  0.3595423
+ 0.6048672 ]
+[COMP] The identified Koopman operator is STABLE
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                   0
+MSE training             4.82987e-06
+MSE validation           2.92827e-05
+activation flag                    2
+activation function              elu
+batch size                       100
+no of epochs                    5000
+r^2 training accuracy        99.9983
+r^2 validation accuracy      99.9939
+step size                        0.5
+training error           4.82987e-06
+validation error         2.92827e-05
+x_hidden_variable_list     [3, 3, 1]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0
+MSE training             4.82987e-06
+MSE validation           2.92827e-05
+activation flag                    2
+activation function              elu
+batch size                       100
+no of epochs                    5000
+r^2 training accuracy        99.9983
+r^2 validation accuracy      99.9939
+step size                        0.5
+training error           4.82987e-06
+validation error         2.92827e-05
+x_hidden_variable_list     [3, 3, 1]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0
+MSE training             4.82987e-06
+MSE validation           2.92827e-05
+activation flag                    2
+activation function              elu
+batch size                       100
+no of epochs                    5000
+r^2 training accuracy        99.9983
+r^2 validation accuracy      99.9939
+step size                        0.5
+training error           4.82987e-06
+validation error         2.92827e-05
+x_hidden_variable_list     [3, 3, 1]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+------ ------ -----
