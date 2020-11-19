@@ -127,11 +127,14 @@ dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 
 
 ## Plotting the fit of the required indices
+SYSTEM_NO = 5
+opt_run = 1
+dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
-plot_params['individual_fig_height'] = 2
-plot_params['individual_fig_width'] = 2.4
+plot_params['individual_fig_height'] = 5 #2
+plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
 # f1 = plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=False)
