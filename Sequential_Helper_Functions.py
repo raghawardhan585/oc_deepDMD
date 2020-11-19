@@ -265,7 +265,7 @@ def output_equation_predictions(dict_indexed_data, dict_params, SYSTEM_NUMBER):
         psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled})
         Y_pred = np.matmul(psiX, dict_params['WhT_num'])
         dict_indexed_data_predictions[data_index] = {}
-        dict_indexed_data_predictions[data_index]['Y'] = dict_DATA_i['Y']
+        dict_indexed_data_predictions[data_index]['Y'] = dict_indexed_data[data_index]['Y']
         dict_indexed_data_predictions[data_index]['Y_pred'] = oc.inverse_transform_Y(Y_pred, SYSTEM_NUMBER)
         dict_indexed_data_predictions[data_index]['Y_scaled'] = Y_scaled
         dict_indexed_data_predictions[data_index]['Y_scaled_pred'] = Y_pred
