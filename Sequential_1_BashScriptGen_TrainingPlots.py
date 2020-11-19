@@ -143,7 +143,19 @@ f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 
+
 ## OUTPUT STUFF
+# Runs error plot
+SYSTEM_NO = 5
+ls_run_no = list(range(18,40))
+plot_params ={}
+plot_params['xy_label_font_size']=9
+plot_params['individual_fig_width']=2
+plot_params['individual_fig_height']=2
+seq.plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params)
+
+
+## prediction and optimal plots
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
@@ -161,7 +173,7 @@ plot_params ={}
 plot_params['individual_fig_height'] = 5 #2
 plot_params['individual_fig_width'] = 4#2.4
 ##
-# f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True)
+f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True)
 f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False)
 #
 # with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
