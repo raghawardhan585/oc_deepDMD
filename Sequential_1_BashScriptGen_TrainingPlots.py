@@ -22,15 +22,12 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-
-
 # DEVICE_TO_RUN_ON = 'microtensor'
 DEVICE_TO_RUN_ON = 'optictensor'
 # DEVICE_TO_RUN_ON = 'goldentensor'
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 5
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
-
 dict_run_conditions = {}
 
 # MICROTENSOR CPU RUN
@@ -83,12 +80,49 @@ dict_run_conditions[3]['x']  = {'dict_size':3,'nn_layers':3,'nn_nodes':6}
 dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
 dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 
-
-# dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
-
 seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
-
-##
+## TRansfer the oc deepDMD files
 
 seq.transfer_current_ocDeepDMD_run_files()
+
+##
+SYSTEM_NO=5
+seq.generate_predictions_pickle_file(SYSTEM_NO)
+seq.generate_df_error(SYSTEM_NO)
+# seq.generate_hyperparameter_dataframe(SYSTEM_NO)
+
+
+## Get the optimal run for the given number of observables
+
+dict_filter_criteria={}
+dict_filter_criteria['x'] = {'obs':[],}
+
+
+
+SYSTEM_NO = 5
+N_OBSERVABLES = 3
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
+    df_hyperparameters = pickle.load(handle)
+df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERVABLES]
+ls_runs_const_obs = list(df_hyp_const_obs.index)
+with open(sys_folder_name + '/df_error.pickle','rb') as handle:
+    df_error = pickle.load(handle)
+ls_runs_const_obs = list(range(56,57))
+
+# Check is
+ls_all_runs = list(df_hyperparameters.index)
+for items in ls_runs_const_obs:
+    if items not in ls_all_runs:
+        ls_runs_const_obs.remove(items)
+
+
+df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
+# df_error_const_obs = df_error
+df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
+opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
+# opt_run = 37
+dict_predictions_opt_run = get_prediction_data(SYSTEM_NO,opt_run)
+
+

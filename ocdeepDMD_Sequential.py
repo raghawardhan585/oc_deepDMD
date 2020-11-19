@@ -53,16 +53,20 @@ best_test_error = np.inf
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+
+ls_dict_training_params1 = ls_dict_training_params
+ls_dict_training_params2 = []
+ls_dict_training_params3 = []
 
 sess = tf.InteractiveSession()
 
@@ -454,7 +458,7 @@ with tf.device(DEVICE_NAME):
     # First optimization
     print('---------    TRAINING BEGINS   ---------')
     dict_model1_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1)
-    all_histories1, dict_run_info1 = static_train_net(dict_train1, dict_valid1, dict_feed1, ls_dict_training_params,dict_model1_metrics,x_params_list =x1_params_list)
+    all_histories1, dict_run_info1 = static_train_net(dict_train1, dict_valid1, dict_feed1, ls_dict_training_params1,dict_model1_metrics,x_params_list =x1_params_list)
     print('---   STATE TRAINING COMPLETE   ---')
 
 
@@ -490,7 +494,7 @@ with tf.device(DEVICE_NAME):
     dict_K2 = {'WhT': Wh1T}
     # Second optimization
     dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
-    all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2, ls_dict_training_params,dict_model2_metrics,x_params_list =x2_params_list)
+    all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2, ls_dict_training_params2,dict_model2_metrics,x_params_list =x2_params_list)
     print('---   OUTPUT TRAINING COMPLETE   ---')
 
     # ==============
@@ -525,7 +529,7 @@ with tf.device(DEVICE_NAME):
     dict_K3 = {'KxT': KxT_2}
     # Third optimization
     dict_model3_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi3, dict_K3)
-    all_histories3, dict_run_info3 = static_train_net(dict_train3, dict_valid3, dict_feed3, ls_dict_training_params,dict_model3_metrics,x_params_list =x3_params_list)
+    all_histories3, dict_run_info3 = static_train_net(dict_train3, dict_valid3, dict_feed3, ls_dict_training_params3,dict_model3_metrics,x_params_list =x3_params_list)
     print('---   OUTPUT COMPENSATED STATE TRAINING COMPLETE   ---')
     #----------------------------------------------------------------------------------------------------------------------------------
     # Post RUNS
@@ -604,3 +608,8 @@ for items in dict_run_info.keys():
     print(pd.DataFrame(dict_run_info[items]))
     print('-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----')
 print('------ ------ -----')
+
+# Saving the hyperparameters
+dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes}
+with open(FOLDER_NAME + '/dict_hyperparameters.pickle') as handle:
+    pickle.dump(dict_hp,handle)
