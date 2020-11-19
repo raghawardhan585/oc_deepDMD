@@ -353,6 +353,35 @@ def plot_fit_Y(dict_run,plot_params,ls_runs,scaled=False):
     f.show()
     return f
 
+def plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    # Check that the given list of runs is in the folder
+    for run_no in ls_run_no:
+        if not os.path.exists(sys_folder_name + '/Sequential/RUN_' + str(run_no)):
+            print('[WARNING] RUN_',run_no,' folder does not exist!')
+            ls_run_no.remove(run_no)
+    # Print the training curves for the runs
+    N_runs = len(ls_run_no)
+    n_x = int(np.ceil(np.sqrt(N_runs)))
+    n_y = int(np.ceil(N_runs/n_x))
+    fig = plt.figure(figsize=(plot_params['individual_fig_width'] * n_x, plot_params['individual_fig_height'] * n_y))
+    i =1
+    for run_no in ls_run_no:
+        # Open the run folder
+        with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/all_histories.pickle', 'rb') as handle:
+            df_run_info = pd.DataFrame(pickle.load(handle)[2])
+        ax = fig.add_subplot(n_y, n_x, i)
+        i=i+1
+        ax.plot(df_run_info.index,np.log10(df_run_info.loc[:,'train MSE']),color = colors[0],label = 'train')
+        ax.plot(df_run_info.index, np.log10(df_run_info.loc[:,'valid MSE']), color=colors[1],label = 'valid')
+        # ax.legend()
+        ax.set_xlabel('# Epochs')
+        ax.set_ylabel('Mean squared Error')
+        ax.xaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+        ax.yaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+    fig.show()
+    return fig
+
 
 def generate_df_error(SYSTEM_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
