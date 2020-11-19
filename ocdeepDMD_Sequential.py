@@ -359,34 +359,34 @@ data_suffix = 'System_5_ocDeepDMDdata.pickle'
 
 # CMD Line Argument (Override) Inputs:
 # TODO - Rearrange this section
-import sys
-if len(sys.argv)>1:
-    DEVICE_NAME = sys.argv[1]
-    if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
-        DEVICE_NAME = '/cpu:0'
-if len(sys.argv)>2:
-    SYSTEM_NO = sys.argv[2]
-    data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
-if len(sys.argv) > 3:
-    RUN_NUMBER = np.int(sys.argv[3])
-if len(sys.argv) > 4:
-    x_deep_dict_size = np.int(sys.argv[4])
-if len(sys.argv)>5:
-    n_x_nn_layers = np.int(sys.argv[5])
-if len(sys.argv)>6:
-    n_x_nn_nodes = np.int(sys.argv[6])
-if len(sys.argv) > 7:
-    y_deep_dict_size = np.int(sys.argv[7])
-if len(sys.argv)>8:
-    n_y_nn_layers = np.int(sys.argv[8])
-if len(sys.argv)>9:
-    n_y_nn_nodes = np.int(sys.argv[9])
-if len(sys.argv) > 10:
-    xy_deep_dict_size = np.int(sys.argv[10])
-if len(sys.argv)>11:
-    n_xy_nn_layers = np.int(sys.argv[11])
-if len(sys.argv)>12:
-    n_xy_nn_nodes = np.int(sys.argv[12])
+# import sys
+# if len(sys.argv)>1:
+#     DEVICE_NAME = sys.argv[1]
+#     if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+#         DEVICE_NAME = '/cpu:0'
+# if len(sys.argv)>2:
+#     SYSTEM_NO = sys.argv[2]
+#     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+# if len(sys.argv) > 3:
+#     RUN_NUMBER = np.int(sys.argv[3])
+# if len(sys.argv) > 4:
+#     x_deep_dict_size = np.int(sys.argv[4])
+# if len(sys.argv)>5:
+#     n_x_nn_layers = np.int(sys.argv[5])
+# if len(sys.argv)>6:
+#     n_x_nn_nodes = np.int(sys.argv[6])
+# if len(sys.argv) > 7:
+#     y_deep_dict_size = np.int(sys.argv[7])
+# if len(sys.argv)>8:
+#     n_y_nn_layers = np.int(sys.argv[8])
+# if len(sys.argv)>9:
+#     n_y_nn_nodes = np.int(sys.argv[9])
+# if len(sys.argv) > 10:
+#     xy_deep_dict_size = np.int(sys.argv[10])
+# if len(sys.argv)>11:
+#     n_xy_nn_layers = np.int(sys.argv[11])
+# if len(sys.argv)>12:
+#     n_xy_nn_nodes = np.int(sys.argv[12])
 
 data_file = data_directory + data_suffix
 Xp, Xf, Yp, Yf = load_pickle_data(data_file)
@@ -463,10 +463,11 @@ with tf.device(DEVICE_NAME):
     all_histories1, dict_run_info1 = static_train_net(dict_train1, dict_valid1, dict_feed1, ls_dict_training_params1,dict_model1_metrics,all_histories1,dict_run_info1,x_params_list =x1_params_list)
     print('---   STATE TRAINING COMPLETE   ---')
 
-    print(dict_run_info1)
+    print(pd.DataFrame(dict_run_info1))
     # ==============
     # RUN 2
     # ==============
+with tf.device(DEVICE_NAME):
     # Hidden layer creation
     x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
     x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
@@ -478,7 +479,7 @@ with tf.device(DEVICE_NAME):
     psix1p_num = psix1p.eval(feed_dict={xp_feed: Xp})
     psix1f_num = psix1f.eval(feed_dict={xf_feed: Xf})
     dict_train2 = {'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
-    dict_valid2 = {'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[train_indices]}
+    dict_valid2 = {'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
     # K Variables
     Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
     # Feed Variable Definition
