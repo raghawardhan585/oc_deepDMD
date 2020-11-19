@@ -151,7 +151,7 @@ with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperpara
 ## OUTPUT STUFF
 # Runs error plot
 SYSTEM_NO = 5
-ls_run_no = list(range(18,48)) #18
+ls_run_no = list(range(35,48)) #18
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
@@ -165,7 +165,7 @@ ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 SYSTEM_NO = 5
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_run_indices = list(range(18,48))
+ls_process_run_indices = list(range(35,48))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
