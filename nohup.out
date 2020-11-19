@@ -1,0 +1,53 @@
+Running all sessions
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:71: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+2020-11-18 23:36:05.984317: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2020-11-18 23:36:05.986850: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 4200000000 Hz
+2020-11-18 23:36:05.987081: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x2c3dda0 executing computations on platform Host. Devices:
+2020-11-18 23:36:05.987095: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:98: The name tf.truncated_normal is deprecated. Please use tf.random.truncated_normal instead.
+
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:448: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:121: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:71: The name tf.InteractiveSession is deprecated. Please use tf.compat.v1.InteractiveSession instead.
+
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:139: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+
+2020-11-18 23:36:06.023434: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2020-11-18 23:36:06.026042: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 4200000000 Hz
+2020-11-18 23:36:06.026275: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x1c7bda0 executing computations on platform Host. Devices:
+2020-11-18 23:36:06.026288: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:98: The name tf.truncated_normal is deprecated. Please use tf.random.truncated_normal instead.
+
+2020-11-18 23:36:06.028190: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:228: The name tf.train.AdagradOptimizer is deprecated. Please use tf.compat.v1.train.AdagradOptimizer instead.
+
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:448: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:121: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:139: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
+
+2020-11-18 23:36:06.076420: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
+WARNING:tensorflow:From ocdeepDMD_Sequential.py:228: The name tf.train.AdagradOptimizer is deprecated. Please use tf.compat.v1.train.AdagradOptimizer instead.
+
+WARNING:tensorflow:From /home/deepuser/.local/lib/python3.6/site-packages/tensorflow/python/training/adagrad.py:76: calling Constant.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.
+Instructions for updating:
+Call initializer instance with the dtype argument instead of passing it to the constructor
+WARNING:tensorflow:From /home/deepuser/.local/lib/python3.6/site-packages/tensorflow/python/training/adagrad.py:76: calling Constant.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.
+Instructions for updating:
+Call initializer instance with the dtype argument instead of passing it to the constructor
+Traceback (most recent call last):
+  File "ocdeepDMD_Sequential.py", line 614, in <module>
+    with open(FOLDER_NAME + '/dict_hyperparameters.pickle') as handle:
+FileNotFoundError: [Errno 2] No such file or directory: '_current_run_saved_files/SYS_5_RUN_0/dict_hyperparameters.pickle'
+Traceback (most recent call last):
+  File "ocdeepDMD_Sequential.py", line 614, in <module>
+    with open(FOLDER_NAME + '/dict_hyperparameters.pickle') as handle:
+FileNotFoundError: [Errno 2] No such file or directory: '_current_run_saved_files/SYS_5_RUN_1/dict_hyperparameters.pickle'
+All sessions are complete
+=======================================================
