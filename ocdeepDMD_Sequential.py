@@ -288,7 +288,27 @@ def get_fed_dict(dict_train,dict_valid,dict_feed):
             feed_dict_valid[dict_feed['psix2fT']] = dict_valid['psiX2f']
     return feed_dict_train,feed_dict_valid
 
-
+def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
+    # The function doesn't feed step size
+    feed_dict_train = {}
+    for items in dict_feed.keys():
+        if items == 'xpT':
+            feed_dict_train[dict_feed['xpT']] = dict_train['Xp'][train_indices]
+        elif items == 'xfT':
+            feed_dict_train[dict_feed['xfT']] = dict_train['Xf'][train_indices]
+        elif items == 'ypT':
+            feed_dict_train[dict_feed['ypT']] = dict_train['Yp'][train_indices]
+        elif items == 'yfT':
+            feed_dict_train[dict_feed['yfT']] = dict_train['Yf'][train_indices]
+        elif items == 'psix1pT':
+            feed_dict_train[dict_feed['psix1pT']] = dict_train['psiX1p'][train_indices]
+        elif items == 'psix1fT':
+            feed_dict_train[dict_feed['psix1fT']] = dict_train['psiX1f'][train_indices]
+        elif items == 'psix2pT':
+            feed_dict_train[dict_feed['psix2pT']] = dict_train['psiX2p'][train_indices]
+        elif items == 'psix2fT':
+            feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f'][train_indices]
+    return feed_dict_train
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories, dict_run_info,x_params_list={}):
     feed_dict_train, feed_dict_valid = get_fed_dict(dict_train,dict_valid,dict_feed)
