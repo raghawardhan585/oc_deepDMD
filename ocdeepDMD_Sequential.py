@@ -474,7 +474,6 @@ with tf.device(DEVICE_NAME):
     # RUN 2
     # ==============
     # Hidden layer creation
-with tf.device(DEVICE_NAME):
     x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
     x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
     Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
