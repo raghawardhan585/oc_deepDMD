@@ -53,32 +53,32 @@ best_test_error = np.inf
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
 
-ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 30000, 'batch_size': 100 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
-ls_dict_training_params.append(dict_training_params)
+# ls_dict_training_params = []
+# dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 30000, 'batch_size': 100 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 200 }
+# ls_dict_training_params.append(dict_training_params)
 
 
 ls_dict_training_params2 = ls_dict_training_params
@@ -223,12 +223,17 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
 
 def objective_func_output(dict_feed,dict_psi,dict_K):
     dict_model_perf_metrics ={}
-    Yf_predicted = tf.matmul(dict_psi['xfT'], dict_K['WhT'])
-    Yf_prediction_error = dict_feed['yfT'] - Yf_predicted
-    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    Yf_prediction_error = dict_feed['yfT'] - tf.matmul(dict_psi['xfT'], dict_K['WhT'])
+    try:
+        Yp_prediction_error = dict_feed['ypT'] - tf.matmul(dict_psi['xpT'], dict_K['WhT'])
+        Y_prediction_error = tf.concat([Yp_prediction_error,Yf_prediction_error],axis=1)
+    except:
+        Y_prediction_error = Yf_prediction_error
+
+    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
     # Mean Squared Error
-    dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
     # Accuracy computation
     SST = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']), axis=0)
     SSE = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
@@ -263,6 +268,9 @@ def get_fed_dict(dict_train,dict_valid,dict_feed):
         elif items == 'xfT':
             feed_dict_train[dict_feed['xfT']] = dict_train['Xf']
             feed_dict_valid[dict_feed['xfT']] = dict_valid['Xf']
+        elif items == 'ypT':
+            feed_dict_train[dict_feed['ypT']] = dict_train['Yp']
+            feed_dict_valid[dict_feed['ypT']] = dict_valid['Yp']
         elif items == 'yfT':
             feed_dict_train[dict_feed['yfT']] = dict_train['Yf']
             feed_dict_valid[dict_feed['yfT']] = dict_valid['Yf']
@@ -280,25 +288,7 @@ def get_fed_dict(dict_train,dict_valid,dict_feed):
             feed_dict_valid[dict_feed['psix2fT']] = dict_valid['psiX2f']
     return feed_dict_train,feed_dict_valid
 
-def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
-    # The function doesn't feed step size
-    feed_dict_train = {}
-    for items in dict_feed.keys():
-        if items == 'xpT':
-            feed_dict_train[dict_feed['xpT']] = dict_train['Xp'][train_indices]
-        elif items == 'xfT':
-            feed_dict_train[dict_feed['xfT']] = dict_train['Xf'][train_indices]
-        elif items == 'yfT':
-            feed_dict_train[dict_feed['yfT']] = dict_train['Yf'][train_indices]
-        elif items == 'psix1pT':
-            feed_dict_train[dict_feed['psix1pT']] = dict_train['psiX1p'][train_indices]
-        elif items == 'psix1fT':
-            feed_dict_train[dict_feed['psix1fT']] = dict_train['psiX1f'][train_indices]
-        elif items == 'psix2pT':
-            feed_dict_train[dict_feed['psix2pT']] = dict_train['psiX2p'][train_indices]
-        elif items == 'psix2fT':
-            feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f'][train_indices]
-    return feed_dict_train
+
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories, dict_run_info,x_params_list={}):
     feed_dict_train, feed_dict_valid = get_fed_dict(dict_train,dict_valid,dict_feed)
@@ -375,34 +365,34 @@ data_suffix = 'System_5_ocDeepDMDdata.pickle'
 
 # CMD Line Argument (Override) Inputs:
 # TODO - Rearrange this section
-import sys
-if len(sys.argv)>1:
-    DEVICE_NAME = sys.argv[1]
-    if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
-        DEVICE_NAME = '/cpu:0'
-if len(sys.argv)>2:
-    SYSTEM_NO = sys.argv[2]
-    data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
-if len(sys.argv) > 3:
-    RUN_NUMBER = np.int(sys.argv[3])
-if len(sys.argv) > 4:
-    x_deep_dict_size = np.int(sys.argv[4])
-if len(sys.argv)>5:
-    n_x_nn_layers = np.int(sys.argv[5])
-if len(sys.argv)>6:
-    n_x_nn_nodes = np.int(sys.argv[6])
-if len(sys.argv) > 7:
-    y_deep_dict_size = np.int(sys.argv[7])
-if len(sys.argv)>8:
-    n_y_nn_layers = np.int(sys.argv[8])
-if len(sys.argv)>9:
-    n_y_nn_nodes = np.int(sys.argv[9])
-if len(sys.argv) > 10:
-    xy_deep_dict_size = np.int(sys.argv[10])
-if len(sys.argv)>11:
-    n_xy_nn_layers = np.int(sys.argv[11])
-if len(sys.argv)>12:
-    n_xy_nn_nodes = np.int(sys.argv[12])
+# import sys
+# if len(sys.argv)>1:
+#     DEVICE_NAME = sys.argv[1]
+#     if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+#         DEVICE_NAME = '/cpu:0'
+# if len(sys.argv)>2:
+#     SYSTEM_NO = sys.argv[2]
+#     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+# if len(sys.argv) > 3:
+#     RUN_NUMBER = np.int(sys.argv[3])
+# if len(sys.argv) > 4:
+#     x_deep_dict_size = np.int(sys.argv[4])
+# if len(sys.argv)>5:
+#     n_x_nn_layers = np.int(sys.argv[5])
+# if len(sys.argv)>6:
+#     n_x_nn_nodes = np.int(sys.argv[6])
+# if len(sys.argv) > 7:
+#     y_deep_dict_size = np.int(sys.argv[7])
+# if len(sys.argv)>8:
+#     n_y_nn_layers = np.int(sys.argv[8])
+# if len(sys.argv)>9:
+#     n_y_nn_nodes = np.int(sys.argv[9])
+# if len(sys.argv) > 10:
+#     xy_deep_dict_size = np.int(sys.argv[10])
+# if len(sys.argv)>11:
+#     n_xy_nn_layers = np.int(sys.argv[11])
+# if len(sys.argv)>12:
+#     n_xy_nn_nodes = np.int(sys.argv[12])
 
 data_file = data_directory + data_suffix
 Xp, Xf, Yp, Yf = load_pickle_data(data_file)
@@ -483,33 +473,33 @@ with tf.device(DEVICE_NAME):
     # ==============
     # RUN 2
     # ==============
-with tf.device(DEVICE_NAME):
     # Hidden layer creation
+with tf.device(DEVICE_NAME):
     x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
     x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
     Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
     x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
-                      'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                      'res_net': res_net}
+                      'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
     # Data Required
     psix1p_num = psix1p.eval(feed_dict={xp_feed: Xp})
     psix1f_num = psix1f.eval(feed_dict={xf_feed: Xf})
-    dict_train2 = {'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
-    dict_valid2 = {'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
+    dict_train2 = {'Xp': Xp[train_indices],  'psiX1p': psix1p_num[train_indices],  'Yp': Yp[train_indices], 'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
+    dict_valid2 = {'Xp': Xp[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'Yp': Yp[valid_indices], 'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
     # K Variables
     Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
     # Feed Variable Definition
-    yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    yp_feed = tf.placeholder(tf.float32, shape=[None, Yp.shape[1]])
     yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
     psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
     psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
     # Psi variables
     psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
     psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
-    psix12f_concat = tf.concat([psix1f_feed, psix2f],axis=1)
+    psix12p_concat = tf.concat([psix1p_feed, psix2p],axis=1)
+    psix12f_concat = tf.concat([psix1f_feed, psix2f], axis=1)
     # Objective Function Variables
-    dict_feed2 = {'psix1fT': psix1f_feed, 'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
-    dict_psi2 = {'xfT': psix12f_concat}
+    dict_feed2 = {'psix1pT': psix1p_feed, 'xpT': xp_feed, 'ypT': yp_feed, 'psix1fT': psix1f_feed, 'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
+    dict_psi2 = {'xpT': psix12p_concat,'xfT': psix12f_concat}
     dict_K2 = {'WhT': Wh1T}
     # Second optimization
     dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
