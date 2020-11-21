@@ -359,7 +359,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
 
 def generate_2state_initial_condition():
     r = np.random.uniform(9.,10.)
-    theta = np.random.uniform(0.,2*np.pi)
+    theta = np.random.uniform(-np.pi/6,np.pi/6)
     return np.array([[r*np.cos(theta),r*np.sin(theta)]])
 
 def sim_sys_1_2(sys_params):
@@ -392,14 +392,15 @@ def data_gen_sys_1_2(sys_params, N_CURVES,SYSTEM_NO):
         os.mkdir(storage_folder)
     # Simulation
     dict_indexed_data = {}
-    plt.figure()
+    f,ax = plt.subplots(2,1)
     X0 = np.empty(shape=(0,2))
     for i in range(N_CURVES):
         sys_params['x0'] = generate_2state_initial_condition()
         X0 = np.concatenate([X0,sys_params['x0']],axis=0)
         dict_indexed_data[i]= sim_sys_1_2(sys_params)
-        plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
-    plt.plot(X0[:,0],X0[:,1],'*')
+        ax[0].plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+        ax[1].plot(dict_indexed_data[i]['Y'])
+    ax[0].plot(X0[:,0],X0[:,1],'*')
     plt.show()
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     # # Sorting into deep DMD format
