@@ -22,8 +22,8 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-# DEVICE_TO_RUN_ON = 'microtensor'
-DEVICE_TO_RUN_ON = 'optictensor'
+DEVICE_TO_RUN_ON = 'microtensor'
+# DEVICE_TO_RUN_ON = 'optictensor'
 # DEVICE_TO_RUN_ON = 'goldentensor'
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 6
 NO_OF_ITERATIONS_PER_GPU = 2
@@ -31,26 +31,26 @@ NO_OF_ITERATIONS_IN_CPU = 2
 dict_run_conditions = {}
 
 # MICROTENSOR CPU RUN
-# dict_run_conditions[0] = {}
-# dict_run_conditions[0]['x']  = {'dict_size':3,'nn_layers':3,'nn_nodes':9}
-# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
-# dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[1] = {}
-# dict_run_conditions[1]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
-# dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[2] = {}
-# dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
-# dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[3] = {}
-# dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':3}
-# dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+dict_run_conditions[0] = {}
+dict_run_conditions[0]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
+dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+dict_run_conditions[1] = {}
+dict_run_conditions[1]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
+dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+dict_run_conditions[2] = {}
+dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
+dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+dict_run_conditions[3] = {}
+dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':3}
+dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 
 # Golden tensor
 # dict_run_conditions[0] = {}
-# dict_run_conditions[0]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[0]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 # dict_run_conditions[0]['y']  = {'dict_size':6,'nn_layers':4,'nn_nodes':9}
 # dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 # dict_run_conditions[1] = {}
@@ -58,31 +58,31 @@ dict_run_conditions = {}
 # dict_run_conditions[1]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':3}
 # dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 # dict_run_conditions[2] = {}
-# dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+# dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 # dict_run_conditions[2]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
 # dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 # dict_run_conditions[3] = {}
-# dict_run_conditions[3]['x']  = {'dict_size':3,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 # dict_run_conditions[3]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':9}
 # dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 
 # Optic tensor
-dict_run_conditions[0] = {}
-dict_run_conditions[0]['x']  = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':6}
-dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[1] = {}
-dict_run_conditions[1]['x']  = {'dict_size':2,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':9}
-dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[2] = {}
-dict_run_conditions[2]['x']  = {'dict_size':2,'nn_layers':3,'nn_nodes':9}
-dict_run_conditions[2]['y']  = {'dict_size':6,'nn_layers':4,'nn_nodes':3}
-dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[3] = {}
-dict_run_conditions[3]['x']  = {'dict_size':3,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[3]['y']  = {'dict_size':6,'nn_layers':4,'nn_nodes':6}
-dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[0] = {}
+# dict_run_conditions[0]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[1] = {}
+# dict_run_conditions[1]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':4,'nn_nodes':9}
+# dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[2] = {}
+# dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[2]['y']  = {'dict_size':6,'nn_layers':4,'nn_nodes':3}
+# dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[3] = {}
+# dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[3]['y']  = {'dict_size':6,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
 
 seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
@@ -146,9 +146,10 @@ ls_test_curves = list(range(40,60))
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
 
 ##
+opt_run = 34
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
-
+print(dict_hp)
 
 ## OUTPUT STUFF
 # Runs error plot
