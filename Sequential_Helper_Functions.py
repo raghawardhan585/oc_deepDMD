@@ -180,7 +180,7 @@ def transfer_current_ocDeepDMD_run_files():
         current_run_no = current_run_no + 1
     return
 
-def generate_predictions_pickle_file(SYSTEM_NO,state_only = False):
+def generate_predictions_pickle_file(SYSTEM_NO,state_only = False, ls_process_runs=[]):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     # Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle'):
@@ -188,14 +188,17 @@ def generate_predictions_pickle_file(SYSTEM_NO,state_only = False):
             dict_predictions_SEQUENTIAL = pickle.load(handle)
     else:
         dict_predictions_SEQUENTIAL = {}
-    # Figure out the unprocessed food
-    ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
-    # Scan all folders to get all Run Indices
+    # Find all available run folders
     ls_all_run_indices = []
     for folder in os.listdir(sys_folder_name+'/Sequential'):
         if folder[0:4] == 'RUN_': # It is a RUN folder
             ls_all_run_indices.append(int(folder[4:]))
+    # List of all processed runs are the keys of dict_prediction_SEQUENTIAL
+    ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
     ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
+    # Among the unprocessed runs, only process the specified runs
+    if len(ls_process_runs) !=0:
+        ls_unprocessed_runs = list(set(ls_unprocessed_runs).intersection(set(ls_process_runs)))
     print('RUNS TO PROCESS - ',ls_unprocessed_runs)
     # Updating the dictionary of predictions
     for run in ls_unprocessed_runs:
