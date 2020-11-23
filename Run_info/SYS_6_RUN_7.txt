@@ -1,0 +1,45 @@
+[INFO] Number of total samples: 1160
+[INFO] Observable dimension of a sample: 2
+[INFO] Xp.shape (E-DMD): (1160, 2)
+[INFO] Yf.shape (E-DMD): (1160, 2)
+Number of training snapshots: 580
+Number of validation snapshots: 580
+---------    TRAINING BEGINS   ---------
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  1000
+Batch Size   :  100
+--------------------------------------
+Epoch No:  1000  |   Training error:  8.0769554e-05
+                   Validation error:  0.00011143808
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 8.0769554e-05
+Current Validation Error      : 0.00011143808
+---   STATE TRAINING COMPLETE   ---
+                                   0
+MSE training             8.07696e-05
+MSE validation           0.000111438
+activation flag                    2
+activation function              elu
+batch size                       100
+no of epochs                    1000
+r^2 training accuracy        99.9557
+r^2 validation accuracy      99.9311
+step size                        0.5
+training error           8.07696e-05
+validation error         0.000111438
+x_hidden_variable_list     [6, 6, 3]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+   x_hidden_variable_list  activation flag  ... MSE training  MSE validation
+0                       6                2  ...     0.000081        0.000111
+1                       6                2  ...     0.000081        0.000111
+2                       3                2  ...     0.000081        0.000111
+
+[3 rows x 12 columns]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
