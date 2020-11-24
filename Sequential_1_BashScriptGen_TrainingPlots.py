@@ -53,18 +53,18 @@ dict_run_conditions[0] = {}
 dict_run_conditions[0]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 dict_run_conditions[0]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
 dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':9}
-dict_run_conditions[1] = {}
-dict_run_conditions[1]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[1]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
-dict_run_conditions[1]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[2] = {}
-dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[2]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
-dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[3] = {}
-dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[3]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
-dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':9}
+# dict_run_conditions[1] = {}
+# dict_run_conditions[1]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[1]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[1]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[2] = {}
+# dict_run_conditions[2]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[2]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[3] = {}
+# dict_run_conditions[3]['x']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[3]['y']  = {'dict_size':9,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':9}
 
 # Optic tensor
 # dict_run_conditions[0] = {}
@@ -208,4 +208,4 @@ print(dict_hp)
 
 # Final Runs
 SYSTEM_NO = 6
-seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=list(range(24,42)))
+seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=list(range(43,90)))
