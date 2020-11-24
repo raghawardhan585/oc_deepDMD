@@ -530,7 +530,7 @@ with tf.device(DEVICE_NAME):
                       'res_net': res_net}
     psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
     psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
-with tf.device(DEVICE_NAME):
+
     # ==============
     # RUN 2
     # ==============
