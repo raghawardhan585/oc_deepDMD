@@ -202,3 +202,10 @@ f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=F
 with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 print(dict_hp)
+
+## ------------------------------------------------------------------------------------------------------------------------------
+
+
+# Final Runs
+SYSTEM_NO = 6
+seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=list(range(24,42)))
