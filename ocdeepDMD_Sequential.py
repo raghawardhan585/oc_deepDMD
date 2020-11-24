@@ -155,6 +155,37 @@ def initialize_tensorflow_graph(param_list,u, state_inclusive=False,add_bias=Fal
     result = sess.run(tf.global_variables_initializer())
     return z_list, y
 
+def initialize_constant_tensorflow_graph(param_list,u, state_inclusive=False,add_bias=False):
+    # res_net = param_list['res_net'] --- This variable is not used!
+    # TODO - remove the above variable if not required at all
+    # u is the input of the neural network
+    z_list = [];
+    n_depth = len(param_list['hidden_var_list']);
+    # INITIALIZATION
+    if param_list['activation flag'] == 1:  # RELU
+        z_list.append(tf.nn.dropout(tf.nn.relu(tf.matmul(u, tf.constant(param_list['W_list'][0],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][0],dtype=tf.dtypes.float32)), param_list['keep_prob']))
+    if param_list['activation flag']== 2:  # ELU
+        z_list.append(tf.nn.dropout(tf.nn.elu(tf.matmul(u, tf.constant(param_list['W_list'][0],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][0],dtype=tf.dtypes.float32)), param_list['keep_prob']))
+    if param_list['activation flag'] == 3:  # tanh
+        z_list.append(tf.nn.dropout(tf.nn.tanh(tf.matmul(u, tf.constant(param_list['W_list'][0],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][0],dtype=tf.dtypes.float32)), param_list['keep_prob']))
+    # PROPAGATION & TERMINATION
+    for k in range(1, n_depth):
+        prev_layer_output = tf.matmul(z_list[k - 1], tf.constant(param_list['W_list'][k],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][k],dtype=tf.dtypes.float32)
+        if param_list['activation flag'] == 1: # RELU
+            z_list.append(tf.nn.dropout(tf.nn.relu(prev_layer_output), param_list['keep_prob']));
+        if param_list['activation flag'] == 2: # ELU
+            z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
+        if param_list['activation flag'] == 3: # tanh
+            z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
+    if state_inclusive:
+        y = tf.concat([u, z_list[-1]], axis=1)
+    else:
+        y = z_list[-1]
+    if add_bias:
+        y = tf.concat([y, tf.ones(shape=(tf.shape(y)[0], 1))], axis=1)
+    result = sess.run(tf.global_variables_initializer())
+    return z_list, y
+
 def get_variable_value(variable_name, prev_variable_value, reqd_data_type, lower_bound=0):
     # Purpose: This function is mainly to
     not_valid = True
@@ -489,7 +520,16 @@ with tf.device(DEVICE_NAME):
     all_histories1, dict_run_info1 = static_train_net(dict_train1, dict_valid1, dict_feed1, ls_dict_training_params1,dict_model1_metrics,all_histories1,dict_run_info1,x_params_list =x1_params_list)
     print('---   STATE TRAINING COMPLETE   ---')
     estimate_K_stability(KxT_11)
+    # Post Run 1 Saves
+    KxT_11_num = sess.run(KxT_11)
+    Wx1_list_num = sess.run(Wx1_list)
+    bx1_list_num = sess.run(bx1_list)
     print(pd.DataFrame(dict_run_info1))
+    x1_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x1_hidden_vars_list, 'W_list': Wx1_list_num,
+                      'b_list': bx1_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+                      'res_net': res_net}
+    psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
+    psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
 with tf.device(DEVICE_NAME):
     # ==============
     # RUN 2
@@ -501,8 +541,8 @@ with tf.device(DEVICE_NAME):
     x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
                       'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
     # Data Required
-    psix1p_num = psix1p.eval(feed_dict={xp_feed: Xp})
-    psix1f_num = psix1f.eval(feed_dict={xf_feed: Xf})
+    psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
+    psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
     dict_train2 = {'Xp': Xp[train_indices],  'psiX1p': psix1p_num[train_indices],  'Yp': Yp[train_indices], 'Xf': Xf[train_indices],  'psiX1f': psix1f_num[train_indices],  'Yf': Yf[train_indices]}
     dict_valid2 = {'Xp': Xp[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'Yp': Yp[valid_indices], 'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
     # K Variables
@@ -528,7 +568,16 @@ with tf.device(DEVICE_NAME):
     all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2, ls_dict_training_params2 ,dict_model2_metrics,all_histories2,dict_run_info2,x_params_list =x2_params_list)
     print('---   OUTPUT TRAINING COMPLETE   ---')
     print(pd.DataFrame(dict_run_info2))
-with tf.device(DEVICE_NAME):
+    # Post Run 2 Saves
+    Wh1T_num = sess.run(Wh1T)
+    Wx2_list_num = sess.run(Wx1_list)
+    bx2_list_num = sess.run(bx1_list)
+    x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list_num,
+                      'b_list': bx2_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+                      'res_net': res_net}
+    psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
+    psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
+
     # ==============
     # RUN 3
     # ==============
@@ -537,8 +586,7 @@ with tf.device(DEVICE_NAME):
     x3_hidden_vars_list[-1] = xy_deep_dict_size  # The last hidden layer being declared as the output
     Wx3_list, bx3_list = initialize_Wblist(num_bas_obs, x3_hidden_vars_list)
     x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list,
-                      'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                      'res_net': res_net}
+                      'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
     # Data Required
     psix2p_num = psix2p.eval(feed_dict={xp_feed: Xp})
     psix2f_num = psix2f.eval(feed_dict={xf_feed: Xf})
@@ -566,6 +614,15 @@ with tf.device(DEVICE_NAME):
     all_histories3, dict_run_info3 = static_train_net(dict_train3, dict_valid3, dict_feed3, ls_dict_training_params3,dict_model3_metrics,all_histories3, dict_run_info3, x_params_list =x3_params_list)
     print('---   OUTPUT COMPENSATED STATE TRAINING COMPLETE   ---')
     print(pd.DataFrame(dict_run_info3))
+    # Post Run 3 Saves
+    KxT_2_num = sess.run(KxT_2)
+    Wx3_list_num = sess.run(Wx3_list)
+    bx3_list_num = sess.run(bx3_list)
+    x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list_num,
+                      'b_list': bx3_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+                      'res_net': res_net}
+    psix3pz_list_const, psix3p_const = initialize_constant_tensorflow_graph(x3_params_list, xp_feed)
+    psix3fz_list_const, psix3f_const = initialize_constant_tensorflow_graph(x3_params_list, xf_feed)
     #----------------------------------------------------------------------------------------------------------------------------------
     # Post RUNS
 
@@ -590,18 +647,21 @@ with tf.device(DEVICE_NAME):
     # AFTER RUN 3
     all_histories = {1: all_histories1, 2: all_histories2, 3: all_histories3}
     dict_run_info = {1: dict_run_info1, 2: dict_run_info2, 3: dict_run_info3}
-    psixp = tf.concat([psix1p,psix2p,psix3p],axis=1)
-    psixf = tf.concat([psix1f, psix2f, psix3f], axis=1)
+    psixp = tf.concat([psix1p_const,psix2p_const,psix3p_const],axis=1)
+    psixf = tf.concat([psix1f_const, psix2f_const, psix3f_const], axis=1)
     dict_psi = {'xpT': psixp, 'xfT': psixf}
     dict_feed ={'xpT': xp_feed, 'xfT': xf_feed, 'ypT': yp_feed, 'yfT': yf_feed}
     # Concatenating Ks to a single variable
-    KxT_12 = tf.constant(np.zeros(shape=(y_deep_dict_size + xy_deep_dict_size, x_deep_dict_size + num_bas_obs + 1)),dtype=tf.dtypes.float32)
-    KxT_1 = tf.concat([KxT_11, KxT_12], axis=0)
-    KxT = tf.concat([KxT_1, KxT_2], axis=1)
+    KxT_12_num = np.zeros(shape=(y_deep_dict_size + xy_deep_dict_size, x_deep_dict_size + num_bas_obs + 1))
+    KxT_1_num = np.concatenate([KxT_11_num, KxT_12_num], axis=0)
+    KxT_num = np.concatenate([KxT_1_num, KxT_2_num], axis=1)
+    KxT = tf.Variable(KxT_num)
     Wh2T = tf.constant(np.zeros(shape=(xy_deep_dict_size, num_outputs)), dtype=tf.dtypes.float32)
-    WhT = tf.concat([Wh1T, Wh2T], axis=0)
+    WhT_num = tf.concat([Wh1T_num, Wh2T], axis=0)
+    WhT = tf.Variable(WhT_num)
     dict_K = {'KxT': KxT, 'WhT': WhT}
-    estimate_K_stability(KxT)
+    sess.run(tf.global_variables_initializer())
+    estimate_K_stability(KxT,True)
 # feed_dict_train, feed_dict_valid = get_fed_dict(dict_train, dict_valid, dict_feed)
 # train_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
 # valid_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)

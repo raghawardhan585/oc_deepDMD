@@ -211,8 +211,8 @@ SYSTEM_NO = 6
 ls_process_runs = list(range(66,90))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
-seq.generate_df_error(SYSTEM_NO)
-with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
+seq.generate_df_error_x_and_y(SYSTEM_NO)
+with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle','rb') as handle:
     df_error = pickle.load(handle)
 df_training_plus_validation = df_error.train + df_error.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
@@ -227,3 +227,15 @@ ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
+
+
+##
+SYSTEM_NO = 6
+RUN_NO = 80
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+# Getting the data
+sess = tf.InteractiveSession()
+dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, RUN_NO, sess)
+dict_pred = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
+

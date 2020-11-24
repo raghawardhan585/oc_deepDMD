@@ -39,6 +39,20 @@ def get_error(ls_indices,dict_XY):
     J_error = np.mean(J_error)
     return J_error
 
+def get_error_x_and_y(ls_indices,dict_XY):
+    J_error = np.empty(shape=(0,1))
+    for i in ls_indices:
+        # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
+        all_errors = np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step'])
+        # all_errors = np.square(dict_XY[i]['psiX'][:, 0:5] - dict_XY[i]['psiX_est_n_step'][:, 0:5])
+        # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
+        # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
+        J_error = np.append(J_error, np.mean(all_errors))
+    # J_error = np.log10(np.max(J_error))
+    J_error = np.mean(J_error)
+    return J_error
+
+
 
 def write_bash_script(DEVICE_TO_RUN_ON,dict_run_conditions,SYSTEM_NO,NO_OF_ITERATIONS_PER_GPU,NO_OF_ITERATIONS_IN_CPU):
     with open('/Users/shara/Desktop/oc_deepDMD/' + str(DEVICE_TO_RUN_ON) + '_run.sh', 'w') as bash_exec:
@@ -413,13 +427,40 @@ def generate_df_error(SYSTEM_NO):
             pickle.dump(df_error_SEQUENTIAL,handle)
     return
 
+def generate_df_error_x_and_y(SYSTEM_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    ls_train_curves = list(range(20))
+    ls_valid_curves = list(range(20, 40))
+    ls_test_curves = list(range(40, 60))
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+        dict_predictions_SEQUENTIAL = pickle.load(handle)
+    dict_error = {}
+    for run_no in dict_predictions_SEQUENTIAL.keys():
+        print(run_no)
+        dict_error[run_no] = {}
+        dict_error[run_no]['train'] = get_error_x_and_y(ls_train_curves,dict_predictions_SEQUENTIAL[run_no])
+        dict_error[run_no]['valid'] = get_error_x_and_y(ls_valid_curves, dict_predictions_SEQUENTIAL[run_no])
+        dict_error[run_no]['test'] = get_error_x_and_y(ls_test_curves, dict_predictions_SEQUENTIAL[run_no])
+    df_error_SEQUENTIAL = pd.DataFrame(dict_error).T
+    # Save the file
+    if os.path.exists(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle'):
+        ip = input('Do you wanna write over the df_error file[y/n]?')
+        if ip == 'y':
+            os.remove(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle')
+            with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle', 'wb') as handle:
+                pickle.dump(df_error_SEQUENTIAL, handle)
+    else:
+        with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle','wb') as handle:
+            pickle.dump(df_error_SEQUENTIAL,handle)
+    return
+
 def get_prediction_data(SYSTEM_NO,RUN_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_predictions = pickle.load(handle)
     return dict_predictions[RUN_NO]
 
-def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
+def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False,one_step = False):
     n_rows = 7
     if observables:
          n_cols = 9
@@ -436,13 +477,21 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
                 n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
                 for j in range(n_states):
                     ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[j])
-                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
+                    if one_step:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_one_step'][:, j], color=colors[j],
+                                              label='x' + str(j + 1) + '[scaled]')
+                    else:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],
                                           label='x' + str(j + 1)+ '[scaled]')
                 ax[row_i, col_i].legend()
                 try:
                     for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
                         ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[n_states + j])
-                        ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
+                        if one_step:
+                            ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_one_step'][:, j],color=colors[n_states + j],
+                                                      label='y' + str(j + 1) + '[scaled]')
+                        else:
+                            ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[n_states + j],
                                                   label='y' + str(j + 1)+ '[scaled]')
                     ax[row_i, col_i + 1].legend()
                 except:
@@ -452,12 +501,20 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
                 n_states = dict_run[ls_runs[i]]['X'].shape[1]
                 for j in range(n_states):
                     ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[j])
-                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
+                    if one_step:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_est_one_step'][:, j], color=colors[j],
+                                              label='x' + str(j + 1))
+                    else:
+                        ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[j],label ='x'+str(j+1) )
                 ax[row_i, col_i].legend()
                 try:
                     for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
                         ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[n_states+j])
-                        ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
+                        if one_step:
+                            ax[row_i, col_i + 1].plot(dict_run[ls_runs[i]]['Y_est_one_step'][:, j],
+                                                      color=colors[n_states + j], label='y' + str(j + 1))
+                        else:
+                            ax[row_i,col_i+1].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[n_states+j],label ='y'+str(j+1))
                     ax[row_i, col_i+1].legend()
                 except:
                     print('No output to plot')
@@ -465,7 +522,11 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False):
                 # Plot the observables
                 for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
                     ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)],linewidth = int(j/7+1))
-                    ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],linewidth = int(j/7+1),label ='x_'+str(j+1) )
+                    if one_step:
+                        ax[row_i, col_i + 2].plot(dict_run[ls_runs[i]]['psiX_est_one_step'][:, j],
+                                                  color=colors[np.mod(j, 7)], linewidth=int(j / 7 + 1),label='x_' + str(j + 1))
+                    else:
+                        ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX_est_n_step'][:, j], color=colors[np.mod(j,7)],linewidth = int(j/7+1),label ='x_'+str(j+1) )
                 ax[row_i, col_i+2].legend()
             i = i+1
             if i == len(ls_runs):

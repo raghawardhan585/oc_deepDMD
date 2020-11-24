@@ -501,12 +501,14 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
         n_base_states = X_scaled.shape[1]
         psiX = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X_scaled, dict_params['yfT_feed']: Y_scaled})
         # One Step Prediction ----------------------
-        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :],dict_params['ypT_feed']: Y_scaled[0:1, :]})
+        psixpT_i = psiX[0,:]
         psiX_est_one_step = copy.deepcopy(psiX)
         for i in range(0, X_scaled.shape[0] - 1):
-            psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
-            psiX_est_one_step[i + 1, :] = psixfT_i
-            psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[i + 1:i + 2, :], dict_params['ypT_feed']: Y_scaled[i + 1:i + 2, :]})
+            psiX_est_one_step[i + 1, :] = np.matmul(psiX[i,:], dict_params['KxT_num'])
+        # for i in range(0, X_scaled.shape[0] - 1):
+        #     psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
+        #     psiX_est_one_step[i + 1, :] = psixfT_i
+        #     psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[i + 1:i + 2, :], dict_params['ypT_feed']: Y_scaled[i + 1:i + 2, :]})
         Y_est_one_step = np.matmul(psiX_est_one_step, dict_params['WhT_num'])
         # N Step Prediction ----------------------
         psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :], dict_params['ypT_feed']: Y_scaled[0:1, :]})
