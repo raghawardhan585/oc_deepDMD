@@ -237,5 +237,14 @@ run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 # Getting the data
 sess = tf.InteractiveSession()
 dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, RUN_NO, sess)
-dict_pred = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
+dict_pred = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO)
+
+##
+i = 50
+for j in range(5):
+    plt.plot(dict_pred[i]['psiX'][:, j], '.', color = colors[np.mod(j,7)],linewidth = int(j/7+1))
+    plt.plot(dict_pred[i]['psiX_est_n_step'][:, j], color = colors[np.mod(j,7)],linewidth = int(j/7+1), label='psi ' + str(j + 1))
+    # plt.plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],label='x' + str(j + 1) + '[scaled]')
+plt.legend()
+plt.show()
 

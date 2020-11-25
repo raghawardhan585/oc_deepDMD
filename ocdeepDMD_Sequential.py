@@ -277,7 +277,7 @@ def objective_func_state(dict_feed,dict_psi,dict_K):
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
     dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
-    dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
+    dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
     # Mean Squared Error
     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
     # Accuracy computation
@@ -341,8 +341,12 @@ def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
             feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f'][train_indices]
     return feed_dict_train
 
-def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories, dict_run_info,x_params_list={}):
+
+
+
+def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics_curr, all_histories, dict_run_info,x_params_list={}):
     feed_dict_train, feed_dict_valid = get_fed_dict(dict_train,dict_valid,dict_feed)
+    print(dict_model_metrics_curr['MSE'].eval(feed_dict = feed_dict_train))
     # --------
     try :
         run_info_index = list(dict_run_info.keys())[-1]
@@ -350,12 +354,13 @@ def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params,
         run_info_index = 0
     for dict_train_params_i in ls_dict_training_params:
         display_train_params(dict_train_params_i)
-        all_histories, n_epochs_run = train_net_v2(dict_train,feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics, dict_train_params_i, all_histories)
-        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,dict_model_metrics,n_epochs_run, dict_train_params_i,x_params_list['hidden_var_list'])
+        all_histories, n_epochs_run = train_net_v2(dict_train,feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics_curr, dict_train_params_i, all_histories)
+        dict_run_info[run_info_index] = generate_hyperparam_entry(feed_dict_train, feed_dict_valid,dict_model_metrics_curr,n_epochs_run, dict_train_params_i,x_params_list['hidden_var_list'])
         print('Current Training Error  :', dict_run_info[run_info_index]['training error'])
         print('Current Validation Error      :', dict_run_info[run_info_index]['validation error'])
         # estimate_K_stability(KxT)
         run_info_index += 1
+    print(dict_model_metrics_curr['MSE'].eval(feed_dict=feed_dict_train))
     return all_histories, dict_run_info
 
 def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics, dict_run_params, all_histories):
@@ -412,7 +417,7 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
 # Main Block
 # data_directory = os.path.normpath(os.getcwd() + os.sep + os.pardir) +'/koopman_data/'
 data_directory = 'koopman_data/'
-data_suffix = 'System_5_ocDeepDMDdata.pickle'
+data_suffix = 'System_6_ocDeepDMDdata.pickle'
 
 # CMD Line Argument (Override) Inputs:
 # TODO - Rearrange this section
@@ -531,6 +536,28 @@ with tf.device(DEVICE_NAME):
     psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
     psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
 
+# SYSTEM_NO = 6
+# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+# with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
+#     dict_indexed_data = pickle.load(handle)
+
+# feed_dict_train1, feed_dict_valid1 = get_fed_dict(dict_train1, dict_valid1, dict_feed1)
+#
+# print('Training Error: ', np.mean(np.square(psix1f_const.eval(feed_dict = feed_dict_train1) - np.matmul(psix1p_const.eval(feed_dict = feed_dict_train1) ,KxT_11_num))))
+# print('Validation Error: ', np.mean(np.square(psix1f_const.eval(feed_dict = feed_dict_valid1) - np.matmul(psix1p_const.eval(feed_dict = feed_dict_valid1) ,KxT_11_num))))
+# print('Train Error: ',dict_model1_metrics['loss_fn'].eval(feed_dict = feed_dict_train1))
+# print('Valid Error: ',dict_model1_metrics['loss_fn'].eval(feed_dict = feed_dict_valid1))
+# import ocdeepdmd_simulation_examples_helper_functions as oc
+# dict_params = {'psixpT':psix1p_const,'psixfT':psix1f_const,'xpT_feed':xp_feed,'xfT_feed':xf_feed, 'KxT_num':KxT_11_num}
+# dict_p = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER=6)
+# i = 0
+# for j in range(2):
+#     plt.plot(dict_p[i]['X_scaled'][:, j], '.', color=colors[j])
+#     plt.plot(dict_p[i]['X_scaled_est_one_step'][:, j], color=colors[j], label='x' + str(j + 1) + '[scaled]')
+#     # plt.plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],label='x' + str(j + 1) + '[scaled]')
+# plt.legend()
+# plt.show()
+
     # ==============
     # RUN 2
     # ==============
@@ -578,6 +605,14 @@ with tf.device(DEVICE_NAME):
     psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
     psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
 
+# feed_dict_train2, feed_dict_valid2 = get_fed_dict(dict_train2, dict_valid2, dict_feed2)
+#
+# psiXf = np.concatenate([psix1f_const.eval(feed_dict = feed_dict_train2),psix2f_const.eval(feed_dict = feed_dict_train2)],axis=1)
+# psiXp = np.concatenate([psix1p_const.eval(feed_dict = feed_dict_train2),psix2p_const.eval(feed_dict = feed_dict_train2)],axis=1)
+# print('[PHASE 2] Training Error: ', np.mean(np.square(np.concatenate([ yf_feed.eval(feed_dict = feed_dict_train2) - np.matmul(psiXf,Wh1T_num) , yp_feed.eval(feed_dict = feed_dict_train2)-np.matmul(psiXp,Wh1T_num)],axis=0))))
+# psiXf = np.concatenate([psix1f_const.eval(feed_dict = feed_dict_valid2),psix2f_const.eval(feed_dict = feed_dict_valid2)],axis=1)
+# psiXp = np.concatenate([psix1p_const.eval(feed_dict = feed_dict_valid2),psix2p_const.eval(feed_dict = feed_dict_valid2)],axis=1)
+# print('[PHASE 2] Validation Error: ', np.mean(np.square(np.concatenate([ yf_feed.eval(feed_dict = feed_dict_valid2) - np.matmul(psiXf,Wh1T_num) , yp_feed.eval(feed_dict = feed_dict_valid2)-np.matmul(psiXp,Wh1T_num)],axis=0))))
     # ==============
     # RUN 3
     # ==============
@@ -588,8 +623,8 @@ with tf.device(DEVICE_NAME):
     x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list,
                       'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
     # Data Required
-    psix2p_num = psix2p.eval(feed_dict={xp_feed: Xp})
-    psix2f_num = psix2f.eval(feed_dict={xf_feed: Xf})
+    psix2p_num = psix2p_const.eval(feed_dict={xp_feed: Xp})
+    psix2f_num = psix2f_const.eval(feed_dict={xf_feed: Xf})
     dict_train3 = {'Xp': Xp[train_indices], 'Xf': Xf[train_indices], 'psiX1p': psix1p_num[train_indices], 'psiX2p': psix2p_num[train_indices],'psiX2f': psix2f_num[train_indices]}
     dict_valid3 = {'Xp': Xp[valid_indices], 'Xf': Xf[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'psiX2p': psix2p_num[valid_indices],'psiX2f': psix2f_num[valid_indices]}
     # K Variables
@@ -619,10 +654,65 @@ with tf.device(DEVICE_NAME):
     Wx3_list_num = sess.run(Wx3_list)
     bx3_list_num = sess.run(bx3_list)
     x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list_num,
-                      'b_list': bx3_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                      'res_net': res_net}
+                      'b_list': bx3_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net}
+    feed_dict_train3, feed_dict_valid3 = get_fed_dict(dict_train3, dict_valid3, dict_feed3)
+    print('Train Error: ', dict_model3_metrics['loss_fn'].eval(feed_dict=feed_dict_train3))
+    print('Valid Error: ', dict_model3_metrics['loss_fn'].eval(feed_dict=feed_dict_valid3))
+    print('Training Error: ', np.mean(np.square(psix23f_concat.eval(feed_dict=feed_dict_train3) - np.matmul(psix123p_concat.eval(feed_dict=feed_dict_train3),KxT_2_num))))
+    print('Validation Error: ', np.mean(np.square(psix23f_concat.eval(feed_dict=feed_dict_valid3) - np.matmul(psix123p_concat.eval(feed_dict=feed_dict_valid3),KxT_2_num))))
     psix3pz_list_const, psix3p_const = initialize_constant_tensorflow_graph(x3_params_list, xp_feed)
     psix3fz_list_const, psix3f_const = initialize_constant_tensorflow_graph(x3_params_list, xf_feed)
+    psi3p = tf.concat([psix1p_const, psix2p_const, psix3p_const], axis=1)
+    psi3f = tf.concat([psix2f_const, psix3f_const], axis=1)
+    print('=====')
+    print('Training Error: ', np.mean(np.square(psix23f_concat.eval(feed_dict=feed_dict_train3) - np.matmul(psix123p_concat.eval(feed_dict=feed_dict_train3), KxT_2_num))))
+    print('Validation Error: ', np.mean(np.square(psix23f_concat.eval(feed_dict=feed_dict_valid3) - np.matmul(psix123p_concat.eval(feed_dict=feed_dict_valid3), KxT_2_num))))
+# ##
+# feed_dict_train3, feed_dict_valid3 = get_fed_dict(dict_train3, dict_valid3, dict_feed3)
+# print('Train Error: ',dict_model3_metrics['loss_fn'].eval(feed_dict = feed_dict_train3))
+# print('Valid Error: ',dict_model3_metrics['loss_fn'].eval(feed_dict = feed_dict_valid3))
+#
+# psi3p = tf.concat([psix1p_const,psix2p_const,psix3p_const],axis=1)
+# psi3f = tf.concat([psix2f_const,psix3f_const],axis=1)
+#
+# print('Training Error: ', np.mean(np.square(psi3f.eval(feed_dict = feed_dict_train1) - np.matmul(psi3p.eval(feed_dict = feed_dict_train1) ,KxT_2_num))))
+# print('Validation Error: ', np.mean(np.square(psi3f.eval(feed_dict = feed_dict_valid1) - np.matmul(psi3p.eval(feed_dict = feed_dict_valid1) ,KxT_2_num))))
+
+
+## Plot the above results
+# import matplotlib.pyplot as plt
+# psix3p_num = psix3p.eval(feed_dict={xp_feed: Xp})
+# psix3f_num = psix3f.eval(feed_dict={xf_feed: Xf})
+#
+# psixp_num = np.concatenate([psix1p_num,psix2p_num,psix3p_num],axis=1)
+# psixf_num = np.concatenate([psix1f_num,psix2f_num,psix3f_num],axis=1)
+#
+# KxT_12_num = np.zeros(shape=(y_deep_dict_size + xy_deep_dict_size, x_deep_dict_size + num_bas_obs + 1))
+# KxT_1_num = np.concatenate([KxT_11_num, KxT_12_num], axis=0)
+# KxT_num = np.concatenate([KxT_1_num, KxT_2_num], axis=1)
+#
+# psixf_num_est = np.matmul(psixp_num,KxT_num)
+#
+# print('All Observables Error[MSE]: ', np.mean(np.square(psixf_num_est - psixf_num)))
+# print('State Error[MSE]: ', np.mean(np.square(psix1f_num - np.matmul(psix1p_num,KxT_11_num))))
+# print('Extra observables Error[MSE]: ', np.mean(np.square(np.concatenate([psix2f_num,psix3f_num],axis=1) - np.matmul(psixp_num,KxT_2_num))))
+#
+# colors = [[0.68627453, 0.12156863, 0.16470589],
+#           [0.96862745, 0.84705883, 0.40000001],
+#           [0.83137256, 0.53333336, 0.6156863],
+#           [0.03529412, 0.01960784, 0.14509805],
+#           [0.90980393, 0.59607846, 0.78039217],
+#           [0.69803923, 0.87843138, 0.72941178],
+#           [0.20784314, 0.81568629, 0.89411765]];
+# colors = np.asarray(colors);  # defines a color palette
+#
+# for j in range(len(psixf_num[0])):
+#     plt.plot(psixf_num[:,j], '.', color = colors[np.mod(j,7)],linewidth = int(j/7+1))
+#     plt.plot(psixf_num_est[:,j], color = colors[np.mod(j,7)],linewidth = int(j/7+1), label='psi ' + str(j + 1))
+#     # plt.plot(dict_run[ls_runs[i]]['X_scaled_est_n_step'][:, j], color=colors[j],label='x' + str(j + 1) + '[scaled]')
+# plt.legend()
+# plt.show()
+
     #----------------------------------------------------------------------------------------------------------------------------------
     # Post RUNS
 
