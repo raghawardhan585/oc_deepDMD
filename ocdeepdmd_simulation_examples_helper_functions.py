@@ -31,8 +31,7 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
     Xf = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
     Yp = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
     Yf = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
-    ls_all_indices = np.arange(
-        int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
+    ls_all_indices = np.arange(int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
     # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
     for i in ls_all_indices:
         Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][0:-1, :]], axis=0)
