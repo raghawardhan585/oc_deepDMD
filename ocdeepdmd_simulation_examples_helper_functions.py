@@ -359,7 +359,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
 
 def generate_2state_initial_condition():
     r = np.random.uniform(9.,10.)
-    theta = np.random.uniform(-np.pi/6,np.pi/6)
+    theta = np.random.uniform(0,2*np.pi)
     return np.array([[r*np.cos(theta),r*np.sin(theta)]])
 
 def sim_sys_1_2(sys_params):
