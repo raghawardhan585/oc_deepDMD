@@ -9,6 +9,8 @@ import os
 import shutil
 import tensorflow as tf
 import Sequential_Helper_Functions as seq
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 import ocdeepdmd_simulation_examples_helper_functions as oc
 colors = [[0.68627453, 0.12156863, 0.16470589],
@@ -208,7 +210,7 @@ print(dict_hp)
 
 # Final Runs
 SYSTEM_NO = 6
-ls_process_runs = list(range(90,114))
+ls_process_runs = list(range(114,138))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO)

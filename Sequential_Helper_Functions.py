@@ -17,6 +17,7 @@ import itertools
 from scipy.integrate import odeint
 import ocdeepdmd_simulation_examples_helper_functions as oc
 from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],

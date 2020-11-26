@@ -40,9 +40,9 @@ A = np.array([[0.86,0.],[0.8,0.4]])
 gamma = -0.9
 # Simulation Parameters
 N_data_points = 30
-N_CURVES = 60
+N_CURVES = 240
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-SYSTEM_NO = 6
+SYSTEM_NO = 7
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 oc.plot_training_valid_test_states(4)
 # ##
@@ -82,43 +82,43 @@ sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, '
 SYSTEM_NO = 3
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 
-## Bash Script Generator
-
-# DEVICE_TO_RUN_ON = 'microtensor'
-# DEVICE_TO_RUN_ON = 'optictensor'
-DEVICE_TO_RUN_ON = 'goldentensor'
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 5
-NO_OF_ITERATIONS_PER_GPU = 2
-NO_OF_ITERATIONS_IN_CPU = 2
-
-dict_run_conditions = {}
-# MICROTENSOR CPU RUN
-# dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':15}
-# dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
-# dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
-# dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
-# dict_run_conditions[4] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':18}
-# dict_run_conditions[5] = {'x_dict_size':4,'x_nn_layers':4,'x_nn_nodes':18}
-
-
-# dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
-# Runs
-# Golden tensor
-dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':5}
-dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':10}
-dict_run_conditions[2] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':15}
-dict_run_conditions[3] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':5}
-
-# Optic tensor
-# dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':5}
-# dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':10}
-# dict_run_conditions[2] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':15}
-# dict_run_conditions[3] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':10}
-
-
-# dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
-
-oc.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
+# ## Bash Script Generator
+#
+# # DEVICE_TO_RUN_ON = 'microtensor'
+# # DEVICE_TO_RUN_ON = 'optictensor'
+# DEVICE_TO_RUN_ON = 'goldentensor'
+# DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 5
+# NO_OF_ITERATIONS_PER_GPU = 2
+# NO_OF_ITERATIONS_IN_CPU = 2
+#
+# dict_run_conditions = {}
+# # MICROTENSOR CPU RUN
+# # dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':15}
+# # dict_run_conditions[1] = {'x_dict_size':8,'x_nn_layers':4,'x_nn_nodes':5}
+# # dict_run_conditions[2] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':12}
+# # dict_run_conditions[3] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':15}
+# # dict_run_conditions[4] = {'x_dict_size':2,'x_nn_layers':5,'x_nn_nodes':18}
+# # dict_run_conditions[5] = {'x_dict_size':4,'x_nn_layers':4,'x_nn_nodes':18}
+#
+#
+# # dict_run_conditions[6] = {'x_dict_size':4,'x_nn_layers':5,'x_nn_nodes':9}
+# # Runs
+# # Golden tensor
+# dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':5}
+# dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':10}
+# dict_run_conditions[2] = {'x_dict_size':5,'x_nn_layers':3,'x_nn_nodes':15}
+# dict_run_conditions[3] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':5}
+#
+# # Optic tensor
+# # dict_run_conditions[0] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':5}
+# # dict_run_conditions[1] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':10}
+# # dict_run_conditions[2] = {'x_dict_size':5,'x_nn_layers':6,'x_nn_nodes':15}
+# # dict_run_conditions[3] = {'x_dict_size':5,'x_nn_layers':9,'x_nn_nodes':10}
+#
+#
+# # dict_run_conditions[4] = {'x_dict_size':3,'x_nn_layers':4,'x_nn_nodes':18}
+#
+# oc.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
 ## Transfering the files to the required deepDMD run files
 # This is more for organizing all the runs for a single system in a single folder
