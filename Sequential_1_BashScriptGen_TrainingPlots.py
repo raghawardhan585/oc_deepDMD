@@ -208,7 +208,7 @@ print(dict_hp)
 
 # Final Runs
 SYSTEM_NO = 6
-ls_process_runs = list(range(66,90))
+ls_process_runs = list(range(90,98))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO)
