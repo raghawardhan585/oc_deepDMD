@@ -16,6 +16,7 @@ import copy
 import itertools
 from scipy.integrate import odeint
 import ocdeepdmd_simulation_examples_helper_functions as oc
+from matplotlib import cm
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -369,6 +370,33 @@ def plot_fit_Y(dict_run,plot_params,ls_runs,scaled=False):
                 break
     f.show()
     return f
+
+def plot_observables(dict_run,plot_params):
+    # x horizontal y vertical
+    # n_x = int(np.ceil(np.sqrt(dict_run['observables'].shape[2])))
+    # n_y = int(np.ceil(dict_run['observables'].shape[2]/n_x))
+    n_x = dict_run['observables'].shape[2]
+    n_y = 1
+    fig = plt.figure(figsize=(plot_params['individual_fig_width']*n_x,plot_params['individual_fig_height']*n_y))
+    for i in range(dict_run['observables'].shape[2]):
+        ax = fig.add_subplot(n_y,n_x, i + 1, projection='3d')
+        ax.plot_surface(dict_run['X1'], dict_run['X2'], dict_run['observables'][:,:,i], cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        # if np.sum(dict_optrun['observables'][:, :, i]) == 0:
+        #     ax.set_title('$\psi_{}$'.format(i + 1) + '(x) = 0')
+        # else:
+        #     ax.set_title('$\psi_{}$'.format(i + 1) + '(x)')
+        # ax.title.set_fontsize(9)
+        ax.grid(False)
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.xaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+        ax.yaxis.label.set_fontsize(plot_params['xy_label_font_size'])
+        ax.set_xticks([0, 0.5, 1])
+        ax.set_yticks([0, 0.5, 1])
+    fig.show()
+    return fig
 
 def plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
