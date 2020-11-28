@@ -74,9 +74,9 @@ k_3n = 3.
 k_3d = 1.08
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
-sampling_time = 0.1
+sampling_time = 0.5
 simulation_time = 30
-N_CURVES = 180
+N_CURVES = 240
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES}
 SYSTEM_NO = 21
