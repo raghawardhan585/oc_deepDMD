@@ -44,7 +44,7 @@ N_CURVES = 240
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 SYSTEM_NO = 7
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
-oc.plot_training_valid_test_states(4)
+oc.plot_training_valid_test_states(SYSTEM_NO)
 # ##
 # with open('koopman_data/System_4_ocdeepDMDdata.pickle','rb') as handle:
 #     a = pickle.load(handle)
@@ -76,12 +76,12 @@ sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,al
 # Simulation Parameters
 sampling_time = 0.1
 simulation_time = 30
-N_CURVES = 120
+N_CURVES = 180
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES}
 SYSTEM_NO = 21
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
-
+oc.plot_training_valid_test_states(SYSTEM_NO)
 # ## Bash Script Generator
 #
 # # DEVICE_TO_RUN_ON = 'microtensor'

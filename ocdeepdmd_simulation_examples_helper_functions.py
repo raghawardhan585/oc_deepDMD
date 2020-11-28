@@ -332,24 +332,33 @@ def plot_training_valid_test_states(SYSTEM_NO):
     with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
         dict_DATA = pickle.load(handle)
     n_states = len(dict_DATA[0]['X'][0])
+    n_outputs = len(dict_DATA[0]['Y'][0])
     n_curves = len(dict_DATA)
     N_curves_split = int(np.ceil(n_curves/3))
-    f,ax = plt.subplots(n_states,3,sharex=True)
+    f,ax = plt.subplots(n_states+n_outputs,3,sharex=True)
     for i in range(0,N_curves_split):
         for j in range(n_states):
-            ax[j, 0].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+            ax[j, 0].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j,7)],label='X'+str(j))
+        for j in range(n_outputs):
+            ax[n_states+j,0].plot(dict_DATA[i]['Y'][:, j], color=colors[np.mod(n_states+j,7)],label='Y'+str(j))
         # ax[0,0].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,0].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0,0].set_title('Training Data')
     for i in range(N_curves_split,2*N_curves_split):
         for j in range(n_states):
-            ax[j, 1].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+            ax[j, 1].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j, 7)],label='X'+str(j))
+        for j in range(n_outputs):
+            ax[n_states + j, 1].plot(dict_DATA[i]['Y'][:, j], color=colors[np.mod(n_states + j, 7)],
+                                     label='Y' + str(j))
         # ax[0,1].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,1].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0,1].set_title('Validation Data')
     for i in range(2*N_curves_split,n_curves):
         for j in range(n_states):
-            ax[j, 2].plot(dict_DATA[i]['X'][:, j], color=colors[j])
+            ax[j, 2].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j, 7)],label='X'+str(j))
+        for j in range(n_outputs):
+            ax[n_states + j, 2].plot(dict_DATA[i]['Y'][:, j], color=colors[np.mod(n_states + j, 7)],
+                                     label='Y' + str(j))
         # ax[0,2].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,2].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0,2].set_title('Test Data')
