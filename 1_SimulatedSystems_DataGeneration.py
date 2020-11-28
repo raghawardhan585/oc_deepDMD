@@ -76,10 +76,10 @@ sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,al
 # Simulation Parameters
 sampling_time = 0.1
 simulation_time = 30
-N_CURVES = 60
+N_CURVES = 120
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES}
-SYSTEM_NO = 3
+SYSTEM_NO = 21
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 
 # ## Bash Script Generator

@@ -334,7 +334,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
     n_states = len(dict_DATA[0]['X'][0])
     n_curves = len(dict_DATA)
     N_curves_split = int(np.ceil(n_curves/3))
-    f,ax = plt.subplots(2,3,sharex=True)
+    f,ax = plt.subplots(n_states,3,sharex=True)
     for i in range(0,N_curves_split):
         for j in range(n_states):
             ax[j, 0].plot(dict_DATA[i]['X'][:, j], color=colors[j])
@@ -482,6 +482,8 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
         plt.plot(dict_indexed_data[i]['X'][:,1],dict_indexed_data[i]['X'][:,3])
     plt.plot(X0[:,1],X0[:,3],'*')
     plt.show()
+    plt.figure()
+
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     return
 
