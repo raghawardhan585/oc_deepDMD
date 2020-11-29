@@ -93,8 +93,8 @@ seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRIT
 seq.transfer_current_ocDeepDMD_run_files()
 
 ##
-SYSTEM_NO = 6
-seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=list(range(24,42)))
+SYSTEM_NO = 21
+seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=list(range(0,24)))
 seq.generate_df_error(SYSTEM_NO)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO)
 
@@ -106,7 +106,7 @@ seq.generate_df_error(SYSTEM_NO)
 
 
 
-SYSTEM_NO = 6
+SYSTEM_NO = 21
 # N_OBSERVABLES = 3
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
@@ -144,8 +144,8 @@ plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
-# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
+# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=False)
 
 ##
 opt_run = 34
