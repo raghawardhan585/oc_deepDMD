@@ -94,9 +94,10 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ##
 SYSTEM_NO = 21
-seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=list(range(0,24)))
-seq.generate_df_error(SYSTEM_NO)
-# seq.generate_hyperparameter_dataframe(SYSTEM_NO)
+ls_process_runs = list(range(24,48))
+seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
+seq.generate_df_error(SYSTEM_NO,ls_process_runs)
+# seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
 
 
 ## Get the optimal run for the given number of observables
@@ -107,7 +108,7 @@ seq.generate_df_error(SYSTEM_NO)
 
 
 SYSTEM_NO = 21
-# N_OBSERVABLES = 3
+# N_OBSERVABLES = 2
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
 #     df_hyperparameters = pickle.load(handle)
