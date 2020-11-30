@@ -483,7 +483,7 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     X0 = np.empty(shape=(0,4))
     t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
     for i in range(N_CURVES):
-        x0_curr = np.random.uniform(0,70,size=(4))
+        x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'],size=(4))
         X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
         X = odeint(activator_repressor_clock_4states, x0_curr, t, args = sys_params['sys_params_arc4s'])
         Y = sys_params['k_3n'] * X[:, 1:2] / (sys_params['k_3d'] + X[:, 3:4])
