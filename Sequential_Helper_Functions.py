@@ -429,15 +429,17 @@ def plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params):
     return fig
 
 
-def generate_df_error(SYSTEM_NO):
+def generate_df_error(SYSTEM_NO,ls_required_runs):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     ls_train_curves = list(range(20))
     ls_valid_curves = list(range(20, 40))
     ls_test_curves = list(range(40, 60))
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_predictions_SEQUENTIAL = pickle.load(handle)
+    ls_all_available_runs = list(dict_predictions_SEQUENTIAL.keys())
+    ls_runs = set(ls_required_runs).intersection(set(ls_all_available_runs))
     dict_error = {}
-    for run_no in dict_predictions_SEQUENTIAL.keys():
+    for run_no in ls_runs:
         print(run_no)
         dict_error[run_no] = {}
         dict_error[run_no]['train'] = get_error(ls_train_curves,dict_predictions_SEQUENTIAL[run_no])
