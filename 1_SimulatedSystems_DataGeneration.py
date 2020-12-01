@@ -72,16 +72,16 @@ n = 2.
 m = 4.
 k_3n = 3.
 k_3d = 1.08
-x_min = 10
-x_max = 25
+x_min = 20
+x_max = 22
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
 sampling_time = 0.5
-simulation_time = 30
+simulation_time = 100
 N_CURVES = 240
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 22
+SYSTEM_NO = 23
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 # ## Bash Script Generator
