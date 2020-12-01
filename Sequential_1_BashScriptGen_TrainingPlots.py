@@ -93,8 +93,8 @@ seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRIT
 seq.transfer_current_ocDeepDMD_run_files()
 
 ##
-SYSTEM_NO = 22
-ls_process_runs = list(range(24,48))
+SYSTEM_NO = 23
+ls_process_runs = list(range(0,7))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
@@ -107,7 +107,7 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 
-SYSTEM_NO = 22
+SYSTEM_NO = 23
 # N_OBSERVABLES = 2
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
