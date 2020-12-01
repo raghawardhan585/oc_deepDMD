@@ -94,7 +94,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ##
 SYSTEM_NO = 23
-ls_process_runs = list(range(0,24))
+ls_process_runs = list(range(24,48))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
