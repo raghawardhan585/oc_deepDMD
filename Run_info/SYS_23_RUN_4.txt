@@ -1,0 +1,62 @@
+[INFO] Number of total samples: 31840
+[INFO] Observable dimension of a sample: 4
+[INFO] Xp.shape (E-DMD): (31840, 4)
+[INFO] Yf.shape (E-DMD): (31840, 4)
+Number of training snapshots: 15920
+Number of validation snapshots: 15920
+---------    TRAINING BEGINS   ---------
+1.4447048
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0004736617
+                   Validation error:  0.0004732584
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00024277694
+                   Validation error:  0.00024251858
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00024277694
+Current Validation Error      : 0.00024251858
+0.00024277694
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.         0.63957804 0.63957804 0.06571642 0.7708037  0.7708037
+ 0.8977498  0.8977498  0.95960987 0.95960987 0.9464623  0.9464623
+ 0.9990895  0.9990895 ]
+[COMP] The identified Koopman operator is STABLE
+                                    0
+MSE training              0.000242777
+MSE validation            0.000242519
+activation flag                     2
+activation function               elu
+batch size                       1000
+no of epochs                     2000
+r^2 training accuracy         99.2744
+r^2 validation accuracy       99.2825
+step size                         0.5
+training error            0.000242777
+validation error          0.000242519
+x_hidden_variable_list   [9, 9, 9, 9]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                   0            1            2            3
+x_hidden_variable_list             9            9            9            9
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                        0.5          0.5          0.5          0.5
+training error           0.000242777  0.000242777  0.000242777  0.000242777
+validation error         0.000242519  0.000242519  0.000242519  0.000242519
+r^2 training accuracy        99.2744      99.2744      99.2744      99.2744
+r^2 validation accuracy      99.2825      99.2825      99.2825      99.2825
+MSE training             0.000242777  0.000242777  0.000242777  0.000242777
+MSE validation           0.000242519  0.000242519  0.000242519  0.000242519
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
