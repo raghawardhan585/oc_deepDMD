@@ -51,17 +51,17 @@ best_test_error = np.inf
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 20000, 'batch_size': 1000 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 1000 }
+dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 1000 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 1000 }
+dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 1000 }
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 1000 }
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 1000 }
 ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
@@ -719,9 +719,9 @@ with tf.device(DEVICE_NAME):
     # AFTER RUN 1
     all_histories = all_histories1
     dict_run_info = dict_run_info1
-    psixp = psix1p
-    psixf = psix1f
-    KxT = KxT_11
+    psixp = psix1p_const
+    psixf = psix1f_const
+    KxT = tf.Variable(KxT_11_num)
     dict_K = {'KxT': KxT}
     dict_feed = {'xpT': xp_feed, 'xfT': xf_feed}
     dict_psi = {'xpT': psixp, 'xfT': psixf}
@@ -729,7 +729,7 @@ with tf.device(DEVICE_NAME):
     # AFTER RUN 2
     # all_histories = {1: all_histories1, 2: all_histories2}
     # dict_run_info = {1: dict_run_info1, 2: dict_run_info2}
-    # psixf = tf.concat([psix1f, psix2f], axis=1)
+    # psixf = tf.concat([psix1f_const, psix2f_const], axis=1) $TODO - Verify this output variable when unlocking
     # dict_K = {'WhT': Wh1T}
     # dict_feed = {'xfT': xf_feed, 'yfT': yf_feed}
     # dict_psi = {'xfT': psixf}
@@ -806,7 +806,7 @@ print('------ ------ -----')
 print('----- Run Info ----')
 print('------ ------ -----')
 for items in dict_run_info.keys():
-    print(pd.DataFrame(dict_run_info[items]))
+    print(pd.DataFrame(dict_run_info[items]).T)
     print('-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----')
 
 # Saving the hyperparameters
