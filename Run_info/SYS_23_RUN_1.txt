@@ -1,0 +1,251 @@
+[INFO] Number of total samples: 31840
+[INFO] Observable dimension of a sample: 4
+[INFO] Xp.shape (E-DMD): (31840, 4)
+[INFO] Yf.shape (E-DMD): (31840, 4)
+Number of training snapshots: 15920
+Number of validation snapshots: 15920
+---------    TRAINING BEGINS   ---------
+1.6126288
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  5000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0012544497
+                   Validation error:  0.001262654
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.000931345
+                   Validation error:  0.00093951967
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  0.0008000174
+                   Validation error:  0.00080722076
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  0.00073745527
+                   Validation error:  0.0007458308
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  0.0004719648
+                   Validation error:  0.00047715404
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.0004719648
+Current Validation Error      : 0.00047715404
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.3
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0003758202
+                   Validation error:  0.00037858103
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00033387108
+                   Validation error:  0.0003367993
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00033387108
+Current Validation Error      : 0.0003367993
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.1
+Train Error Threshold      :  1e-07
+Validation Error Threshold :  1e-07
+Maximum number of Epochs   :  10000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0003227158
+                   Validation error:  0.0003252914
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00031398874
+                   Validation error:  0.00031621163
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  0.00030636007
+                   Validation error:  0.00030830098
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  0.0002999369
+                   Validation error:  0.00030166123
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  0.00029378524
+                   Validation error:  0.0002953294
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  0.000288281
+                   Validation error:  0.000289626
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  0.00028318673
+                   Validation error:  0.0002844103
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  0.00027845218
+                   Validation error:  0.0002795386
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  0.00027393337
+                   Validation error:  0.00027487872
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  0.00026970095
+                    Validation error:  0.00027052828
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00026970095
+Current Validation Error      : 0.00027052828
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.08
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.00026638992
+                   Validation error:  0.000267163
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.0002632672
+                   Validation error:  0.00026397928
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.0002632672
+Current Validation Error      : 0.00026397928
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.05
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.00026138042
+                   Validation error:  0.00026204484
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00025953658
+                   Validation error:  0.00026016362
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00025953658
+Current Validation Error      : 0.00026016362
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.01
+Train Error Threshold      :  1e-08
+Validation Error Threshold :  1e-08
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0002591661
+                   Validation error:  0.00025978836
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00025880826
+                   Validation error:  0.00025942235
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00025880826
+Current Validation Error      : 0.00025942235
+0.00025880826
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.         0.69533664 0.69533664 0.9193497  0.9193497  0.7279935
+ 0.97728014 0.97728014]
+[COMP] The identified Koopman operator is STABLE
+                                    0             1  ...             4             5
+x_hidden_variable_list   [3, 3, 3, 3]  [3, 3, 3, 3]  ...  [3, 3, 3, 3]  [3, 3, 3, 3]
+activation flag                     2             2  ...             2             2
+activation function               elu           elu  ...           elu           elu
+no of epochs                     5000          2000  ...          2000          2000
+batch size                       1000          1000  ...          1000          1000
+step size                         0.5           0.3  ...          0.05          0.01
+training error            0.000471965   0.000333871  ...   0.000259537   0.000258808
+validation error          0.000477154   0.000336799  ...   0.000260164   0.000259422
+r^2 training accuracy         99.8392       99.8619  ...       99.8915       99.8918
+r^2 validation accuracy       99.8367       99.8609  ...       99.8914       99.8916
+MSE training              0.000471965   0.000333871  ...   0.000259537   0.000258808
+MSE validation            0.000477154   0.000336799  ...   0.000260164   0.000259422
+
+[12 rows x 6 columns]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    5000         5000         5000         5000
+batch size                      1000         1000         1000         1000
+step size                        0.5          0.5          0.5          0.5
+training error           0.000471965  0.000471965  0.000471965  0.000471965
+validation error         0.000477154  0.000477154  0.000477154  0.000477154
+r^2 training accuracy        99.8392      99.8392      99.8392      99.8392
+r^2 validation accuracy      99.8367      99.8367      99.8367      99.8367
+MSE training             0.000471965  0.000471965  0.000471965  0.000471965
+MSE validation           0.000477154  0.000477154  0.000477154  0.000477154
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                        0.3          0.3          0.3          0.3
+training error           0.000333871  0.000333871  0.000333871  0.000333871
+validation error         0.000336799  0.000336799  0.000336799  0.000336799
+r^2 training accuracy        99.8619      99.8619      99.8619      99.8619
+r^2 validation accuracy      99.8609      99.8609      99.8609      99.8609
+MSE training             0.000333871  0.000333871  0.000333871  0.000333871
+MSE validation           0.000336799  0.000336799  0.000336799  0.000336799
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                   10000        10000        10000        10000
+batch size                      1000         1000         1000         1000
+step size                        0.1          0.1          0.1          0.1
+training error           0.000269701  0.000269701  0.000269701  0.000269701
+validation error         0.000270528  0.000270528  0.000270528  0.000270528
+r^2 training accuracy        99.8881      99.8881      99.8881      99.8881
+r^2 validation accuracy      99.8879      99.8879      99.8879      99.8879
+MSE training             0.000269701  0.000269701  0.000269701  0.000269701
+MSE validation           0.000270528  0.000270528  0.000270528  0.000270528
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                       0.08         0.08         0.08         0.08
+training error           0.000263267  0.000263267  0.000263267  0.000263267
+validation error         0.000263979  0.000263979  0.000263979  0.000263979
+r^2 training accuracy        99.8901      99.8901      99.8901      99.8901
+r^2 validation accuracy        99.89        99.89        99.89        99.89
+MSE training             0.000263267  0.000263267  0.000263267  0.000263267
+MSE validation           0.000263979  0.000263979  0.000263979  0.000263979
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                       0.05         0.05         0.05         0.05
+training error           0.000259537  0.000259537  0.000259537  0.000259537
+validation error         0.000260164  0.000260164  0.000260164  0.000260164
+r^2 training accuracy        99.8915      99.8915      99.8915      99.8915
+r^2 validation accuracy      99.8914      99.8914      99.8914      99.8914
+MSE training             0.000259537  0.000259537  0.000259537  0.000259537
+MSE validation           0.000260164  0.000260164  0.000260164  0.000260164
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+                                   0            1            2            3
+x_hidden_variable_list             3            3            3            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                       0.01         0.01         0.01         0.01
+training error           0.000258808  0.000258808  0.000258808  0.000258808
+validation error         0.000259422  0.000259422  0.000259422  0.000259422
+r^2 training accuracy        99.8918      99.8918      99.8918      99.8918
+r^2 validation accuracy      99.8916      99.8916      99.8916      99.8916
+MSE training             0.000258808  0.000258808  0.000258808  0.000258808
+MSE validation           0.000259422  0.000259422  0.000259422  0.000259422
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
