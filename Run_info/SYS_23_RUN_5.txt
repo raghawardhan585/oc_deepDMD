@@ -1,0 +1,61 @@
+[INFO] Number of total samples: 31840
+[INFO] Observable dimension of a sample: 4
+[INFO] Xp.shape (E-DMD): (31840, 4)
+[INFO] Yf.shape (E-DMD): (31840, 4)
+Number of training snapshots: 15920
+Number of validation snapshots: 15920
+---------    TRAINING BEGINS   ---------
+3.1468616
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.001605365
+                   Validation error:  0.0016065706
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.0007233458
+                   Validation error:  0.0007239007
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.0007233458
+Current Validation Error      : 0.0007239007
+0.0007233458
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.         0.7361195  0.7361195  0.9363949  0.9363949  0.74647045
+ 0.9776025  0.9776025 ]
+[COMP] The identified Koopman operator is STABLE
+                                    0
+MSE training              0.000723346
+MSE validation            0.000723901
+activation flag                     2
+activation function               elu
+batch size                       1000
+no of epochs                     2000
+r^2 training accuracy          91.707
+r^2 validation accuracy       91.6535
+step size                         0.5
+training error            0.000723346
+validation error          0.000723901
+x_hidden_variable_list   [9, 9, 9, 3]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                   0            1            2            3
+x_hidden_variable_list             9            9            9            3
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      1000         1000         1000         1000
+step size                        0.5          0.5          0.5          0.5
+training error           0.000723346  0.000723346  0.000723346  0.000723346
+validation error         0.000723901  0.000723901  0.000723901  0.000723901
+r^2 training accuracy         91.707       91.707       91.707       91.707
+r^2 validation accuracy      91.6535      91.6535      91.6535      91.6535
+MSE training             0.000723346  0.000723346  0.000723346  0.000723346
+MSE validation           0.000723901  0.000723901  0.000723901  0.000723901
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
