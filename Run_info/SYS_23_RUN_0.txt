@@ -1,0 +1,62 @@
+[INFO] Number of total samples: 31840
+[INFO] Observable dimension of a sample: 4
+[INFO] Xp.shape (E-DMD): (31840, 4)
+[INFO] Yf.shape (E-DMD): (31840, 4)
+Number of training snapshots: 15920
+Number of validation snapshots: 15920
+---------    TRAINING BEGINS   ---------
+1.9422857
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  3000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.0009973041
+                   Validation error:  0.0009990005
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.00051355007
+                   Validation error:  0.000519103
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.00051355007
+Current Validation Error      : 0.000519103
+0.00051355007
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.         0.5614691  0.65440136 0.65440136 1.4337174  0.22358987
+ 0.912302   0.912302   0.5231802  0.9711421  0.9711421  0.8205333
+ 0.99951756 0.99951756]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+                                       0
+MSE training                  0.00051355
+MSE validation               0.000519103
+activation flag                        2
+activation function                  elu
+batch size                          3000
+no of epochs                        2000
+r^2 training accuracy            99.7695
+r^2 validation accuracy           99.768
+step size                            0.5
+training error                0.00051355
+validation error             0.000519103
+x_hidden_variable_list   [15, 15, 15, 9]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                   0            1            2            3
+x_hidden_variable_list            15           15           15            9
+activation flag                    2            2            2            2
+activation function              elu          elu          elu          elu
+no of epochs                    2000         2000         2000         2000
+batch size                      3000         3000         3000         3000
+step size                        0.5          0.5          0.5          0.5
+training error            0.00051355   0.00051355   0.00051355   0.00051355
+validation error         0.000519103  0.000519103  0.000519103  0.000519103
+r^2 training accuracy        99.7695      99.7695      99.7695      99.7695
+r^2 validation accuracy       99.768       99.768       99.768       99.768
+MSE training              0.00051355   0.00051355   0.00051355   0.00051355
+MSE validation           0.000519103  0.000519103  0.000519103  0.000519103
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
