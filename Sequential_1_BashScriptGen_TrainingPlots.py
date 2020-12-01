@@ -146,7 +146,7 @@ ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True,one_step=True)
-# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=True)
 
 ##
 opt_run = 34

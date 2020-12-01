@@ -552,7 +552,7 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False,one_
                     print('No output to plot')
             if observables:
                 # Plot the observables
-                for j in range(dict_run[ls_runs[i]]['psiX'].shape[1]):
+                for j in range(n_states,dict_run[ls_runs[i]]['psiX'].shape[1]):
                     ax[row_i,col_i+2].plot(dict_run[ls_runs[i]]['psiX'][:,j],'.',color = colors[np.mod(j,7)],linewidth = int(j/7+1))
                     if one_step:
                         ax[row_i, col_i + 2].plot(dict_run[ls_runs[i]]['psiX_est_one_step'][:, j],
