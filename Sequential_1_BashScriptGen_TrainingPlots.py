@@ -95,39 +95,41 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ##
 SYSTEM_NO = 23
-ls_process_runs = list(range(72))
+ls_process_runs = list(range(0,92))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
 
+##
+ls_filtered_runs =[]
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+for run_i in ls_process_runs:
+    with open(sys_folder_name + '/Sequential/RUN_' + str(run_i) + '/dict_hyperparameters.pickle', 'rb') as handle:
+        dict_hp_i = pickle.load(handle)
+    if dict_hp_i['x_obs'] == 9:
+        ls_filtered_runs.append(run_i)
+print(ls_filtered_runs)
+seq.generate_df_error(SYSTEM_NO,ls_filtered_runs)
+
+## N-step predictions
+run_i = ls_filtered_runs[-1]
+N_STEPS = 10
+# Get the data
+sess = tf.InteractiveSession()
+dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, run_i, sess)
+# for data_index in dict_indexed_data.keys():
+
+
+# Need to write a generic function that gives the n-step predictions
+
 
 ## Get the optimal run for the given number of observables
 
-# dict_filter_criteria={}
-# dict_filter_criteria['x'] = {'obs':[],}
-
-
-
 SYSTEM_NO = 23
-# N_OBSERVABLES = 2
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# with open(sys_folder_name + '/df_hyperparameters.pickle', 'rb') as handle:
-#     df_hyperparameters = pickle.load(handle)
-# df_hyp_const_obs = df_hyperparameters[df_hyperparameters.n_observables==N_OBSERVABLES]
-# ls_runs_const_obs = list(df_hyp_const_obs.index)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
 
-# ls_runs_const_obs = list(range(19))
-
-# Check is
-# ls_all_runs = list(df_hyperparameters.index)
-# for items in ls_runs_const_obs:
-#     if items not in ls_all_runs:
-#         ls_runs_const_obs.remove(items)
-
-
-# df_error_const_obs = df_error.loc[ls_runs_const_obs,:]
 df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
