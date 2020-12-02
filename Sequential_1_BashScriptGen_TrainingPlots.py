@@ -282,3 +282,4 @@ plot_params['xy_label_font_size']=15
 plot_params['individual_fig_width']=15
 plot_params['individual_fig_height']=15
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
+
