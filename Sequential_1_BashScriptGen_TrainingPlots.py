@@ -101,7 +101,9 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
 
 ##
+ls_process_runs = list(range(0,92))
 ls_filtered_runs =[]
+SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 for run_i in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run_i) + '/dict_hyperparameters.pickle', 'rb') as handle:
@@ -109,15 +111,47 @@ for run_i in ls_process_runs:
     if dict_hp_i['x_obs'] == 9:
         ls_filtered_runs.append(run_i)
 print(ls_filtered_runs)
-seq.generate_df_error(SYSTEM_NO,ls_filtered_runs)
+
 
 ## N-step predictions
-run_i = ls_filtered_runs[-1]
-N_STEPS = 10
+SYSTEM_NO = 23
+ls_steps = list(range(10,200,10))
 # Get the data
-sess = tf.InteractiveSession()
-dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, run_i, sess)
-# for data_index in dict_indexed_data.keys():
+
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
+    dict_indexed_data = pickle.load(handle)
+dict_rmse ={}
+dict_r2={}
+for run_i in ls_filtered_runs:
+    print('RUN: ',run_i)
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
+    sess = tf.InteractiveSession()
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    psixfT = tf.get_collection('psixfT')[0]
+    xfT_feed = tf.get_collection('xfT_feed')[0]
+    KxT = tf.get_collection('KxT')[0]
+    KxT_num = sess.run(KxT)
+    dict_rmse_run = {}
+    dict_r2_run = {}
+    for data_index in dict_indexed_data.keys():  # iterating through each dataset
+        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
+        X_scaled = dict_DATA_i['X']
+        psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
+        dict_rmse_run[data_index] = {}
+        dict_r2_run[data_index] = {}
+        for i in ls_steps:  # iterating through each step prediction
+            np_psiX_true = psiX[i:, :]
+            np_psiX_pred = np.matmul(psiX[:-i, :],np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
+            dict_rmse_run[data_index][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+            dict_r2_run[data_index][i] = np.max([0, (1 - np.sum(np.square(np_psiX_true - np_psiX_pred)) / np.sum(np.square(np_psiX_true))) * 100])
+    dict_rmse[run_i]= pd.DataFrame(dict_rmse_run).mean(axis=1).to_dict()
+    dict_r2[run_i]= pd.DataFrame(dict_r2_run).mean(axis=1).to_dict()
+    tf.reset_default_graph()
+    sess.close()
+print(pd.DataFrame(dict_r2))
 
 
 # Need to write a generic function that gives the n-step predictions

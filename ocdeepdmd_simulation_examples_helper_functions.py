@@ -366,7 +366,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
     return
 
 def generate_2state_initial_condition():
-    r = np.random.uniform(9.,10.)
+    r = np.random.uniform(5.,10.)
     theta = np.random.uniform(0,2*np.pi)
     return np.array([[r*np.cos(theta),r*np.sin(theta)]])
 
