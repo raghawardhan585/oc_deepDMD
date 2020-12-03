@@ -56,7 +56,7 @@ for i in list(dict_data.keys())[0:]:
             if dist<2:
                 plt.arrow(x,y,dx,dy,head_width = 0.1,head_length=0.5,alpha=1,color='tab:green')
             else:
-                plt.arrow(x, y, dx, dy, head_width=0.5, head_length=3, alpha=1, color='tab:green')
+                plt.arrow(x, y, dx, dy, head_width=0.3, head_length=3, alpha=1, color='tab:green')
 plt.xlabel('x1')
 plt.ylabel('x2')
 plt.plot([0],[0],'o',color='tab:red',markersize=10)

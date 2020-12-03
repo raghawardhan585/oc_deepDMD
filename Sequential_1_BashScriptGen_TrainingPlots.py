@@ -301,3 +301,10 @@ for run_i in ls_filtered_runs:
     tf.reset_default_graph()
     sess.close()
 print(pd.DataFrame(dict_r2))
+
+
+## SYSTEM 1 ANALYSIS
+SYSTEM_NO = 7
+ls_process_runs = list(range(0, 72))
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+os.listdir(sys_folder_name + '/Sequential')
