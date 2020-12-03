@@ -415,8 +415,12 @@ def plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params):
     i =1
     for run_no in ls_run_no:
         # Open the run folder
-        with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/all_histories.pickle', 'rb') as handle:
-            df_run_info = pd.DataFrame(pickle.load(handle)[2])
+        try:
+            with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/all_histories.pickle', 'rb') as handle:
+                df_run_info = pd.DataFrame(pickle.load(handle)[2])
+        except:
+            with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/all_histories.pickle', 'rb') as handle:
+                df_run_info = pd.DataFrame(pickle.load(handle))
         ax = fig.add_subplot(n_y, n_x, i)
         i=i+1
         ax.plot(df_run_info.index,np.log10(df_run_info.loc[:,'train MSE']),color = colors[0],label = 'train')
@@ -565,3 +569,43 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,observables=False,one_
                 break
     f.show()
     return f
+
+def n_step_prediction_error_table(SYSTEM_NO,ls_filtered_runs,ls_steps):
+    # Get the required simulated data
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
+        dict_indexed_data = pickle.load(handle)
+    # Initialization
+    dict_rmse = {}
+    dict_r2 = {}
+    # Iterate through ech run to calculate the various step prediction errors
+    for run_i in ls_filtered_runs:
+        print('RUN: ', run_i)
+        run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
+        sess = tf.InteractiveSession()
+        saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+        saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+        psixfT = tf.get_collection('psixfT')[0]
+        xfT_feed = tf.get_collection('xfT_feed')[0]
+        KxT = tf.get_collection('KxT')[0]
+        KxT_num = sess.run(KxT)
+        dict_rmse_run = {}
+        dict_r2_run = {}
+        for data_index in dict_indexed_data.keys():  # iterating through each dataset
+            dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
+            X_scaled = dict_DATA_i['X']
+            psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
+            dict_rmse_run[data_index] = {}
+            dict_r2_run[data_index] = {}
+            for i in ls_steps:  # iterating through each step prediction
+                np_psiX_true = psiX[i:, :]
+                np_psiX_pred = np.matmul(psiX[:-i, :],
+                                         np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
+                dict_rmse_run[data_index][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+                dict_r2_run[data_index][i] = np.max(
+                    [0, (1 - np.sum(np.square(np_psiX_true - np_psiX_pred)) / np.sum(np.square(np_psiX_true))) * 100])
+        dict_rmse[run_i] = pd.DataFrame(dict_rmse_run).mean(axis=1).to_dict()
+        dict_r2[run_i] = pd.DataFrame(dict_r2_run).mean(axis=1).to_dict()
+        tf.reset_default_graph()
+        sess.close()
+    return pd.DataFrame(dict_r2),pd.DataFrame(dict_rmse)

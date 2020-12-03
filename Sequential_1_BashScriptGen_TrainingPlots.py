@@ -134,18 +134,15 @@ with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperpara
 print(dict_hp)
 #========================================================================================================================
 
-## OUTPUT STUFF
-# Runs error plot
+## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
 SYSTEM_NO = 23
-ls_run_no = list(range(120,144))
+ls_run_no = list(range(144,168))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
 plot_params['individual_fig_height']=2
 seq.plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params)
-
-
-## prediction and optimal plots
+## RUN 2 - Caluculate error and find the optimal run
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
@@ -163,28 +160,25 @@ plot_params ={}
 plot_params['individual_fig_height'] = 5 #2
 plot_params['individual_fig_width'] = 4#2.4
 print('Optimal Run no: ',opt_run)
-##
-# f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=False)
+f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=False)
 f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False)
-#
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 print(dict_hp)
-
-## Info of other output Runs
-run_no = 56
-
-dict_predictions_opt_run = seq.get_prediction_data_output(SYSTEM_NO,run_no)
-plot_params ={}
-plot_params['individual_fig_height'] = 5 #2
-plot_params['individual_fig_width'] = 4#2.4
-print('Run no: ',run_no)
-# f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=False)
-f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False)
+# ## RUN 2 - Get info on any other run that we might deem worthy
+# run_no = 56
 #
-with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/dict_hyperparameters.pickle','rb') as handle:
-    dict_hp = pickle.load(handle)
-print(dict_hp)
+# dict_predictions_opt_run = seq.get_prediction_data_output(SYSTEM_NO,run_no)
+# plot_params ={}
+# plot_params['individual_fig_height'] = 5 #2
+# plot_params['individual_fig_width'] = 4#2.4
+# print('Run no: ',run_no)
+# # f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=False)
+# f1 = seq.plot_fit_Y(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False)
+# #
+# with open(sys_folder_name + '/Sequential/RUN_' + str(run_no) + '/dict_hyperparameters.pickle','rb') as handle:
+#     dict_hp = pickle.load(handle)
+# print(dict_hp)
 
 ## ------------------------------------------------------------------------------------------------------------------------------
 
@@ -221,7 +215,7 @@ plot_params['individual_fig_width']=15
 plot_params['individual_fig_height']=15
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
-## Saving the Optimal first run result
+## RUN 1 - Saving the Optimal first run result
 SYSTEM_NO = 23
 RUN_NO = 115
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -236,7 +230,7 @@ print(d.keys())
 with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_1.pickle','wb') as handle:
     pickle.dump(d,handle)
 
-## Saving the Optimal Results of the Second Run
+## RUN 2 - Saving the Optimal Results of the Second Run
 SYSTEM_NO = 23
 RUN_NO = 153
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -252,15 +246,6 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_2.pickle','wb') as 
     pickle.dump(d,handle)
 
 
-
-
-
-
-
-
-
-
-
 ## RUN 1 PROCESSING - Filtering the runs based on the hyperparameters
 ls_process_runs = list(range(0,92))
 ls_filtered_runs =[]
@@ -273,56 +258,38 @@ for run_i in ls_process_runs:
         ls_filtered_runs.append(run_i)
 print(ls_filtered_runs)
 
-##
-ls_filtered_runs = ls_process_runs
-## RUN 1/3 - upto N-step prediction error calculation for all the specified runs (ls_filtered_runs)
-SYSTEM_NO = 23
-ls_steps = list(range(10,200,10))
-# Get the data
-
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
-    dict_indexed_data = pickle.load(handle)
-dict_rmse ={}
-dict_r2={}
-for run_i in ls_filtered_runs:
-    print('RUN: ',run_i)
-    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
-    sess = tf.InteractiveSession()
-    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-    dict_params = {}
-    psixfT = tf.get_collection('psixfT')[0]
-    xfT_feed = tf.get_collection('xfT_feed')[0]
-    KxT = tf.get_collection('KxT')[0]
-    KxT_num = sess.run(KxT)
-    dict_rmse_run = {}
-    dict_r2_run = {}
-    for data_index in dict_indexed_data.keys():  # iterating through each dataset
-        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
-        X_scaled = dict_DATA_i['X']
-        psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
-        dict_rmse_run[data_index] = {}
-        dict_r2_run[data_index] = {}
-        for i in ls_steps:  # iterating through each step prediction
-            np_psiX_true = psiX[i:, :]
-            np_psiX_pred = np.matmul(psiX[:-i, :],np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
-            dict_rmse_run[data_index][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
-            dict_r2_run[data_index][i] = np.max([0, (1 - np.sum(np.square(np_psiX_true - np_psiX_pred)) / np.sum(np.square(np_psiX_true))) * 100])
-    dict_rmse[run_i]= pd.DataFrame(dict_rmse_run).mean(axis=1).to_dict()
-    dict_r2[run_i]= pd.DataFrame(dict_r2_run).mean(axis=1).to_dict()
-    tf.reset_default_graph()
-    sess.close()
-print(pd.DataFrame(dict_r2))
-
-
 ## SYSTEM 1 ANALYSIS
 SYSTEM_NO = 7
 ls_process_runs = list(range(0, 72))
+ls_steps = list(range(3,31,3))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-os.listdir(sys_folder_name + '/Sequential')
 
-# # Get the unique observables
-# for run in ls_process_runs:
-#     with open(sys_folder_name + 'Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
-#         d =
+dict_obs = {}
+ls_obs_unique = []
+# Get the unique observables
+for run in ls_process_runs:
+    with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
+        d = pickle.load(handle)
+    obs_curr = (d['x_obs'],d['y_obs'],d['xy_obs'])
+    dict_obs[run] = obs_curr
+    if obs_curr not in ls_obs_unique:
+        ls_obs_unique.append(obs_curr)
+
+dict_run_sorted_by_obs ={}
+for obs in ls_obs_unique:
+    dict_run_sorted_by_obs[obs] = []
+    for i in dict_obs.keys():
+        if dict_obs[i] == obs:
+            dict_run_sorted_by_obs[obs].append(i)
+
+
+
+df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[(2, 2, 2)],ls_steps)
+
+plt.plot(df_r2)
+# plt.ylim([0,100])
+plt.show()
+
+# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+# with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
+#     dict_indexed_data = pickle.load(handle)
