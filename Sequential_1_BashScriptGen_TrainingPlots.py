@@ -24,67 +24,66 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-# DEVICE_TO_RUN_ON = 'microtensor'
+DEVICE_TO_RUN_ON = 'microtensor'
 # DEVICE_TO_RUN_ON = 'optictensor'
-DEVICE_TO_RUN_ON = 'goldentensor'
+# DEVICE_TO_RUN_ON = 'goldentensor'
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 23
-NO_OF_ITERATIONS_PER_GPU = 1
-NO_OF_ITERATIONS_IN_CPU = 1
+NO_OF_ITERATIONS_PER_GPU = 2
+NO_OF_ITERATIONS_IN_CPU = 2
 dict_run_conditions = {}
 
 # MICROTENSOR CPU RUN
-# dict_run_conditions[0] = {}
-# dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[1] = {}
-# dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
-# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-
-# dict_run_conditions[2] = {}
-# dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
-# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-# dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-# dict_run_conditions[3] = {}
-# dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
-# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-# dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-
-# Golden tensor
 dict_run_conditions[0] = {}
 dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
 dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
 dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
 dict_run_conditions[1] = {}
-dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
 dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 dict_run_conditions[2] = {}
-dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
 dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
 dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
 dict_run_conditions[3] = {}
-dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
 dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
 dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+
+# Golden tensor
+# dict_run_conditions[0] = {}
+# dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
+# dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+# dict_run_conditions[1] = {}
+# dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
+# dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[2] = {}
+# dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
+# dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+# dict_run_conditions[3] = {}
+# dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
+# dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
 
 # Optic tensor
 # dict_run_conditions[0] = {}
 # dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':4}
+# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
 # dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':4}
 # dict_run_conditions[1] = {}
 # dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
 # dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
 # dict_run_conditions[2] = {}
 # dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
 # dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
 # dict_run_conditions[3] = {}
 # dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
 # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
 
 seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
@@ -95,7 +94,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ##
 SYSTEM_NO = 23
-ls_process_runs = list(range(92,112))
+ls_process_runs = list(range(112,120))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 # seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
@@ -112,7 +111,8 @@ for run_i in ls_process_runs:
         ls_filtered_runs.append(run_i)
 print(ls_filtered_runs)
 
-
+##
+ls_filtered_runs = ls_process_runs
 ## N-step predictions
 SYSTEM_NO = 23
 ls_steps = list(range(10,200,10))
@@ -283,3 +283,17 @@ plot_params['individual_fig_width']=15
 plot_params['individual_fig_height']=15
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
+## Saving the Optimal first run result
+SYSTEM_NO = 23
+RUN_NO = 115
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
+print(d.keys())
+with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_1.pickle','wb') as handle:
+    pickle.dump(d,handle)

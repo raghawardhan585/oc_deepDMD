@@ -14,9 +14,10 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
 colors = np.asarray(colors);  # defines a color palette
 
 
+## Figure 1 - Data of system 1
+
 SYSTEM_NO = 7
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-
 
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
     dict_data = pickle.load(handle)
