@@ -748,7 +748,7 @@ with tf.device(DEVICE_NAME):
     psixf = tf.concat([psix1f_const, psix2f_const], axis=1) # TODO - Verify this output variable when unlocking
     WhT = tf.Variable(Wh1T_num)
     sess.run(tf.global_variables_initializer())
-    dict_K = {'WhT': Wh1T}
+    dict_K = {'WhT': WhT}
     dict_feed = {'xfT': xf_feed, 'yfT': yf_feed}
     dict_psi = {'xfT': psixf}
 
