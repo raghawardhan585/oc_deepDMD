@@ -34,56 +34,56 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
         dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-        dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+        dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
+        dict_run_conditions[0]['xy'] = {'dict_size':3,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
         dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':3,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[2] = {}
         dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':3,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[3] = {}
         dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-        dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+        dict_run_conditions[3]['xy'] = {'dict_size':3,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON =='goldentensor':
         # Golden tensor
         dict_run_conditions[0] = {}
         dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
-        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+        dict_run_conditions[0]['xy'] = {'dict_size':6,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[1] = {}
         dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':6,'nn_layers':3,'nn_nodes':9}
         dict_run_conditions[2] = {}
         dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
-        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':6,'nn_layers':4,'nn_nodes':6}
         dict_run_conditions[3] = {}
         dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
-        dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+        dict_run_conditions[3]['xy'] = {'dict_size':6,'nn_layers':4,'nn_nodes':9}
     elif DEVICE_TO_RUN_ON == 'optictensor':
         # Optic tensor
         dict_run_conditions[0] = {}
         dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
-        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':4}
+        dict_run_conditions[0]['xy'] = {'dict_size':9,'nn_layers':3,'nn_nodes':9}
         dict_run_conditions[1] = {}
         dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':9,'nn_layers':3,'nn_nodes':12}
         dict_run_conditions[2] = {}
         dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
-        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[3] = {}
         dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
-        dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+        dict_run_conditions[3]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':12}
     seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
 ## Transfer the oc deepDMD files
@@ -151,7 +151,7 @@ ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_run_indices = list(range(120,144))
+ls_process_run_indices = list(range(144,168))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
@@ -236,7 +236,20 @@ print(d.keys())
 with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_1.pickle','wb') as handle:
     pickle.dump(d,handle)
 
-
+## Saving the Optimal Results of the Second Run
+SYSTEM_NO = 23
+RUN_NO = 153
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
+print(d.keys())
+with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_2.pickle','wb') as handle:
+    pickle.dump(d,handle)
 
 
 
@@ -308,3 +321,8 @@ SYSTEM_NO = 7
 ls_process_runs = list(range(0, 72))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 os.listdir(sys_folder_name + '/Sequential')
+
+# # Get the unique observables
+# for run in ls_process_runs:
+#     with open(sys_folder_name + 'Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
+#         d =
