@@ -19,34 +19,26 @@ colors = np.asarray(colors);  # defines a color palette
 ## Figure 1 - Data of system 1
 
 # System Parameters
-
 A = np.array([[0.86,0.],[0.8,0.4]])
 gamma = -0.9
 # Simulation Parameters
 N_data_points = 30
 N_CURVES = 240
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-
+# Phase Space Data
 dict_data = {}
 X0 = np.empty(shape=(0, 2))
 i=0
-for x1,x2 in itertools.product(list(np.arange(-10,11,2)), list(np.arange(-125,21,20))):
+for x1,x2 in itertools.product(list(np.arange(-10,11,2)), list(np.arange(-125,16,20))):
     sys_params['x0'] = np.array([[x1,x2]])
     X0 = np.concatenate([X0, sys_params['x0']], axis=0)
     dict_data[i] = oc.sim_sys_1_2(sys_params)
     i = i+1
-    # ax[0].plot(dict_indexed_data[i]['X'][:, 0], dict_indexed_data[i]['X'][:, 1])
-    # ax[1].plot(dict_indexed_data[i]['Y'])
-# ax[0].plot(X0[:, 0], X0[:, 1], '*')
-# plt.show()
-
-
-##
-
+# Plot
 plt.figure()
 alpha = 1.0
 epsilon = alpha - 0.01
-arrow_length = 0.03
+arrow_length = 0.3
 ls_pts = list(range(0,1))
 for i in list(dict_data.keys())[0:]:
     for j in ls_pts:
@@ -58,19 +50,19 @@ for i in list(dict_data.keys())[0:]:
             dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
             x = dict_data[i]['X'][j, 0]
             y = dict_data[i]['X'][j, 1]
-            dx = (dict_data[i]['X'][j+1, 0] - dict_data[i]['X'][j, 0] )*arrow_length
-            dy = (dict_data[i]['X'][j+1, 1] - dict_data[i]['X'][j, 1] )*arrow_length
-            print(x,' ',y,' ',dx,' ',dy)
-            plt.arrow(x,y,dx,dy,head_width = 0.3,head_length=3,alpha=1,color='tab:green')
+            dx = (dict_data[i]['X'][j + 1, 0] - dict_data[i]['X'][j, 0]) * arrow_length
+            dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
+            # print(x,' ',y,' ',dist)
+            if dist<2:
+                plt.arrow(x,y,dx,dy,head_width = 0.1,head_length=0.5,alpha=1,color='tab:green')
+            else:
+                plt.arrow(x, y, dx, dy, head_width=0.5, head_length=3, alpha=1, color='tab:green')
 plt.xlabel('x1')
 plt.ylabel('x2')
 plt.plot([0],[0],'o',color='tab:red',markersize=10)
 plt.xlim([-10,10])
-plt.ylim([-125,20])
+plt.ylim([-126,16])
 plt.show()
-
-# plt.figure()
-
 
 ##
 
