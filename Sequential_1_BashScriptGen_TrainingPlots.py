@@ -24,146 +24,83 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DEVICE_TO_RUN_ON = 'microtensor'
-# DEVICE_TO_RUN_ON = 'optictensor'
-# DEVICE_TO_RUN_ON = 'goldentensor'
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 23
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 dict_run_conditions = {}
 
-# MICROTENSOR CPU RUN
-dict_run_conditions[0] = {}
-dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-dict_run_conditions[1] = {}
-dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
-dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-dict_run_conditions[2] = {}
-dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
-dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-dict_run_conditions[3] = {}
-dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
-dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
+    if DEVICE_TO_RUN_ON == 'microtensor':
+        # MICROTENSOR CPU RUN
+        dict_run_conditions[0] = {}
+        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['y']  = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
+        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+        dict_run_conditions[1] = {}
+        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
+        dict_run_conditions[1]['y']  = {'dict_size':2,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[2] = {}
+        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
+        dict_run_conditions[2]['y']  = {'dict_size':2,'nn_layers':3,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        # dict_run_conditions[3] = {}
+        # dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
+        # dict_run_conditions[3]['y']  = {'dict_size':2,'nn_layers':3,'nn_nodes':12}
+        # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+    elif DEVICE_TO_RUN_ON =='goldentensor':
+        # Golden tensor
+        dict_run_conditions[0] = {}
+        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['y']  = {'dict_size':2,'nn_layers':4,'nn_nodes':3}
+        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
+        dict_run_conditions[1] = {}
+        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[1]['y']  = {'dict_size':2,'nn_layers':4,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[2] = {}
+        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[2]['y']  = {'dict_size':2,'nn_layers':4,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        # dict_run_conditions[3] = {}
+        # dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        # dict_run_conditions[3]['y']  = {'dict_size':2,'nn_layers':4,'nn_nodes':12}
+        # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+    elif DEVICE_TO_RUN_ON == 'optictensor':
+        # Optic tensor
+        dict_run_conditions[0] = {}
+        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['y']  = {'dict_size':2,'nn_layers':5,'nn_nodes':3}
+        dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':4}
+        dict_run_conditions[1] = {}
+        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[1]['y']  = {'dict_size':2,'nn_layers':5,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
+        dict_run_conditions[2] = {}
+        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[2]['y']  = {'dict_size':2,'nn_layers':5,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        # dict_run_conditions[3] = {}
+        # dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        # dict_run_conditions[3]['y']  = {'dict_size':2,'nn_layers':5,'nn_nodes':12}
+        # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+    seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
-# Golden tensor
-# dict_run_conditions[0] = {}
-# dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
-# dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
-# dict_run_conditions[1] = {}
-# dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
-# dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[2] = {}
-# dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
-# dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-# dict_run_conditions[3] = {}
-# dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
-# dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-
-# Optic tensor
-# dict_run_conditions[0] = {}
-# dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
-# dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':4}
-# dict_run_conditions[1] = {}
-# dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
-# dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-# dict_run_conditions[2] = {}
-# dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
-# dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-# dict_run_conditions[3] = {}
-# dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
-# dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
-# dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-
-seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
-
-## TRansfer the oc deepDMD files
+## Transfer the oc deepDMD files
 
 seq.transfer_current_ocDeepDMD_run_files()
 
-##
+## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 23
-ls_process_runs = list(range(112,120))
+ls_process_runs = list(range(112,120)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
-# seq.generate_hyperparameter_dataframe(SYSTEM_NO) # OUT DATED
 
-##
-ls_process_runs = list(range(0,92))
-ls_filtered_runs =[]
-SYSTEM_NO = 23
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-for run_i in ls_process_runs:
-    with open(sys_folder_name + '/Sequential/RUN_' + str(run_i) + '/dict_hyperparameters.pickle', 'rb') as handle:
-        dict_hp_i = pickle.load(handle)
-    if dict_hp_i['x_obs'] == 9:
-        ls_filtered_runs.append(run_i)
-print(ls_filtered_runs)
-
-##
-ls_filtered_runs = ls_process_runs
-## N-step predictions
-SYSTEM_NO = 23
-ls_steps = list(range(10,200,10))
-# Get the data
-
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
-    dict_indexed_data = pickle.load(handle)
-dict_rmse ={}
-dict_r2={}
-for run_i in ls_filtered_runs:
-    print('RUN: ',run_i)
-    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
-    sess = tf.InteractiveSession()
-    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-    dict_params = {}
-    psixfT = tf.get_collection('psixfT')[0]
-    xfT_feed = tf.get_collection('xfT_feed')[0]
-    KxT = tf.get_collection('KxT')[0]
-    KxT_num = sess.run(KxT)
-    dict_rmse_run = {}
-    dict_r2_run = {}
-    for data_index in dict_indexed_data.keys():  # iterating through each dataset
-        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
-        X_scaled = dict_DATA_i['X']
-        psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
-        dict_rmse_run[data_index] = {}
-        dict_r2_run[data_index] = {}
-        for i in ls_steps:  # iterating through each step prediction
-            np_psiX_true = psiX[i:, :]
-            np_psiX_pred = np.matmul(psiX[:-i, :],np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
-            dict_rmse_run[data_index][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
-            dict_r2_run[data_index][i] = np.max([0, (1 - np.sum(np.square(np_psiX_true - np_psiX_pred)) / np.sum(np.square(np_psiX_true))) * 100])
-    dict_rmse[run_i]= pd.DataFrame(dict_rmse_run).mean(axis=1).to_dict()
-    dict_r2[run_i]= pd.DataFrame(dict_r2_run).mean(axis=1).to_dict()
-    tf.reset_default_graph()
-    sess.close()
-print(pd.DataFrame(dict_r2))
-
-
-# Need to write a generic function that gives the n-step predictions
-
-
-## Get the optimal run for the given number of observables
-
+## RUN 1 PROCESSING - Get the optimal run from the specified runs
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
-
 df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
@@ -190,16 +127,17 @@ ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=True,one_step=True)
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=False,observables=True,one_step=False)
 
-##
-opt_run = 25
+## RUN 1 PROCESSING - Display the hyper parameters
+# opt_run = 25 # Use this only if we want to see the hyperparameters of a specific run
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 print(dict_hp)
+#========================================================================================================================
 
 ## OUTPUT STUFF
 # Runs error plot
-SYSTEM_NO = 6
-ls_run_no = list(range(42,66)) #18
+SYSTEM_NO = 23
+ls_run_no = list(range(120,144))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
@@ -211,9 +149,9 @@ seq.plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params)
 ls_train_curves = list(range(20))
 ls_valid_curves = list(range(20,40))
 ls_test_curves = list(range(40,60))
-SYSTEM_NO = 6
+SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_run_indices = list(range(42,66))
+ls_process_run_indices = list(range(120,144))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
@@ -297,3 +235,69 @@ for items in d1.keys():
 print(d.keys())
 with open('/Users/shara/Desktop/oc_deepDMD/System_23_BestRun_1.pickle','wb') as handle:
     pickle.dump(d,handle)
+
+
+
+
+
+
+
+
+
+
+
+
+
+## RUN 1 PROCESSING - Filtering the runs based on the hyperparameters
+ls_process_runs = list(range(0,92))
+ls_filtered_runs =[]
+SYSTEM_NO = 23
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+for run_i in ls_process_runs:
+    with open(sys_folder_name + '/Sequential/RUN_' + str(run_i) + '/dict_hyperparameters.pickle', 'rb') as handle:
+        dict_hp_i = pickle.load(handle)
+    if dict_hp_i['x_obs'] == 9:
+        ls_filtered_runs.append(run_i)
+print(ls_filtered_runs)
+
+##
+ls_filtered_runs = ls_process_runs
+## RUN 1/3 - upto N-step prediction error calculation for all the specified runs (ls_filtered_runs)
+SYSTEM_NO = 23
+ls_steps = list(range(10,200,10))
+# Get the data
+
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
+    dict_indexed_data = pickle.load(handle)
+dict_rmse ={}
+dict_r2={}
+for run_i in ls_filtered_runs:
+    print('RUN: ',run_i)
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
+    sess = tf.InteractiveSession()
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    psixfT = tf.get_collection('psixfT')[0]
+    xfT_feed = tf.get_collection('xfT_feed')[0]
+    KxT = tf.get_collection('KxT')[0]
+    KxT_num = sess.run(KxT)
+    dict_rmse_run = {}
+    dict_r2_run = {}
+    for data_index in dict_indexed_data.keys():  # iterating through each dataset
+        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
+        X_scaled = dict_DATA_i['X']
+        psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
+        dict_rmse_run[data_index] = {}
+        dict_r2_run[data_index] = {}
+        for i in ls_steps:  # iterating through each step prediction
+            np_psiX_true = psiX[i:, :]
+            np_psiX_pred = np.matmul(psiX[:-i, :],np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
+            dict_rmse_run[data_index][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+            dict_r2_run[data_index][i] = np.max([0, (1 - np.sum(np.square(np_psiX_true - np_psiX_pred)) / np.sum(np.square(np_psiX_true))) * 100])
+    dict_rmse[run_i]= pd.DataFrame(dict_rmse_run).mean(axis=1).to_dict()
+    dict_r2[run_i]= pd.DataFrame(dict_r2_run).mean(axis=1).to_dict()
+    tf.reset_default_graph()
+    sess.close()
+print(pd.DataFrame(dict_r2))
