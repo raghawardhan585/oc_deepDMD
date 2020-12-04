@@ -92,7 +92,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 23
-ls_process_runs = list(range(115,116)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(236,244)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
@@ -100,7 +100,7 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 ## RUN 1 - Display hyperparameters of the runs
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_runs = list(range(0,120))
+# ls_process_runs = list(range(0,120))
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)
@@ -337,9 +337,9 @@ plt.show()
 ## SYSTEM 2 ANALYSIS
 
 SYSTEM_NO = 23
-ls_process_runs = list(range(0, 120))
+ls_process_runs = set(range(0, 120)).union(range(216,243))
 # ls_process_runs = list(range(168, 216))
-ls_steps = list(range(3,50,3))
+ls_steps = list(range(5,50,5))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
@@ -386,7 +386,7 @@ i=0
 for items in df_r2_opt.columns:
     label_curr = ' n_x = ' + str(items)
     # label_curr = ' n_xy = ' + str(items)
-    plt.plot(df_r2_opt[items],color = colors[i],label = label_curr)
+    plt.plot(df_r2_opt[items],color = colors[np.mod(i,7)],linewidth = np.int(i/7)+1 ,label = label_curr)
     i=i+1
 plt.legend()
 # plt.ylim([99.975,100])
