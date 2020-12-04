@@ -33,55 +33,55 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
     if DEVICE_TO_RUN_ON == 'microtensor':
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':10}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':7,'nn_nodes':9}
+        dict_run_conditions[1]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':13}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-        dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':15}
-        dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
-        dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':9,'nn_nodes':18}
-        dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-        dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
+        # dict_run_conditions[2] = {}
+        # dict_run_conditions[2]['x']  = {'dict_size':10,'nn_layers':9,'nn_nodes':15}
+        # dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        # dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
+        # dict_run_conditions[3] = {}
+        # dict_run_conditions[3]['x']  = {'dict_size':10,'nn_layers':9,'nn_nodes':18}
+        # dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+        # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON =='goldentensor':
         # Golden tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['x']  = {'dict_size':11,'nn_layers':4,'nn_nodes':11}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[1]['x']  = {'dict_size':11,'nn_layers':4,'nn_nodes':14}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[2]['x']  = {'dict_size':11,'nn_layers':5,'nn_nodes':11}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[3]['x']  = {'dict_size':11,'nn_layers':5,'nn_nodes':14}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON == 'optictensor':
         # Optic tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[0]['x']  = {'dict_size':12,'nn_layers':4,'nn_nodes':12}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':4}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[1]['x']  = {'dict_size':12,'nn_layers':4,'nn_nodes':15}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':7}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[2]['x']  = {'dict_size':12,'nn_layers':5,'nn_nodes':12}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':4}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':6,'nn_nodes':9}
+        dict_run_conditions[3]['x']  = {'dict_size':12,'nn_layers':5,'nn_nodes':15}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':7}
     seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
@@ -96,6 +96,17 @@ ls_process_runs = list(range(112,120)) # Runs for which we want to calculate the
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
+
+## RUN 1 - Display hyperparameters of the runs
+SYSTEM_NO = 23
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+ls_process_runs = list(range(0,120))
+for run in ls_process_runs:
+    with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
+        dict_hp = pickle.load(handle)
+    print(dict_hp['x_obs'],' ',dict_hp['x_layers'],' ',dict_hp['x_nodes'])
+
+
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -104,7 +115,7 @@ with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
 df_error_const_obs = df_error
 df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
-# opt_run = 37
+# opt_run = 1
 dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 print('Optimal Run no: ',opt_run)
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
@@ -143,11 +154,16 @@ plot_params['individual_fig_width']=2
 plot_params['individual_fig_height']=2
 seq.plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params)
 ## RUN 2 - Caluculate error and find the optimal run
-ls_train_curves = list(range(20))
-ls_valid_curves = list(range(20,40))
-ls_test_curves = list(range(40,60))
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+    var_i = pickle.load(handle)
+N_CURVES = len(var_i.keys())
+del var_i
+ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
+ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
+
 ls_process_run_indices = list(range(144,168))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
@@ -184,16 +200,17 @@ print(dict_hp)
 
 
 # Final Runs
-SYSTEM_NO = 23
-ls_process_runs = list(range(168,192))
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
-seq.generate_df_error_x_and_y(SYSTEM_NO)
-with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle','rb') as handle:
-    df_error = pickle.load(handle)
-df_training_plus_validation = df_error.train + df_error.valid
-opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
+SYSTEM_NO = 7
+# ls_process_runs = list(range(168,216))
 
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+# seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
+# seq.generate_df_error_x_and_y(SYSTEM_NO)
+# with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle','rb') as handle:
+#     df_error = pickle.load(handle)
+# df_training_plus_validation = df_error.train + df_error.valid
+# opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
+opt_run = 67
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 print('Optimal Run Hyperparameters')
@@ -204,16 +221,21 @@ dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
 plot_params['individual_fig_height'] = 5 #2
 plot_params['individual_fig_width'] = 4#2.4
-ls_train_curves = list(range(20))
-ls_valid_curves = list(range(20,40))
-ls_test_curves = list(range(40,60))
+
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+    var_i = pickle.load(handle)
+N_CURVES = len(var_i.keys())
+del var_i
+ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
+ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=True)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=False)
 ## Plotting the observables
 plot_params={}
-plot_params['xy_label_font_size']=15
-plot_params['individual_fig_width']=15
-plot_params['individual_fig_height']=15
+plot_params['xy_label_font_size']=5
+plot_params['individual_fig_width']=5
+plot_params['individual_fig_height']=5
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
 ## RUN 1 - Saving the Optimal first run result
@@ -262,8 +284,15 @@ print(ls_filtered_runs)
 ## SYSTEM 1 ANALYSIS
 SYSTEM_NO = 7
 ls_process_runs = list(range(0, 72))
-ls_steps = list(range(3,31,3))
+ls_steps = list(range(3,25,3))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+    var_i = pickle.load(handle)
+N_CURVES = len(var_i.keys())
+del var_i
+ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
+ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 
 dict_obs = {}
 ls_obs_unique = []
@@ -282,15 +311,88 @@ for obs in ls_obs_unique:
     for i in dict_obs.keys():
         if dict_obs[i] == obs:
             dict_run_sorted_by_obs[obs].append(i)
-
-
-
-df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[(2, 2, 2)],ls_steps)
-
-plt.plot(df_r2)
-# plt.ylim([0,100])
+dict_opt_runs={}
+dict_r2_opt={}
+for items in dict_run_sorted_by_obs.keys():
+    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_curves)
+    opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
+    dict_opt_runs[items] = opt_index
+    dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
+##
+df_r2_opt = pd.DataFrame(dict_r2_opt)
+plt.figure()
+i=0
+for items in df_r2_opt.columns:
+    label_curr = 'n_x = ' + str(items[0]) + '  n_y = ' + str(items[1]) + ' n_xy = ' + str(items[2])
+    plt.plot(df_r2_opt[items],color = colors[i],label = label_curr)
+    i=i+1
+plt.legend()
+plt.ylim([99.975,100])
 plt.show()
 
 # sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 # with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
 #     dict_indexed_data = pickle.load(handle)
+
+## SYSTEM 2 ANALYSIS
+
+SYSTEM_NO = 23
+ls_process_runs = list(range(0, 120))
+# ls_process_runs = list(range(168, 216))
+ls_steps = list(range(3,50,3))
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+    var_i = pickle.load(handle)
+N_CURVES = len(var_i.keys())
+del var_i
+ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
+ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
+
+
+dict_obs = {}
+ls_obs_unique = []
+# Get the unique observables
+for run in ls_process_runs:
+    with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
+        d = pickle.load(handle)
+    # obs_curr = (d['x_obs'],d['y_obs'],d['xy_obs'])
+    obs_curr = d['x_obs']
+    # obs_curr = d['xy_obs']
+    dict_obs[run] = obs_curr
+    if obs_curr not in ls_obs_unique:
+        ls_obs_unique.append(obs_curr)
+
+
+dict_run_sorted_by_obs ={}
+for obs in ls_obs_unique:
+    dict_run_sorted_by_obs[obs] = []
+    for i in dict_obs.keys():
+        if dict_obs[i] == obs:
+            dict_run_sorted_by_obs[obs].append(i)
+
+dict_r2_opt={}
+dict_opt_runs={}
+for items in dict_run_sorted_by_obs.keys():
+    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_curves)
+    opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
+    dict_opt_runs[items] = opt_index
+    dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
+
+##
+df_r2_opt = pd.DataFrame(dict_r2_opt)
+plt.figure()
+i=0
+for items in df_r2_opt.columns:
+    label_curr = ' n_x = ' + str(items)
+    # label_curr = ' n_xy = ' + str(items)
+    plt.plot(df_r2_opt[items],color = colors[i],label = label_curr)
+    i=i+1
+plt.legend()
+# plt.ylim([99.975,100])
+plt.xlabel('Number of prediction steps')
+plt.ylabel('r^2 accuracy(in %)')
+plt.show()
+##
+
+df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,[8],ls_steps,ls_test_curves)

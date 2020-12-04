@@ -81,7 +81,7 @@ simulation_time = 100
 N_CURVES = 240
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 23
+SYSTEM_NO = 24
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 # ## Bash Script Generator
