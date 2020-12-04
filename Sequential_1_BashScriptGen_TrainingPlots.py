@@ -381,6 +381,7 @@ for items in dict_run_sorted_by_obs.keys():
 
 ##
 df_r2_opt = pd.DataFrame(dict_r2_opt)
+df_r2_opt = df_r2_opt.sort_index(axis=1)
 plt.figure()
 i=0
 for items in df_r2_opt.columns:
