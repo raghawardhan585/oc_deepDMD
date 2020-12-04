@@ -24,3 +24,10 @@ SYSTEM_NO = 7
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 
 # Theoretical Eigenfunctions
+# A = np.array([[0.86,0.],[0.8,0.4]])
+a11 = 0.86
+a21 = 0.8
+a22 = 0.4
+gamma = -0.9
+
+A = np.asarray([[a11,0,0,0,0],[a21,a22,0,gamma,0],[0,0,a11*a22,a11*a21,a11*gamma],[0,0,0,a11**2,0],[0,0,0,0,a11*3]])
