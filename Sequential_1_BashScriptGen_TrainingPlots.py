@@ -24,12 +24,12 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 23
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 24
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 dict_run_conditions = {}
 
-for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
+for DEVICE_TO_RUN_ON in ['microtensor']:#,'optictensor','goldentensor']:
     if DEVICE_TO_RUN_ON == 'microtensor':
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
@@ -37,7 +37,7 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':4,'nn_nodes':14}
+        dict_run_conditions[1]['x']  = {'dict_size':6,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         # dict_run_conditions[2] = {}
@@ -92,7 +92,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 23
-ls_process_runs = list(range(252,260)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(114,116)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
@@ -100,7 +100,7 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 ## RUN 1 - Display hyperparameters of the runs
 SYSTEM_NO = 23
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# ls_process_runs = list(range(0,120))
+# ls_process_runs = list(range(115,116))
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)

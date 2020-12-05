@@ -346,18 +346,18 @@ def plot_training_valid_test_states(SYSTEM_NO):
     ax[0,0].set_title('Training Data')
     for i in range(N_curves_split,2*N_curves_split):
         for j in range(n_states):
-            ax[j, 1].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j, 7)],label='X'+str(j))
+            ax[j, 1].plot(dict_DATA[i]['X'][:, j],'.', color=colors[np.mod(j, 7)],label='X'+str(j))
         for j in range(n_outputs):
-            ax[n_states + j, 1].plot(dict_DATA[i]['Y'][:, j], color=colors[np.mod(n_states + j, 7)],
+            ax[n_states + j, 1].plot(dict_DATA[i]['Y'][:, j],'.', color=colors[np.mod(n_states + j, 7)],
                                      label='Y' + str(j))
         # ax[0,1].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,1].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0,1].set_title('Validation Data')
     for i in range(2*N_curves_split,n_curves):
         for j in range(n_states):
-            ax[j, 2].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j, 7)],label='X'+str(j))
+            ax[j, 2].plot(dict_DATA[i]['X'][:, j],'.', color=colors[np.mod(j, 7)],label='X'+str(j))
         for j in range(n_outputs):
-            ax[n_states + j, 2].plot(dict_DATA[i]['Y'][:, j], color=colors[np.mod(n_states + j, 7)],
+            ax[n_states + j, 2].plot(dict_DATA[i]['Y'][:, j],'.', color=colors[np.mod(n_states + j, 7)],
                                      label='Y' + str(j))
         # ax[0,2].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,2].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
@@ -543,6 +543,10 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
     return dict_indexed_data_predictions
 
 def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER):
+    for items in dict_indexed_data.keys():
+        dict_indexed_data[items]['X'] = dict_indexed_data[items]['X'][100:]
+        dict_indexed_data[items]['Y'] = dict_indexed_data[items]['Y'][100:]
+        print(dict_indexed_data[items]['X'].shape)
     dict_indexed_data_predictions = {}
     for data_index in dict_indexed_data.keys():
         dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
