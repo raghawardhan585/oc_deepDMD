@@ -543,10 +543,6 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
     return dict_indexed_data_predictions
 
 def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER):
-    for items in dict_indexed_data.keys():
-        dict_indexed_data[items]['X'] = dict_indexed_data[items]['X'][100:]
-        dict_indexed_data[items]['Y'] = dict_indexed_data[items]['Y'][100:]
-        print(dict_indexed_data[items]['X'].shape)
     dict_indexed_data_predictions = {}
     for data_index in dict_indexed_data.keys():
         dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
