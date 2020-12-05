@@ -463,7 +463,10 @@ def activator_repressor_clock_4states(x,t,gamma_A,gamma_B,delta_A,delta_B,alpha_
     x4dot = - gamma_B * x[3] + kappa_B*x[2]
     return np.array([x1dot,x2dot,x3dot,x4dot])
 
-
+def activator_repressor_clock_2states(x,t,gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m):
+    x1dot = - gamma_A * x[0] + kappa_A/delta_A * (alpha_A*(x[0]/K_A)**n + alpha_A0)/(1 + (x[0]/K_A)**n + (x[1]/K_B)**m)
+    x2dot = - gamma_B * x[1] + kappa_B/delta_B*(alpha_B*(x[0]/K_A)**n + alpha_B0)/(1 + (x[0]/K_A)**n)
+    return np.array([x1dot,x2dot])
 
 def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
@@ -492,7 +495,37 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     plt.plot(X0[:,1],X0[:,3],'*')
     plt.show()
     plt.figure()
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
+    return
 
+def data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO):
+    # Create a folder for the system and store the data
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        get_input = input('Do you wanna delete the existing system[y/n]? ')
+        if get_input == 'y':
+            shutil.rmtree(storage_folder)
+            os.mkdir(storage_folder)
+        else:
+            return
+    else:
+        os.mkdir(storage_folder)
+    # Simulation
+    dict_indexed_data = {}
+    plt.figure()
+    X0 = np.empty(shape=(0,2))
+    t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
+    for i in range(N_CURVES):
+        x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'],size=(2))
+        X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
+        X = odeint(activator_repressor_clock_2states, x0_curr, t, args = sys_params['sys_params_arc4s'])
+        # Y = sys_params['k_3n'] * X[:, 0:1] / (sys_params['k_3d'] + X[:, 1:2])
+        Y = sys_params['k_3n'] * X[:, 1:2] / (sys_params['k_3d'] + X[:, 0:1])
+        dict_indexed_data[i]= {'X':X,'Y':Y}
+        plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+    plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
+    plt.show()
+    plt.figure()
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     return
 
