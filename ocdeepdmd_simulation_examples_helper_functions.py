@@ -335,7 +335,7 @@ def plot_training_valid_test_states(SYSTEM_NO):
     n_outputs = len(dict_DATA[0]['Y'][0])
     n_curves = len(dict_DATA)
     N_curves_split = int(np.ceil(n_curves/3))
-    f,ax = plt.subplots(n_states+n_outputs,3,sharex=True)
+    f,ax = plt.subplots(n_states+n_outputs,3,sharex=True,figsize = (3*2,2*(n_states+n_outputs)))
     for i in range(0,N_curves_split):
         for j in range(n_states):
             ax[j, 0].plot(dict_DATA[i]['X'][:, j], color=colors[np.mod(j,7)],label='X'+str(j))
@@ -362,6 +362,26 @@ def plot_training_valid_test_states(SYSTEM_NO):
         # ax[0,2].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,2].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0,2].set_title('Test Data')
+    f.show()
+    return
+
+def plot_one_curve(SYSTEM_NO,CURVE_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+        dict_DATA = pickle.load(handle)[CURVE_NO]
+    n_states = len(dict_DATA['X'][0])
+    n_outputs = len(dict_DATA['Y'][0])
+    f,ax = plt.subplots(2,1,figsize=(3,10))
+    for j in range(n_states):
+        ax[0].plot(dict_DATA['X'][:, j], color=colors[np.mod(j,7)],label='X'+str(j),linewidth = 1 + np.int(j/7))
+    for j in range(n_outputs):
+        ax[1].plot(dict_DATA['Y'][:, j], color=colors[np.mod(n_states+j,7)],label='Y'+str(j))
+        # ax[0,0].plot(dict_DATA[i]['X'][:,0],color=colors[0])
+        # ax[1,0].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
+    ax[0].legend()
+    ax[1].legend()
+    ax[0].set_title('States')
+    ax[1].set_title('Outputs')
     f.show()
     return
 
@@ -468,6 +488,27 @@ def activator_repressor_clock_2states(x,t,gamma_A,gamma_B,delta_A,delta_B,alpha_
     x2dot = - gamma_B * x[1] + kappa_B/delta_B*(alpha_B*(x[0]/K_A)**n + alpha_B0)/(1 + (x[0]/K_A)**n)
     return np.array([x1dot,x2dot])
 
+def incoherent_feedforward_loop(x,t,k1,gamma1,k2n,k2d,gamma2):
+    x1dot = k1 - gamma1*x[0]
+    x2dot = - gamma2 * x[1] + k2n/(k2d+x[0])
+    return np.array([x1dot,x2dot])
+
+def combinatorial_promoter(x,t,k1f,k1r,k2f,k2r,k3f,k3r,k4f,k4r,k5f,k5r,k6f,k6r,k7f,k7r,k8f,delta,u1,u2):
+    xdot = np.zeros(len(x))
+    xdot[0] = -k1f*u1*x[0] + k1r*x[4];
+    xdot[1] = -k2f*u2*x[1] + k2r*x[5] -k4f*x[1]*x[2] + k4r*x[7] - k5f*x[1]*x[6] + k5r*x[8] #+ 0.2*x[10];
+    xdot[2] = -k3f * x[2] * x[4] + k3r * x[6] - k4f * x[1] * x[2] + k4r * x[7];
+    xdot[3] = - k7f * x[3] * x[6] + k7r * x[9] + k8f * x[9] ;
+    xdot[4] = k1f * u1 * x[0]  - k1r * x[4] - k3f * x[2] * x[4] + k3r * x[6] - k6f * x[4] * x[7] + k6r * x[8];
+    xdot[5] = k2f * u2 * x[1]- k2r*x[5] # - 0.2*x[3];
+    xdot[6] = k3f*x[2]*x[4] - k3r*x[6] - k5f*x[1]*x[6] + k5r*x[8] - k7f*x[3]*x[6] + k7r*x[9] + k8f*x[9];
+    xdot[7] = k4f * x[1] * x[2]- k4r * x[7]  -k6f * x[4] * x[7] + k6r * x[8] ;
+    xdot[8] = k5f*x[1]*x[6] - k5r*x[8] + k6f*x[4]*x[7] - k6r*x[8];
+    xdot[9] = k7f * x[3] * x[6] - k7r * x[9] -  k8f * x[9];
+    xdot[10] = k8f*x[9] - delta*x[10];
+    return xdot
+
+
 def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
@@ -498,7 +539,7 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     return
 
-def data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO):
+def data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
     if os.path.exists(storage_folder):
@@ -512,20 +553,19 @@ def data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO):
         os.mkdir(storage_folder)
     # Simulation
     dict_indexed_data = {}
-    plt.figure()
-    X0 = np.empty(shape=(0,2))
+    # plt.figure()
+    X0 = np.empty(shape=(0,11))
     t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
     for i in range(N_CURVES):
-        x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'],size=(2))
+        x0_curr = np.array([np.random.uniform(sys_params['x_min'][i],sys_params['x_max'][i]) for i in range(len(sys_params['x_min']))])
         X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
-        X = odeint(activator_repressor_clock_2states, x0_curr, t, args = sys_params['sys_params_arc4s'])
-        # Y = sys_params['k_3n'] * X[:, 0:1] / (sys_params['k_3d'] + X[:, 1:2])
-        Y = sys_params['k_3n'] * X[:, 1:2] / (sys_params['k_3d'] + X[:, 0:1])
+        X = odeint(combinatorial_promoter, x0_curr, t, args = sys_params['sys_params_arc4s'])
+        Y = 1 / (1 + (sys_params['Ka'] / X[:, 10:11])**0.5)
         dict_indexed_data[i]= {'X':X,'Y':Y}
-        plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
-    plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
-    plt.show()
-    plt.figure()
+        # plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+    # plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
+    # plt.show()
+    # plt.figure()
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     return
 

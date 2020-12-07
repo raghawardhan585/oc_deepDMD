@@ -73,12 +73,12 @@ m = 4.
 k_3n = 3.
 k_3d = 1.08
 x_min = 5
-x_max = 60
+x_max = 6
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
 sampling_time = 0.1
 simulation_time = 40
-N_CURVES = 240
+N_CURVES = 2
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 25
@@ -87,79 +87,60 @@ oc.plot_training_valid_test_states(SYSTEM_NO)
 
 
 # ==========================
-## System 4 - Activator Repressor CLock - 2state system
+## System 4 - Combinatorial Promoter system
 # ==========================
 # System Parameters
-gamma_A = 1.
-gamma_B = 0.5
-delta_A = 1.
-delta_B = 1.
-alpha_A0= 0.04
-alpha_B0= 0.004
-alpha_A = 250.
-alpha_B = 30.
-K_A = 1.
-K_B = 1.
-kappa_A = 1.
-kappa_B = 1.
-n = 2.
-m = 4.
-k_3n = 3.
-k_3d = 1.08
-x_min = 5
-x_max = 5
-sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
+k1f = 1e-2; # [1/min] Used kfa
+k1r = 0.09; # [1/min]
+k2f = 0.005; # [1/min] Used kfr
+k2r = 0.2; # [1/min] # Assumed that the activator and the repressor have the same type of dynamics
+k3f = 0.55
+k3r = 0.1
+k4f = 0.184
+k4r = 0.002
+k5f = 0.092
+k5r = 0.25
+k6f = 0.82
+k6r = 0.15
+k7f = 0.85
+k7r = 0.1
+k8f = 0.1
+delta = 0.02
+Ka = 0.5
+u1 = 5
+u2 = 2
+
+x_ACT_min = 1
+x_ACT_max = 2
+
+x_REP_min = 0.1
+x_REP_max = 2
+
+x_DNA_min = 0.1
+x_DNA_max = 2
+
+x_RNAP_min = 0.1
+x_RNAP_max = 0.5
+
+x_mRNA_min = 0.1
+x_mRNA_max = 0.5
+
+x_min = np.array([x_ACT_min,x_REP_min,x_DNA_min,x_RNAP_min,0,0,0,0,0,0,x_mRNA_min])
+x_max = np.array([x_ACT_max,x_REP_max,x_DNA_max,x_RNAP_max,0,0,0,0,0,0,x_mRNA_max])
+sys_params_arc4s = (k1f,k1r,k2f,k2r,k3f,k3r,k4f,k4r,k5f,k5r,k6f,k6r,k7f,k7r,k8f,delta,u1,u2)
+
 # Simulation Parameters
-sampling_time = 0.5
+sampling_time = 2
 simulation_time = 40
-N_CURVES = 240
+N_CURVES = 300
 
-sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 31
-oc.data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO)
+oc.data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)
-
-# ==========================
-## System 4 - Activator Repressor CLock - 2state system
-# ==========================
-# System Parameters
-J0 = 1
-N = 1
-k1 = 1
-K1 = 1
-q = 1
-k2 = 1
-k6 = 1
+oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 
 
-gamma_A = 1.
-gamma_B = 0.5
-delta_A = 1.
-delta_B = 1.
-alpha_A0= 0.04
-alpha_B0= 0.004
-alpha_A = 250.
-alpha_B = 30.
-K_A = 1.
-K_B = 1.
-kappa_A = 1.
-kappa_B = 1.
-n = 2.
-m = 4.
-k_3n = 3.
-k_3d = 1.08
-x_min = 5
-x_max = 5
-sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
-# Simulation Parameters
-sampling_time = 0.5
-simulation_time = 40
-N_CURVES = 240
-
-sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 31
-oc.data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO)
-oc.plot_training_valid_test_states(SYSTEM_NO)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
