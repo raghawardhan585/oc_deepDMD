@@ -24,7 +24,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 24
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 25
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 dict_run_conditions = {}
@@ -33,55 +33,55 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
     if DEVICE_TO_RUN_ON == 'microtensor':
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':4,'nn_nodes':15}
+        dict_run_conditions[0]['x']  = {'dict_size':5,'nn_layers':4,'nn_nodes':5}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':15,'nn_layers':4,'nn_nodes':20}
+        dict_run_conditions[1]['x']  = {'dict_size':5,'nn_layers':4,'nn_nodes':8}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
-        # dict_run_conditions[2] = {}
-        # dict_run_conditions[2]['x']  = {'dict_size':9,'nn_layers':4,'nn_nodes':19}
-        # dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
-        # dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
-        # dict_run_conditions[3] = {}
-        # dict_run_conditions[3]['x']  = {'dict_size':9,'nn_layers':4,'nn_nodes':24}
-        # dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
-        # dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
+        dict_run_conditions[2] = {}
+        dict_run_conditions[2]['x']  = {'dict_size':5,'nn_layers':5,'nn_nodes':5}
+        dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':9}
+        dict_run_conditions[2]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
+        dict_run_conditions[3] = {}
+        dict_run_conditions[3]['x']  = {'dict_size':5,'nn_layers':5,'nn_nodes':8}
+        dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':12}
+        dict_run_conditions[3]['xy'] = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON =='goldentensor':
         # Golden tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':18,'nn_layers':4,'nn_nodes':18}
+        dict_run_conditions[0]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':10}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':4,'nn_nodes':23}
+        dict_run_conditions[1]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':15}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':18,'nn_layers':5,'nn_nodes':18}
+        dict_run_conditions[2]['x']  = {'dict_size':10,'nn_layers':5,'nn_nodes':10}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':18,'nn_layers':5,'nn_nodes':23}
+        dict_run_conditions[3]['x']  = {'dict_size':10,'nn_layers':5,'nn_nodes':15}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON == 'optictensor':
         # Optic tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':21,'nn_layers':4,'nn_nodes':21}
+        dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':4,'nn_nodes':15}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':4}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':21,'nn_layers':4,'nn_nodes':26}
+        dict_run_conditions[1]['x']  = {'dict_size':15,'nn_layers':4,'nn_nodes':20}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':7}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':21,'nn_layers':5,'nn_nodes':21}
+        dict_run_conditions[2]['x']  = {'dict_size':15,'nn_layers':5,'nn_nodes':15}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':4}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':21,'nn_layers':5,'nn_nodes':26}
+        dict_run_conditions[3]['x']  = {'dict_size':15,'nn_layers':5,'nn_nodes':20}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':7}
     seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
@@ -92,7 +92,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 24
-ls_process_runs = list(range(0,24)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,44)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
