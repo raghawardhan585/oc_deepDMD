@@ -33,11 +33,11 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
     if DEVICE_TO_RUN_ON == 'microtensor':
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':16,'nn_layers':4,'nn_nodes':16}
+        dict_run_conditions[0]['x']  = {'dict_size':6,'nn_layers':4,'nn_nodes':6}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':16,'nn_layers':4,'nn_nodes':21}
+        dict_run_conditions[1]['x']  = {'dict_size':6,'nn_layers':4,'nn_nodes':11}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':1,'nn_layers':3,'nn_nodes':6}
         # dict_run_conditions[2] = {}
@@ -51,37 +51,37 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
     elif DEVICE_TO_RUN_ON =='goldentensor':
         # Golden tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':17,'nn_layers':4,'nn_nodes':17}
+        dict_run_conditions[0]['x']  = {'dict_size':7,'nn_layers':4,'nn_nodes':7}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':3}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':17,'nn_layers':4,'nn_nodes':22}
+        dict_run_conditions[1]['x']  = {'dict_size':7,'nn_layers':4,'nn_nodes':12}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':2,'nn_layers':3,'nn_nodes':6}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':18,'nn_layers':4,'nn_nodes':18}
+        dict_run_conditions[2]['x']  = {'dict_size':8,'nn_layers':4,'nn_nodes':8}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':3}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':18,'nn_layers':4,'nn_nodes':23}
+        dict_run_conditions[3]['x']  = {'dict_size':8,'nn_layers':4,'nn_nodes':13}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':4,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':2,'nn_layers':4,'nn_nodes':6}
     elif DEVICE_TO_RUN_ON == 'optictensor':
         # Optic tensor
         dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':19,'nn_layers':4,'nn_nodes':19}
+        dict_run_conditions[0]['x']  = {'dict_size':9,'nn_layers':4,'nn_nodes':9}
         dict_run_conditions[0]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':3}
         dict_run_conditions[0]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':4}
         dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':19,'nn_layers':4,'nn_nodes':24}
+        dict_run_conditions[1]['x']  = {'dict_size':9,'nn_layers':4,'nn_nodes':14}
         dict_run_conditions[1]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':6}
         dict_run_conditions[1]['xy'] = {'dict_size':4,'nn_layers':3,'nn_nodes':7}
         dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':20,'nn_layers':4,'nn_nodes':20}
+        dict_run_conditions[2]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':10}
         dict_run_conditions[2]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':9}
         dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':4}
         dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':20,'nn_layers':4,'nn_nodes':25}
+        dict_run_conditions[3]['x']  = {'dict_size':10,'nn_layers':4,'nn_nodes':15}
         dict_run_conditions[3]['y']  = {'dict_size':1,'nn_layers':5,'nn_nodes':12}
         dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':7}
     seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
@@ -108,7 +108,7 @@ for run in ls_process_runs:
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
-SYSTEM_NO = 31
+SYSTEM_NO = 25
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
