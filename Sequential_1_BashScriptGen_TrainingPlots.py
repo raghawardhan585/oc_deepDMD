@@ -92,7 +92,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 31
-ls_process_runs = list(range(0,24)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,44)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
@@ -338,9 +338,9 @@ plt.show()
 ## SYSTEM 2 ANALYSIS
 
 SYSTEM_NO = 31
-ls_process_runs = list(range(0,24))#set(range(0, 120)).union(range(216,260))
+ls_process_runs = list(range(0,44))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(168, 216))
-ls_steps = list(range(3,20,3))
+ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
