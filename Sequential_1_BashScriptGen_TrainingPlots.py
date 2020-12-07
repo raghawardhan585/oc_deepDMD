@@ -294,7 +294,7 @@ del var_i
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-
+ls_train_and_valid_curves = list(range(int(np.floor(2*N_CURVES/3))))
 dict_obs = {}
 ls_obs_unique = []
 # Get the unique observables
@@ -315,7 +315,7 @@ for obs in ls_obs_unique:
 dict_opt_runs={}
 dict_r2_opt={}
 for items in dict_run_sorted_by_obs.keys():
-    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_curves)
+    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
     opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
     dict_opt_runs[items] = opt_index
     dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
@@ -349,7 +349,7 @@ del var_i
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-
+ls_train_and_valid_curves = list(range(int(np.floor(2*N_CURVES/3))))
 
 dict_obs = {}
 ls_obs_unique = []
@@ -375,7 +375,7 @@ for obs in ls_obs_unique:
 dict_r2_opt={}
 dict_opt_runs={}
 for items in dict_run_sorted_by_obs.keys():
-    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_curves)
+    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
     opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
     dict_opt_runs[items] = opt_index
     dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()

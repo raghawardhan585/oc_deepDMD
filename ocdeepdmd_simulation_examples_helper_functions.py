@@ -373,9 +373,9 @@ def plot_one_curve(SYSTEM_NO,CURVE_NO):
     n_outputs = len(dict_DATA['Y'][0])
     f,ax = plt.subplots(2,1,figsize=(3,10))
     for j in range(n_states):
-        ax[0].plot(dict_DATA['X'][:, j], color=colors[np.mod(j,7)],label='X'+str(j),linewidth = 1 + np.int(j/7))
+        ax[0].plot(dict_DATA['X'][:, j], '.', color=colors[np.mod(j,7)],label='X'+str(j),linewidth = 1 + np.int(j/7))
     for j in range(n_outputs):
-        ax[1].plot(dict_DATA['Y'][:, j], color=colors[np.mod(n_states+j,7)],label='Y'+str(j))
+        ax[1].plot(dict_DATA['Y'][:, j], '.', color=colors[np.mod(n_states+j,7)],label='Y'+str(j))
         # ax[0,0].plot(dict_DATA[i]['X'][:,0],color=colors[0])
         # ax[1,0].plot(dict_DATA[i]['X'][:, 1], color=colors[1])
     ax[0].legend()
@@ -513,12 +513,14 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
     if os.path.exists(storage_folder):
-        get_input = input('Do you wanna delete the existing system[y/n]? ')
-        if get_input == 'y':
-            shutil.rmtree(storage_folder)
-            os.mkdir(storage_folder)
-        else:
-            return
+        shutil.rmtree(storage_folder)
+        os.mkdir(storage_folder)
+        # get_input = input('Do you wanna delete the existing system[y/n]? ')
+        # if get_input == 'y':
+        #     shutil.rmtree(storage_folder)
+        #     os.mkdir(storage_folder)
+        # else:
+        #     return
     else:
         os.mkdir(storage_folder)
     # Simulation
