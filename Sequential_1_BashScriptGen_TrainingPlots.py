@@ -91,8 +91,8 @@ for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 31
-ls_process_runs = list(range(0,64)) # Runs for which we want to calculate the error
+SYSTEM_NO = 25
+ls_process_runs = list(range(0,8)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
