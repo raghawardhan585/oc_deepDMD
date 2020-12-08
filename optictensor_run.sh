@@ -4,14 +4,14 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 26 0 9 8 11 1 5 3 4 3 4 > Run_info/SYS_26_RUN_0.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:0' 26 1 9 8 11 1 5 3 4 3 4 > Run_info/SYS_26_RUN_1.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 26 2 9 8 14 1 5 6 4 3 7 > Run_info/SYS_26_RUN_2.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 26 3 9 8 14 1 5 6 4 3 7 > Run_info/SYS_26_RUN_3.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 26 4 10 8 12 1 5 9 4 4 4 > Run_info/SYS_26_RUN_4.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 26 5 10 8 12 1 5 9 4 4 4 > Run_info/SYS_26_RUN_5.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 26 6 10 8 15 1 5 12 4 4 7 > Run_info/SYS_26_RUN_6.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 26 7 10 8 15 1 5 12 4 4 7 > Run_info/SYS_26_RUN_7.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 31 0 24 4 29 1 5 3 4 3 4 > Run_info/SYS_31_RUN_0.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 31 1 24 4 29 1 5 3 4 3 4 > Run_info/SYS_31_RUN_1.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 31 2 24 4 32 1 5 6 4 3 7 > Run_info/SYS_31_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 31 3 24 4 32 1 5 6 4 3 7 > Run_info/SYS_31_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 31 4 25 4 30 1 5 9 4 4 4 > Run_info/SYS_31_RUN_4.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 31 5 25 4 30 1 5 9 4 4 4 > Run_info/SYS_31_RUN_5.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 31 6 25 4 33 1 5 12 4 4 7 > Run_info/SYS_31_RUN_6.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 31 7 25 4 33 1 5 12 4 4 7 > Run_info/SYS_31_RUN_7.txt &
 echo "Running all sessions" 
 wait 
 echo "All sessions are complete" 
