@@ -92,9 +92,9 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 25
-ls_process_runs = list(range(0,80)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(80,88)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
-seq.generate_df_error(SYSTEM_NO,ls_process_runs)
+# seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
