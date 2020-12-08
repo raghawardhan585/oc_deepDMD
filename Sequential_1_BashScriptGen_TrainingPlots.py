@@ -338,8 +338,8 @@ plt.show()
 
 ## SYSTEM 2 ANALYSIS
 
-SYSTEM_NO = 25
-ls_process_runs = list(range(80,111))#set(range(0, 120)).union(range(216,260))
+SYSTEM_NO = 26
+ls_process_runs = list(range(0,24))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(168, 216))
 ls_steps = list(range(1,20,4))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -376,8 +376,8 @@ for obs in ls_obs_unique:
 dict_r2_opt={}
 dict_opt_runs={}
 for items in dict_run_sorted_by_obs.keys():
-    df_r2, df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO, dict_run_sorted_by_obs[items], ls_steps,ls_train_curves)
-    # df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
+    # df_r2, df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO, dict_run_sorted_by_obs[items], ls_steps,ls_train_curves)
+    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
     opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
     dict_opt_runs[items] = opt_index
     dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
