@@ -67,8 +67,8 @@ plt.show()
 ##
 
 # System Parameters
-mA_init = 1
-mB_init = 1
+mA_init = 0.1
+mB_init = 0.1
 gamma_A = 0.7
 gamma_B = 0.5
 delta_A = 1.
@@ -84,47 +84,35 @@ kappa_B = 0.5
 n = 2.
 m = 4.
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
-# k_3n = 3.
-# k_3d = 1.08
-Ts = 0.5
-t_end = 30
-
+k_3n = 3.
+k_3d = 1.08
+Ts = 0.1
+t_end = 40
 # Simulation Parameters
 dict_data = {}
 X0 = np.empty(shape=(0, 2))
 t = np.arange(0, t_end, Ts)
 
-
-
-
-for i in range(N_CURVES):
-    x0_curr = np.random.uniform(sys_params['x_min'], sys_params['x_max'], size=(4))
-    X0 = np.concatenate([X0, x0_curr.reshape(1, -1)], axis=0)
-    X = odeint(activator_repressor_clock_4states, x0_curr, t, args=sys_params['sys_params_arc4s'])
-    Y = sys_params['k_3n'] * X[:, 1:2] / (sys_params['k_3d'] + X[:, 3:4])
-    dict_indexed_data[i] = {'X': X, 'Y': Y}
-    plt.plot(dict_indexed_data[i]['X'][:, 1], dict_indexed_data[i]['X'][:, 3])
-
-
-
-sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 # Phase Space Data
 dict_data = {}
 X0 = np.empty(shape=(0, 2))
 i=0
-for x1,x2 in itertools.product(list(np.arange(-10,11,2)), list(np.arange(-125,16,20))):
-    sys_params['x0'] = np.array([[x1,x2]])
-    X0 = np.concatenate([X0, sys_params['x0']], axis=0)
-    dict_data[i] = oc.sim_sys_1_2(sys_params)
+for x1,x2 in itertools.product(list(np.arange(0.01,1.2,0.1)), list(np.arange(0.01,1.7,0.15))):
+    dict_data[i]={}
+    x0_curr =  np.array([mA_init,x1,mB_init,x2])
+    X0 = np.concatenate([X0, np.array([[x1,x2]])], axis=0)
+    dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_4states, x0_curr, t, args=sys_params_arc4s)
+    dict_data[i]['Y'] = k_3n * dict_data[i]['X'][:, 1:2] / (k_3d + dict_data[i]['X'][:, 3:4])
     i = i+1
 
-
+for items in dict_data.keys():
+    dict_data[items]['X'] = dict_data[items]['X'][:,[1,3]]
 
 # Plot
 plt.figure()
 alpha = 1.0
 epsilon = alpha - 0.01
-arrow_length = 0.3
+arrow_length = 0.4
 ls_pts = list(range(0,1))
 for i in list(dict_data.keys())[0:]:
     for j in ls_pts:
@@ -140,12 +128,14 @@ for i in list(dict_data.keys())[0:]:
             dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
             # print(x,' ',y,' ',dist)
             if dist<2:
-                plt.arrow(x,y,dx,dy,head_width = 0.1,head_length=0.5,alpha=1,color='tab:green')
+                plt.arrow(x,y,dx,dy,head_width = 0.02,head_length=0.03,alpha=1,color='tab:green')
             else:
                 plt.arrow(x, y, dx, dy, head_width=0.3, head_length=3, alpha=1, color='tab:green')
-plt.xlabel('x1')
-plt.ylabel('x2')
-plt.plot([0],[0],'o',color='tab:red',markersize=10)
-plt.xlim([-10,10])
-plt.ylim([-126,16])
+plt.xlabel('[A]')
+plt.ylabel('[B]')
+plt.plot(dict_data[0]['X'][200:,0],dict_data[0]['X'][200:,1],color='tab:red',markersize=10)
+plt.xlim([0,0.6])
+plt.ylim([0,1.65])
 plt.show()
+##
+
