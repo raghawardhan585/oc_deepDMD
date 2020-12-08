@@ -67,8 +67,8 @@ plt.show()
 ##
 
 # System Parameters
-mA_init = 0.1
-mB_init = 0.1
+mA_init = 0.2
+mB_init = 0.9
 gamma_A = 0.7
 gamma_B = 0.5
 delta_A = 1.
@@ -97,7 +97,7 @@ t = np.arange(0, t_end, Ts)
 dict_data = {}
 X0 = np.empty(shape=(0, 2))
 i=0
-for x1,x2 in itertools.product(list(np.arange(0.01,1.2,0.1)), list(np.arange(0.01,1.7,0.15))):
+for x1,x2 in itertools.product(list(np.arange(0.3,1.,0.1)), list(np.arange(0.3,1.,0.15))):
     dict_data[i]={}
     x0_curr =  np.array([mA_init,x1,mB_init,x2])
     X0 = np.concatenate([X0, np.array([[x1,x2]])], axis=0)
@@ -134,8 +134,12 @@ for i in list(dict_data.keys())[0:]:
 plt.xlabel('[A]')
 plt.ylabel('[B]')
 plt.plot(dict_data[0]['X'][200:,0],dict_data[0]['X'][200:,1],color='tab:red',markersize=10)
-plt.xlim([0,0.6])
-plt.ylim([0,1.65])
+plt.plot(dict_data[5]['X'][200:,0],dict_data[5]['X'][200:,1],color='tab:red',markersize=10)
+plt.plot(dict_data[10]['X'][200:,0],dict_data[10]['X'][200:,1],color='tab:red',markersize=10)
+# plt.xlim([0,0.6])
+# plt.ylim([0,1.65])
+plt.xlim([0,2])
+plt.ylim([0,2])
 plt.show()
 ##
 
