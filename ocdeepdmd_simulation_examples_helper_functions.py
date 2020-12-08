@@ -42,8 +42,8 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
     n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
     dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
                            'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
-    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
-    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
+    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
+    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
         pickle.dump(dict_Scaler, handle)
     dict_DATA = scale_data_using_existing_scaler_folder(dict_DATA_RAW, SYSTEM_NO)

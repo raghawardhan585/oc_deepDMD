@@ -99,7 +99,7 @@ simulation_time = 30
 N_CURVES = 600
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 25
+SYSTEM_NO = 26
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
