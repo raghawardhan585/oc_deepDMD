@@ -92,9 +92,9 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 25
-ls_process_runs = list(range(80,88)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(80,104)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
-# seq.generate_df_error(SYSTEM_NO,ls_process_runs)
+seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
@@ -338,7 +338,7 @@ plt.show()
 ## SYSTEM 2 ANALYSIS
 
 SYSTEM_NO = 25
-ls_process_runs = list(range(0,80))#set(range(0, 120)).union(range(216,260))
+ls_process_runs = list(range(80,104))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(168, 216))
 ls_steps = list(range(1,20,4))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
