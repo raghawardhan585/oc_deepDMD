@@ -55,20 +55,20 @@ RUN_2_COMPLETE = True
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 3000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 250}
+ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
 
@@ -605,6 +605,7 @@ with tf.device(DEVICE_NAME):
         Wx2_list_num = var_i['Wy_list_num']
         bx2_list_num = var_i['by_list_num']
         Wh1T_num = var_i['Wh_num']
+        activation_flag = 3
         x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
         x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
     else:

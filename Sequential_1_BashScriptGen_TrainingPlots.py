@@ -29,25 +29,25 @@ NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 1
 dict_run_conditions = {}
 
-for DEVICE_TO_RUN_ON in ['microtensor']:#,'optictensor','goldentensor']:
+for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
     if DEVICE_TO_RUN_ON == 'microtensor':
         # MICROTENSOR CPU RUN
         dict_run_conditions[0] = {}
         dict_run_conditions[0]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
         dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
         dict_run_conditions[0]['xy'] = {'dict_size':3,'nn_layers':4,'nn_nodes':5}
-        # dict_run_conditions[1] = {}
-        # dict_run_conditions[1]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
-        # dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        # dict_run_conditions[1]['xy'] = {'dict_size':3,'nn_layers':4,'nn_nodes':8}
-        # dict_run_conditions[2] = {}
-        # dict_run_conditions[2]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
-        # dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        # dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':6}
-        # dict_run_conditions[3] = {}
-        # dict_run_conditions[3]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
-        # dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        # dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':9}
+        dict_run_conditions[1] = {}
+        dict_run_conditions[1]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
+        dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+        dict_run_conditions[1]['xy'] = {'dict_size':3,'nn_layers':4,'nn_nodes':8}
+        dict_run_conditions[2] = {}
+        dict_run_conditions[2]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
+        dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+        dict_run_conditions[2]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':6}
+        dict_run_conditions[3] = {}
+        dict_run_conditions[3]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
+        dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+        dict_run_conditions[3]['xy'] = {'dict_size':4,'nn_layers':4,'nn_nodes':9}
     elif DEVICE_TO_RUN_ON =='goldentensor':
         # Golden tensor
         dict_run_conditions[0] = {}
@@ -205,7 +205,7 @@ print(dict_hp)
 # Final Runs
 SYSTEM_NO = 31
 # ls_process_runs = list(range(148,172))
-ls_process_runs = list(range(149,150))
+ls_process_runs = list(range(150,151))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
