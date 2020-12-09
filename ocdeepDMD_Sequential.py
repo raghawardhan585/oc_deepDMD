@@ -519,7 +519,6 @@ with tf.device(DEVICE_NAME):
         bx1_list_num = var_i['bx_list_num']
         KxT_11_num = var_i['Kx_num']
         activation_flag = 3
-        print(Wx1_list_num)
     else:
         # Hidden layer creation
         x1_hidden_vars_list = np.asarray([n_x_nn_nodes] * n_x_nn_layers)
