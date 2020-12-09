@@ -25,7 +25,7 @@ SYSTEM_NO = 31
 
 #  Deep Learning Optimization Parameters ##
 
-activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
+activation_flag = 3;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 1000
 TRAIN_PERCENT = 50
@@ -518,6 +518,7 @@ with tf.device(DEVICE_NAME):
         Wx1_list_num = var_i['Wx_list_num']
         bx1_list_num = var_i['bx_list_num']
         KxT_11_num = var_i['Kx_num']
+        activation_flag = 3
         print(Wx1_list_num)
     else:
         # Hidden layer creation
