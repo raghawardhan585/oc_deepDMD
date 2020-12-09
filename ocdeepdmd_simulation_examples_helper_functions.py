@@ -592,7 +592,7 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
             psiX_est_one_step[i + 1, :] = np.matmul(psiX[i,:], dict_params['KxT_num'])
         Y_est_one_step = np.matmul(psiX_est_one_step, dict_params['WhT_num'])
         # N Step Prediction ----------------------
-        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :], dict_params['ypT_feed']: Y_scaled[0:1, :]})
+        psixpT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1, :]})
         psiX_est_n_step = copy.deepcopy(psiX)
         for i in range(0, X_scaled.shape[0] - 1):
             psixfT_i = np.matmul(psixpT_i, dict_params['KxT_num'])
