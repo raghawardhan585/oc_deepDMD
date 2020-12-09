@@ -466,11 +466,12 @@ def generate_df_error(SYSTEM_NO,ls_required_runs):
 
 def generate_df_error_x_and_y(SYSTEM_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-    ls_train_curves = list(range(20))
-    ls_valid_curves = list(range(20, 40))
-    ls_test_curves = list(range(40, 60))
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_predictions_SEQUENTIAL = pickle.load(handle)
+    N_CURVES = len(dict_predictions_SEQUENTIAL[list(dict_predictions_SEQUENTIAL.keys())[0]].keys())
+    ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
+    ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
+    ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
     dict_error = {}
     for run_no in dict_predictions_SEQUENTIAL.keys():
         print(run_no)
