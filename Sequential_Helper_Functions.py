@@ -464,21 +464,23 @@ def generate_df_error(SYSTEM_NO,ls_required_runs):
             pickle.dump(df_error_SEQUENTIAL,handle)
     return
 
-def generate_df_error_x_and_y(SYSTEM_NO):
+def generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_predictions_SEQUENTIAL = pickle.load(handle)
-    N_CURVES = len(dict_predictions_SEQUENTIAL[list(dict_predictions_SEQUENTIAL.keys())[0]].keys())
+    ls_all_runs = list(dict_predictions_SEQUENTIAL.keys())
+    N_CURVES = len(dict_predictions_SEQUENTIAL[ls_all_runs[-1]].keys())
     ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
     ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
     ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
     dict_error = {}
-    for run_no in dict_predictions_SEQUENTIAL.keys():
-        print(run_no)
-        dict_error[run_no] = {}
-        dict_error[run_no]['train'] = get_error_x_and_y(ls_train_curves,dict_predictions_SEQUENTIAL[run_no])
-        dict_error[run_no]['valid'] = get_error_x_and_y(ls_valid_curves, dict_predictions_SEQUENTIAL[run_no])
-        dict_error[run_no]['test'] = get_error_x_and_y(ls_test_curves, dict_predictions_SEQUENTIAL[run_no])
+    for run_no in ls_process_runs:
+        if run_no in ls_all_runs :
+            print(run_no)
+            dict_error[run_no] = {}
+            dict_error[run_no]['train'] = get_error_x_and_y(ls_train_curves,dict_predictions_SEQUENTIAL[run_no])
+            dict_error[run_no]['valid'] = get_error_x_and_y(ls_valid_curves, dict_predictions_SEQUENTIAL[run_no])
+            dict_error[run_no]['test'] = get_error_x_and_y(ls_test_curves, dict_predictions_SEQUENTIAL[run_no])
     df_error_SEQUENTIAL = pd.DataFrame(dict_error).T
     # Save the file
     if os.path.exists(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle'):
