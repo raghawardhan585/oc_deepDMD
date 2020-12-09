@@ -148,8 +148,8 @@ print(dict_hp)
 #========================================================================================================================
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
-SYSTEM_NO = 23
-ls_run_no = list(range(144,168))
+SYSTEM_NO = 31
+ls_run_no = list(range(100,124))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
