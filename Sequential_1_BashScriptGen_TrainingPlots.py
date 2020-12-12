@@ -43,7 +43,7 @@ dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [4,5,6,7,8]
 dict_hp['xy']['ls_nn_nodes'] = [5,10,15,20,25]
 process_variable = 'x'
-SYSTEM_NO = 10
+SYSTEM_NO = 27
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
