@@ -11,6 +11,7 @@ import tensorflow as tf
 import Sequential_Helper_Functions as seq
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
+import itertools
 
 import ocdeepdmd_simulation_examples_helper_functions as oc
 colors = [[0.68627453, 0.12156863, 0.16470589],
@@ -27,79 +28,194 @@ colors = np.asarray(colors);  # defines a color palette
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 27
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
-dict_run_conditions = {}
 
-for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
-    if DEVICE_TO_RUN_ON == 'microtensor':
-        # MICROTENSOR CPU RUN
-        dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':8,'nn_nodes':22}
-        dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[0]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':11}
-        dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':8,'nn_nodes':25}
-        dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':14}
-        # dict_run_conditions[2] = {}
-        # dict_run_conditions[2]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
-        # dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        # dict_run_conditions[2]['xy'] = {'dict_size':10,'nn_layers':4,'nn_nodes':12}
-        # dict_run_conditions[3] = {}
-        # dict_run_conditions[3]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
-        # dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        # dict_run_conditions[3]['xy'] = {'dict_size':10,'nn_layers':4,'nn_nodes':15}
-    elif DEVICE_TO_RUN_ON =='goldentensor':
-        # Golden tensor
-        dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':11,'nn_nodes':22}
-        dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[0]['xy'] = {'dict_size':11,'nn_layers':4,'nn_nodes':13}
-        dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':11,'nn_nodes':25}
-        dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':11,'nn_layers':4,'nn_nodes':16}
-        dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':21,'nn_layers':11,'nn_nodes':28}
-        dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[2]['xy'] = {'dict_size':12,'nn_layers':4,'nn_nodes':14}
-        dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':24,'nn_layers':11,'nn_nodes':31}
-        dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[3]['xy'] = {'dict_size':12,'nn_layers':4,'nn_nodes':17}
-    elif DEVICE_TO_RUN_ON == 'optictensor':
-        # Optic tensor
-        dict_run_conditions[0] = {}
-        dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':14,'nn_nodes':22}
-        dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[0]['xy'] = {'dict_size':13,'nn_layers':4,'nn_nodes':15}
-        dict_run_conditions[1] = {}
-        dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':14,'nn_nodes':25}
-        dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[1]['xy'] = {'dict_size':13,'nn_layers':4,'nn_nodes':18}
-        dict_run_conditions[2] = {}
-        dict_run_conditions[2]['x']  = {'dict_size':21,'nn_layers':14,'nn_nodes':28}
-        dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[2]['xy'] = {'dict_size':14,'nn_layers':4,'nn_nodes':16}
-        dict_run_conditions[3] = {}
-        dict_run_conditions[3]['x']  = {'dict_size':24,'nn_layers':14,'nn_nodes':31}
-        dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
-        dict_run_conditions[3]['xy'] = {'dict_size':14,'nn_layers':4,'nn_nodes':19}
-    seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
+dict_hp={}
+dict_hp['x']={}
+dict_hp['x']['ls_dict_size'] = [2,3,4]
+dict_hp['x']['ls_nn_layers'] = [4,5,6,7,8]
+dict_hp['x']['ls_nn_nodes'] = [5]#,10,15,20,25]
+dict_hp['y']={}
+dict_hp['y']['ls_dict_size'] = [2,3,4]
+dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
+dict_hp['y']['ls_nn_nodes'] = [5,10,15,20,25]
+dict_hp['xy']={}
+dict_hp['xy']['ls_dict_size'] = [2,3,4]
+dict_hp['xy']['ls_nn_layers'] = [4,5,6,7,8]
+dict_hp['xy']['ls_nn_nodes'] = [5,10,15,20,25]
+process_variable = 'x'
+SYSTEM_NO = 10
+
+ls_dict_size = dict_hp[process_variable]['ls_dict_size']
+ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
+ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
+a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
+print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
+dict_all_run_conditions ={}
+for i in range(len(a)):
+    dict_all_run_conditions[i] ={}
+    dict_all_run_conditions[i][process_variable] = {'dict_size':a[i][0],'nn_layers':a[i][1],'nn_nodes':a[i][2]}
+    for items in ['x','y','xy']:
+        if items != process_variable:
+            dict_all_run_conditions[i][items] = {'dict_size': 1, 'nn_layers': 1,'nn_nodes': 1}
+
+# Scheduling
+mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
+gt = open('/Users/shara/Desktop/oc_deepDMD/goldentensor_run.sh','w')
+ot = open('/Users/shara/Desktop/oc_deepDMD/optictensor_run.sh','w')
+ls_files  = [mt,gt,ot]
+for items in ls_files:
+    items.write('#!/bin/bash \n')
+    items.write('rm -rf _current_run_saved_files \n')
+    items.write('mkdir _current_run_saved_files \n')
+    items.write('rm -rf Run_info \n')
+    items.write('mkdir Run_info \n')
+    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [write_to_file] \n')
+
+ls_run_no =[0,0,0]
+for i in dict_all_run_conditions.keys():
+    run_params = ''
+    for items in dict_all_run_conditions[i].keys():
+        for sub_items in dict_all_run_conditions[i][items].keys():
+            run_params = run_params + ' ' + str(dict_all_run_conditions[i][items][sub_items])
+    if np.mod(i+1,9) ==0: # Microtensor CPU 0
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[0]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[0]) + '.txt &\n'
+        ls_files[0].write(general_run + run_params + write_to_file)
+        ls_files[0].write('wait \n')
+        ls_run_no[0] = ls_run_no[0] + 1
+    elif np.mod(i+1,9)==8: # Goldentensor GPU 3
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
+        ls_files[1].write(general_run + run_params + write_to_file)
+        ls_files[1].write('wait \n')
+        ls_run_no[1] = ls_run_no[1] + 1
+    elif np.mod(i + 1, 9) == 7: # Goldentensor GPU 2
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
+        ls_files[1].write(general_run + run_params + write_to_file)
+        ls_run_no[1] = ls_run_no[1] + 1
+    elif np.mod(i + 1, 9) == 6: # Goldentensor GPU 1
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
+        ls_files[1].write(general_run + run_params + write_to_file)
+        ls_run_no[1] = ls_run_no[1] + 1
+    elif np.mod(i+1,9)==5: # Goldentensor GPU 0
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
+        ls_files[1].write(general_run + run_params + write_to_file)
+        ls_run_no[1] = ls_run_no[1] + 1
+    elif np.mod(i + 1, 9) == 4: # Optictensor GPU 3
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
+        ls_files[2].write(general_run + run_params + write_to_file)
+        ls_files[2].write('wait \n')
+        ls_run_no[2] = ls_run_no[2] + 1
+    elif np.mod(i + 1, 9) == 3: # Optictensor GPU 2
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
+        ls_files[2].write(general_run + run_params + write_to_file)
+        ls_run_no[2] = ls_run_no[2] + 1
+    elif np.mod(i+1,9)==2: # Optictensor GPU 1
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
+        ls_files[2].write(general_run + run_params + write_to_file)
+        ls_run_no[2] = ls_run_no[2] + 1
+    elif np.mod(i + 1, 9) == 1: # Optictensor GPU 0
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
+        ls_files[2].write(general_run + run_params + write_to_file)
+        ls_run_no[2] = ls_run_no[2] + 1
+for items in ls_files:
+    items.write('wait \n')
+    items.write('echo "All sessions are complete" \n')
+    items.write('echo "=======================================================" \n')
+    items.write('cd .. \n')
+    items.write('rm -R _current_run_saved_files \n')
+    items.write('rm -R Run_info \n')
+    items.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
+    items.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
+    items.write('cd oc_deepDMD/ \n')
+    items.close()
+
+
+
+
+
+
+
+## Manual Bash Script
+# dict_run_conditions = {}
+# for DEVICE_TO_RUN_ON in ['microtensor','optictensor','goldentensor']:
+#     if DEVICE_TO_RUN_ON == 'microtensor':
+#         # MICROTENSOR CPU RUN
+#         dict_run_conditions[0] = {}
+#         dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':8,'nn_nodes':22}
+#         dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[0]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':11}
+#         dict_run_conditions[1] = {}
+#         dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':8,'nn_nodes':25}
+#         dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[1]['xy'] = {'dict_size':9,'nn_layers':4,'nn_nodes':14}
+#         # dict_run_conditions[2] = {}
+#         # dict_run_conditions[2]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
+#         # dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         # dict_run_conditions[2]['xy'] = {'dict_size':10,'nn_layers':4,'nn_nodes':12}
+#         # dict_run_conditions[3] = {}
+#         # dict_run_conditions[3]['x']  = {'dict_size':23,'nn_layers':4,'nn_nodes':31}
+#         # dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         # dict_run_conditions[3]['xy'] = {'dict_size':10,'nn_layers':4,'nn_nodes':15}
+#     elif DEVICE_TO_RUN_ON =='goldentensor':
+#         # Golden tensor
+#         dict_run_conditions[0] = {}
+#         dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':11,'nn_nodes':22}
+#         dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[0]['xy'] = {'dict_size':11,'nn_layers':4,'nn_nodes':13}
+#         dict_run_conditions[1] = {}
+#         dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':11,'nn_nodes':25}
+#         dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[1]['xy'] = {'dict_size':11,'nn_layers':4,'nn_nodes':16}
+#         dict_run_conditions[2] = {}
+#         dict_run_conditions[2]['x']  = {'dict_size':21,'nn_layers':11,'nn_nodes':28}
+#         dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[2]['xy'] = {'dict_size':12,'nn_layers':4,'nn_nodes':14}
+#         dict_run_conditions[3] = {}
+#         dict_run_conditions[3]['x']  = {'dict_size':24,'nn_layers':11,'nn_nodes':31}
+#         dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[3]['xy'] = {'dict_size':12,'nn_layers':4,'nn_nodes':17}
+#     elif DEVICE_TO_RUN_ON == 'optictensor':
+#         # Optic tensor
+#         dict_run_conditions[0] = {}
+#         dict_run_conditions[0]['x']  = {'dict_size':15,'nn_layers':14,'nn_nodes':22}
+#         dict_run_conditions[0]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[0]['xy'] = {'dict_size':13,'nn_layers':4,'nn_nodes':15}
+#         dict_run_conditions[1] = {}
+#         dict_run_conditions[1]['x']  = {'dict_size':18,'nn_layers':14,'nn_nodes':25}
+#         dict_run_conditions[1]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[1]['xy'] = {'dict_size':13,'nn_layers':4,'nn_nodes':18}
+#         dict_run_conditions[2] = {}
+#         dict_run_conditions[2]['x']  = {'dict_size':21,'nn_layers':14,'nn_nodes':28}
+#         dict_run_conditions[2]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[2]['xy'] = {'dict_size':14,'nn_layers':4,'nn_nodes':16}
+#         dict_run_conditions[3] = {}
+#         dict_run_conditions[3]['x']  = {'dict_size':24,'nn_layers':14,'nn_nodes':31}
+#         dict_run_conditions[3]['y']  = {'dict_size':3,'nn_layers':5,'nn_nodes':6}
+#         dict_run_conditions[3]['xy'] = {'dict_size':14,'nn_layers':4,'nn_nodes':19}
+#     seq.write_bash_script(DEVICE_TO_RUN_ON, dict_run_conditions, DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR, NO_OF_ITERATIONS_PER_GPU, NO_OF_ITERATIONS_IN_CPU)
 
 ## Transfer the oc deepDMD files
 
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 31
-ls_process_runs = list(range(0,100)) # Runs for which we want to calculate the error
+SYSTEM_NO = 27
+ls_process_runs = list(range(0,60)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
-SYSTEM_NO = 31
+SYSTEM_NO = 27
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 ls_process_runs = list(range(0,100))
 for run in ls_process_runs:
@@ -110,7 +226,7 @@ for run in ls_process_runs:
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
-SYSTEM_NO = 31
+SYSTEM_NO = 27
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
@@ -129,7 +245,7 @@ print(dict_hp)
 # opt_run = 1
 # dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
-plot_params['individual_fig_height'] = 5 #2
+plot_params['individual_fig_height'] = 4 #2
 plot_params['individual_fig_width'] = 4#2.4
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
@@ -340,10 +456,10 @@ plt.show()
 
 ## SYSTEM 2 ANALYSIS
 
-SYSTEM_NO = 31
-# ls_process_runs = list(range(0,100))#set(range(0, 120)).union(range(216,260))
-ls_process_runs = list(range(124, 164))
-ls_steps = list(range(1,20,4))
+SYSTEM_NO = 27
+ls_process_runs = list(range(0,60))#set(range(0, 120)).union(range(216,260))
+# ls_process_runs = list(range(124, 164))
+ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
@@ -361,8 +477,8 @@ for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
         d = pickle.load(handle)
     # obs_curr = (d['x_obs'],d['y_obs'],d['xy_obs'])
-    # obs_curr = d['x_obs']
-    obs_curr = d['xy_obs']
+    obs_curr = d['x_obs']
+    # obs_curr = d['xy_obs']
     dict_obs[run] = obs_curr
     if obs_curr not in ls_obs_unique:
         ls_obs_unique.append(obs_curr)
@@ -390,8 +506,8 @@ df_r2_opt = df_r2_opt.sort_index(axis=1)
 plt.figure()
 i=0
 for items in df_r2_opt.columns:
-    # label_curr = ' n_x = ' + str(items)
-    label_curr = ' n_xy = ' + str(items)
+    label_curr = ' n_x = ' + str(items)
+    # label_curr = ' n_xy = ' + str(items)
     plt.plot(df_r2_opt[items],color = colors[np.mod(i,7)],linewidth = np.int(i/7)+1 ,label = label_curr)
     i=i+1
 plt.legend()
