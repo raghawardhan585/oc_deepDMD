@@ -56,20 +56,20 @@ oc.plot_training_valid_test_states(SYSTEM_NO)
 ## System 3 - Activator Repressor CLock - 4state system
 # ==========================
 # System Parameters
-gamma_A = 0.7
+gamma_A = 1.
 gamma_B = 0.5
 delta_A = 1.
 delta_B = 1.
-alpha_A0= 0.4
+alpha_A0= 0.04
 alpha_B0= 0.004
-alpha_A = 2.
-alpha_B = 2.
-K_A = 0.1
-K_B = 0.08
-kappa_A = 0.9
-kappa_B = 0.5
+alpha_A = 50.
+alpha_B = 30.
+K_A = 1.
+K_B = 1.5
+kappa_A = 1.
+kappa_B = 1.
 n = 2.
-m = 4.
+m = 2.
 k_3n = 3.
 k_3d = 1.08
 
@@ -92,12 +92,12 @@ k_3d = 1.08
 
 # x_min = np.asarray([0.1,0.3,0.9,0.3])
 # x_max = np.asarray([0.2,1.,1.,1.])
-x_min = np.asarray([0.2,0.7,0.9,0.3])
-x_max = np.asarray([0.2,0.7,0.9,0.3])
+x_min = np.asarray([0.3,0.3,0.9,1.3])
+x_max = np.asarray([0.3,0.3,0.9,1.3])
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
-sampling_time = 0.2
-simulation_time = 30
+sampling_time = 0.5
+simulation_time = 50
 N_CURVES = 3
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
@@ -162,6 +162,45 @@ oc.plot_training_valid_test_states(SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 
 
+# ==========================
+## System 5 - Glycolytic Oscillator
+# ==========================
+# System Parameters
+J0 = 2.5
+N = 1.
+A = 4.
+
+k1 = 100.
+k2 = 6.
+k3 = 16.
+k4 = 100.
+k5 = 1.28
+k6 = 12.
+k7 = 1.8
+K1 = 0.52
+kappa = 13.
+mu = 0.1
+q = 4
+
+Ka = 1
+# x_min = np.asarray([0.1,0.3,0.9,0.3])
+# x_max = np.asarray([0.2,1.,1.,1.])
+# x_min= np.asarray([0.15,0.19,0.04,0.1,0.08,0.14,0.05])
+# x_max = x_min
+x_max = np.asarray([1.6,2.16,0.2,0.35,0.3,2.67,0.1])
+# x_max = (x_1 + x_2)/2
+x_min = x_max
+sys_params_arc4s = (k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A)
+# Simulation Parameters
+sampling_time = 0.05
+simulation_time = 12
+N_CURVES = 3
+
+sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+SYSTEM_NO = 51
+oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO)
+oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
+oc.plot_training_valid_test_states(SYSTEM_NO)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

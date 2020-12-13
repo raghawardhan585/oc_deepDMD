@@ -508,6 +508,17 @@ def combinatorial_promoter(x,t,k1f,k1r,k2f,k2r,k3f,k3r,k4f,k4r,k5f,k5r,k6f,k6r,k
     xdot[10] = k8f*x[9] - delta*x[10];
     return xdot
 
+def glycolytic_oscillator(x,t,k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A):
+    xdot = np.zeros(len(x))
+    xdot[0] = J0 - k1*x[0]*x[5]/(1 +(x[5]/K1)**q)
+    xdot[1] = 2*k1*x[0]*x[5]/(1 +(x[5]/K1)**q) - k2*x[1]*(N-x[4]) - k6*x[1]*x[4]
+    xdot[2] = k2*x[1]*(N-x[4]) - k3*x[2]*(A-x[5])
+    xdot[3] = k3*x[2]*(A-x[5]) - k4*x[3]*x[4] - kappa*(x[3]-x[6])
+    xdot[4] = k2*x[1]*(N-x[4]) - k4*x[3]*x[4] - k6*x[1]*x[4]
+    xdot[5] = -2*k1*x[0]*x[5]/(1 +(x[5]/K1)**q) + 2*k3*x[2]*(A-x[5]) - k5*x[5]
+    xdot[6] = mu*kappa*(x[3]-x[6]) -k7*x[6]
+    return xdot
+
 
 def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
@@ -563,6 +574,36 @@ def data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO):
         X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
         X = odeint(combinatorial_promoter, x0_curr, t, args = sys_params['sys_params_arc4s'])
         Y = 1 / (1 + (sys_params['Ka'] / X[:, 10:11])**0.5)
+        dict_indexed_data[i]= {'X':X,'Y':Y}
+        # plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+    # plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
+    # plt.show()
+    # plt.figure()
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
+    return
+
+def data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO):
+    # Create a folder for the system and store the data
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        get_input = input('Do you wanna delete the existing system[y/n]? ')
+        if get_input == 'y':
+            shutil.rmtree(storage_folder)
+            os.mkdir(storage_folder)
+        else:
+            return
+    else:
+        os.mkdir(storage_folder)
+    # Simulation
+    dict_indexed_data = {}
+    # plt.figure()
+    X0 = np.empty(shape=(0,7))
+    t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
+    for i in range(N_CURVES):
+        x0_curr = np.array([np.random.uniform(sys_params['x_min'][i],sys_params['x_max'][i]) for i in range(len(sys_params['x_min']))])
+        X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
+        X = odeint(glycolytic_oscillator, x0_curr, t, args = sys_params['sys_params_arc4s'])
+        Y = 1 / (1 + (sys_params['Ka'] / X[:, 6:7])**0.5)
         dict_indexed_data[i]= {'X':X,'Y':Y}
         # plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
     # plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
