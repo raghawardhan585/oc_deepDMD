@@ -25,7 +25,7 @@ SYSTEM_NO = 31
 
 #  Deep Learning Optimization Parameters ##
 
-activation_flag = 3;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
+activation_flag = 1;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 1000
 TRAIN_PERCENT = 50

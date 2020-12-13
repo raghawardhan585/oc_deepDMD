@@ -97,7 +97,7 @@ x_max = np.asarray([0.3,0.3,0.9,1.3])
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
 sampling_time = 0.5
-simulation_time = 50
+simulation_time = 100
 N_CURVES = 3
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
