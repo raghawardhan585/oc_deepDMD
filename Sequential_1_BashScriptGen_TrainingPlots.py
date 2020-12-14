@@ -83,7 +83,6 @@ for i in dict_all_run_conditions.keys():
         ls_files[0].write(general_run + run_params + write_to_file)
         ls_files[0].write('wait \n')
         ls_run_no[0] = ls_run_no[0] + 1
-        print('HELLELLOOOO')
     elif np.mod(i+1,9)==9: # Goldentensor GPU 3
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
@@ -208,7 +207,7 @@ for items in ls_files:
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 51
+SYSTEM_NO = 27
 ls_process_runs = list(range(0,38)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
