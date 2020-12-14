@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [6,7,8]
-dict_hp['x']['ls_nn_layers'] = [5,6,7,8]
-dict_hp['x']['ls_nn_nodes'] = [10,15,20,25]
+dict_hp['x']['ls_dict_size'] = [7,8,9,10]
+dict_hp['x']['ls_nn_layers'] = [7,8,9,10,11]
+dict_hp['x']['ls_nn_nodes'] = [15,20,25]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -208,7 +208,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 27
-ls_process_runs = list(range(0,25)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,64)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
