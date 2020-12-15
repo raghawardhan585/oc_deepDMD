@@ -35,9 +35,9 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 1
-n_x_nn_layers = 3  # x_max_layers 3 works well
-n_x_nn_nodes = 3  # max width_limit -4 works well
+x_deep_dict_size = 3
+n_x_nn_layers = 4  # x_max_layers 3 works well
+n_x_nn_nodes = 6  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 1
@@ -55,22 +55,22 @@ RUN_2_COMPLETE = False
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 250}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 250}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+# ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
 
@@ -467,34 +467,34 @@ data_suffix = 'System_'+str(SYSTEM_NO)+'_ocDeepDMDdata.pickle'
 
 # CMD Line Argument (Override) Inputs:
 # TODO - Rearrange this section
-import sys
-if len(sys.argv)>1:
-    DEVICE_NAME = sys.argv[1]
-    if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
-        DEVICE_NAME = '/cpu:0'
-if len(sys.argv)>2:
-    SYSTEM_NO = sys.argv[2]
-    data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
-if len(sys.argv) > 3:
-    RUN_NUMBER = np.int(sys.argv[3])
-if len(sys.argv) > 4:
-    x_deep_dict_size = np.int(sys.argv[4])
-if len(sys.argv)>5:
-    n_x_nn_layers = np.int(sys.argv[5])
-if len(sys.argv)>6:
-    n_x_nn_nodes = np.int(sys.argv[6])
-if len(sys.argv) > 7:
-    y_deep_dict_size = np.int(sys.argv[7])
-if len(sys.argv)>8:
-    n_y_nn_layers = np.int(sys.argv[8])
-if len(sys.argv)>9:
-    n_y_nn_nodes = np.int(sys.argv[9])
-if len(sys.argv) > 10:
-    xy_deep_dict_size = np.int(sys.argv[10])
-if len(sys.argv)>11:
-    n_xy_nn_layers = np.int(sys.argv[11])
-if len(sys.argv)>12:
-    n_xy_nn_nodes = np.int(sys.argv[12])
+# import sys
+# if len(sys.argv)>1:
+#     DEVICE_NAME = sys.argv[1]
+#     if DEVICE_NAME not in ['/cpu:0','/gpu:0','/gpu:1','/gpu:2','/gpu:3']:
+#         DEVICE_NAME = '/cpu:0'
+# if len(sys.argv)>2:
+#     SYSTEM_NO = sys.argv[2]
+#     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+# if len(sys.argv) > 3:
+#     RUN_NUMBER = np.int(sys.argv[3])
+# if len(sys.argv) > 4:
+#     x_deep_dict_size = np.int(sys.argv[4])
+# if len(sys.argv)>5:
+#     n_x_nn_layers = np.int(sys.argv[5])
+# if len(sys.argv)>6:
+#     n_x_nn_nodes = np.int(sys.argv[6])
+# if len(sys.argv) > 7:
+#     y_deep_dict_size = np.int(sys.argv[7])
+# if len(sys.argv)>8:
+#     n_y_nn_layers = np.int(sys.argv[8])
+# if len(sys.argv)>9:
+#     n_y_nn_nodes = np.int(sys.argv[9])
+# if len(sys.argv) > 10:
+#     xy_deep_dict_size = np.int(sys.argv[10])
+# if len(sys.argv)>11:
+#     n_xy_nn_layers = np.int(sys.argv[11])
+# if len(sys.argv)>12:
+#     n_xy_nn_nodes = np.int(sys.argv[12])
 
 data_file = data_directory + data_suffix
 Xp, Xf, Yp, Yf = load_pickle_data(data_file)
@@ -522,6 +522,28 @@ dict_train['Yp'] = Yp[dict_train_indices[ls_prediction_steps[0]]]
 dict_valid['Yp'] = Yp[dict_valid_indices[ls_prediction_steps[0]]]
 dict_train['Yf'] = Yf[dict_train_indices[ls_prediction_steps[0]]]
 dict_valid['Yf'] = Yf[dict_valid_indices[ls_prediction_steps[0]]]
+
+def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
+    Xp_train = Xp_train.T
+    Xf_train = Xf_train.T
+    Xp_valid = Xp_valid.T
+    Xf_valid = Xf_valid.T
+    U,S,Vh = np.linalg.svd(Xp_train)
+    V = Vh.T.conj()
+    Uh = U.T.conj()
+    A_hat = np.zeros(shape = U.shape)
+    ls_error_train = []
+    ls_error_valid = []
+    for i in range(len(S)):
+        A_hat = A_hat + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+        ls_error_train.append(np.mean(np.square((Xf_train - np.matmul(A_hat,Xp_train)))))
+        ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
+    ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
+    nPC_opt = np.where(ls_error==np.min(ls_error))[0][0] + 1
+    A_hat_opt = np.zeros(shape = U.shape)
+    for i in range(nPC_opt):
+        A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+    return  A_hat_opt.T
 
 
 
@@ -577,6 +599,9 @@ with tf.device(DEVICE_NAME):
                           'b_list': bx1_list,'keep_prob': keep_prob,'activation flag': activation_flag,'res_net': res_net}
         # K Variables  -    Kx definition w/ bias
         KxT_11 = weight_variable([x_deep_dict_size + num_bas_obs + 1, x_deep_dict_size + num_bas_obs])
+        A_hat_opt = get_best_K_DMD(dict_train['Xp'][ls_prediction_steps[0]], dict_train['Xf'][ls_prediction_steps[0]], dict_valid['Xp'][ls_prediction_steps[0]], dict_valid['Xf'][ls_prediction_steps[0]])
+        sess.run(tf.global_variables_initializer())
+        KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs,0:num_bas_obs].assign(A_hat_opt)))
         last_col = tf.constant(np.zeros(shape=(x_deep_dict_size + num_bas_obs, 1)), dtype=tf.dtypes.float32)
         last_col = tf.concat([last_col, [[1.]]], axis=0)
         KxT_11 = tf.concat([KxT_11, last_col], axis=1)

@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [4,5,6]
-dict_hp['x']['ls_nn_layers'] = [6,7,8,9]
-dict_hp['x']['ls_nn_nodes'] = [15,20,25]
+dict_hp['x']['ls_dict_size'] = [3,4,5]
+dict_hp['x']['ls_nn_layers'] = [3,4,5]
+dict_hp['x']['ls_nn_nodes'] = [5,8,11]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -83,44 +83,44 @@ for i in dict_all_run_conditions.keys():
         ls_files[0].write(general_run + run_params + write_to_file)
         ls_files[0].write('wait \n')
         ls_run_no[0] = ls_run_no[0] + 1
-    elif np.mod(i+1,9)==9: # Goldentensor GPU 3
+    elif np.mod(i+1,10)==9: # Goldentensor GPU 3
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + run_params + write_to_file)
         ls_files[1].write('wait \n')
         ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,9) == 8: # Goldentensor GPU 2
+    elif np.mod(i,10) == 8: # Goldentensor GPU 2
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + run_params + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,9) == 7: # Goldentensor GPU 1
+    elif np.mod(i,10) == 7: # Goldentensor GPU 1
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + run_params + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,9)==6: # Goldentensor GPU 0
+    elif np.mod(i,10)==6: # Goldentensor GPU 0
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + run_params + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,9) == 5: # Optictensor GPU 3
+    elif np.mod(i,10) == 5: # Optictensor GPU 3
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + run_params + write_to_file)
         ls_files[2].write('wait \n')
         ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,9) == 4: # Optictensor GPU 2
+    elif np.mod(i,10) == 4: # Optictensor GPU 2
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + run_params + write_to_file)
         ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,9)==3: # Optictensor GPU 1
+    elif np.mod(i,10)==3: # Optictensor GPU 1
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + run_params + write_to_file)
         ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,9) == 2: # Optictensor GPU 0
+    elif np.mod(i,10) == 2: # Optictensor GPU 0
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + run_params + write_to_file)

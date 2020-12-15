@@ -101,7 +101,7 @@ sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,al
 sampling_time = 1
 simulation_time = 100
 N_CURVES = 3
-ls_prediction_steps=list(range(1,30,3))
+ls_prediction_steps=list(range(1,10,1))
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 28
