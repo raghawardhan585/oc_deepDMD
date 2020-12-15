@@ -24,26 +24,41 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
 colors = np.asarray(colors);  # defines a color palette
 
 # Help to store data for oc_deepDMD
-def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
+def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,ls_prediction_steps,SYSTEM_NO):
     # Sorting into deep DMD format
-    print(dict_indexed_data[0]['Y'].shape)
-    Xp = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
-    Xf = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
-    Yp = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
-    Yf = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
     ls_all_indices = np.arange(int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
     # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
+    if 1 not in ls_prediction_steps:
+        ls_prediction_steps.append(1)
+    ls_prediction_steps.sort()
+    print('[INFO]: Shape of Y : ',dict_indexed_data[0]['Y'].shape)
+    n_data_pts = dict_indexed_data[0]['X'].shape[0]
+    Xp = {}
+    Xf = {}
+    for step in ls_prediction_steps:
+        if step <= n_data_pts:
+            Xp[step] = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+            Xf[step] = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+            for i in ls_all_indices:
+                Xp[step] = np.concatenate([Xp[step], dict_indexed_data[i]['X'][0:-step, :]], axis=0)
+                Xf[step] = np.concatenate([Xf[step], dict_indexed_data[i]['X'][step:, :]], axis=0)
+        else:
+            print('[WARNING] Predictive step ',step,' cannot be processed due to insufficient data')
+    # Xp = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+    # Xf = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+    Yp = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
+    Yf = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
     for i in ls_all_indices:
-        Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][0:-1, :]], axis=0)
-        Xf = np.concatenate([Xf, dict_indexed_data[i]['X'][1:, :]], axis=0)
+        # Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][0:-1, :]], axis=0)
+        # Xf = np.concatenate([Xf, dict_indexed_data[i]['X'][1:, :]], axis=0)
         Yp = np.concatenate([Yp, dict_indexed_data[i]['Y'][0:-1, :]], axis=0)
         Yf = np.concatenate([Yf, dict_indexed_data[i]['Y'][1:, :]], axis=0)
     dict_DATA_RAW = {'Xp': Xp, 'Xf': Xf, 'Yp': Yp, 'Yf': Yf}
     n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
-    dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
+    dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][1][0:n_train], 'Xf': dict_DATA_RAW['Xf'][1][0:n_train],
                            'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
-    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
-    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
+    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
+    _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
         pickle.dump(dict_Scaler, handle)
     dict_DATA = scale_data_using_existing_scaler_folder(dict_DATA_RAW, SYSTEM_NO)
@@ -293,7 +308,12 @@ def inverse_transform_X(X_in,SYSTEM_NUMBER):
     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
         TheScaler = pickle.load(handle)
     if 'X Scale' in TheScaler.keys():
-        X_out = TheScaler['X Scale'].inverse_transform(X_in)
+        if type(X_in) == dict:
+            X_out = {}
+            for step in X_in.keys():
+                X_out[step] = TheScaler['X Scale'].transform(X_in[step])
+        else:
+            X_out = TheScaler['X Scale'].inverse_transform(X_in)
     else:
         X_out = X_in
     return X_out
@@ -314,7 +334,12 @@ def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
     for item in dict_DATA_IN.keys():
         if item in ['Xp','Xf','X']:
             if 'X Scale' in TheScaler.keys():
-                dict_DATA_OUT[item] = TheScaler['X Scale'].transform(dict_DATA_IN[item])
+                if type(dict_DATA_IN[item]) == dict:
+                    dict_DATA_OUT[item] = {}
+                    for step in dict_DATA_IN[item].keys():
+                        dict_DATA_OUT[item][step] = TheScaler['X Scale'].transform(dict_DATA_IN[item][step])
+                else:
+                    dict_DATA_OUT[item] = TheScaler['X Scale'].transform(dict_DATA_IN[item])
             else:
                 dict_DATA_OUT[item] = dict_DATA_IN[item]
         elif item in ['Yp', 'Yf','Y']:
@@ -520,7 +545,7 @@ def glycolytic_oscillator(x,t,k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A):
     return xdot
 
 
-def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
+def data_gen_sys_arc4s(sys_params, N_CURVES,ls_prediction_steps,SYSTEM_NO):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
     if os.path.exists(storage_folder):
@@ -549,7 +574,7 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     plt.plot(X0[:,1],X0[:,3],'*')
     plt.show()
     plt.figure()
-    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, ls_prediction_steps, SYSTEM_NO)
     return
 
 def data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO):

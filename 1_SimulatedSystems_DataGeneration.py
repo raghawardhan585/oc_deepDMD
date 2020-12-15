@@ -30,6 +30,7 @@ N_data_points = 30
 N_CURVES = 10
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 SYSTEM_NO = 1
+ls_prediction_steps=[1]
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 
 # ==========================
@@ -43,6 +44,7 @@ N_data_points = 30
 N_CURVES = 240
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 SYSTEM_NO = 8
+ls_prediction_steps=[1]
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 # ##
@@ -96,16 +98,23 @@ x_min = np.asarray([0.3,0.3,0.9,1.3])
 x_max = np.asarray([0.3,0.3,0.9,1.3])
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
-sampling_time = 0.5
+sampling_time = 1
 simulation_time = 100
 N_CURVES = 3
+ls_prediction_steps=list(range(1,30,3))
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 27
-oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
+SYSTEM_NO = 28
+oc.data_gen_sys_arc4s(sys_params, N_CURVES,ls_prediction_steps,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
+##
+SYSTEM_NO = 28
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+print(d.keys())
 
 # ==========================
 ## System 4 - Combinatorial Promoter system
@@ -154,6 +163,7 @@ sys_params_arc4s = (k1f,k1r,k2f,k2r,k3f,k3r,k4f,k4r,k5f,k5r,k6f,k6r,k7f,k7r,k8f,
 sampling_time = 2
 simulation_time = 40
 N_CURVES = 300
+ls_prediction_steps=[1]
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 31
@@ -195,7 +205,7 @@ sys_params_arc4s = (k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A)
 sampling_time = 0.05
 simulation_time = 12
 N_CURVES = 3
-
+ls_prediction_steps=[1]
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 51
 oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO)
