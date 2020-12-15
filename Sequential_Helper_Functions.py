@@ -349,6 +349,63 @@ def get_prediction_data_output(SYSTEM_NO,RUN_NO):
         dict_predictions = pickle.load(handle)
     return dict_predictions[RUN_NO]
 
+def get_run_performance_stats(SYSTEM_NO,RUN_NO):
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+        dict_run = pickle.load(handle)[RUN_NO]
+    N_CURVES = len(dict_run.keys())
+    ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
+    ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
+    ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
+    dict_stat = {'train':{},'valid':{},'test':{}}
+    num_bas_obs = dict_run[0]['X'].shape[1]
+    num_lift_obs = dict_run[0]['psiX'].shape[1] - num_bas_obs
+    #
+    x_err_train = np.empty(shape=(0,num_bas_obs))
+    x_train = np.empty(shape=(0, num_bas_obs))
+    psi_err_train = np.empty(shape=(0, num_lift_obs))
+    psi_train = np.empty(shape=(0, num_lift_obs))
+    for curve in ls_train_curves:
+        x_err_train = np.concatenate([x_err_train,dict_run[curve]['X'] - dict_run[curve]['X_est_one_step']],axis=0)
+        x_train = np.concatenate([x_train, dict_run[curve]['X']], axis=0)
+        psi_err_train = np.concatenate([psi_err_train, dict_run[curve]['psiX'][:,num_bas_obs:] - dict_run[curve]['psiX_est_one_step'][:,num_bas_obs:]], axis=0)
+        psi_train = np.concatenate([psi_train, dict_run[curve]['psiX'][:,num_bas_obs:]], axis=0)
+    x_err_valid = np.empty(shape=(0, num_bas_obs))
+    x_valid = np.empty(shape=(0, num_bas_obs))
+    psi_err_valid = np.empty(shape=(0, num_lift_obs))
+    psi_valid = np.empty(shape=(0, num_lift_obs))
+    for curve in ls_valid_curves:
+        x_err_valid = np.concatenate([x_err_valid, dict_run[curve]['X'] - dict_run[curve]['X_est_one_step']], axis=0)
+        x_valid = np.concatenate([x_valid, dict_run[curve]['X']], axis=0)
+        psi_err_valid = np.concatenate([psi_err_valid,
+                                        dict_run[curve]['psiX'][:, num_bas_obs:] - dict_run[curve]['psiX_est_one_step'][
+                                                                                   :, num_bas_obs:]], axis=0)
+        psi_valid = np.concatenate([psi_valid, dict_run[curve]['psiX'][:, num_bas_obs:]], axis=0)
+    x_err_test = np.empty(shape=(0, num_bas_obs))
+    x_test = np.empty(shape=(0, num_bas_obs))
+    psi_err_test = np.empty(shape=(0, num_lift_obs))
+    psi_test = np.empty(shape=(0, num_lift_obs))
+    for curve in ls_test_curves:
+        x_err_test = np.concatenate([x_err_test, dict_run[curve]['X'] - dict_run[curve]['X_est_one_step']], axis=0)
+        x_test = np.concatenate([x_test, dict_run[curve]['X']], axis=0)
+        psi_err_test = np.concatenate([psi_err_test,dict_run[curve]['psiX'][:, num_bas_obs:] - dict_run[curve]['psiX_est_one_step'][:, num_bas_obs:]], axis=0)
+        psi_test = np.concatenate([psi_test, dict_run[curve]['psiX'][:, num_bas_obs:]], axis=0)
+    for i in range(num_bas_obs):
+        dict_stat['train']['x' + str(i+1)] = np.max([0, 100*(1 - np.sum(np.square(x_err_train[:,i]))/np.sum(np.square(x_train[:,i])))])
+        dict_stat['valid']['x' + str(i + 1)] = np.max([0, 100 * (1 - np.sum(np.square(x_err_valid[:, i])) / np.sum(np.square(x_valid[:, i])))])
+        dict_stat['test']['x' + str(i + 1)] = np.max([0, 100 * (1 - np.sum(np.square(x_err_test[:, i])) / np.sum(np.square(x_test[:, i])))])
+    for i in range(num_lift_obs):
+        dict_stat['train']['psi' + str(i+1)] = np.max([0, 100*(1 - np.sum(np.square(psi_err_train[:,i]))/np.sum(np.square(psi_train[:,i])))])
+        dict_stat['valid']['psi' + str(i + 1)] = np.max([0, 100 * (1 - np.sum(np.square(psi_err_valid[:, i])) / np.sum(np.square(psi_valid[:, i])))])
+        dict_stat['test']['psi' + str(i + 1)] = np.max([0, 100 * (1 - np.sum(np.square(psi_err_test[:, i])) / np.sum(np.square(psi_test[:, i])))])
+    print('One Step Prediction accuracy of each state and observable:')
+    df_stat = pd.DataFrame(dict_stat)
+    print(df_stat)
+    return df_stat
+
+
+
+
 def plot_fit_Y(dict_run,plot_params,ls_runs,scaled=False):
     n_rows = 4
     n_cols = 5

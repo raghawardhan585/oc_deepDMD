@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 28
+SYSTEM_NO = 52
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -35,9 +35,9 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 3
-n_x_nn_layers = 4  # x_max_layers 3 works well
-n_x_nn_nodes = 6  # max width_limit -4 works well
+x_deep_dict_size = 5
+n_x_nn_layers = 6  # x_max_layers 3 works well
+n_x_nn_nodes = 5  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 1
@@ -55,21 +55,21 @@ RUN_2_COMPLETE = False
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 250}
+dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 50000, 'batch_size': 20}
 ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
@@ -112,14 +112,17 @@ def estimate_K_stability(Kx, print_Kx=False):
         print('[COMP] The identified Koopman operator is STABLE')
         unstable = False
     return unstable
+
 def load_pickle_data(file_path):
     with open(file_path,'rb') as handle:
         output_vec = pickle.load(handle)
-    if type(output_vec['Xp']) != dict:
-        print('[WARNING] Data not in multi step prediction framework. Converting to the same with just 1-step predictive data')
-        output_vec['Xp'] = {1 : output_vec['Xp']}
-        output_vec['Xf'] = {1: output_vec['Xf']}
-    return output_vec['Xp'], output_vec['Xf'], output_vec['Yp'], output_vec['Yf']
+    if type(output_vec['Xp']) == dict:
+        Xp_out = output_vec['Xp'][next(iter(output_vec['Xp']))]
+        Xf_out = output_vec['Xf'][next(iter(output_vec['Xf']))]
+    else:
+        Xp_out = output_vec['Xp']
+        Xf_out = output_vec['Xf']
+    return Xp_out, Xf_out, output_vec['Yp'], output_vec['Yf']
 
 def weight_variable(shape):
     std_dev = math.sqrt(3.0 / (shape[0] + shape[1]))
@@ -285,26 +288,17 @@ def objective_func_output(dict_feed,dict_psi,dict_K):
     return dict_model_perf_metrics
 
 def objective_func_state(dict_feed,dict_psi,dict_K):
-    ls_pred_steps = list(dict_psi['xfT'].keys())
-    dict_model_perf_metrics = {}
-    dict_psiXf_pred = {}
-    for step in ls_pred_steps:
-        dict_K_step = dict_K['KxT']
-        for i in range(1,step):
-            dict_K_step = tf.matmul(dict_K_step,dict_K['KxT'])
-        dict_psiXf_pred[step] = tf.matmul(dict_psi['xpT'][step], dict_K_step)
-        if step == ls_pred_steps[0]:
-            psiXf_prediction_error = dict_psi['xfT'][step] - dict_psiXf_pred[step]
-            SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'][step]))
-            SSE = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'][step] - dict_psiXf_pred[step]), axis=0)
-        else:
-            psiXf_prediction_error = tf.concat([psiXf_prediction_error, dict_psi['xfT'][step] - dict_psiXf_pred[step]],axis =0)
-            SST = SST + tf.math.reduce_sum(tf.math.square(dict_psi['xfT'][step]))
-            SSE = SSE + tf.math.reduce_sum(tf.math.square(dict_psi['xfT'][step] - dict_psiXf_pred[step]))
-    dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))  # Mean Squared Error
-    dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
-    dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE']
+    dict_model_perf_metrics ={}
+    psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
+    psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
+    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
+    # Mean Squared Error
+    dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    # Accuracy computation
+    SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
+    SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
@@ -315,13 +309,11 @@ def get_fed_dict(dict_train,dict_valid,dict_feed):
     feed_dict_valid = {}
     for items in dict_feed.keys():
         if items == 'xpT':
-            for step in dict_feed['xpT'].keys():
-                feed_dict_train[dict_feed['xpT'][step]] = dict_train['Xp'][step]
-                feed_dict_valid[dict_feed['xpT'][step]] = dict_valid['Xp'][step]
+            feed_dict_train[dict_feed['xpT']] = dict_train['Xp']
+            feed_dict_valid[dict_feed['xpT']] = dict_valid['Xp']
         elif items == 'xfT':
-            for step in dict_feed['xfT'].keys():
-                feed_dict_train[dict_feed['xfT'][step]] = dict_train['Xf'][step]
-                feed_dict_valid[dict_feed['xfT'][step]] = dict_valid['Xf'][step]
+            feed_dict_train[dict_feed['xfT']] = dict_train['Xf']
+            feed_dict_valid[dict_feed['xfT']] = dict_valid['Xf']
         elif items == 'ypT':
             feed_dict_train[dict_feed['ypT']] = dict_train['Yp']
             feed_dict_valid[dict_feed['ypT']] = dict_valid['Yp']
@@ -329,21 +321,17 @@ def get_fed_dict(dict_train,dict_valid,dict_feed):
             feed_dict_train[dict_feed['yfT']] = dict_train['Yf']
             feed_dict_valid[dict_feed['yfT']] = dict_valid['Yf']
         elif items == 'psix1pT':
-            for step in dict_feed['psix1pT'].keys():
-                feed_dict_train[dict_feed['psix1pT'][step]] = dict_train['psiX1p'][step]
-                feed_dict_valid[dict_feed['psix1pT'][step]] = dict_valid['psiX1p'][step]
+            feed_dict_train[dict_feed['psix1pT']] = dict_train['psiX1p']
+            feed_dict_valid[dict_feed['psix1pT']] = dict_valid['psiX1p']
         elif items == 'psix1fT':
-            for step in dict_feed['psix1fT'].keys():
-                feed_dict_train[dict_feed['psix1fT'][step]] = dict_train['psiX1f'][step]
-                feed_dict_valid[dict_feed['psix1fT'][step]] = dict_valid['psiX1f'][step]
+            feed_dict_train[dict_feed['psix1fT']] = dict_train['psiX1f']
+            feed_dict_valid[dict_feed['psix1fT']] = dict_valid['psiX1f']
         elif items == 'psix2pT':
-            for step in dict_feed['psix2pT'].keys():
-                feed_dict_train[dict_feed['psix2pT'][step]] = dict_train['psiX2p'][step]
-                feed_dict_valid[dict_feed['psix2pT'][step]] = dict_valid['psiX2p'][step]
+            feed_dict_train[dict_feed['psix2pT']] = dict_train['psiX2p']
+            feed_dict_valid[dict_feed['psix2pT']] = dict_valid['psiX2p']
         elif items == 'psix2fT':
-            for step in dict_feed['psix2fT'].keys():
-                feed_dict_train[dict_feed['psix2fT'][step]] = dict_train['psiX2f'][step]
-                feed_dict_valid[dict_feed['psix2fT'][step]] = dict_valid['psiX2f'][step]
+            feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f']
+            feed_dict_valid[dict_feed['psix2fT']] = dict_valid['psiX2f']
     return feed_dict_train,feed_dict_valid
 
 def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
@@ -351,30 +339,44 @@ def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
     feed_dict_train = {}
     for items in dict_feed.keys():
         if items == 'xpT':
-            for step in dict_feed['xpT'].keys():
-                feed_dict_train[dict_feed['xpT'][step]] = dict_train['Xp'][step][train_indices[step]]
+            feed_dict_train[dict_feed['xpT']] = dict_train['Xp'][train_indices]
         elif items == 'xfT':
-            for step in dict_feed['xfT'].keys():
-                feed_dict_train[dict_feed['xfT'][step]] = dict_train['Xf'][step][train_indices[step]]
+            feed_dict_train[dict_feed['xfT']] = dict_train['Xf'][train_indices]
         elif items == 'ypT':
-            feed_dict_train[dict_feed['ypT']] = dict_train['Yp'][train_indices[next(iter(train_indices))]]
+            feed_dict_train[dict_feed['ypT']] = dict_train['Yp'][train_indices]
         elif items == 'yfT':
-            feed_dict_train[dict_feed['yfT']] = dict_train['Yf'][train_indices[next(iter(train_indices))]]
+            feed_dict_train[dict_feed['yfT']] = dict_train['Yf'][train_indices]
         elif items == 'psix1pT':
-            for step in dict_feed['psix1pT'].keys():
-                feed_dict_train[dict_feed['psix1pT'][step]] = dict_train['psiX1p'][step][train_indices[step]]
+            feed_dict_train[dict_feed['psix1pT']] = dict_train['psiX1p'][train_indices]
         elif items == 'psix1fT':
-            for step in dict_feed['psix1fT'].keys():
-                feed_dict_train[dict_feed['psix1fT'][step]] = dict_train['psiX1f'][step][train_indices[step]]
+            feed_dict_train[dict_feed['psix1fT']] = dict_train['psiX1f'][train_indices]
         elif items == 'psix2pT':
-            for step in dict_feed['psix2pT'].keys():
-                feed_dict_train[dict_feed['psix2pT'][step]] = dict_train['psiX2p'][step][train_indices[step]]
+            feed_dict_train[dict_feed['psix2pT']] = dict_train['psiX2p'][train_indices]
         elif items == 'psix2fT':
-            for step in dict_feed['psix2fT'].keys():
-                feed_dict_train[dict_feed['psix2fT'][step]] = dict_train['psiX2f'][step][train_indices[step]]
+            feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f'][train_indices]
     return feed_dict_train
 
-
+def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
+    Xp_train = Xp_train.T
+    Xf_train = Xf_train.T
+    Xp_valid = Xp_valid.T
+    Xf_valid = Xf_valid.T
+    U,S,Vh = np.linalg.svd(Xp_train)
+    V = Vh.T.conj()
+    Uh = U.T.conj()
+    A_hat = np.zeros(shape = U.shape)
+    ls_error_train = []
+    ls_error_valid = []
+    for i in range(len(S)):
+        A_hat = A_hat + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+        ls_error_train.append(np.mean(np.square((Xf_train - np.matmul(A_hat,Xp_train)))))
+        ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
+    ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
+    nPC_opt = np.where(ls_error==np.min(ls_error))[0][0] + 1
+    A_hat_opt = np.zeros(shape = U.shape)
+    for i in range(nPC_opt):
+        A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+    return  A_hat_opt.T
 
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics_curr, all_histories, dict_run_info,x_params_list={}):
@@ -397,20 +399,12 @@ def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params,
     return all_histories, dict_run_info
 
 def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_model_metrics, dict_run_params, all_histories):
+
     # -----------------------------
     # Initialization
     # -----------------------------
-    try:
-        ls_prediction_steps = list(dict_train['Xp'].keys()) # TODO - Assuming Xp always exists - Verify this is infact true
-    except:
-        print('[ERROR] No multiple step format detected')
-        exit()
-    runs_per_epoch = int(np.ceil(len(dict_train['Xp'][next(iter(dict_train['Xp']))]) / dict_run_params['batch_size']))
-    dict_n_train_samples = {}
-    dict_batch_size = {}
-    for step in ls_prediction_steps:
-        dict_n_train_samples[step] = len(dict_train['Xp'][step])
-        dict_batch_size[step] = np.int(np.ceil(len(dict_train['Xp'][step])/ runs_per_epoch))
+    N_train_samples = num_trains # Taken from global reference
+    runs_per_epoch = int(np.ceil(N_train_samples / dict_run_params['batch_size']))
     epoch_i = 0
     training_error = 100
     validation_error = 100
@@ -420,21 +414,16 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
     while ((epoch_i < dict_run_params['max_epochs']) and (training_error > dict_run_params['train_error_threshold']) and (validation_error > dict_run_params['valid_error_threshold'])):
         epoch_i += 1
         # Re initializing the training indices
-        dict_all_train_indices = {}
-        dict_num_indices_run ={}
-        for step in ls_prediction_steps:
-            dict_all_train_indices[step] = list(range(dict_n_train_samples[step]))
-            dict_num_indices_run[step] = 0
-            # Random sort of the training indices
-            random.shuffle(dict_all_train_indices[step])
+        all_train_indices = list(range(N_train_samples))
+        # Random sort of the training indices
+        random.shuffle(all_train_indices)
         for run_i in range(runs_per_epoch):
-            dict_train_indices = {}
-            for step in ls_prediction_steps:
-                try:
-                    dict_train_indices[step] = dict_all_train_indices[step][run_i * dict_batch_size[step]:(run_i + 1) * dict_batch_size[step]]
-                except:
-                    dict_train_indices[step] = dict_all_train_indices[step][run_i * dict_batch_size[step]: dict_n_train_samples[step]]
-            feed_dict_train_curr = get_fed_dict_train_only(dict_train,dict_feed,dict_train_indices)
+            if run_i != runs_per_epoch - 1:
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']:(run_i + 1) * dict_run_params['batch_size']]
+            else:
+                # Last run with the residual data
+                train_indices = all_train_indices[run_i * dict_run_params['batch_size']: N_train_samples]
+            feed_dict_train_curr = get_fed_dict_train_only(dict_train,dict_feed,train_indices)
             feed_dict_train_curr[dict_feed['step_size']] =  dict_run_params['step_size_val']
             dict_model_metrics['optimizer'].run(feed_dict=feed_dict_train_curr)
         # After training 1 epoch
@@ -498,62 +487,35 @@ if len(sys.argv)>12:
 
 data_file = data_directory + data_suffix
 Xp, Xf, Yp, Yf = load_pickle_data(data_file)
-MULTI_STEP_PRED = True
-ls_prediction_steps = list(Xp.keys())
-num_bas_obs = len(Xp[1][0])
+num_bas_obs = len(Xp[0])
+num_all_samples = len(Xp)
 num_outputs = len(Yf[0])
-# Train/Test Split for Benchmarking Forecasting Later
-dict_num_all_samples ={}
-dict_num_trains = {}
-dict_train_indices = {}
-dict_valid_indices = {}
-dict_train = {'Xp' :{}, 'Xf':{}}
-dict_valid = {'Xp' :{}, 'Xf':{}}
-for step in ls_prediction_steps:
-    dict_num_all_samples[step] = len(Xp[step]) 
-    dict_num_trains[step] = np.int(np.array([dict_num_all_samples[step]]) * TRAIN_PERCENT / 100)
-    dict_train_indices[step] = np.arange(0, dict_num_trains[step], 1)
-    dict_valid_indices[step] = np.arange(dict_num_trains[step], dict_num_all_samples[step], 1)
-    dict_train['Xp'][step] = Xp[step][dict_train_indices[step]]
-    dict_valid['Xp'][step] = Xp[step][dict_valid_indices[step]]
-    dict_train['Xf'][step] = Xf[step][dict_train_indices[step]]
-    dict_valid['Xf'][step] = Xf[step][dict_valid_indices[step]]
-dict_train['Yp'] = Yp[dict_train_indices[ls_prediction_steps[0]]]
-dict_valid['Yp'] = Yp[dict_valid_indices[ls_prediction_steps[0]]]
-dict_train['Yf'] = Yf[dict_train_indices[ls_prediction_steps[0]]]
-dict_valid['Yf'] = Yf[dict_valid_indices[ls_prediction_steps[0]]]
 
-def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
-    Xp_train = Xp_train.T
-    Xf_train = Xf_train.T
-    Xp_valid = Xp_valid.T
-    Xf_valid = Xf_valid.T
-    U,S,Vh = np.linalg.svd(Xp_train)
-    V = Vh.T.conj()
-    Uh = U.T.conj()
-    A_hat = np.zeros(shape = U.shape)
-    ls_error_train = []
-    ls_error_valid = []
-    for i in range(len(S)):
-        A_hat = A_hat + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
-        ls_error_train.append(np.mean(np.square((Xf_train - np.matmul(A_hat,Xp_train)))))
-        ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
-    ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
-    nPC_opt = np.where(ls_error==np.min(ls_error))[0][0] + 1
-    A_hat_opt = np.zeros(shape = U.shape)
-    for i in range(nPC_opt):
-        A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
-    return  A_hat_opt.T
+# Train/Test Split for Benchmarking Forecasting Later
+
+num_trains = np.int(num_all_samples * TRAIN_PERCENT / 100)
+train_indices = np.arange(0, num_trains, 1)
+valid_indices = np.arange(num_trains,num_all_samples,1)
+dict_train = {}
+dict_valid = {}
+dict_train['Xp'] = Xp[train_indices]
+dict_valid['Xp'] = Xp[valid_indices]
+dict_train['Yp'] = Yp[train_indices]
+dict_valid['Yp'] = Yp[valid_indices]
+dict_train['Xf'] = Xf[train_indices]
+dict_valid['Xf'] = Xf[valid_indices]
+dict_train['Yf'] = Yf[train_indices]
+dict_valid['Yf'] = Yf[valid_indices]
 
 
 
 # Display info
-print("[INFO] Number of total samples for ", ls_prediction_steps[0],"- step predictions: " + repr(dict_num_all_samples[ls_prediction_steps[0]]))
+print("[INFO] Number of total samples: " + repr(num_all_samples))
 print("[INFO] Observable dimension of a sample: " + repr(num_bas_obs))
-print("[INFO] Xp.shape (E-DMD): " + repr(Xp[ls_prediction_steps[0]].shape))
-print("[INFO] Yf.shape (E-DMD): " + repr(Xf[ls_prediction_steps[0]].shape))
-print("Number of training snapshots: " + repr(dict_num_trains[ls_prediction_steps[0]]))
-print("Number of validation snapshots: " + repr(dict_num_all_samples[ls_prediction_steps[0]] - dict_num_trains[ls_prediction_steps[0]]))
+print("[INFO] Xp.shape (E-DMD): " + repr(Xp.shape))
+print("[INFO] Yf.shape (E-DMD): " + repr(Xf.shape))
+print("Number of training snapshots: " + repr(len(train_indices)))
+print("Number of validation snapshots: " + repr(len(valid_indices)))
 # print("[INFO] STATE - hidden_vars_list: " + repr(x_hidden_vars_list))
 
 ##
@@ -566,16 +528,12 @@ with tf.device(DEVICE_NAME):
     # ==============
     # Data Required
     # We already have xp and xf given
-    dict_train1 = {'Xp': dict_train['Xp'], 'Xf': dict_train['Xf']}
-    dict_valid1 = {'Xp': dict_valid['Xp'], 'Xf': dict_valid['Xf']}
-    xp_feed = {}
-    xf_feed = {}
-    for step in ls_prediction_steps:
-        xp_feed[step] = tf.placeholder(tf.float32, shape=[None, num_bas_obs])
-        xf_feed[step] = tf.placeholder(tf.float32, shape=[None, num_bas_obs])
+    dict_train1 = {'Xp': Xp[train_indices], 'Xf': Xf[train_indices]}
+    dict_valid1 = {'Xp': Xp[valid_indices], 'Xf': Xf[valid_indices]}
     # Feed Variable definitions
+    xp_feed = tf.placeholder(tf.float32, shape=[None, num_bas_obs])
+    xf_feed = tf.placeholder(tf.float32, shape=[None, num_bas_obs])
     step_size_feed = tf.placeholder(tf.float32, shape=[])
-
     if RUN_1_COMPLETE:
         # SYSTEM_NO = 23
         print(SYSTEM_NO)
@@ -589,7 +547,7 @@ with tf.device(DEVICE_NAME):
         Wx1_list_num = var_i['Wx_list_num']
         bx1_list_num = var_i['bx_list_num']
         KxT_11_num = var_i['Kx_num']
-        activation_flag = 3 # TODO GENERALIZE THIS!
+        activation_flag = 3
     else:
         # Hidden layer creation
         x1_hidden_vars_list = np.asarray([n_x_nn_nodes] * n_x_nn_layers)
@@ -599,18 +557,15 @@ with tf.device(DEVICE_NAME):
                           'b_list': bx1_list,'keep_prob': keep_prob,'activation flag': activation_flag,'res_net': res_net}
         # K Variables  -    Kx definition w/ bias
         KxT_11 = weight_variable([x_deep_dict_size + num_bas_obs + 1, x_deep_dict_size + num_bas_obs])
-        A_hat_opt = get_best_K_DMD(dict_train['Xp'][ls_prediction_steps[0]], dict_train['Xf'][ls_prediction_steps[0]], dict_valid['Xp'][ls_prediction_steps[0]], dict_valid['Xf'][ls_prediction_steps[0]])
+        A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'],dict_valid['Xp'], dict_valid['Xf'])
         sess.run(tf.global_variables_initializer())
-        KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs,0:num_bas_obs].assign(A_hat_opt)))
+        KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
         last_col = tf.constant(np.zeros(shape=(x_deep_dict_size + num_bas_obs, 1)), dtype=tf.dtypes.float32)
         last_col = tf.concat([last_col, [[1.]]], axis=0)
         KxT_11 = tf.concat([KxT_11, last_col], axis=1)
         # Psi variables
-        psix1p ={}
-        psix1f = {}
-        for step in ls_prediction_steps:
-            psix1pz_list, psix1p[step]= initialize_tensorflow_graph(x1_params_list, xp_feed[step], state_inclusive=True,add_bias=True)
-            psix1fz_list, psix1f[step] = initialize_tensorflow_graph(x1_params_list, xf_feed[step], state_inclusive=True,add_bias=True)
+        psix1pz_list, psix1p = initialize_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
+        psix1fz_list, psix1f = initialize_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
         # Objective Function Variables
         dict_feed1 = { 'xpT': xp_feed, 'xfT': xf_feed, 'step_size': step_size_feed}
         dict_psi1 = {'xpT': psix1p, 'xfT': psix1f}
@@ -631,11 +586,8 @@ with tf.device(DEVICE_NAME):
     x1_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x1_hidden_vars_list, 'W_list': Wx1_list_num,
                       'b_list': bx1_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
                       'res_net': res_net}
-    psix1p_const = {}
-    psix1f_const = {}
-    for step in ls_prediction_steps:
-        psix1pz_list_const, psix1p_const[step] = initialize_constant_tensorflow_graph(x1_params_list, xp_feed[step], state_inclusive=True, add_bias=True)
-        psix1fz_list_const, psix1f_const[step] = initialize_constant_tensorflow_graph(x1_params_list, xf_feed[step], state_inclusive=True, add_bias=True)
+    psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
+    psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
 
 # SYSTEM_NO = 6
 # sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -924,10 +876,10 @@ saver = tf.compat.v1.train.Saver()
 
 all_tf_var_names =[]
 for items in dict_psi.keys():
-    tf.compat.v1.add_to_collection('psi'+items, dict_psi[items][ls_prediction_steps[0]])
+    tf.compat.v1.add_to_collection('psi'+items, dict_psi[items])
     all_tf_var_names.append('psi'+items)
 for items in dict_feed.keys():
-    tf.compat.v1.add_to_collection(items+'_feed', dict_feed[items][ls_prediction_steps[0]])
+    tf.compat.v1.add_to_collection(items+'_feed', dict_feed[items])
     all_tf_var_names.append(items+'_feed')
 for items in dict_K.keys():
     tf.compat.v1.add_to_collection(items, dict_K[items])

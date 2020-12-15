@@ -95,17 +95,17 @@ k_3d = 1.08
 # x_min = np.asarray([0.1,0.3,0.9,0.3])
 # x_max = np.asarray([0.2,1.,1.,1.])
 x_min = np.asarray([0.3,0.3,0.9,1.3])
-x_max = np.asarray([0.3,0.3,0.9,1.3])
+x_max = np.asarray([0.4,0.4,0.95,1.4])
 sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 # Simulation Parameters
 sampling_time = 1
 simulation_time = 100
-N_CURVES = 3
-ls_prediction_steps=list(range(1,10,1))
+N_CURVES = 60
+# ls_prediction_steps=[1]#list(range(1,10,1))
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
 SYSTEM_NO = 28
-oc.data_gen_sys_arc4s(sys_params, N_CURVES,ls_prediction_steps,SYSTEM_NO)
+oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
@@ -207,7 +207,7 @@ simulation_time = 12
 N_CURVES = 3
 ls_prediction_steps=[1]
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 51
+SYSTEM_NO = 52
 oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)

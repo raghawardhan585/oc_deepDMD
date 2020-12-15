@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [3,4,5]
-dict_hp['x']['ls_nn_layers'] = [3,4,5]
-dict_hp['x']['ls_nn_nodes'] = [5,8,11]
+dict_hp['x']['ls_dict_size'] = [4,5]
+dict_hp['x']['ls_nn_layers'] = [4,7]
+dict_hp['x']['ls_nn_nodes'] = [8,11,14]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -207,8 +207,8 @@ for items in ls_files:
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 28
-ls_process_runs = list(range(0,1)) # Runs for which we want to calculate the error
+SYSTEM_NO = 27
+ls_process_runs = list(range(0,108)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
@@ -226,7 +226,7 @@ for run in ls_process_runs:
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
-SYSTEM_NO = 28
+SYSTEM_NO = 27
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
@@ -235,10 +235,13 @@ df_training_plus_validation = df_error_const_obs.train + df_error_const_obs.vali
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index)[0])
 # opt_run = 1
 dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
+
+
 print('Optimal Run no: ',opt_run)
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)
 print(dict_hp)
+df_opt_stat = seq.get_run_performance_stats(SYSTEM_NO,opt_run)
 ##
 # Plotting the fit of the required indices
 # SYSTEM_NO = 5
@@ -256,7 +259,7 @@ ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + 
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=False,one_step=False)
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=True,one_step=True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=False,observables=True,one_step=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=True,observables=True,one_step=True)
 
 ## RUN 1 PROCESSING - Display the hyper parameters
 # opt_run = 25 # Use this only if we want to see the hyperparameters of a specific run
