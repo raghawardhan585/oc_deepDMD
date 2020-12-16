@@ -25,15 +25,15 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 28
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 52
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [5]
-dict_hp['x']['ls_nn_layers'] = [4,7,10]
-dict_hp['x']['ls_nn_nodes'] = [6,9,12,15]
+dict_hp['x']['ls_dict_size'] = [4,5,6,7]
+dict_hp['x']['ls_nn_layers'] = [3,6,9,12]
+dict_hp['x']['ls_nn_nodes'] = [9,12,15]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -208,7 +208,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 28
-ls_process_runs = list(range(0,23)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(15,31)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
@@ -460,7 +460,7 @@ plt.show()
 ## SYSTEM 2 ANALYSIS
 
 SYSTEM_NO = 28
-ls_process_runs = list(range(0,11))#set(range(0, 120)).union(range(216,260))
+ls_process_runs = list(range(12,30))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(124, 164))
 ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
