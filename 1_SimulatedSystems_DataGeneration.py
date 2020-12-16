@@ -193,12 +193,12 @@ mu = 0.1
 q = 4
 
 Ka = 1
-# x_min = np.asarray([0.1,0.3,0.9,0.3])
-# x_max = np.asarray([0.2,1.,1.,1.])
-x_min= np.asarray([0.15,0.19,0.04,0.1,0.08,0.14,0.05])
+# x_min= np.asarray([0.15,0.19,0.04,0.1,0.08,0.14,0.05]) # original
+# x_min= np.asarray([0.15,0.19,0.04,0.1,0.08,0.14,0.05])
 # x_max = x_min
 x_max = np.asarray([1.6,2.16,0.2,0.35,0.3,2.67,0.1])
-# x_max = (x_1 + x_2)/2
+x_min = x_max/2
+# x_min = 2*x_min
 # x_min = x_max
 sys_params_arc4s = (k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A)
 # Simulation Parameters
@@ -207,7 +207,7 @@ simulation_time = 5
 N_CURVES = 300
 ls_prediction_steps=[1]
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 52
+SYSTEM_NO = 53
 oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
