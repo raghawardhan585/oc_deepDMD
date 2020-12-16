@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [4,5]
-dict_hp['x']['ls_nn_layers'] = [4,7]
-dict_hp['x']['ls_nn_nodes'] = [8,11,14]
+dict_hp['x']['ls_dict_size'] = [3]
+dict_hp['x']['ls_nn_layers'] = [4,7,10]
+dict_hp['x']['ls_nn_nodes'] = [3,6,9,12]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -83,7 +83,7 @@ for i in dict_all_run_conditions.keys():
         ls_files[0].write(general_run + run_params + write_to_file)
         ls_files[0].write('wait \n')
         ls_run_no[0] = ls_run_no[0] + 1
-    elif np.mod(i+1,10)==9: # Goldentensor GPU 3
+    elif np.mod(i,10)==9: # Goldentensor GPU 3
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + run_params + write_to_file)
@@ -208,7 +208,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 28
-ls_process_runs = list(range(0,7)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,11)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
@@ -459,8 +459,8 @@ plt.show()
 
 ## SYSTEM 2 ANALYSIS
 
-SYSTEM_NO = 27
-ls_process_runs = list(range(0,120))#set(range(0, 120)).union(range(216,260))
+SYSTEM_NO = 28
+ls_process_runs = list(range(0,11))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(124, 164))
 ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
