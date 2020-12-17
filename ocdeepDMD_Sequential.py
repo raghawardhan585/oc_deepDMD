@@ -55,12 +55,12 @@ RUN_2_COMPLETE = False
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 200}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 200}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 200}
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 500}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 500}
+ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 20}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 20}
@@ -126,6 +126,7 @@ def load_pickle_data(file_path):
 
 def weight_variable(shape):
     std_dev = math.sqrt(3.0 / (shape[0] + shape[1]))
+    print(std_dev)
     return tf.Variable(tf.truncated_normal(shape, mean=0.0, stddev=std_dev, dtype=tf.float32))
 def bias_variable(shape):
     std_dev = math.sqrt(3.0 / shape[0])
@@ -152,8 +153,8 @@ def initialize_tensorflow_graph(param_list,u, state_inclusive=False,add_bias=Fal
         z_list.append(tf.nn.dropout(tf.nn.elu(tf.matmul(u, param_list['W_list'][0]) + param_list['b_list'][0]), param_list['keep_prob']))
     if param_list['activation flag'] == 3:  # tanh
         z_list.append(tf.nn.dropout(tf.nn.tanh(tf.matmul(u, param_list['W_list'][0]) + param_list['b_list'][0]), param_list['keep_prob']))
-    # PROPAGATION & TERMINATION
-    for k in range(1, n_depth):
+    # PROPAGATION
+    for k in range(1, n_depth-1):
         prev_layer_output = tf.matmul(z_list[k - 1], param_list['W_list'][k]) + param_list['b_list'][k]
         if param_list['activation flag'] == 1: # RELU
             z_list.append(tf.nn.dropout(tf.nn.relu(prev_layer_output), param_list['keep_prob']));
@@ -161,6 +162,8 @@ def initialize_tensorflow_graph(param_list,u, state_inclusive=False,add_bias=Fal
             z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
         if param_list['activation flag'] == 3: # tanh
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
+    # TERMINATION
+    z_list.append(tf.matmul(z_list[n_depth-2], param_list['W_list'][n_depth-1]) + param_list['b_list'][n_depth-1])
     if state_inclusive:
         y = tf.concat([u, z_list[-1]], axis=1)
     else:
@@ -184,7 +187,7 @@ def initialize_constant_tensorflow_graph(param_list,u, state_inclusive=False,add
     if param_list['activation flag'] == 3:  # tanh
         z_list.append(tf.nn.dropout(tf.nn.tanh(tf.matmul(u, tf.constant(param_list['W_list'][0],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][0],dtype=tf.dtypes.float32)), param_list['keep_prob']))
     # PROPAGATION & TERMINATION
-    for k in range(1, n_depth):
+    for k in range(1, n_depth-1):
         prev_layer_output = tf.matmul(z_list[k - 1], tf.constant(param_list['W_list'][k],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][k],dtype=tf.dtypes.float32)
         if param_list['activation flag'] == 1: # RELU
             z_list.append(tf.nn.dropout(tf.nn.relu(prev_layer_output), param_list['keep_prob']));
@@ -192,6 +195,8 @@ def initialize_constant_tensorflow_graph(param_list,u, state_inclusive=False,add
             z_list.append(tf.nn.dropout(tf.nn.elu(prev_layer_output), param_list['keep_prob']));
         if param_list['activation flag'] == 3: # tanh
             z_list.append(tf.nn.dropout(tf.nn.tanh(prev_layer_output), param_list['keep_prob']));
+    # TERMINATION
+    z_list.append(tf.matmul(z_list[n_depth - 2], tf.constant(param_list['W_list'][n_depth-1],dtype=tf.dtypes.float32)) + tf.constant(param_list['b_list'][n_depth-1],dtype=tf.dtypes.float32))
     if state_inclusive:
         y = tf.concat([u, z_list[-1]], axis=1)
     else:
