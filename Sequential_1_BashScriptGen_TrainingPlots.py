@@ -207,8 +207,8 @@ for items in ls_files:
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,12)) # Runs for which we want to calculate the error
+SYSTEM_NO = 21
+ls_process_runs = list(range(0,8)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
@@ -226,7 +226,7 @@ for run in ls_process_runs:
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
-SYSTEM_NO = 53
+SYSTEM_NO = 21
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)
@@ -259,7 +259,7 @@ ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + 
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=True,one_step=False)
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=True,one_step=True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=True,observables=True,one_step=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=True,observables=True,one_step=True)
 
 ## RUN 1 PROCESSING - Display the hyper parameters
 # opt_run = 25 # Use this only if we want to see the hyperparameters of a specific run
@@ -459,8 +459,8 @@ plt.show()
 
 ## SYSTEM 2 ANALYSIS
 
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,48))#set(range(0, 120)).union(range(216,260))
+SYSTEM_NO = 21
+ls_process_runs = list(range(0,8))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(124, 164))
 ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
