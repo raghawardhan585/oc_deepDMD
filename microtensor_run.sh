@@ -4,25 +4,21 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 0  6 3 9 1 1 1 1 1 1 > Run_info/SYS_53_RUN_0.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 0  3 3 9 1 1 1 1 1 1 > Run_info/SYS_22_RUN_0.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 1  6 3 12 1 1 1 1 1 1 > Run_info/SYS_53_RUN_1.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 1  3 3 12 1 1 1 1 1 1 > Run_info/SYS_22_RUN_1.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 2  6 9 15 1 1 1 1 1 1 > Run_info/SYS_53_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 2  3 12 12 1 1 1 1 1 1 > Run_info/SYS_22_RUN_2.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 3  6 9 18 1 1 1 1 1 1 > Run_info/SYS_53_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 3  3 12 15 1 1 1 1 1 1 > Run_info/SYS_22_RUN_3.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 4  7 6 9 1 1 1 1 1 1 > Run_info/SYS_53_RUN_4.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 4  4 9 15 1 1 1 1 1 1 > Run_info/SYS_22_RUN_4.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 5  7 6 12 1 1 1 1 1 1 > Run_info/SYS_53_RUN_5.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 5  4 12 9 1 1 1 1 1 1 > Run_info/SYS_22_RUN_5.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 6  7 12 15 1 1 1 1 1 1 > Run_info/SYS_53_RUN_6.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 6  5 9 9 1 1 1 1 1 1 > Run_info/SYS_22_RUN_6.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 7  7 12 18 1 1 1 1 1 1 > Run_info/SYS_53_RUN_7.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 8  8 9 9 1 1 1 1 1 1 > Run_info/SYS_53_RUN_8.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 53 9  8 9 12 1 1 1 1 1 1 > Run_info/SYS_53_RUN_9.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 22 7  5 9 12 1 1 1 1 1 1 > Run_info/SYS_22_RUN_7.txt &
 wait 
 wait 
 echo "All sessions are complete" 

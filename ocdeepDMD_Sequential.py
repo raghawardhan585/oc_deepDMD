@@ -17,7 +17,8 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 53
+SYSTEM_NO = 21
+STATE_INCLUSIVE = False
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -55,21 +56,21 @@ RUN_2_COMPLETE = False
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 500}
 ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
@@ -512,7 +513,10 @@ dict_valid['Xf'] = Xf[valid_indices]
 dict_train['Yf'] = Yf[train_indices]
 dict_valid['Yf'] = Yf[valid_indices]
 
-
+if STATE_INCLUSIVE:
+    num_x_observables_total = x_deep_dict_size + num_bas_obs
+else:
+    num_x_observables_total = x_deep_dict_size
 
 # Display info
 print("[INFO] Number of total samples: " + repr(num_all_samples))
@@ -540,6 +544,7 @@ with tf.device(DEVICE_NAME):
     xf_feed = tf.placeholder(tf.float32, shape=[None, num_bas_obs])
     step_size_feed = tf.placeholder(tf.float32, shape=[])
     if RUN_1_COMPLETE:
+        # TODO Figure out the variable value STATE_INCLUSIVE
         # SYSTEM_NO = 23
         print(SYSTEM_NO)
         with open('System_' + str(SYSTEM_NO) + '_BestRun_1.pickle','rb') as handle:
@@ -561,30 +566,31 @@ with tf.device(DEVICE_NAME):
         x1_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x1_hidden_vars_list,'W_list': Wx1_list,
                           'b_list': bx1_list,'keep_prob': keep_prob,'activation flag': activation_flag,'res_net': res_net}
         # K Variables  -    Kx definition w/ bias
-        KxT_11 = weight_variable([x_deep_dict_size + num_bas_obs + 1, x_deep_dict_size + num_bas_obs])
-        A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'],dict_valid['Xp'], dict_valid['Xf'])
-        sess.run(tf.global_variables_initializer())
-        KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
-        last_col = tf.constant(np.zeros(shape=(x_deep_dict_size + num_bas_obs, 1)), dtype=tf.dtypes.float32)
+        KxT_11 = weight_variable([num_x_observables_total + 1, num_x_observables_total])
+        if STATE_INCLUSIVE:
+            A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'],dict_valid['Xp'], dict_valid['Xf'])
+            sess.run(tf.global_variables_initializer())
+            KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
+        last_col = tf.constant(np.zeros(shape=(num_x_observables_total, 1)), dtype=tf.dtypes.float32)
         last_col = tf.concat([last_col, [[1.]]], axis=0)
         KxT_11 = tf.concat([KxT_11, last_col], axis=1)
         # Psi variables
 
-        psix1pz_list, psix1p = initialize_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
-        psix1fz_list, psix1f = initialize_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
+        psix1pz_list, psix1p = initialize_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=STATE_INCLUSIVE, add_bias=True)
+        psix1fz_list, psix1f = initialize_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=STATE_INCLUSIVE, add_bias=True)
         # Objective Function Variables
         dict_feed1 = { 'xpT': xp_feed, 'xfT': xf_feed, 'step_size': step_size_feed}
         dict_psi1 = {'xpT': psix1p, 'xfT': psix1f}
         dict_K1 ={'KxT':KxT_11}
         # First optimization
         print('---------    TRAINING BEGINS   ---------')
-        print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
+        # print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
         dict_model1_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1)
         all_histories1 = {'train error': [], 'validation error': [], 'train MSE': [], 'valid MSE': []}
         dict_run_info1 = {}
         all_histories1, dict_run_info1 = static_train_net(dict_train1, dict_valid1, dict_feed1, ls_dict_training_params1,dict_model1_metrics,all_histories1,dict_run_info1,x_params_list =x1_params_list)
         print('---   STATE TRAINING COMPLETE   ---')
-        print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
+        # print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
         estimate_K_stability(KxT_11)
         # Post Run 1 Saves
         KxT_11_num = sess.run(KxT_11)
@@ -594,8 +600,8 @@ with tf.device(DEVICE_NAME):
     x1_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x1_hidden_vars_list, 'W_list': Wx1_list_num,
                       'b_list': bx1_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
                       'res_net': res_net}
-    psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=True, add_bias=True)
-    psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=True, add_bias=True)
+    psix1pz_list_const, psix1p_const = initialize_constant_tensorflow_graph(x1_params_list, xp_feed, state_inclusive=STATE_INCLUSIVE, add_bias=True)
+    psix1fz_list_const, psix1f_const = initialize_constant_tensorflow_graph(x1_params_list, xf_feed, state_inclusive=STATE_INCLUSIVE, add_bias=True)
 
 # SYSTEM_NO = 6
 # sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)

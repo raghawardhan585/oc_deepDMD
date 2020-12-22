@@ -106,7 +106,7 @@ N_CURVES = 3
 # ls_prediction_steps=[1]#list(range(1,10,1))
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 21
+SYSTEM_NO = 22
 oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
