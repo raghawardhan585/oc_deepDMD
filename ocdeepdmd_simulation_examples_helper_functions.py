@@ -718,7 +718,7 @@ def model_prediction(dict_indexed_data, dict_params, SYSTEM_NUMBER):
         dict_indexed_data_predictions[data_index]['psiX_est_n_step'] = psiX_est_n_step
     return dict_indexed_data_predictions
 
-def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER,state_inclusive = True):
+def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER):
     dict_indexed_data_predictions = {}
     for data_index in dict_indexed_data.keys():
         dict_DATA_i = scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NUMBER)
@@ -741,13 +741,12 @@ def model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NUMBER,st
             psixpT_i = psixfT_i
         dict_indexed_data_predictions[data_index] = {}
         dict_indexed_data_predictions[data_index]['X'] = dict_indexed_data[data_index]['X']
-        if state_inclusive:
-            dict_indexed_data_predictions[data_index]['X_est_one_step'] = inverse_transform_X(psiX_est_one_step[:, 0:n_base_states], SYSTEM_NUMBER)
-            dict_indexed_data_predictions[data_index]['X_est_n_step'] = inverse_transform_X(psiX_est_n_step[:, 0:n_base_states], SYSTEM_NUMBER)
-            dict_indexed_data_predictions[data_index]['X_scaled'] = X_scaled
-            dict_indexed_data_predictions[data_index]['X_scaled_est_one_step'] = psiX_est_one_step[:, 0:n_base_states]
-            dict_indexed_data_predictions[data_index]['X_scaled_est_n_step'] = psiX_est_n_step[:, 0:n_base_states]
-            dict_indexed_data_predictions[data_index]['psiX'] = psiX
+        dict_indexed_data_predictions[data_index]['X_est_one_step'] = inverse_transform_X(psiX_est_one_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['X_est_n_step'] = inverse_transform_X(psiX_est_n_step[:, 0:n_base_states], SYSTEM_NUMBER)
+        dict_indexed_data_predictions[data_index]['X_scaled'] = X_scaled
+        dict_indexed_data_predictions[data_index]['X_scaled_est_one_step'] = psiX_est_one_step[:, 0:n_base_states]
+        dict_indexed_data_predictions[data_index]['X_scaled_est_n_step'] = psiX_est_n_step[:, 0:n_base_states]
+        dict_indexed_data_predictions[data_index]['psiX'] = psiX
         dict_indexed_data_predictions[data_index]['psiX_est_one_step'] = psiX_est_one_step
         dict_indexed_data_predictions[data_index]['psiX_est_n_step'] = psiX_est_n_step
     return dict_indexed_data_predictions

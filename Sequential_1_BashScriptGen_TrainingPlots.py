@@ -25,15 +25,15 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 22
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [3,4,5]
-dict_hp['x']['ls_nn_layers'] = [3,6,9,12]
-dict_hp['x']['ls_nn_nodes'] = [9,12,15]
+dict_hp['x']['ls_dict_size'] = [9,10,11]
+dict_hp['x']['ls_nn_layers'] = [3,6]
+dict_hp['x']['ls_nn_nodes'] = [9,12,15,18,21]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -207,18 +207,17 @@ for items in ls_files:
 seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 22
-STATE_INCLUSIVE = False # True
-ls_process_runs = list(range(0,57)) # Runs for which we want to calculate the error
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,174)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
-seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs, state_inclusive= STATE_INCLUSIVE)
+seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
-SYSTEM_NO = 53
+# SYSTEM_NO = 53
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_runs = list(range(0,12))
+ls_process_runs = list(range(0,174))
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)
@@ -227,7 +226,7 @@ for run in ls_process_runs:
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
-SYSTEM_NO = 53
+# SYSTEM_NO = 22
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL.pickle','rb') as handle:
     df_error = pickle.load(handle)

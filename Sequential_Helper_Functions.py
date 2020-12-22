@@ -197,7 +197,7 @@ def transfer_current_ocDeepDMD_run_files():
         current_run_no = current_run_no + 1
     return
 
-def generate_predictions_pickle_file(SYSTEM_NO,state_only = False, ls_process_runs=[],state_inclusive = True):
+def generate_predictions_pickle_file(SYSTEM_NO,state_only = False, ls_process_runs=[]):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     # Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle'):
@@ -233,7 +233,7 @@ def generate_predictions_pickle_file(SYSTEM_NO,state_only = False, ls_process_ru
         except:
             print('Cannot find the eigenfunctions and observables as the number of base states is not equal to 2')
         if state_only:
-            dict_intermediate = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO,state_inclusive)
+            dict_intermediate = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO)
         else:
             dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
         for curve_no in dict_intermediate.keys():
@@ -360,7 +360,6 @@ def get_run_performance_stats(SYSTEM_NO,RUN_NO):
     dict_stat = {'train':{},'valid':{},'test':{}}
     num_bas_obs = dict_run[0]['X'].shape[1]
     num_lift_obs = dict_run[0]['psiX'].shape[1] - num_bas_obs
-    #
     x_err_train = np.empty(shape=(0,num_bas_obs))
     x_train = np.empty(shape=(0, num_bas_obs))
     psi_err_train = np.empty(shape=(0, num_lift_obs))
