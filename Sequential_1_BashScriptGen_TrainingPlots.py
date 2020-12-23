@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [9,10,11]
+dict_hp['x']['ls_dict_size'] = [12,13,14]
 dict_hp['x']['ls_nn_layers'] = [3,6]
-dict_hp['x']['ls_nn_nodes'] = [9,12,15,18,21]
+dict_hp['x']['ls_nn_nodes'] = [15,18,21,24,27]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -208,7 +208,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 53
-ls_process_runs = list(range(0,174)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,204)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
@@ -459,8 +459,8 @@ plt.show()
 
 ## SYSTEM 2 ANALYSIS
 
-SYSTEM_NO = 21
-ls_process_runs = list(range(0,8))#set(range(0, 120)).union(range(216,260))
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,204))#set(range(0, 120)).union(range(216,260))
 # ls_process_runs = list(range(124, 164))
 ls_steps = list(range(1,20,1))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
