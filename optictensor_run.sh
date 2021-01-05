@@ -4,16 +4,29 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 53 0  18 3 30 1 1 1 1 1 1 > Run_info/SYS_53_RUN_0.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 53 1  18 3 33 1 1 1 1 1 1 > Run_info/SYS_53_RUN_1.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 53 2  18 6 24 1 1 1 1 1 1 > Run_info/SYS_53_RUN_2.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 53 3  18 6 27 1 1 1 1 1 1 > Run_info/SYS_53_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 10 0  1 3 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_0.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 10 1  1 4 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_1.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 10 2  1 4 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 10 3  1 4 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_3.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 53 4  19 6 24 1 1 1 1 1 1 > Run_info/SYS_53_RUN_4.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 53 5  19 6 27 1 1 1 1 1 1 > Run_info/SYS_53_RUN_5.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 53 6  19 6 30 1 1 1 1 1 1 > Run_info/SYS_53_RUN_6.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 53 7  19 6 33 1 1 1 1 1 1 > Run_info/SYS_53_RUN_7.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 10 4  2 4 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_4.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 10 5  2 4 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_5.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 10 6  2 4 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_6.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 10 7  2 5 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_7.txt &
 wait 
+python3 ocdeepDMD_Sequential.py '/gpu:0' 10 8  3 4 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_8.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 10 9  3 4 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_9.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 10 10  3 5 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_10.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 10 11  3 5 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_11.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/gpu:0' 10 12  4 4 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_12.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 10 13  4 5 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_13.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 10 14  4 5 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_14.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 10 15  4 5 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_15.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/gpu:0' 10 16  5 5 3 1 1 1 1 1 1 > Run_info/SYS_10_RUN_16.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 10 17  5 5 5 1 1 1 1 1 1 > Run_info/SYS_10_RUN_17.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 10 18  5 5 8 1 1 1 1 1 1 > Run_info/SYS_10_RUN_18.txt &
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 

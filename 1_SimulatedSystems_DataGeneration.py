@@ -43,7 +43,7 @@ gamma = -0.9
 N_data_points = 30
 N_CURVES = 240
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-SYSTEM_NO = 8
+SYSTEM_NO = 10
 ls_prediction_steps=[1]
 oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)

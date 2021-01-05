@@ -25,15 +25,15 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 10
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [18,19]
-dict_hp['x']['ls_nn_layers'] = [3,6]
-dict_hp['x']['ls_nn_nodes'] = [24,27,30,33]
+dict_hp['x']['ls_dict_size'] = [1,2,3,4,5]
+dict_hp['x']['ls_nn_layers'] = [3,4,5]
+dict_hp['x']['ls_nn_nodes'] = [3,5,8]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
@@ -208,7 +208,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 53
-ls_process_runs = list(range(0,204)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,71)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
