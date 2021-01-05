@@ -53,11 +53,12 @@ print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
     dict_all_run_conditions[i] ={}
-    dict_all_run_conditions[i][process_variable] = {'dict_size':a[i][0],'nn_layers':a[i][1],'nn_nodes':a[i][2]}
     for items in ['x','y','xy']:
         if items != process_variable:
             dict_all_run_conditions[i][items] = {'dict_size': 1, 'nn_layers': 1,'nn_nodes': 1}
-
+        else:
+            dict_all_run_conditions[i][process_variable] = {'dict_size': a[i][0], 'nn_layers': a[i][1],'nn_nodes': a[i][2]}
+print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
 gt = open('/Users/shara/Desktop/oc_deepDMD/goldentensor_run.sh','w')
