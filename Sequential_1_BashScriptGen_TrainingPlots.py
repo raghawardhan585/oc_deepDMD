@@ -378,8 +378,8 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
     pickle.dump(d,handle)
 
 ## RUN 2 - Saving the Optimal Results of the Second Run
-SYSTEM_NO = 31 #153 Maybe for system 7 or 23
-RUN_NO = 116
+SYSTEM_NO = 10 #153 Maybe for system 7 or 23
+RUN_NO = 52
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
