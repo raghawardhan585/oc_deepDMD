@@ -270,15 +270,15 @@ print(dict_hp)
 #========================================================================================================================
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
-SYSTEM_NO = 31
-ls_run_no = list(range(100,148))
+SYSTEM_NO = 10
+ls_run_no = list(range(45,51))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
 plot_params['individual_fig_height']=2
 seq.plot_training_runs_output(SYSTEM_NO,ls_run_no,plot_params)
 ## RUN 2 - Caluculate error and find the optimal run
-SYSTEM_NO = 31
+# SYSTEM_NO = 31
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
@@ -288,7 +288,7 @@ ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 
-ls_process_run_indices = list(range(100,124))
+ls_process_run_indices = list(range(45,51))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
