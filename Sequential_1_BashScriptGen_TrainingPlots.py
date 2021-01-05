@@ -31,18 +31,18 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [1,2,3,4,5]
-dict_hp['x']['ls_nn_layers'] = [3,4,5]
-dict_hp['x']['ls_nn_nodes'] = [3,5,8]
+dict_hp['x']['ls_dict_size'] = [2]
+dict_hp['x']['ls_nn_layers'] = [3]
+dict_hp['x']['ls_nn_nodes'] = [8]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [2,3,4]
-dict_hp['y']['ls_nn_layers'] = [4,5,6,7,8]
-dict_hp['y']['ls_nn_nodes'] = [5,10,15,20,25]
+dict_hp['y']['ls_dict_size'] = [1,2,3]
+dict_hp['y']['ls_nn_layers'] = [3,4,5]
+dict_hp['y']['ls_nn_nodes'] = [3,6,9]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [4,5,6,7,8]
 dict_hp['xy']['ls_nn_nodes'] = [5,10,15,20,25]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -217,7 +217,7 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 ## RUN 1 - Display hyperparameters of the runs
 # SYSTEM_NO = 53
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_runs = list(range(0,174))
+ls_process_runs = list(range(0,45))
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)
@@ -362,8 +362,8 @@ plot_params['individual_fig_height']=5
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
 ## RUN 1 - Saving the Optimal first run result
-SYSTEM_NO = 31# Run no 115 for system 23
-RUN_NO = 84
+SYSTEM_NO = 10# Run no 115 for system 23
+RUN_NO = 0
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
