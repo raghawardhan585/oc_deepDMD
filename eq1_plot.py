@@ -1,3 +1,4 @@
+##
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -59,8 +60,14 @@ try:
 except:
     print('No output info found')
 
-eval,evec = np.linalg.eig(dict_params['KxT_num'])
-kmode = np.empty(shape=(len(eval),0))
-N_steps = 100
-for i in range(N_steps):
-    k
+# eval,evec = np.linalg.eig(dict_params['KxT_num'])
+# kmode = np.empty(shape=(len(eval),0))
+# N_steps = 100
+# for i in range(N_steps):
+#     k
+##
+plt.figure()
+for i in range(160,240):
+    plt.plot(d[i]['X'][:,0],d[0]['X'][:,1],'.',color = 'skyblue')
+    plt.plot(d[i]['X_est_n_step'][:, 0], d[0]['X_est_n_step'][:, 1], color='skyblue')
+plt.show()
