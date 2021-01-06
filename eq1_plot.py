@@ -11,7 +11,7 @@ sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_D
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
-    d = pickle.load(handle)
+    K = pickle.load(handle)
 
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d = pickle.load(handle)[RUN_NO]
@@ -27,3 +27,6 @@ ax = f.add_subplot(111, projection='3d')
 for i in range(d['eigenfunctions'].shape[2]):
     ax.plot_surface(d['X1'],d['X2'],d['eigenfunctions'][:,:,i])
 plt.show()
+
+## Getting the Koopman Modes
+
