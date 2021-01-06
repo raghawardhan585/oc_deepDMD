@@ -273,7 +273,7 @@ print(dict_hp)
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
 SYSTEM_NO = 10
-ls_run_no = list(range(45,72))
+ls_run_no = list(range(45,49))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
@@ -290,7 +290,7 @@ ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 
-ls_process_run_indices = list(range(45,72))
+ls_process_run_indices = ls_run_no#list(range(45,72))
 seq.generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indices)
 seq.generate_df_error_output(SYSTEM_NO)
 with open(sys_folder_name + '/df_error_SEQUENTIAL_OUTPUT.pickle','rb') as handle:
@@ -366,8 +366,8 @@ plot_params['individual_fig_height']=5
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
 ## RUN 1 - Saving the Optimal first run result
-SYSTEM_NO = 10# Run no 115 for system 23
-RUN_NO = 0
+SYSTEM_NO = 53# Run no 115 for system 23
+RUN_NO = 234
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
