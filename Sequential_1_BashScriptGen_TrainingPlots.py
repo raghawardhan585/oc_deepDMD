@@ -35,14 +35,14 @@ dict_hp['x']['ls_dict_size'] = [2]
 dict_hp['x']['ls_nn_layers'] = [3]
 dict_hp['x']['ls_nn_nodes'] = [8]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [1,2,3]
-dict_hp['y']['ls_nn_layers'] = [3,4,5]
-dict_hp['y']['ls_nn_nodes'] = [3,6]
+dict_hp['y']['ls_dict_size'] = [2]
+dict_hp['y']['ls_nn_layers'] = [5]
+dict_hp['y']['ls_nn_nodes'] = [6]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [1,2,3]
 dict_hp['xy']['ls_nn_layers'] = [3,4,5]
-dict_hp['xy']['ls_nn_nodes'] = [3,4,5]
-process_variable = 'y'
+dict_hp['xy']['ls_nn_nodes'] = [5,8]
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -273,7 +273,7 @@ print(dict_hp)
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
 SYSTEM_NO = 10
-ls_run_no = list(range(45,49))
+ls_run_no = list(range(45,63))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
@@ -382,7 +382,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 
 ## RUN 2 - Saving the Optimal Results of the Second Run
 SYSTEM_NO = 10 #153 Maybe for system 7 or 23
-RUN_NO = 52
+RUN_NO = 45
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
