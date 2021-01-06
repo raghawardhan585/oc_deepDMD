@@ -25,13 +25,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 30
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [2]
+dict_hp['x']['ls_dict_size'] = [5,6]
 dict_hp['x']['ls_nn_layers'] = [3,4]
 dict_hp['x']['ls_nn_nodes'] = [12,15,18,21,24]
 dict_hp['y']={}
@@ -211,7 +211,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,45)) # Runs for which we want to calculate the error
 SYSTEM_NO = 30
-ls_process_runs = list(range(0,52)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(52,62)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,264)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
