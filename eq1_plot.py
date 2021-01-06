@@ -8,10 +8,10 @@ import tensorflow as tf
 
 # SYS_NO = 10
 # RUN_NO = 0
-# SYS_NO = 30
-# RUN_NO = 47
-SYS_NO = 53
-RUN_NO = 234
+SYS_NO = 30
+RUN_NO = 47
+# SYS_NO = 53
+# RUN_NO = 234
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 
@@ -85,3 +85,8 @@ for i in range(160,240):
     plt.plot(d[i]['X'][:,0],d[0]['X'][:,1],'.',color = 'skyblue')
     plt.plot(d[i]['X_est_n_step'][:, 0], d[0]['X_est_n_step'][:, 1], color='skyblue')
 plt.show()
+
+
+## Dynamic Modes
+
+# Required Variables - K, psiX
