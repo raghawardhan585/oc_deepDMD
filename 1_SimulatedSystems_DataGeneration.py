@@ -168,7 +168,7 @@ N_CURVES = 300
 ls_prediction_steps=[1]
 
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 31
+SYSTEM_NO = 30
 oc.data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
