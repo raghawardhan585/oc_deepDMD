@@ -35,14 +35,14 @@ dict_hp['x']['ls_dict_size'] = [2]
 dict_hp['x']['ls_nn_layers'] = [3]
 dict_hp['x']['ls_nn_nodes'] = [8]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [5]
-dict_hp['y']['ls_nn_layers'] = [9]
-dict_hp['y']['ls_nn_nodes'] = [1]
+dict_hp['y']['ls_dict_size'] = [1,2,3]
+dict_hp['y']['ls_nn_layers'] = [3,4,5]
+dict_hp['y']['ls_nn_nodes'] = [3,6]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [1,2,3]
 dict_hp['xy']['ls_nn_layers'] = [3,4,5]
 dict_hp['xy']['ls_nn_nodes'] = [3,4,5]
-process_variable = 'xy'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -324,9 +324,9 @@ print(dict_hp)
 
 
 # Final Runs
-SYSTEM_NO = 31
+SYSTEM_NO = 10
 # ls_process_runs = list(range(148,172))
-ls_process_runs = list(range(124,164))
+ls_process_runs = list(range(72,77))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
@@ -334,6 +334,7 @@ with open(sys_folder_name + '/df_error_SEQUENTIAL_x_and_y.pickle','rb') as handl
     df_error = pickle.load(handle)
 df_training_plus_validation = df_error.train + df_error.valid
 opt_run = int(np.array(df_training_plus_validation.loc[df_training_plus_validation == df_training_plus_validation .min()].index))
+print('Optimal Run : ', opt_run)
 # opt_run = 67
 with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperparameters.pickle','rb') as handle:
     dict_hp = pickle.load(handle)

@@ -528,7 +528,10 @@ def generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs):
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_predictions_SEQUENTIAL = pickle.load(handle)
     ls_all_runs = list(dict_predictions_SEQUENTIAL.keys())
-    N_CURVES = len(dict_predictions_SEQUENTIAL[ls_all_runs[-1]].keys())
+    if 'observables' in dict_predictions_SEQUENTIAL[ls_all_runs[-1]].keys():
+        N_CURVES = len(dict_predictions_SEQUENTIAL[ls_all_runs[-1]].keys()) - 4
+    else:
+        N_CURVES = len(dict_predictions_SEQUENTIAL[ls_all_runs[-1]].keys())
     ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
     ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
     ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
