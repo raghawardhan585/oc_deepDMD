@@ -6,8 +6,12 @@ from matplotlib import cm
 import pickle
 import tensorflow as tf
 
-SYS_NO = 53
-RUN_NO = 234
+SYS_NO = 10
+RUN_NO = 0
+# SYS_NO = 30
+# RUN_NO = 47
+# SYS_NO = 53
+# RUN_NO = 234
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 
@@ -17,17 +21,27 @@ with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d = pickle.load(handle)[RUN_NO]
 
-f = plt.figure()
-ax = f.add_subplot(111, projection='3d')
-for i in range(d['observables'].shape[2]):
-    ax.plot_surface(d['X1'],d['X2'],d['observables'][:,:,i])
+# f = plt.figure()
+# ax = f.add_subplot(111, projection='3d')
+# for i in range(d['observables'].shape[2]):
+#     ax.plot_surface(d['X1'],d['X2'],d['observables'][:,:,i])
+# plt.show()
+#
+# f = plt.figure()
+# ax = f.add_subplot(111, projection='3d')
+# for i in range(d['eigenfunctions'].shape[2]):
+#     ax.plot_surface(d['X1'],d['X2'],d['eigenfunctions'][:,:,i])
+# plt.show()
+
+u,s,vT = np.linalg.svd(d[0]['X'])
+plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+plt.plot([0,len(s)-1],[100,100])
+plt.show()
+u,s,vT = np.linalg.svd(d[0]['psiX'])
+plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+plt.plot([0,len(s)-1],[100,100])
 plt.show()
 
-f = plt.figure()
-ax = f.add_subplot(111, projection='3d')
-for i in range(d['eigenfunctions'].shape[2]):
-    ax.plot_surface(d['X1'],d['X2'],d['eigenfunctions'][:,:,i])
-plt.show()
 
 ## Getting the Koopman Modes
 
