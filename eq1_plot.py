@@ -7,6 +7,7 @@ from matplotlib import cm
 import pickle
 import tensorflow as tf
 import itertools
+import ocdeepdmd_simulation_examples_helper_functions as oc
 
 SYS_NO = 10
 RUN_NO = 78
@@ -170,15 +171,47 @@ f.show()
 
 # Dynamic modes - Lambda*inv(W)*U.T*psiX
 
-## Final Plot
-CURVE_NO = 0
+## Calculate the accuracy as a funcation of the number of steps predicted
+ls_steps = list(range(1,20,1))
+dict_rmse_run = {}
+dict_r2_run = {}
+dict_DATA_i = oc.scale_data_using_existing_scaler_folder(d[CURVE_NO], SYS_NO)
+X_scaled = dict_DATA_i['X']
+Y_scaled = dict_DATA_i['Y']
+psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
+for i in ls_steps:  # iterating through each step prediction
+    np_psiX_true = psiX[i:, :]
+    np_psiX_pred = np.matmul(psiX[:-i, :], np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
+    Y_pred = np.matmul(psiX[:-i, :], np.linalg.matrix_power(KxT_num, i))
+    Y_true = Y_scaled[i:, :]
+    dict_rmse_run[i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+    dict_r2_run[i] = np.max([0, (1 - (np.sum(np.square(np_psiX_true - np_psiX_pred))+0) / (np.sum(np.square(np_psiX_true))+)) * 100])
 
-plt.subplot2grid((4,1), (0,0), colspan=1, rowspan=3)
-for i in range(d[CURVE_NO]['X'].shape[1]):
-    plt.plot(d[CURVE_NO]['X'][:,i],'.',color = colors[i])
-    plt.plot(d[CURVE_NO]['X_est'][:, i],'-.',color=colors[i])
-    plt.plot(d[CURVE_NO]['X_est'][:, i], '-.', color=colors[i])
-plt.subplot2grid((4,1), (3,0), colspan=1, rowspan=1)
+## Figure 1
+CURVE_NO = 0
+n_states = d[CURVE_NO]['X'].shape[1]
+n_outputs = d[CURVE_NO]['Y'].shape[1]
+plt.subplot2grid((5,1), (0,0), colspan=1, rowspan=3)
+for i in range(n_states):
+    x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
+    plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
+    plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 2)
+    plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,'-.',color=colors[i])
+    plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale, '--', color=colors[i])
+for i in range(n_outputs):
+    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
+    plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
+    plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale,'.',color = colors[n_states+i],linewidth = 2)
+    plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale,'-.',color=colors[n_states+i])
+    plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, '--', color=colors[n_states+i])
+plt.xlabel('Time Index(k)')
+plt.ylabel('States and Outputs')
+plt.title('One step vs n step prediction')
+plt.legend()
+plt.subplot2grid((5,1), (3,0), colspan=1, rowspan=2)
+plt.xlabel('# Prediction Steps')
+plt.ylabel('$r^2$(in %)')
+plt.title('Accuracy of prediction steps')
 plt.show()
 
 
