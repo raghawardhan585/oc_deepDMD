@@ -42,7 +42,7 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [3,4]
 dict_hp['xy']['ls_nn_nodes'] = [6,9,12]
-process_variable = 'y'
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
