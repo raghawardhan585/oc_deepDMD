@@ -59,7 +59,8 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.03529412, 0.01960784, 0.14509805],
           [0.90980393, 0.59607846, 0.78039217],
           [0.69803923, 0.87843138, 0.72941178],
-          [0.20784314, 0.81568629, 0.89411765]];
+          [0.20784314, 0.81568629, 0.89411765],
+          '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
 
 # u,s,vT = np.linalg.svd(d[0]['X'])
@@ -173,7 +174,7 @@ plt.show()
 
 ## [R2 function of prediction steps] Calculate the accuracy as a funcation of the number of steps predicted
 CURVE_NO = 0
-ls_steps = list(range(1,20,1))
+ls_steps = list(range(1,50,3))
 dict_rmse = {}
 dict_r2 = {}
 for CURVE_NO in range(200,300):
@@ -192,102 +193,70 @@ for CURVE_NO in range(200,300):
         dict_r2[CURVE_NO][i] = np.max([0, (1 - (np.sum(np.square(np_psiX_true - np_psiX_pred))+np.sum(np.square(Y_true - Y_pred))) / (np.sum(np.square(np_psiX_true))+np.sum(np.square(Y_true)))) * 100])
 df_r2 = pd.DataFrame(dict_r2)
 print(df_r2)
-CHECK_VAL =df_r2.iloc[-1,:].min()
-for i in range(160,240):
+CHECK_VAL =df_r2.iloc[-1,:].max()
+for i in range(200,300):
     if df_r2.loc[df_r2.index[-1],i] == CHECK_VAL:
         CURVE_NO = i
         break
 ## Figure 1
-plt.figure(figsize=(18,7))
-plt.subplot2grid((7,18), (0,0), colspan=6, rowspan=4)
-alpha = 1.0
-epsilon = alpha - 0.01
-arrow_length = 0.3
-ls_pts = list(range(0,1))
-for i in list(dict_data.keys())[0:]:
-    for j in ls_pts:
-        if np.abs(dict_data[i]['X'][j, 0]) > 1 or j==0:
-            plt.plot(dict_data[i]['X'][j, 0], dict_data[i]['X'][j, 1], 'o',color='salmon',fillstyle='none',markersize=5)
-    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.3)
-    if np.mod(i,1)==0:
-        for j in ls_pts:
-            dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
-            x = dict_data[i]['X'][j, 0]
-            y = dict_data[i]['X'][j, 1]
-            dx = (dict_data[i]['X'][j + 1, 0] - dict_data[i]['X'][j, 0]) * arrow_length
-            dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
-            # print(x,' ',y,' ',dist)
-            if dist<2:
-                plt.arrow(x,y,dx,dy,head_width = 0.1,head_length=0.5,alpha=1,color='tab:green')
-            else:
-                plt.arrow(x, y, dx, dy, head_width=0.3, head_length=3, alpha=1, color='tab:green')
-plt.xlabel('state $x_1$')
-plt.ylabel('state $x_2$')
-plt.plot([0],[0],'o',color='tab:red',markersize=10)
-plt.xlim([-10,10])
-plt.ylim([-126,16])
-plt.title('(a)')
+plt.figure(figsize=(20,7))
+plt.subplot2grid((7,20), (0,0), colspan=6, rowspan=6)
 
 
 # CURVE_NO = 0
-plt.subplot2grid((7,18), (0,6), colspan=6, rowspan=4)
 n_states = d[CURVE_NO]['X'].shape[1]
 n_outputs = d[CURVE_NO]['Y'].shape[1]
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
     l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
     plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'dotted',color=colors[i])
+    plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'solid',color=colors[i])
     plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
     plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
     plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='dotted',color=colors[n_states+i])
+    plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='solid',color=colors[n_states+i])
     plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
 l1 = plt.legend(loc="upper right")
 plt.gca().add_artist(l1)
 a1, = plt.plot(0,'.',linewidth = 5,label='Truth',color = 'grey')
-a2, = plt.plot(0, linestyle ='dotted',linewidth = 1,label='1-step',color = 'grey')
+a2, = plt.plot(0, linestyle ='solid',linewidth = 1,label='1-step',color = 'grey')
 a3, = plt.plot(0, linestyle = 'dashed',linewidth = 1,label='n-step',color = 'grey')
 l2 = plt.legend((a1,a2,a3),('Truth','1-step','n-step'),loc = "lower right")
 plt.xlabel('Time Index(k)')
 plt.ylabel('States and Outputs')
+plt.title('(a)')
+
+
+
+plt.subplot2grid((7,20), (0,7), colspan=6, rowspan=6)
+plt.bar(df_r2.index,df_r2.mean(axis=1))
+plt.xlim([0.5,50.5])
+plt.ylim([80,100])
+STEPS = 6
+plt.xticks(ticks=np.arange(1, 51, step=STEPS),labels=range(1,51,STEPS))
+plt.xlabel('# Prediction Steps')
+plt.ylabel('$r^2$(in %)')
 plt.title('(b)')
 
 
-plt.subplot2grid((7,18), (0,12), colspan=6, rowspan=4)
+plt.subplot2grid((7,20), (0,14), colspan=6, rowspan=6)
 for i in range(nPC):
-    plt.plot(Phi[i,:],label='$\phi_{}(x)$'.format(i+1))
+    if i in comp_modes_conj:
+        continue
+    elif i in comp_modes:
+        # plt.plot(Phi[i, :],label = 'lala')
+        plt.plot(Phi[i,:],label='$\phi_{{},{}}(x)$'.format(i+1,comp_modes_conj[comp_modes.index(i)]+1))
+    else:
+        plt.plot(Phi[i, :], label='$\phi_{}(x)$'.format(i + 1))
 plt.legend()
 plt.xlabel('Time Index(k)')
 plt.ylabel('Evolution of eigenfunctions')
 plt.title('(c)')
 
 
-plt.subplot2grid((7,18), (4,0), colspan=3, rowspan=2)
-plt.bar(df_r2.index,df_r2.mean(axis=1))
-plt.xlim([0.5,19.5])
-STEPS = 3
-plt.xticks(ticks=np.arange(1, 20, step=STEPS),labels=range(1,20,STEPS))
-plt.xlabel('# Prediction Steps')
-plt.ylabel('$r^2$(in %)')
-plt.title('(d)')
 
-
-for i in range(nPC):
-    f = plt.subplot2grid((7,18), (4, 3*(i+1)), colspan=3, rowspan=2)
-    c = f.pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
-    if i!=0:
-        plt.yticks([])
-    else:
-        plt.ylabel('$x_2$')
-    if i ==2:
-        plt.title('(e) \n $\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-    else:
-        plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-    plt.colorbar(c,ax = f)
-    plt.xlabel('$x_1$')
 
 plt.show()
 
