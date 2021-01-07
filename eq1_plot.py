@@ -6,10 +6,10 @@ from matplotlib import cm
 import pickle
 import tensorflow as tf
 
-# SYS_NO = 10
-# RUN_NO = 0
-SYS_NO = 30
-RUN_NO = 47
+SYS_NO = 10
+RUN_NO = 0
+# SYS_NO = 30
+# RUN_NO = 47
 # SYS_NO = 53
 # RUN_NO = 234
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
@@ -89,4 +89,31 @@ plt.show()
 
 ## Dynamic Modes
 
-# Required Variables - K, psiX
+Senergy_THRESHOLD = 99.99
+# Required Variables - K, psiX,
+CURVE_NO = 0
+psiX = d[CURVE_NO]['psiX'].T
+K = dict_params['KxT_num'].T
+psiXp_data = psiX[:,0:-1]
+psiXf_data = psiX[:,1:]
+# Minimal POD modes of psiX
+U,S,VT = np.linalg.svd(psiXp_data)
+Senergy = np.cumsum(S**2)/np.sum(S**2)*100
+for i in range(len(S)):
+    if Senergy[i] > Senergy_THRESHOLD:
+        nPC = i+1
+        break
+print('Optimal POD modes chosen : ', nPC)
+Ur = U[:,0:nPC]
+# Reduced K - Kred
+Kred = np.matmul(np.matmul(Ur.T,K),Ur)
+# Eigendecomposition of Kred
+eval,W = np.linalg.eig(Kred)
+E = np.diag(eval)
+Winv = np.linalg.inv(W)
+# Koopman eigenfunctions
+Phi = np.matmul(np.matmul(Winv,Ur.T),psiXp_data)
+# Koopman modes - UW
+
+
+# Dynamic modes - Lambda*inv(W)*U.T*psiX
