@@ -9,11 +9,12 @@ import pickle
 import tensorflow as tf
 import itertools
 import ocdeepdmd_simulation_examples_helper_functions as oc
+import copy
 
 # SYS_NO = 30
 # RUN_NO = 47
 SYS_NO = 53
-RUN_NO = 234 #344
+RUN_NO = 344
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
@@ -107,11 +108,30 @@ Kred = np.matmul(np.matmul(Ur.T,K),Ur)
 # eval,W = np.linalg.eig(Kred.T)
 eval,W = np.linalg.eig(Kred)
 E = np.diag(eval)
+for i1 in range(len(eval)):
+    if np.imag(E[i1,i1]) != 0:
+        print(i1)
+        # Find the complex conjugate
+        for i2 in range(i1+1,len(eval)):
+            if eval[i2] == eval[i1].conj():
+                break
+        # i1 and i2 are the indices of the complex conjugate eigenvalues
+        E[i1,i1] = np.real(eval[i1])
+        E[i2, i2] = np.real(eval[i1])
+        E[i1, i2] = np.imag(eval[i1])
+        E[i2, i1] = - np.imag(eval[i1])
+        u1 = copy.deepcopy(np.real(W[:, i1:i1 + 1]))
+        w1 = copy.deepcopy(np.imag(W[:, i1:i1 + 1]))
+        W[:, i1:i1 + 1] = u1
+        W[:, i2:i2 + 1] = w1
+E = np.real(E)
+W = np.real(W)
 Winv = np.linalg.inv(W)
 # Koopman eigenfunctions
-Phi = np.matmul(np.matmul(Winv,Ur.T),psiXp_data)
+Phi = np.matmul(E,np.matmul(np.matmul(Winv,Ur.T),psiXp_data))
 plt.figure()
 plt.plot(Phi.T)
+plt.legend(np.arange(nPC))
 plt.show()
 
 # ## Eigenfunctions and Observables
