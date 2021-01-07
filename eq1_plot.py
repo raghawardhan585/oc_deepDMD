@@ -23,7 +23,14 @@ with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d = pickle.load(handle)[RUN_NO]
 
-
+colors = [[0.68627453, 0.12156863, 0.16470589],
+          [0.96862745, 0.84705883, 0.40000001],
+          [0.83137256, 0.53333336, 0.6156863],
+          [0.03529412, 0.01960784, 0.14509805],
+          [0.90980393, 0.59607846, 0.78039217],
+          [0.69803923, 0.87843138, 0.72941178],
+          [0.20784314, 0.81568629, 0.89411765]];
+colors = np.asarray(colors);  # defines a color palette
 
 # u,s,vT = np.linalg.svd(d[0]['X'])
 # plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
@@ -167,8 +174,10 @@ f.show()
 CURVE_NO = 0
 
 plt.subplot2grid((4,1), (0,0), colspan=1, rowspan=3)
-for i in range(d[0]['X'].shape[1]):
-    plt.plot()
+for i in range(d[CURVE_NO]['X'].shape[1]):
+    plt.plot(d[CURVE_NO]['X'][:,i],'.',color = colors[i])
+    plt.plot(d[CURVE_NO]['X_est'][:, i],'-.',color=colors[i])
+    plt.plot(d[CURVE_NO]['X_est'][:, i], '-.', color=colors[i])
 plt.subplot2grid((4,1), (3,0), colspan=1, rowspan=1)
 plt.show()
 
