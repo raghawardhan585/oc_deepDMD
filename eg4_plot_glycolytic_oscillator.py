@@ -199,8 +199,8 @@ for i in range(200,300):
         CURVE_NO = i
         break
 ## Figure 1
-plt.figure(figsize=(20,7))
-plt.subplot2grid((7,20), (0,0), colspan=6, rowspan=6)
+plt.figure(figsize=(20,6))
+plt.subplot2grid((6,20), (0,0), colspan=6, rowspan=6)
 
 
 # CURVE_NO = 0
@@ -208,13 +208,13 @@ n_states = d[CURVE_NO]['X'].shape[1]
 n_outputs = d[CURVE_NO]['Y'].shape[1]
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
-    l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
+    l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
     plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
     plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'solid',color=colors[i])
     plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
-    plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
+    plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
     plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
     plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='solid',color=colors[n_states+i])
     plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
@@ -230,7 +230,7 @@ plt.title('(a)')
 
 
 
-plt.subplot2grid((7,20), (0,7), colspan=6, rowspan=6)
+plt.subplot2grid((6,20), (0,7), colspan=6, rowspan=6)
 plt.bar(df_r2.index,df_r2.mean(axis=1))
 plt.xlim([0.5,50.5])
 plt.ylim([80,100])
@@ -241,13 +241,13 @@ plt.ylabel('$r^2$(in %)')
 plt.title('(b)')
 
 
-plt.subplot2grid((7,20), (0,14), colspan=6, rowspan=6)
+plt.subplot2grid((6,20), (0,14), colspan=6, rowspan=6)
 for i in range(nPC):
     if i in comp_modes_conj:
         continue
     elif i in comp_modes:
         # plt.plot(Phi[i, :],label = 'lala')
-        plt.plot(Phi[i,:],label='$\phi_{{},{}}(x)$'.format(i+1,comp_modes_conj[comp_modes.index(i)]+1))
+        plt.plot(Phi[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj[comp_modes.index(i)]+1))
     else:
         plt.plot(Phi[i, :], label='$\phi_{}(x)$'.format(i + 1))
 plt.legend()
