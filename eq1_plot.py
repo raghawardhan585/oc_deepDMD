@@ -1,6 +1,7 @@
 ##
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import pickle
@@ -22,17 +23,7 @@ with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d = pickle.load(handle)[RUN_NO]
 
-# f = plt.figure()
-# ax = f.add_subplot(111, projection='3d')
-# for i in range(d['observables'].shape[2]):
-#     ax.plot_surface(d['X1'],d['X2'],d['observables'][:,:,i])
-# plt.show()
-#
-# f = plt.figure()
-# ax = f.add_subplot(111, projection='3d')
-# for i in range(d['eigenfunctions'].shape[2]):
-#     ax.plot_surface(d['X1'],d['X2'],d['eigenfunctions'][:,:,i])
-# plt.show()
+
 
 # u,s,vT = np.linalg.svd(d[0]['X'])
 # plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
@@ -171,6 +162,16 @@ f.show()
 
 
 # Dynamic modes - Lambda*inv(W)*U.T*psiX
+
+## Final Plot
+CURVE_NO = 0
+
+plt.subplot2grid((4,1), (0,0), colspan=1, rowspan=3)
+for i in range(d[0]['X'].shape[1]):
+    plt.plot()
+plt.subplot2grid((4,1), (3,0), colspan=1, rowspan=1)
+plt.show()
+
 
 ## Theoretical results
 a11 = 0.86

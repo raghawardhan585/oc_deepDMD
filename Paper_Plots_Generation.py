@@ -44,7 +44,7 @@ for i in list(dict_data.keys())[0:]:
     for j in ls_pts:
         if np.abs(dict_data[i]['X'][j, 0]) > 1 or j==0:
             plt.plot(dict_data[i]['X'][j, 0], dict_data[i]['X'][j, 1], 'o',color='salmon',fillstyle='none',markersize=5)
-    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.5)
+    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.3)
     if np.mod(i,1)==0:
         for j in ls_pts:
             dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
@@ -63,29 +63,29 @@ plt.plot([0],[0],'o',color='tab:red',markersize=10)
 plt.xlim([-10,10])
 plt.ylim([-126,16])
 plt.show()
-
+plt.savefig("Plots/example_1_phase_portrait.svg")
 ##
 
 # System Parameters
-mA_init = 0.2
-mB_init = 0.9
-gamma_A = 0.7
+gamma_A = 1.
 gamma_B = 0.5
 delta_A = 1.
 delta_B = 1.
-alpha_A0= 0.4
+alpha_A0= 0.04
 alpha_B0= 0.004
-alpha_A = 2.
-alpha_B = 2.
-K_A = 0.1
-K_B = 0.08
-kappa_A = 0.9
-kappa_B = 0.5
+alpha_A = 50.
+alpha_B = 30.
+K_A = 1.
+K_B = 1.5
+kappa_A = 1.
+kappa_B = 1.
 n = 2.
-m = 4.
-sys_params_arc4s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
+m = 2.
 k_3n = 3.
 k_3d = 1.08
+
+
+sys_params_arc2s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
 Ts = 0.1
 t_end = 40
 # Simulation Parameters
@@ -97,28 +97,28 @@ t = np.arange(0, t_end, Ts)
 dict_data = {}
 X0 = np.empty(shape=(0, 2))
 i=0
-for x1,x2 in itertools.product(list(np.arange(0.3,1.,0.1)), list(np.arange(0.3,1.,0.15))):
+for x1,x2 in itertools.product(list(np.arange(1,30.,3.5)), list(np.arange(1,60.,8))):
     dict_data[i]={}
-    x0_curr =  np.array([mA_init,x1,mB_init,x2])
+    x0_curr =  np.array([x1,x2])
     X0 = np.concatenate([X0, np.array([[x1,x2]])], axis=0)
-    dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_4states, x0_curr, t, args=sys_params_arc4s)
+    dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
     dict_data[i]['Y'] = k_3n * dict_data[i]['X'][:, 1:2] / (k_3d + dict_data[i]['X'][:, 3:4])
     i = i+1
 
-for items in dict_data.keys():
-    dict_data[items]['X'] = dict_data[items]['X'][:,[1,3]]
+# for items in dict_data.keys():
+#     dict_data[items]['X'] = dict_data[items]['X'][:,[1,3]]
 
 # Plot
 plt.figure()
 alpha = 1.0
 epsilon = alpha - 0.01
-arrow_length = 0.4
+arrow_length = 1.2
 ls_pts = list(range(0,1))
 for i in list(dict_data.keys())[0:]:
     for j in ls_pts:
         if np.abs(dict_data[i]['X'][j, 0]) > 1 or j==0:
             plt.plot(dict_data[i]['X'][j, 0], dict_data[i]['X'][j, 1], 'o',color='salmon',fillstyle='none',markersize=5)
-    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.5)
+    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.3)
     if np.mod(i,1)==0:
         for j in ls_pts:
             dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
@@ -127,19 +127,22 @@ for i in list(dict_data.keys())[0:]:
             dx = (dict_data[i]['X'][j + 1, 0] - dict_data[i]['X'][j, 0]) * arrow_length
             dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
             # print(x,' ',y,' ',dist)
-            if dist<2:
+            if dist<0.1:
                 plt.arrow(x,y,dx,dy,head_width = 0.02,head_length=0.03,alpha=1,color='tab:green')
             else:
-                plt.arrow(x, y, dx, dy, head_width=0.3, head_length=3, alpha=1, color='tab:green')
-plt.xlabel('[A]')
-plt.ylabel('[B]')
+                plt.arrow(x, y, dx, dy, head_width=1., head_length=0.9, alpha=1, color='tab:green')
+plt.xlabel('x1')
+plt.ylabel('x2')
 plt.plot(dict_data[0]['X'][200:,0],dict_data[0]['X'][200:,1],color='tab:red',markersize=10)
 plt.plot(dict_data[5]['X'][200:,0],dict_data[5]['X'][200:,1],color='tab:red',markersize=10)
 plt.plot(dict_data[10]['X'][200:,0],dict_data[10]['X'][200:,1],color='tab:red',markersize=10)
 # plt.xlim([0,0.6])
 # plt.ylim([0,1.65])
-plt.xlim([0,2])
-plt.ylim([0,2])
+plt.xlim([-0.1,30])
+plt.ylim([-0.1,60])
 plt.show()
+plt.savefig("Plots/example_1_phase_portrait.svg")
+
+
 ##
 
