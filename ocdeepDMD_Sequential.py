@@ -58,7 +58,7 @@ best_test_error = np.inf
 # 3 - Making both dynamics and output linear
 
 
-RUN_OPTIMIZATION = 3
+RUN_OPTIMIZATION = 1
 
 
 if RUN_OPTIMIZATION == 1:

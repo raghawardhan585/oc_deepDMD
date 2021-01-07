@@ -25,15 +25,15 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [5,6]
+dict_hp['x']['ls_dict_size'] = [1,2,3]
 dict_hp['x']['ls_nn_layers'] = [3,4]
-dict_hp['x']['ls_nn_nodes'] = [12,15,18,21,24]
+dict_hp['x']['ls_nn_nodes'] = [6,12,18]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,2,3,4]
 dict_hp['y']['ls_nn_layers'] = [3,4]
@@ -42,7 +42,7 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [1,2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [3,4]
 dict_hp['xy']['ls_nn_nodes'] = [3,6,9,12]
-process_variable = 'xy'
+process_variable = 'x'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -266,9 +266,10 @@ print(dict_hp)
 
 
 # Final Runs
-SYSTEM_NO = 10
-# ls_process_runs = list(range(148,172))
-ls_process_runs = list(range(63,81))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(63,81))
+SYSTEM_NO = 53
+ls_process_runs = list(range(316,348))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
@@ -296,7 +297,7 @@ del var_i
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=False,one_step = True)
 f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=False)
 ## Plotting the observables
 plot_params={}

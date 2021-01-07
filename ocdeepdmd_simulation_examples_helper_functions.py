@@ -612,6 +612,38 @@ def data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO):
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO)
     return
 
+def data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO):
+    # Create a folder for the system and store the data
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        shutil.rmtree(storage_folder)
+        os.mkdir(storage_folder)
+        # get_input = input('Do you wanna delete the existing system[y/n]? ')
+        # if get_input == 'y':
+        #     shutil.rmtree(storage_folder)
+        #     os.mkdir(storage_folder)
+        # else:
+        #     return
+    else:
+        os.mkdir(storage_folder)
+    # Simulation
+    dict_indexed_data = {}
+    plt.figure()
+    X0 = np.empty(shape=(0,2))
+    t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
+    for i in range(N_CURVES):
+        x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'])
+        X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
+        X = odeint(activator_repressor_clock_2states, x0_curr, t, args = sys_params['sys_params_arc2s'])
+        Y = sys_params['k_3n'] * X[:, 0:1] / (sys_params['k_3d'] + X[:, 1:2])
+        dict_indexed_data[i]= {'X':X,'Y':Y}
+        plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+    plt.plot(X0[:,0],X0[:,1],'*')
+    plt.show()
+    plt.figure()
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO)
+    return
+
 def data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)

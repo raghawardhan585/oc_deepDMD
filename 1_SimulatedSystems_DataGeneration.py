@@ -111,6 +111,60 @@ oc.data_gen_sys_arc4s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
+
+# ==========================
+## System 3b - Activator Repressor CLock - 2state system
+# ==========================
+# System Parameters
+gamma_A = 1.
+gamma_B = 0.5
+delta_A = 1.
+delta_B = 1.
+alpha_A0= 0.04
+alpha_B0= 0.004
+alpha_A = 50.
+alpha_B = 30.
+K_A = 1.
+K_B = 1.5
+kappa_A = 1.
+kappa_B = 1.
+n = 2.
+m = 2.
+k_3n = 3.
+k_3d = 1.08
+
+# gamma_A = 1.
+# gamma_B = 0.5
+# delta_A = 1.
+# delta_B = 1.
+# alpha_A0= 0.04
+# alpha_B0= 0.004
+# alpha_A = 250.
+# alpha_B = 30.
+# K_A = 1.
+# K_B = 1.
+# kappa_A = 1.
+# kappa_B = 1.
+# n = 2.
+# m = 4.
+# k_3n = 3.
+# k_3d = 1.08
+
+x_min = np.asarray([1,1])
+x_max = np.asarray([25,70])
+
+sys_params_arc2s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
+# Simulation Parameters
+sampling_time = 0.5
+simulation_time = 50
+N_CURVES = 300
+
+sys_params = {'sys_params_arc2s': sys_params_arc2s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+SYSTEM_NO = 60
+oc.data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO)
+oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
+oc.plot_training_valid_test_states(SYSTEM_NO)
+
 ##
 SYSTEM_NO = 28
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
