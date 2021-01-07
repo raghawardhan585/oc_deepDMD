@@ -108,6 +108,8 @@ Kred = np.matmul(np.matmul(Ur.T,K),Ur)
 # eval,W = np.linalg.eig(Kred.T)
 eval,W = np.linalg.eig(Kred)
 E = np.diag(eval)
+comp_modes =[]
+comp_modes_conj =[]
 for i1 in range(len(eval)):
     if np.imag(E[i1,i1]) != 0:
         print(i1)
@@ -116,6 +118,8 @@ for i1 in range(len(eval)):
             if eval[i2] == eval[i1].conj():
                 break
         # i1 and i2 are the indices of the complex conjugate eigenvalues
+        comp_modes.append(i1)
+        comp_modes_conj.append(i2)
         E[i1,i1] = np.real(eval[i1])
         E[i2, i2] = np.real(eval[i1])
         E[i1, i2] = np.imag(eval[i1])
@@ -166,30 +170,13 @@ plt.show()
 
 # Dynamic modes - Lambda*inv(W)*U.T*psiX
 
-## [Phase Portrait]
 
-# System Parameters
-A = np.array([[0.86,0.],[0.8,0.4]])
-gamma = -0.9
-# Simulation Parameters
-N_data_points = 30
-N_CURVES = 240
-sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
-# Phase Space Data
-dict_data = {}
-X0 = np.empty(shape=(0, 2))
-i=0
-for x1,x2 in itertools.product(list(np.arange(-10,11,2)), list(np.arange(-125,16,20))):
-    sys_params['x0'] = np.array([[x1,x2]])
-    X0 = np.concatenate([X0, sys_params['x0']], axis=0)
-    dict_data[i] = oc.sim_sys_1_2(sys_params)
-    i = i+1
 ## [R2 function of prediction steps] Calculate the accuracy as a funcation of the number of steps predicted
 CURVE_NO = 0
 ls_steps = list(range(1,20,1))
 dict_rmse = {}
 dict_r2 = {}
-for CURVE_NO in range(160,240):
+for CURVE_NO in range(200,300):
     dict_rmse[CURVE_NO] = {}
     dict_r2[CURVE_NO] = {}
     dict_DATA_i = oc.scale_data_using_existing_scaler_folder(d[CURVE_NO], SYS_NO)
