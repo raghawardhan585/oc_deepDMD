@@ -5,9 +5,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import pickle
 import tensorflow as tf
+import itertools
 
 SYS_NO = 10
-RUN_NO = 0
+RUN_NO = 78
 # SYS_NO = 30
 # RUN_NO = 47
 # SYS_NO = 53
@@ -33,14 +34,14 @@ with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as hand
 #     ax.plot_surface(d['X1'],d['X2'],d['eigenfunctions'][:,:,i])
 # plt.show()
 
-u,s,vT = np.linalg.svd(d[0]['X'])
-plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
-plt.plot([0,len(s)-1],[100,100])
-plt.show()
-u,s,vT = np.linalg.svd(d[0]['psiX'])
-plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
-plt.plot([0,len(s)-1],[100,100])
-plt.show()
+# u,s,vT = np.linalg.svd(d[0]['X'])
+# plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+# plt.plot([0,len(s)-1],[100,100])
+# plt.show()
+# u,s,vT = np.linalg.svd(d[0]['psiX'])
+# plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+# plt.plot([0,len(s)-1],[100,100])
+# plt.show()
 
 
 ## Getting the Koopman Modes
@@ -105,15 +106,77 @@ for i in range(len(S)):
         break
 print('Optimal POD modes chosen : ', nPC)
 Ur = U[:,0:nPC]
+plt.figure()
+_,s,_T = np.linalg.svd(d[CURVE_NO]['X'])
+plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+plt.plot([0,len(s)-1],[100,100])
+plt.title('just X')
+plt.show()
+plt.figure()
+_,s,_T = np.linalg.svd(d[CURVE_NO]['psiX'])
+plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
+plt.plot([0,len(s)-1],[100,100])
+plt.title('psiX')
+plt.show()
 # Reduced K - Kred
 Kred = np.matmul(np.matmul(Ur.T,K),Ur)
-# Eigendecomposition of Kred
-eval,W = np.linalg.eig(Kred)
+# # Eigendecomposition of Kred - Right eigenvectors
+# eval,W = np.linalg.eig(Kred)
+# E = np.diag(eval)
+# Winv = np.linalg.inv(W)
+# # Koopman eigenfunctions
+# Phi = np.matmul(np.matmul(Winv,Ur.T),psiXp_data)
+# plt.figure()
+# plt.plot(Phi.T)
+# plt.show()
+
+# Eigendecomposition of Kred - Left eigenvectors
+eval,W = np.linalg.eig(Kred.T)
 E = np.diag(eval)
-Winv = np.linalg.inv(W)
+# Winv = np.linalg.inv(W)
 # Koopman eigenfunctions
-Phi = np.matmul(np.matmul(Winv,Ur.T),psiXp_data)
+Phi = np.matmul(np.matmul(W,Ur.T),psiXp_data)
+plt.figure()
+plt.plot(Phi.T)
+plt.show()
+plt.plot(psiXp_data.T)
+plt.show()
+##
+n_observables = psiXp_data.shape[0]
+sampling_resolution = 0.1
+x1 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
+x2 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
+X1, X2 = np.meshgrid(x1, x2)
+PHI = np.zeros(shape=(X1.shape[0], X1.shape[1],nPC))
+PSI = np.zeros(shape=(X1.shape[0], X1.shape[1],n_observables))
+for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+    x1_i = X1[i, j]
+    x2_i = X2[i, j]
+    psiXT_i = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: np.array([[x1_i, x2_i]])})
+    PHI[i, j, :] = np.matmul(np.matmul(W,Ur.T),psiXT_i.T).reshape((1,1,-1))
+    PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
+## Observables
+f,ax = plt.subplots(1,n_observables,figsize = (2*n_observables,1.5))
+for i in range(n_observables):
+    c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI[:,:,i]), vmax=np.max(PSI[:,:,i]))
+    f.colorbar(c,ax = ax[i])
+f.show()
+## Eigenfunctions
+f,ax = plt.subplots(1,nPC,figsize = (2*nPC,1.5))
+for i in range(nPC):
+    c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
+    f.colorbar(c,ax = ax[i])
+f.show()
 # Koopman modes - UW
 
 
 # Dynamic modes - Lambda*inv(W)*U.T*psiX
+
+## Theoretical results
+a11 = 0.86
+a21 = 0.8
+a22 = 0.4
+gamma = -0.9
+
+Kt = np.array([[a11,0,0,0,0],[a21,a22,gamma,0,0],[0,0,a11**2,0,0],[0,0,a11*a21,a11*a22,a11*gamma],[0,0,0,0,a11**3]])
+
