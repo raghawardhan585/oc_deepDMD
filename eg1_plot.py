@@ -291,7 +291,7 @@ for i in range(nPC):
         plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
     plt.colorbar(c,ax = f)
     plt.xlabel('$x_1$')
-
+plt.savefig('Plots/eg1_TheoreticalExample.svg')
 plt.show()
 
 ## Theoretical results

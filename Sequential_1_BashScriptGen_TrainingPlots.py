@@ -157,14 +157,14 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
-# SYSTEM_NO = 53
+SYSTEM_NO = 53
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# ls_process_runs = list(range(0,45))
+ls_process_runs = [344]
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)
-    # print('RUN : ',run,' x_obs: ',dict_hp['x_obs'],' x_layers ',dict_hp['x_layers'],' x_nodes ',dict_hp['x_nodes'],' y_obs: ',dict_hp['y_obs'],' y_layers ',dict_hp['y_layers'],' y_nodes ',dict_hp['y_nodes'],' xy_obs: ',dict_hp['xy_obs'],' xy_layers ',dict_hp['xy_layers'],' xy_nodes ',dict_hp['xy_nodes'])
-    print('RUN : ', run, ' x_obs: ', dict_hp['x_obs'], ' x_layers ', dict_hp['x_layers'], ' x_nodes ', dict_hp['x_nodes'])
+    print('RUN : ',run,' x_obs: ',dict_hp['x_obs'],' x_layers ',dict_hp['x_layers'],' x_nodes ',dict_hp['x_nodes'],' y_obs: ',dict_hp['y_obs'],' y_layers ',dict_hp['y_layers'],' y_nodes ',dict_hp['y_nodes'],' xy_obs: ',dict_hp['xy_obs'],' xy_layers ',dict_hp['xy_layers'],' xy_nodes ',dict_hp['xy_nodes'])
+    # print('RUN : ', run, ' x_obs: ', dict_hp['x_obs'], ' x_layers ', dict_hp['x_layers'], ' x_nodes ', dict_hp['x_nodes'])
 
 
 ## RUN 1 PROCESSING - Get the optimal run from the specified runs
@@ -270,10 +270,12 @@ print(dict_hp)
 
 
 # Final Runs
-SYSTEM_NO = 10
-ls_process_runs = list(range(63,81))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(63,81))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(316,348))
+SYSTEM_NO = 60
+ls_process_runs = list(range(60,78))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
@@ -476,3 +478,52 @@ plt.show()
 ##
 
 df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,[8],ls_steps,ls_test_curves)
+
+
+## Calculating the required error statistics
+
+SYS_NO = 53
+RUN_NO = 344
+
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+    d = pickle.load(handle)[RUN_NO]
+if 'observables' in d.keys():
+    N_CURVES = len(d.keys()) - 4
+else:
+    N_CURVES = len(d.keys())
+ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
+ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
+
+dict_error = {'train':{},'valid':{},'test':{}}
+for items in dict_error.keys():
+    dict_error[items]['r2'] = []
+    dict_error[items]['r2_n'] = []
+for i in ls_train_curves:
+    SST = np.sum(np.square(d[i]['psiX']))
+    SSE = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_one_step']))
+    SSE_n = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_n_step']))
+    dict_error['train']['r2'].append((1 - SSE/SST)*100)
+    dict_error['train']['r2_n'].append((1 - SSE_n / SST) * 100)
+for i in ls_valid_curves:
+    SST = np.sum(np.square(d[i]['psiX']))
+    SSE = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_one_step']))
+    SSE_n = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_n_step']))
+    dict_error['valid']['r2'].append((1 - SSE/SST)*100)
+    dict_error['valid']['r2_n'].append((1 - SSE_n / SST) * 100)
+for i in ls_test_curves:
+    SST = np.sum(np.square(d[i]['psiX']))
+    SSE = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_one_step']))
+    SSE_n = np.sum(np.square(d[i]['psiX'] - d[i]['psiX_est_n_step']))
+    dict_error['test']['r2'].append((1 - SSE/SST)*100)
+    dict_error['test']['r2_n'].append((1 - SSE_n / SST) * 100)
+
+print('2 - step Training r2 accuracy: ', np.mean(dict_error['train']['r2'] ))
+print('1 - step Validation r2 accuracy: ', np.mean(dict_error['valid']['r2'] ))
+print('1 - step Testing r2 accuracy: ', np.mean(dict_error['test']['r2'] ))
+
+print('N - step Training r2 accuracy: ', np.mean(dict_error['train']['r2_n'] ))
+print('N - step Validation r2 accuracy: ', np.mean(dict_error['valid']['r2_n'] ))
+print('N - step Testing r2 accuracy: ', np.mean(dict_error['test']['r2_n'] ))

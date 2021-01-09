@@ -174,7 +174,7 @@ plt.show()
 
 ## [R2 function of prediction steps] Calculate the accuracy as a funcation of the number of steps predicted
 CURVE_NO = 0
-ls_steps = list(range(1,50,3))
+ls_steps = list(range(1,50,1))
 dict_rmse = {}
 dict_r2 = {}
 for CURVE_NO in range(200,300):
@@ -234,8 +234,8 @@ plt.subplot2grid((6,20), (0,7), colspan=6, rowspan=6)
 plt.bar(df_r2.index,df_r2.mean(axis=1))
 plt.xlim([0.5,50.5])
 plt.ylim([80,100])
-STEPS = 6
-plt.xticks(ticks=np.arange(1, 51, step=STEPS),labels=range(1,51,STEPS))
+STEPS = 10
+plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
 plt.xlabel('# Prediction Steps')
 plt.ylabel('$r^2$(in %)')
 plt.title('(b)')
@@ -257,7 +257,7 @@ plt.title('(c)')
 
 
 
-
+plt.savefig('Plots/eg4_GlycolyticOscillator.svg')
 plt.show()
 
 
