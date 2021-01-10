@@ -121,3 +121,7 @@ for items in ls_files:
     items.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
     items.write('cd oc_deepDMD/ \n')
     items.close()
+
+##
+seq.transfer_current_ocDeepDMD_run_files()
+##
