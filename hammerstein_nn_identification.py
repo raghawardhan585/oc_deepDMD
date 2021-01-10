@@ -290,7 +290,7 @@ if len(sys.argv)>2:
     SYSTEM_NO = sys.argv[2]
     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 if len(sys.argv) > 3:
-    PROCESS_VARIABLE = np.int(sys.argv[3])
+    PROCESS_VARIABLE = sys.argv[3]
     if PROCESS_VARIABLE == 'x':
         LEARN_DYNAMICS = True
     elif PROCESS_VARIABLE == 'y':
