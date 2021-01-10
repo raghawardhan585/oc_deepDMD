@@ -295,11 +295,11 @@ if len(sys.argv) > 3:
         LEARN_DYNAMICS = True
     elif PROCESS_VARIABLE == 'y':
         LEARN_DYNAMICS = False
-if len(sys.argv) > 3:
-    RUN_NUMBER = np.int(sys.argv[3])
-if len(sys.argv)>4:
-    n_layers = np.int(sys.argv[5])
+if len(sys.argv) > 4:
+    RUN_NUMBER = np.int(sys.argv[4])
 if len(sys.argv)>5:
+    n_layers = np.int(sys.argv[5])
+if len(sys.argv)>6:
     n_nodes = np.int(sys.argv[6])
 
 data_file = data_directory + data_suffix
