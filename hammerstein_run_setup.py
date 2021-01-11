@@ -32,12 +32,12 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_nn_layers'] = [3,4]
+dict_hp['x']['ls_nn_layers'] = [3,4,5]
 dict_hp['x']['ls_nn_nodes'] = [5,10,15]
 dict_hp['y']={}
-dict_hp['y']['ls_nn_layers'] = [3,4]
-dict_hp['y']['ls_nn_nodes'] = [6,9,12]
-process_variable = 'x'
+dict_hp['y']['ls_nn_layers'] = [3,4,5]
+dict_hp['y']['ls_nn_nodes'] = [5,10,15]
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -132,7 +132,7 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(52,62))
 # SYSTEM_NO = 153
 # ls_process_runs = list(range(0,283))
-SYSTEM_NO = 160
+SYSTEM_NO = 10
 ls_process_runs = list(range(0,5))
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -144,7 +144,7 @@ else:
     dict_predictions_SEQUENTIAL = {}
 # Find all available run folders
 ls_all_run_indices = []
-for folder in os.listdir(sys_folder_name+'/Sequential'):
+for folder in os.listdir(sys_folder_name+'/Hammerstein'):
     if folder[0:4] == 'RUN_': # It is a RUN folder
         ls_all_run_indices.append(int(folder[4:]))
 # List of all processed runs are the keys of dict_prediction_SEQUENTIAL
@@ -157,16 +157,13 @@ print('RUNS TO PROCESS - ',ls_unprocessed_runs)
 
 
 
-# for run in ls_unprocessed_runs:
-#     print('RUN: ', run)
-#     run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run)
-#     with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-#         d = pickle.load(handle)
-#     print(d)
-    # d['process_variable'] = 'x'
-    # with open(run_folder_name + '/dict_hyperparameters.pickle', 'wb') as handle:
-    #     pickle.dump(d,handle)
-
+for run in ls_unprocessed_runs:
+    print('RUN: ', run)
+    run_folder_name = sys_folder_name + '/Hammerstein/RUN_' + str(run)
+    with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+        d = pickle.load(handle)
+    print(d)
+##
 
 dict_predictions_HAMMERSTEIN = {}
 for run in ls_unprocessed_runs:
