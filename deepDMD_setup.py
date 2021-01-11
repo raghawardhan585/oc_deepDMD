@@ -9,7 +9,7 @@ import os
 import shutil
 import tensorflow as tf
 import Sequential_Helper_Functions as seq
-import hammerstein_helper_functions as hm
+import deepDMD_helper_functions as dp
 import ocdeepdmd_simulation_examples_helper_functions as oc
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
@@ -122,7 +122,8 @@ for items in ls_files:
     items.close()
 
 ##
-hm.transfer_current_ocDeepDMD_run_files()
+dp.transfer_current_ocDeepDMD_run_files()
+
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 110
 # ls_process_runs = list(range(0,45))
@@ -132,7 +133,7 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,283))
 SYSTEM_NO = 10
 ls_process_runs = list(range(0,9))
-hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
+dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
     d = pickle.load(handle)
