@@ -52,7 +52,7 @@ dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 20000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
 # ls_dict_training_params.append(dict_training_params)
@@ -353,6 +353,7 @@ with tf.device(DEVICE_NAME):
     # K Variables  -    Kx definition w/ bias
     A = weight_variable([num_states, num_states])
     A_hat_opt = get_best_K_DMD(dict_train['X'], dict_train['Y'],dict_valid['X'], dict_valid['Y'])
+    print(A_hat_opt)
     sess.run(tf.global_variables_initializer())
     A = tf.Variable(sess.run(A[0:num_states, 0:num_states].assign(A_hat_opt)))
     # Psi variables
@@ -371,13 +372,14 @@ with tf.device(DEVICE_NAME):
     print('---   TRAINING COMPLETE   ---')
     # print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
     A_num = sess.run(A)
+    print(A_num)
     Wx1_list_num = sess.run(Wx1_list)
     bx1_list_num = sess.run(bx1_list)
+print(sess.run(A))
 # AFTER RUN 1
 dict_K = {'AT': A}
 dict_feed = {'xT': x_feed}
 dict_psi = {'xT': psix}
-sess.run(tf.global_variables_initializer())
 # feed_dict_train, feed_dict_valid = get_fed_dict(dict_train, dict_valid, dict_feed)
 # train_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
 # valid_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
@@ -397,7 +399,7 @@ dict_dump = {}
 dict_dump['Wx_list_num'] = Wx1_list_num
 dict_dump['bx_list_num'] = bx1_list_num
 dict_dump['A_num'] = A_num
-
+print(A_num)
 with open(FOLDER_NAME + '/constrainedNN-Model.pickle', 'wb') as file_obj_swing:
     pickle.dump(dict_dump, file_obj_swing)
 with open(FOLDER_NAME + '/run_info.pickle', 'wb') as file_obj_swing:
@@ -409,6 +411,7 @@ saver = tf.compat.v1.train.Saver()
 tf.compat.v1.add_to_collection('psix', x_feed)
 tf.compat.v1.add_to_collection('x_feed', x_feed)
 tf.compat.v1.add_to_collection('AT', A)
+print(sess.run(A))
 all_tf_var_names =['psix','x_feed','AT']
 saver_path_curr = saver.save(sess, FOLDER_NAME + '/' + data_suffix + '.ckpt')
 with open(FOLDER_NAME + '/all_tf_var_names.pickle', 'wb') as handle:
