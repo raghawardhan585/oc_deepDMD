@@ -27,7 +27,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 10
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
@@ -153,7 +153,8 @@ for run_no in ls_runs:
     dict_error[run_no]['valid'] = hm.get_error(ls_valid_curves, d[run_no])
     dict_error[run_no]['test'] = hm.get_error(ls_test_curves, d[run_no])
 df_error_HAMMERSTEIN = pd.DataFrame(dict_error).T
-opt_run = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.valid).max().index[0]
+df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.valid)
+opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 7

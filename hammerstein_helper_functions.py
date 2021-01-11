@@ -79,11 +79,9 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
         d = pickle.load(handle)
     dict_params = {}
     for items in d:
-        print(items)
         dict_params[items] = tf.get_collection(items)[0]
     try:
         dict_params['AT_num'] = sess.run(dict_params['AT'])
-        print(dict_params['AT_num'])
     except:
         print('Error in State to Output Matrix')
     return dict_params
@@ -119,7 +117,6 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
         dict_predictions_HAMMERSTEIN[run] = {}
         sess = tf.InteractiveSession()
         dict_params = get_all_run_info(SYSTEM_NO, run, sess)
-        print(np.linalg.eigvals(dict_params['AT_num']))
         if d['process_variable'] == 'x':
             # Get the 1-step and n-step prediction data
             for data_index in dict_indexed_data.keys():
