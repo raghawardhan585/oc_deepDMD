@@ -300,5 +300,33 @@ a21 = 0.8
 a22 = 0.4
 gamma = -0.9
 
-Kt = np.array([[a11,0,0,0,0],[a21,a22,gamma,0,0],[0,0,a11**2,0,0],[0,0,a11*a21,a11*a22,a11*gamma],[0,0,0,0,a11**3]])
+K_t = np.array([[a11,0,0,0,0],[a21,a22,gamma,0,0],[0,0,a11**2,0,0],[0,0,a11*a21,a11*a22,a11*gamma],[0,0,0,0,a11**3]])
+eval_t, W_t = np.linalg.eig(K_t)
+Wi_t = np.linalg.inv(W_t)
+sampling_resolution = 0.1
+x1 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
+x2 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
+X1, X2 = np.meshgrid(x1, x2)
+
+PHI = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
+PSI = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
+for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+    x1_i = X1[i, j]
+    x2_i = X2[i, j]
+    psiXT_i = np.array(([[x1_i,x2_i,x1_i**2,x1_i*x2_i,x1_i**3]]))
+    PHI[i, j, :] = np.matmul(Wi_t,psiXT_i.T).reshape((1,1,-1))
+    PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
+
+f,ax = plt.subplots(1,5,figsize = (10,1.5))
+for i in range(5):
+    c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI[:,:,i]), vmax=np.max(PSI[:,:,i]))
+    f.colorbar(c,ax = ax[i])
+f.show()
+f,ax = plt.subplots(1,5,figsize = (10,1.5))
+for i in range(5):
+    c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
+    f.colorbar(c,ax = ax[i])
+f.show()
+
+
 
