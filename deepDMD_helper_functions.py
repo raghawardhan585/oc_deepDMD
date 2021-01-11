@@ -81,9 +81,13 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
     for items in d:
         dict_params[items] = tf.get_collection(items)[0]
     try:
-        dict_params['AT_num'] = sess.run(dict_params['AT'])
+        dict_params['KxT_num'] = sess.run(dict_params['KxT'])
     except:
-        print('Error in State to Output Matrix')
+        print('Error in State Transition Matrix')
+    try:
+        dict_params['WhT_num'] = sess.run(dict_params['WhT'])
+    except:
+        print('Error in Output Matrix')
     return dict_params
 
 def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
@@ -112,29 +116,34 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
     for run in ls_unprocessed_runs:
         print('Run: ',run)
         run_folder_name = sys_folder_name + '/deepDMD/RUN_' + str(run)
-        with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-            d = pickle.load(handle)
         dict_predictions_deepDMD[run] = {}
         sess = tf.InteractiveSession()
         dict_params = get_all_run_info(SYSTEM_NO, run, sess)
-        if d['process_variable'] == 'x':
-            # Get the 1-step and n-step prediction data
-            for data_index in dict_indexed_data.keys():
-                dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
-                X_scaled = dict_DATA_i['X']
-                x_nstep = copy.deepcopy(X_scaled[0:1,:])
-                x_1step = copy.deepcopy(X_scaled[0:1,:])
-                for i in range(1,X_scaled.shape[0]):
-                    # N - step predictions
-                    x_nstep = np.concatenate([x_nstep,np.matmul(x_nstep[-1:],dict_params['AT_num'])])
-                    # 1 - step predictions
-                    x_1step = np.concatenate([x_1step,np.matmul(X_scaled[i-1:i],dict_params['AT_num'])])
-                dict_predictions_deepDMD[run][data_index] = {'X_scaled':X_scaled, 'X_one_step_scaled': x_1step,'X_n_step_scaled': x_nstep, 'X': dict_DATA_i['X']}
-                dict_predictions_deepDMD[run][data_index]['X_one_step'] = oc.inverse_transform_X(x_nstep, SYSTEM_NO)
-                dict_predictions_deepDMD[run][data_index]['X_n_step'] = oc.inverse_transform_X(x_1step, SYSTEM_NO)
-        # elif d['process_variable'] == 'y':
-        #     # Get the output data fit
-        #     try: # If there exists an OPTIMAL_STATE_FIT
+        # Get the 1-step and n-step prediction data
+        for data_index in dict_indexed_data.keys():
+            dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
+            X_scaled = dict_DATA_i['X']
+            Y_scaled = dict_DATA_i['Y']
+            # 1 - step predictions
+            psiX_1step = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1,:]})
+            psiX_1step = np.concatenate([psiX_1step,np.matmul(dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:-1, :]}),dict_params['KxT_num'])],axis=0)
+            Y_1step_scaled = np.matmul(psiX_1step,dict_params['WhT_num'])
+            # N - step predictions
+            psiX_nstep = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled[0:1,:]})
+            for i in range(1,X_scaled.shape[0]):
+                psiX_nstep = np.concatenate([psiX_nstep, np.matmul(psiX_nstep[-1:],dict_params['KxT_num'])], axis=0)
+            Y_nstep_scaled = np.matmul(psiX_nstep, dict_params['WhT_num'])
+            dict_predictions_deepDMD[run][data_index] = {'X': dict_DATA_i['X'], 'Y': dict_DATA_i['Y'], 'X_scaled': X_scaled, 'Y_scaled': Y_scaled}
+            dict_predictions_deepDMD[run][data_index]['psiX_one_step_scaled'] = psiX_1step
+            dict_predictions_deepDMD[run][data_index]['psiX_n_step_scaled'] = psiX_nstep
+            dict_predictions_deepDMD[run][data_index]['X_one_step_scaled'] = psiX_1step[:,0:len(X_scaled[0])]
+            dict_predictions_deepDMD[run][data_index]['X_n_step_scaled'] = psiX_nstep[:,0:len(X_scaled[0])]
+            dict_predictions_deepDMD[run][data_index]['X_one_step'] = oc.inverse_transform_X(psiX_1step[:, 0:len(X_scaled[0])], SYSTEM_NO)
+            dict_predictions_deepDMD[run][data_index]['X_n_step'] = oc.inverse_transform_X(psiX_nstep[:, 0:len(X_scaled[0])], SYSTEM_NO)
+            dict_predictions_deepDMD[run][data_index]['Y_one_step_scaled'] = Y_1step_scaled
+            dict_predictions_deepDMD[run][data_index]['Y_n_step_scaled'] = Y_nstep_scaled
+            dict_predictions_deepDMD[run][data_index]['Y_one_step'] = oc.inverse_transform_Y(Y_1step_scaled, SYSTEM_NO)
+            dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_X(Y_nstep_scaled, SYSTEM_NO)
         tf.reset_default_graph()
         sess.close()
     # Saving the dict_predictions folder

@@ -44,7 +44,7 @@ a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
-    dict_all_run_conditions[i] = str(a[i][0]) + ' '  + str(a[i][1]) + ' '  + str(a[i][2])
+    dict_all_run_conditions[i] = str(a[i][0]) + ' ' + str(a[i][1]) + ' ' + str(a[i][2])
 print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
