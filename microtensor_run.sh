@@ -4,13 +4,13 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
-python3 deepDMD.py '/cpu:0' 60 0 2 3 10 > Run_info/SYS_60_RUN_0.txt &
+python3 deepDMD.py '/cpu:0' 10 0 1 3 5 > Run_info/SYS_10_RUN_0.txt &
 wait 
-python3 deepDMD.py '/cpu:0' 60 1 2 3 15 > Run_info/SYS_60_RUN_1.txt &
+python3 deepDMD.py '/cpu:0' 10 1 1 3 10 > Run_info/SYS_10_RUN_1.txt &
 wait 
-python3 deepDMD.py '/cpu:0' 60 2 5 4 15 > Run_info/SYS_60_RUN_2.txt &
+python3 deepDMD.py '/cpu:0' 10 2 3 4 5 > Run_info/SYS_10_RUN_2.txt &
 wait 
-python3 deepDMD.py '/cpu:0' 60 3 5 4 20 > Run_info/SYS_60_RUN_3.txt &
+python3 deepDMD.py '/cpu:0' 10 3 3 4 10 > Run_info/SYS_10_RUN_3.txt &
 wait 
 wait 
 echo "All sessions are complete" 

@@ -4,13 +4,16 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
-python3 deepDMD.py '/gpu:0' 60 0 5 3 10 > Run_info/SYS_60_RUN_0.txt &
-python3 deepDMD.py '/gpu:1' 60 1 5 3 15 > Run_info/SYS_60_RUN_1.txt &
-python3 deepDMD.py '/gpu:2' 60 2 5 3 20 > Run_info/SYS_60_RUN_2.txt &
-python3 deepDMD.py '/gpu:3' 60 3 5 4 10 > Run_info/SYS_60_RUN_3.txt &
+python3 deepDMD.py '/gpu:0' 10 0 2 4 5 > Run_info/SYS_10_RUN_0.txt &
+python3 deepDMD.py '/gpu:1' 10 1 2 4 10 > Run_info/SYS_10_RUN_1.txt &
+python3 deepDMD.py '/gpu:2' 10 2 3 3 5 > Run_info/SYS_10_RUN_2.txt &
+python3 deepDMD.py '/gpu:3' 10 3 3 3 10 > Run_info/SYS_10_RUN_3.txt &
 wait 
-python3 deepDMD.py '/gpu:0' 60 4 8 4 15 > Run_info/SYS_60_RUN_4.txt &
-python3 deepDMD.py '/gpu:1' 60 5 8 4 20 > Run_info/SYS_60_RUN_5.txt &
+python3 deepDMD.py '/gpu:0' 10 4 5 3 5 > Run_info/SYS_10_RUN_4.txt &
+python3 deepDMD.py '/gpu:1' 10 5 5 3 10 > Run_info/SYS_10_RUN_5.txt &
+python3 deepDMD.py '/gpu:2' 10 6 5 4 5 > Run_info/SYS_10_RUN_6.txt &
+python3 deepDMD.py '/gpu:3' 10 7 5 4 10 > Run_info/SYS_10_RUN_7.txt &
+wait 
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 
