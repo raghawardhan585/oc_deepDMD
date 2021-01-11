@@ -9,6 +9,7 @@ import os
 import shutil
 import tensorflow as tf
 import Sequential_Helper_Functions as seq
+import hammerstein_helper_functions as hm
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
@@ -124,4 +125,85 @@ for items in ls_files:
 
 ##
 seq.transfer_current_ocDeepDMD_run_files()
-##
+## RUN 1 PROCESSING - Generate predictions and error
+# SYSTEM_NO = 110
+# ls_process_runs = list(range(0,45))
+# SYSTEM_NO = 130
+# ls_process_runs = list(range(52,62))
+# SYSTEM_NO = 153
+# ls_process_runs = list(range(0,283))
+SYSTEM_NO = 160
+ls_process_runs = list(range(0,5))
+
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+# Make a predictions folder if one doesn't exist
+if os.path.exists(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle'):
+    with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
+        dict_predictions_SEQUENTIAL = pickle.load(handle)
+else:
+    dict_predictions_SEQUENTIAL = {}
+# Find all available run folders
+ls_all_run_indices = []
+for folder in os.listdir(sys_folder_name+'/Sequential'):
+    if folder[0:4] == 'RUN_': # It is a RUN folder
+        ls_all_run_indices.append(int(folder[4:]))
+# List of all processed runs are the keys of dict_prediction_SEQUENTIAL
+ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
+ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
+# Among the unprocessed runs, only process the specified runs
+if len(ls_process_runs) !=0:
+    ls_unprocessed_runs = list(set(ls_unprocessed_runs).intersection(set(ls_process_runs)))
+print('RUNS TO PROCESS - ',ls_unprocessed_runs)
+
+
+
+# for run in ls_unprocessed_runs:
+#     print('RUN: ', run)
+#     run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run)
+#     with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+#         d = pickle.load(handle)
+#     print(d)
+    # d['process_variable'] = 'x'
+    # with open(run_folder_name + '/dict_hyperparameters.pickle', 'wb') as handle:
+    #     pickle.dump(d,handle)
+
+
+dict_predictions_HAMMERSTEIN = {}
+for run in ls_unprocessed_runs:
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run)
+    with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+        d = pickle.load(handle)
+
+    dict_predictions_HAMMERSTEIN[run] = {}
+    sess = tf.InteractiveSession()
+    dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, run, sess)
+    if d['process_variable'] == 'x':
+        # Get the 1-step and n-step prediction data
+    elif d['process_variable'] == 'y':
+        # Get the output data fit
+        try: # If there exists an OPTIMAL_STATE_FIT
+
+
+
+
+
+    if state_only:
+        dict_intermediate = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO)
+    else:
+        dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
+    for curve_no in dict_intermediate.keys():
+        dict_predictions_SEQUENTIAL[run][curve_no] = dict_intermediate[curve_no]
+
+
+
+    tf.reset_default_graph()
+    sess.close()
+# Saving the dict_predictions folder
+with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'wb') as handle:
+    pickle.dump(dict_predictions_SEQUENTIAL, handle)
+
+
+
+
+# seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
+# seq.generate_df_error(SYSTEM_NO,ls_process_runs)

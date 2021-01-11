@@ -15,7 +15,7 @@ import shutil
 import pandas as pd
 
 # Default Parameters
-LEARN_DYNAMICS = True
+PROCESS_VARIABLE = 'x'
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
 SYSTEM_NO = 60
@@ -291,16 +291,21 @@ if len(sys.argv)>2:
     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 if len(sys.argv) > 3:
     PROCESS_VARIABLE = sys.argv[3]
-    if PROCESS_VARIABLE == 'x':
-        LEARN_DYNAMICS = True
-    elif PROCESS_VARIABLE == 'y':
-        LEARN_DYNAMICS = False
 if len(sys.argv) > 4:
     RUN_NUMBER = np.int(sys.argv[4])
 if len(sys.argv)>5:
     n_layers = np.int(sys.argv[5])
 if len(sys.argv)>6:
     n_nodes = np.int(sys.argv[6])
+
+if PROCESS_VARIABLE == 'x':
+    LEARN_DYNAMICS = True
+elif PROCESS_VARIABLE == 'y':
+    LEARN_DYNAMICS = False
+else:
+    print('Process Variable invalid!!! EXITING')
+    exit()
+
 
 data_file = data_directory + data_suffix
 X,Y = load_pickle_data(data_file, LEARN_DYNAMICS)
@@ -418,7 +423,7 @@ for items in dict_run_info.keys():
 print('-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----')
 
 # Saving the hyperparameters
-dict_hp = {'n_layers': n_layers, 'n_nodes': n_nodes}
+dict_hp = {'n_layers': n_layers, 'n_nodes': n_nodes, 'process_variable': PROCESS_VARIABLE}
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 
