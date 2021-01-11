@@ -124,7 +124,7 @@ for items in ls_files:
     items.close()
 
 ##
-seq.transfer_current_ocDeepDMD_run_files()
+hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 110
 # ls_process_runs = list(range(0,45))
