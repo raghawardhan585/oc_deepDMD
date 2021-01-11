@@ -133,8 +133,8 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(52,62))
 # SYSTEM_NO = 153
 # ls_process_runs = list(range(0,283))
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,10))
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,9))
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
