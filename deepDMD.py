@@ -261,6 +261,28 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
     return all_histories, epoch_i
 
 
+def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
+    Xp_train = Xp_train.T
+    Xf_train = Xf_train.T
+    Xp_valid = Xp_valid.T
+    Xf_valid = Xf_valid.T
+    U,S,Vh = np.linalg.svd(Xp_train)
+    V = Vh.T.conj()
+    Uh = U.T.conj()
+    A_hat = np.zeros(shape = U.shape)
+    ls_error_train = []
+    ls_error_valid = []
+    for i in range(len(S)):
+        A_hat = A_hat + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+        ls_error_train.append(np.mean(np.square((Xf_train - np.matmul(A_hat,Xp_train)))))
+        ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
+    ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
+    nPC_opt = np.where(ls_error==np.min(ls_error))[0][0] + 1
+    A_hat_opt = np.zeros(shape = U.shape)
+    for i in range(nPC_opt):
+        A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+    return  A_hat_opt.T
+
 # ==============================================================================================================================
 # ==============================================================================================================================
 # ==============================================================================================================================
@@ -344,9 +366,13 @@ with tf.device(DEVICE_NAME):
     # Initialize the K and Wh matrices
     # Kx definition w/ bias
     KxT= weight_variable([x_deep_dict_size + num_bas_obs + 1, x_deep_dict_size + num_bas_obs])
+    A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'], dict_valid['Xp'], dict_valid['Xf'])
+    sess.run(tf.global_variables_initializer())
+    KxT = tf.Variable(sess.run(KxT[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
     last_col = tf.constant(np.zeros(shape=(x_deep_dict_size + num_bas_obs, 1)), dtype=tf.dtypes.float32)
     last_col = tf.concat([last_col, [[1.]]], axis=0)
     KxT = tf.concat([KxT, last_col], axis=1)
+    # sess.run(tf.global_variables_initializer())
     # Wh definition_
     yp_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
     yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
