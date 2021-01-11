@@ -10,6 +10,7 @@ import shutil
 import tensorflow as tf
 import Sequential_Helper_Functions as seq
 import hammerstein_helper_functions as hm
+import ocdeepdmd_simulation_examples_helper_functions as oc
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
@@ -37,7 +38,7 @@ dict_hp['x']['ls_nn_nodes'] = [5,10,15]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [3,4,5]
 dict_hp['y']['ls_nn_nodes'] = [5,10,15]
-process_variable = 'y'
+process_variable = 'x'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -132,75 +133,97 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(52,62))
 # SYSTEM_NO = 153
 # ls_process_runs = list(range(0,283))
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,5))
-
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,10))
+hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# Make a predictions folder if one doesn't exist
-if os.path.exists(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle'):
-    with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
-        dict_predictions_SEQUENTIAL = pickle.load(handle)
-else:
-    dict_predictions_SEQUENTIAL = {}
-# Find all available run folders
-ls_all_run_indices = []
-for folder in os.listdir(sys_folder_name+'/Hammerstein'):
-    if folder[0:4] == 'RUN_': # It is a RUN folder
-        ls_all_run_indices.append(int(folder[4:]))
-# List of all processed runs are the keys of dict_prediction_SEQUENTIAL
-ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
-ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
-# Among the unprocessed runs, only process the specified runs
-if len(ls_process_runs) !=0:
-    ls_unprocessed_runs = list(set(ls_unprocessed_runs).intersection(set(ls_process_runs)))
-print('RUNS TO PROCESS - ',ls_unprocessed_runs)
-
-
-
-for run in ls_unprocessed_runs:
-    print('RUN: ', run)
-    run_folder_name = sys_folder_name + '/Hammerstein/RUN_' + str(run)
-    with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-        d = pickle.load(handle)
-    print(d)
+with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
+    d = pickle.load(handle)
+N_CURVES = len(d[list(d.keys())[0]].keys())
+ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
+ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
+ls_all_available_runs = list(d.keys())
+ls_runs = set(ls_process_runs).intersection(set(ls_all_available_runs))
+dict_error = {}
+for run_no in ls_runs:
+    print(run_no)
+    dict_error[run_no] = {}
+    dict_error[run_no]['train'] = hm.get_error(ls_train_curves, d[run_no])
+    dict_error[run_no]['valid'] = hm.get_error(ls_valid_curves, d[run_no])
+    dict_error[run_no]['test'] = hm.get_error(ls_test_curves, d[run_no])
+df_error_HAMMERSTEIN = pd.DataFrame(dict_error).T
+opt_run = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.valid).max().index[0]
 ##
+def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
+    n_rows = 7
+    n_cols = 6
+    graphs_per_run = 2
+    f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
+    i = 0
+    for row_i in range(n_rows):
+        for col_i in list(range(0,n_cols)):
+            if scaled:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X_scaled'].shape[1]
+                for j in range(n_states):
+                    ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_scaled'][:, j], '.', color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1))
+                    if one_step:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_one_step_scaled'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),
+                                              label='x' + str(j + 1) + '[scaled]')
+                    else:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_n_step_scaled'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),
+                                          label='x' + str(j + 1)+ '[scaled]')
+                ax[row_i, col_i].legend()
+                try:
+                    for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1))
+                        if one_step:
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled_est_one_step'][:, j],color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1) + '[scaled]')
+                        else:
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1)+ '[scaled]')
+                    ax[row_i, col_i].legend()
+                except:
+                    print('No output to plot')
+            else:
+                # Plot states and outputs
+                n_states = dict_run[ls_runs[i]]['X'].shape[1]
+                for j in range(n_states):
+                    ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[np.mod(j,7)], linewidth=int(j / 7 + 1))
+                    if one_step:
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_est_one_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),
+                                              label='x' + str(j + 1))
+                    else:
+                        ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),label ='x'+str(j+1) )
+                try:
+                    for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
+                        ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1))
+                        if one_step:
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_est_one_step'][:, j],
+                                                      color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1))
+                        else:
+                            ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1),label ='y'+str(j+1))
+                    ax[row_i, col_i].legend()
+                except:
+                    print('No output to plot')
+            i = i+1
+            if i == len(ls_runs):
+                f.show()
+                return f
+    f.show()
+    return f
 
-dict_predictions_HAMMERSTEIN = {}
-for run in ls_unprocessed_runs:
-    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run)
-    with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-        d = pickle.load(handle)
-
-    dict_predictions_HAMMERSTEIN[run] = {}
-    sess = tf.InteractiveSession()
-    dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, run, sess)
-    if d['process_variable'] == 'x':
-        # Get the 1-step and n-step prediction data
-    elif d['process_variable'] == 'y':
-        # Get the output data fit
-        try: # If there exists an OPTIMAL_STATE_FIT
+with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
+    var_i = pickle.load(handle)
+N_CURVES = len(var_i.keys())
+del var_i
+plot_params ={}
+plot_params['individual_fig_height'] = 4 #2
+plot_params['individual_fig_width'] = 4#2.4
+ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
+ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
+ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
+# f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=True)
 
 
-
-
-
-    if state_only:
-        dict_intermediate = oc.model_prediction_state_only(dict_indexed_data, dict_params, SYSTEM_NO)
-    else:
-        dict_intermediate = oc.model_prediction(dict_indexed_data, dict_params, SYSTEM_NO)
-    for curve_no in dict_intermediate.keys():
-        dict_predictions_SEQUENTIAL[run][curve_no] = dict_intermediate[curve_no]
-
-
-
-    tf.reset_default_graph()
-    sess.close()
-# Saving the dict_predictions folder
-with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'wb') as handle:
-    pickle.dump(dict_predictions_SEQUENTIAL, handle)
-
-
-
-
-# seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
-# seq.generate_df_error(SYSTEM_NO,ls_process_runs)
