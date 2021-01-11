@@ -3,11 +3,16 @@ rm -rf _current_run_saved_files
 mkdir _current_run_saved_files 
 rm -rf Run_info 
 mkdir Run_info 
-# Gen syntax: [interpreter] [code.py] [device] [sys_no] [process var] [run_no] [n_layers] [n_nodes] [write_to_file] 
-python3 hammerstein_nn_identification.py '/gpu:0' 53 'x' 0 4 15 > Run_info/SYS_53_RUN_0.txt &
-python3 hammerstein_nn_identification.py '/gpu:1' 53 'x' 1 4 20 > Run_info/SYS_53_RUN_1.txt &
-python3 hammerstein_nn_identification.py '/gpu:2' 53 'x' 2 4 25 > Run_info/SYS_53_RUN_2.txt &
-python3 hammerstein_nn_identification.py '/gpu:3' 53 'x' 3 4 30 > Run_info/SYS_53_RUN_3.txt &
+# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
+python3 deepDMD.py '/gpu:0' 53 0 10 4 15 > Run_info/SYS_53_RUN_0.txt &
+python3 deepDMD.py '/gpu:1' 53 1 10 4 20 > Run_info/SYS_53_RUN_1.txt &
+python3 deepDMD.py '/gpu:2' 53 2 10 4 25 > Run_info/SYS_53_RUN_2.txt &
+python3 deepDMD.py '/gpu:3' 53 3 10 4 30 > Run_info/SYS_53_RUN_3.txt &
+wait 
+python3 deepDMD.py '/gpu:0' 53 4 11 4 15 > Run_info/SYS_53_RUN_4.txt &
+python3 deepDMD.py '/gpu:1' 53 5 11 4 20 > Run_info/SYS_53_RUN_5.txt &
+python3 deepDMD.py '/gpu:2' 53 6 11 4 25 > Run_info/SYS_53_RUN_6.txt &
+python3 deepDMD.py '/gpu:3' 53 7 11 4 30 > Run_info/SYS_53_RUN_7.txt &
 wait 
 wait 
 echo "All sessions are complete" 

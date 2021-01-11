@@ -32,20 +32,19 @@ NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
-dict_hp['x']={}
-dict_hp['x']['ls_n_observales'] = [3,4]
-dict_hp['x']['ls_nn_layers'] = [3,4]
-dict_hp['x']['ls_nn_nodes'] = [10,15,20,25,30]
-process_variable = 'x'
+dict_hp['ls_dict_size'] = [10,11]
+dict_hp['ls_nn_layers'] = [3,4]
+dict_hp['ls_nn_nodes'] = [10,15,20,25,30]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
-ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
-ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-a = list(itertools.product(ls_nn_layers,ls_nn_nodes))
+ls_dict_size = dict_hp['ls_dict_size']
+ls_nn_layers = dict_hp['ls_nn_layers']
+ls_nn_nodes = dict_hp['ls_nn_nodes']
+a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
-    dict_all_run_conditions[i] = str(a[i][0]) + ' '  + str(a[i][1])
+    dict_all_run_conditions[i] = str(a[i][0]) + ' '  + str(a[i][1]) + ' '  + str(a[i][2])
 print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
@@ -58,55 +57,55 @@ for items in ls_files:
     items.write('mkdir _current_run_saved_files \n')
     items.write('rm -rf Run_info \n')
     items.write('mkdir Run_info \n')
-    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [process var] [run_no] [n_layers] [n_nodes] [write_to_file] \n')
-running_code = 'hammerstein_nn_identification.py'
+    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] \n')
+running_code = 'deepDMD.py'
 ls_run_no =[0,0,0]
 for i in dict_all_run_conditions.keys():
     if np.mod(i,10) ==0 or np.mod(i,10) ==1: # Microtensor CPU 0
-        general_run = 'python3 ' + running_code + ' \'/cpu:0\' ' + str(SYSTEM_NO) + ' \'' + process_variable + '\' ' + str(ls_run_no[0]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[0]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[0]) + '.txt &\n'
         ls_files[0].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_files[0].write('wait \n')
         ls_run_no[0] = ls_run_no[0] + 1
     elif np.mod(i,10)==9: # Goldentensor GPU 3
-        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' ' + str(ls_run_no[1]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_files[1].write('wait \n')
         ls_run_no[1] = ls_run_no[1] + 1
     elif np.mod(i,10) == 8: # Goldentensor GPU 2
-        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' ' + str(ls_run_no[1]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
     elif np.mod(i,10) == 7: # Goldentensor GPU 1
-        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[1]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
     elif np.mod(i,10)==6: # Goldentensor GPU 0
-        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[1]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
         ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[1] = ls_run_no[1] + 1
     elif np.mod(i,10) == 5: # Optictensor GPU 3
-        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[2]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_files[2].write('wait \n')
         ls_run_no[2] = ls_run_no[2] + 1
     elif np.mod(i,10) == 4: # Optictensor GPU 2
-        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[2]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[2] = ls_run_no[2] + 1
     elif np.mod(i,10)==3: # Optictensor GPU 1
-        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[2]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[2] = ls_run_no[2] + 1
     elif np.mod(i,10) == 2: # Optictensor GPU 0
-        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' \''+ process_variable + '\' '+ str(ls_run_no[2]) + ' '
+        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
         ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
         ls_run_no[2] = ls_run_no[2] + 1
