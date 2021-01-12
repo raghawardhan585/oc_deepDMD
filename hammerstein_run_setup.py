@@ -32,14 +32,14 @@ NO_OF_ITERATIONS = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_nn_layers'] = [4,5,6]
-dict_hp['x']['ls_nn_nodes'] = [6,9]
+dict_hp['x']['ls_nn_layers'] = [3,4,5]
+dict_hp['x']['ls_nn_nodes'] = [2,4,6]
 # dict_hp['x']['ls_nn_layers'] = [6,7,8,9]
 # dict_hp['x']['ls_nn_nodes'] = [3,6,9,12,15]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [3,4,5]
 dict_hp['y']['ls_nn_nodes'] = [5,10,15]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -134,7 +134,7 @@ hm.transfer_current_ocDeepDMD_run_files()
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,9))
 SYSTEM_NO = 60
-ls_process_runs = list(range(0,48))
+ls_process_runs = list(range(0,8))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,10))
 
@@ -184,9 +184,9 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
                     for j in range(dict_run[ls_runs[i]]['Y_scaled'].shape[1]):
                         ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled'][:, j], '.', color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1))
                         if one_step:
-                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled_est_one_step'][:, j],color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1) + '[scaled]')
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_one_step_scaled'][:, j],color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1) + '[scaled]')
                         else:
-                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_scaled_est_n_step'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1)+ '[scaled]')
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_n_step_scaled'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1)+ '[scaled]')
                     ax[row_i, col_i].legend()
                 except:
                     print('No output to plot')
@@ -196,18 +196,18 @@ def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
                 for j in range(n_states):
                     ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X'][:,j],'.',color = colors[np.mod(j,7)], linewidth=int(j / 7 + 1))
                     if one_step:
-                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_est_one_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),
+                        ax[row_i, col_i].plot(dict_run[ls_runs[i]]['X_one_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),
                                               label='x' + str(j + 1))
                     else:
-                        ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_est_n_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),label ='x'+str(j+1) )
+                        ax[row_i,col_i].plot(dict_run[ls_runs[i]]['X_n_step'][:, j], color=colors[np.mod(j,7)], linewidth=int(j / 7 + 1),label ='x'+str(j+1) )
                 try:
                     for j in range(dict_run[ls_runs[i]]['Y'].shape[1]):
                         ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y'][:,j],'.',color = colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1))
                         if one_step:
-                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_est_one_step'][:, j],
+                            ax[row_i, col_i].plot(dict_run[ls_runs[i]]['Y_one_step'][:, j],
                                                       color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1), label='y' + str(j + 1))
                         else:
-                            ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y_est_n_step'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1),label ='y'+str(j+1))
+                            ax[row_i,col_i].plot(dict_run[ls_runs[i]]['Y_n_step'][:, j], color=colors[np.mod(n_states + j,7)], linewidth=int((n_states + j )/ 7 + 1),label ='y'+str(j+1))
                     ax[row_i, col_i].legend()
                 except:
                     print('No output to plot')
@@ -230,6 +230,6 @@ ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + 
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
-# f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=True)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=True)
 
 
