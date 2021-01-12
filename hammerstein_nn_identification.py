@@ -431,10 +431,5 @@ with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 
 
-## Verification
-
-
-
-
 
 
