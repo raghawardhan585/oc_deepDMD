@@ -27,12 +27,12 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
-NO_OF_ITERATIONS = 2
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
+NO_OF_ITERATIONS = 1
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_nn_layers'] = [3,4,5,6]
+dict_hp['x']['ls_nn_layers'] = [6,7,8,9]
 dict_hp['x']['ls_nn_nodes'] = [3,6,9,12,15]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [3,4,5]
@@ -131,10 +131,10 @@ hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,9))
-# SYSTEM_NO = 60
-# ls_process_runs = list(range(0,62))
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,10))
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,48))
+# SYSTEM_NO = 53
+# ls_process_runs = list(range(0,10))
 
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -156,6 +156,7 @@ for run_no in ls_runs:
 df_error_HAMMERSTEIN = pd.DataFrame(dict_error).T
 df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.valid)
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
+print('Optimal Run: ', opt_run)
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 5
@@ -220,8 +221,8 @@ with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle
 N_CURVES = len(var_i.keys())
 del var_i
 plot_params ={}
-plot_params['individual_fig_height'] = 2 #2
-plot_params['individual_fig_width'] = 2#2.4
+plot_params['individual_fig_height'] = 4 #2
+plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))

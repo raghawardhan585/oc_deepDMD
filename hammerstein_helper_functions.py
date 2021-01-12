@@ -121,13 +121,14 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
             for data_index in dict_indexed_data.keys():
                 dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
                 X_scaled = dict_DATA_i['X']
+                # 1 - step predictions
+                psix = dict_params['psix'].eval(feed_dict={dict_params['x_feed']: X_scaled})
+                x_1step = copy.deepcopy(X_scaled[0:1, :])
+                x_1step = np.concatenate([x_1step, np.matmul(X_scaled[0:-1], dict_params['AT_num']) + psix[0:-1]],axis=0)
+                # N - step predictions
                 x_nstep = copy.deepcopy(X_scaled[0:1,:])
-                x_1step = copy.deepcopy(X_scaled[0:1,:])
                 for i in range(1,X_scaled.shape[0]):
-                    # N - step predictions
-                    x_nstep = np.concatenate([x_nstep,np.matmul(x_nstep[-1:],dict_params['AT_num'])])
-                    # 1 - step predictions
-                    x_1step = np.concatenate([x_1step,np.matmul(X_scaled[i-1:i],dict_params['AT_num'])])
+                    x_nstep = np.concatenate([x_nstep,np.matmul(x_nstep[-1:],dict_params['AT_num']) +  dict_params['psix'].eval(feed_dict={dict_params['x_feed']: x_nstep[-1:],})])
                 dict_predictions_HAMMERSTEIN[run][data_index] = {'X_scaled':X_scaled, 'X_one_step_scaled': x_1step,'X_n_step_scaled': x_nstep, 'X': dict_DATA_i['X']}
                 dict_predictions_HAMMERSTEIN[run][data_index]['X_one_step'] = oc.inverse_transform_X(x_nstep, SYSTEM_NO)
                 dict_predictions_HAMMERSTEIN[run][data_index]['X_n_step'] = oc.inverse_transform_X(x_1step, SYSTEM_NO)
@@ -144,7 +145,8 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        all_errors = np.square(dict_XY[i]['X'] - dict_XY[i]['X_n_step'])
+        all_errors = np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled'])
+        # all_errors = np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_n_step_scaled'])
         # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(all_errors))
