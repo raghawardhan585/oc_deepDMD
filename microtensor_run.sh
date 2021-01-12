@@ -4,9 +4,13 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [process var] [run_no] [n_layers] [n_nodes] [write_to_file] 
-python3 hammerstein_nn_identification.py '/cpu:0' 60 'y' 0 3 5 > Run_info/SYS_60_RUN_0.txt &
+python3 hammerstein_nn_identification.py '/cpu:0' 53 'x' 0 6 3 > Run_info/SYS_53_RUN_0.txt &
 wait 
-python3 hammerstein_nn_identification.py '/cpu:0' 60 'y' 1 3 10 > Run_info/SYS_60_RUN_1.txt &
+python3 hammerstein_nn_identification.py '/cpu:0' 53 'x' 1 6 6 > Run_info/SYS_53_RUN_1.txt &
+wait 
+python3 hammerstein_nn_identification.py '/cpu:0' 53 'x' 2 8 3 > Run_info/SYS_53_RUN_2.txt &
+wait 
+python3 hammerstein_nn_identification.py '/cpu:0' 53 'x' 3 8 6 > Run_info/SYS_53_RUN_3.txt &
 wait 
 wait 
 echo "All sessions are complete" 
