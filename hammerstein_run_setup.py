@@ -27,14 +27,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
-NO_OF_ITERATIONS_PER_GPU = 2
-NO_OF_ITERATIONS_IN_CPU = 2
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
+NO_OF_ITERATIONS = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_nn_layers'] = [3,4]
-dict_hp['x']['ls_nn_nodes'] = [10,15,20,25,30]
+dict_hp['x']['ls_nn_layers'] = [3,4,5,6]
+dict_hp['x']['ls_nn_nodes'] = [3,6,9,12,15]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [3,4,5]
 dict_hp['y']['ls_nn_nodes'] = [5,10,15]
@@ -43,11 +42,14 @@ SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-a = list(itertools.product(ls_nn_layers,ls_nn_nodes))
+a_base = list(itertools.product(ls_nn_layers,ls_nn_nodes))
+a = []
+for j in range(NO_OF_ITERATIONS):
+    [a.append(items) for items in a_base]
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
-    dict_all_run_conditions[i] = str(a[i][0]) + ' '  + str(a[i][1])
+        dict_all_run_conditions[i] = str(a[i][0]) + ' '  + str(a[i][1])
 print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
