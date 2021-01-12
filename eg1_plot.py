@@ -92,6 +92,10 @@ for i in range(len(S)):
     if Senergy[i] > Senergy_THRESHOLD:
         nPC = i+1
         break
+
+nPC = len(S)
+
+
 print('Optimal POD modes chosen : ', nPC)
 Ur = U[:,0:nPC]
 plt.figure()

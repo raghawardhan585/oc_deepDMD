@@ -98,21 +98,20 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
     # -----------------------------------Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_deepDMD.pickle'):
         with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
-            dict_predictions_SEQUENTIAL = pickle.load(handle)
+            dict_predictions_deepDMD = pickle.load(handle)
     else:
-        dict_predictions_SEQUENTIAL = {}
+        dict_predictions_deepDMD = {}
     # -----------------------------------Find all runs to be processed
     ls_all_run_indices = []
     for folder in os.listdir(sys_folder_name+'/deepDMD'):
         if folder[0:4] == 'RUN_': # It is a RUN folder
             ls_all_run_indices.append(int(folder[4:]))
-    ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
+    ls_processed_runs = list(dict_predictions_deepDMD.keys())
     ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
     if len(ls_process_runs) !=0:
         ls_unprocessed_runs = list(set(ls_unprocessed_runs).intersection(set(ls_process_runs)))
     # ----------------------------------- Process the runs possible
     print('RUNS TO PROCESS - ',ls_unprocessed_runs)
-    dict_predictions_deepDMD = {}
     for run in ls_unprocessed_runs:
         print('Run: ',run)
         run_folder_name = sys_folder_name + '/deepDMD/RUN_' + str(run)
@@ -143,7 +142,7 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
             dict_predictions_deepDMD[run][data_index]['Y_one_step_scaled'] = Y_1step_scaled
             dict_predictions_deepDMD[run][data_index]['Y_n_step_scaled'] = Y_nstep_scaled
             dict_predictions_deepDMD[run][data_index]['Y_one_step'] = oc.inverse_transform_Y(Y_1step_scaled, SYSTEM_NO)
-            dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_X(Y_nstep_scaled, SYSTEM_NO)
+            dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_Y(Y_nstep_scaled, SYSTEM_NO)
         tf.reset_default_graph()
         sess.close()
     # Saving the dict_predictions folder
@@ -154,10 +153,11 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        all_errors = np.square(dict_XY[i]['X'] - dict_XY[i]['X_n_step'])
-        # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
+        # all_errors = np.square(dict_XY[i]['X'] - dict_XY[i]['X_n_step'])
+        all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_one_step'],dict_XY[i]['Y'] - dict_XY[i]['Y_one_step']],axis=1)
+        all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_n_step'], dict_XY[i]['Y'] - dict_XY[i]['Y_n_step']], axis=1)
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
-        J_error = np.append(J_error, np.mean(all_errors))
+        J_error = np.append(J_error, np.mean(np.square(all_errors)))
     # J_error = np.log10(np.max(J_error))
     J_error = np.mean(J_error)
     return J_error
