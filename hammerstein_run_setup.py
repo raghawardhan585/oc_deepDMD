@@ -28,7 +28,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 ## Bash Script Generation
 DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
-NO_OF_ITERATIONS = 2
+NO_OF_ITERATIONS = 1
 
 dict_hp={}
 dict_hp['x']={}
