@@ -408,7 +408,7 @@ with open(FOLDER_NAME + '/all_histories.pickle', 'wb') as file_obj_swing:
     pickle.dump(all_histories, file_obj_swing)
 
 saver = tf.compat.v1.train.Saver()
-tf.compat.v1.add_to_collection('psix', x_feed)
+tf.compat.v1.add_to_collection('psix', psix)
 tf.compat.v1.add_to_collection('x_feed', x_feed)
 tf.compat.v1.add_to_collection('AT', A)
 print(sess.run(A))
@@ -429,6 +429,12 @@ print('-----     -----     -----     -----     -----     -----     -----     ---
 dict_hp = {'n_layers': n_layers, 'n_nodes': n_nodes, 'process_variable': PROCESS_VARIABLE}
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
+
+
+## Verification
+
+
+
 
 
 
