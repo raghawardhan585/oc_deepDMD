@@ -32,9 +32,9 @@ NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [1,2,3,4,5]
-dict_hp['ls_nn_layers'] = [3,4]
-dict_hp['ls_nn_nodes'] = [5,10]
+dict_hp['ls_dict_size'] = [2,3]
+dict_hp['ls_nn_layers'] = [4,5,6]
+dict_hp['ls_nn_nodes'] = [3,5,7]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp['ls_dict_size']
@@ -125,14 +125,14 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 110
-# ls_process_runs = list(range(0,45))
+SYSTEM_NO = 10
+ls_process_runs = list(range(0,20))
 # SYSTEM_NO = 130
 # ls_process_runs = list(range(52,62))
 # SYSTEM_NO = 153
 # ls_process_runs = list(range(0,283))
-SYSTEM_NO = 60
-ls_process_runs = list(range(0,18))
+# SYSTEM_NO = 60
+# ls_process_runs = list(range(0,18))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
@@ -155,8 +155,8 @@ df_err_opt = pd.DataFrame(df_error_deepDMD.train + df_error_deepDMD.valid)
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
-    n_rows = 7
-    n_cols = 6
+    n_rows = 5
+    n_cols = 4
     graphs_per_run = 2
     f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
     i = 0
