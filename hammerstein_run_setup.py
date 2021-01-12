@@ -127,14 +127,13 @@ for items in ls_files:
 ##
 hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 110
-# ls_process_runs = list(range(0,45))
-# SYSTEM_NO = 130
-# ls_process_runs = list(range(52,62))
-# SYSTEM_NO = 153
-# ls_process_runs = list(range(0,283))
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,9))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,9))
+# SYSTEM_NO = 60
+# ls_process_runs = list(range(0,62))
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,10))
+
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
@@ -157,8 +156,8 @@ df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.vali
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
-    n_rows = 7
-    n_cols = 6
+    n_rows = 5
+    n_cols = 4
     graphs_per_run = 2
     f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
     i = 0
@@ -219,8 +218,8 @@ with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle
 N_CURVES = len(var_i.keys())
 del var_i
 plot_params ={}
-plot_params['individual_fig_height'] = 4 #2
-plot_params['individual_fig_width'] = 4#2.4
+plot_params['individual_fig_height'] = 2 #2
+plot_params['individual_fig_width'] = 2#2.4
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))

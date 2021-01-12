@@ -125,12 +125,12 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,20))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,20))
 # SYSTEM_NO = 130
 # ls_process_runs = list(range(52,62))
-# SYSTEM_NO = 153
-# ls_process_runs = list(range(0,283))
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,18))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)

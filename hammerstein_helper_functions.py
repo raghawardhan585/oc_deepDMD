@@ -94,21 +94,20 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
     # -----------------------------------Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle'):
         with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
-            dict_predictions_SEQUENTIAL = pickle.load(handle)
+            dict_predictions_HAMMERSTEIN = pickle.load(handle)
     else:
-        dict_predictions_SEQUENTIAL = {}
+        dict_predictions_HAMMERSTEIN = {}
     # -----------------------------------Find all runs to be processed
     ls_all_run_indices = []
     for folder in os.listdir(sys_folder_name+'/Hammerstein'):
         if folder[0:4] == 'RUN_': # It is a RUN folder
             ls_all_run_indices.append(int(folder[4:]))
-    ls_processed_runs = list(dict_predictions_SEQUENTIAL.keys())
+    ls_processed_runs = list(dict_predictions_HAMMERSTEIN.keys())
     ls_unprocessed_runs = list(set(ls_all_run_indices) - set(ls_processed_runs))
     if len(ls_process_runs) !=0:
         ls_unprocessed_runs = list(set(ls_unprocessed_runs).intersection(set(ls_process_runs)))
     # ----------------------------------- Process the runs possible
     print('RUNS TO PROCESS - ',ls_unprocessed_runs)
-    dict_predictions_HAMMERSTEIN = {}
     for run in ls_unprocessed_runs:
         print('Run: ',run)
         run_folder_name = sys_folder_name + '/Hammerstein/RUN_' + str(run)
