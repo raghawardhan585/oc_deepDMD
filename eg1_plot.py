@@ -11,18 +11,21 @@ import itertools
 import ocdeepdmd_simulation_examples_helper_functions as oc
 
 SYS_NO = 10
-RUN_NO = 78
-# SYS_NO = 30
-# RUN_NO = 47
-# SYS_NO = 53
-# RUN_NO = 234
+# RUN_NO = 78 # Sequential
+
+RUN_NO = 1
+
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
-run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+run_folder_name = sys_folder_name + '/deepDMD/RUN_' + str(RUN_NO)
+# run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
     K = pickle.load(handle)
 
-with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+# with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+#     d = pickle.load(handle)[RUN_NO]
+
+with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d = pickle.load(handle)[RUN_NO]
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
@@ -81,7 +84,10 @@ except:
 Senergy_THRESHOLD = 99.99
 # Required Variables - K, psiX,
 CURVE_NO = 0
-psiX = d[CURVE_NO]['psiX'].T
+try:
+    psiX = d[CURVE_NO]['psiX'].T
+except:
+    psiX = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: d[CURVE_NO]['X_scaled']}).T
 K = dict_params['KxT_num'].T
 psiXp_data = psiX[:,0:-1]
 psiXf_data = psiX[:,1:]
@@ -105,7 +111,7 @@ plt.plot([0,len(s)-1],[100,100])
 plt.title('just X')
 plt.show()
 plt.figure()
-_,s,_T = np.linalg.svd(d[CURVE_NO]['psiX'])
+_,s,_T = np.linalg.svd(psiX)
 plt.stem(np.arange(len(s)),(np.cumsum(s**2)/np.sum(s**2))*100)
 plt.plot([0,len(s)-1],[100,100])
 plt.title('psiX')
@@ -312,25 +318,41 @@ x1 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
 x2 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
 X1, X2 = np.meshgrid(x1, x2)
 
-PHI = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
-PSI = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
+PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
+PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1],5))
 for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
     x1_i = X1[i, j]
     x2_i = X2[i, j]
     psiXT_i = np.array(([[x1_i,x2_i,x1_i**2,x1_i*x2_i,x1_i**3]]))
-    PHI[i, j, :] = np.matmul(Wi_t,psiXT_i.T).reshape((1,1,-1))
-    PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
+    PHI_theo[i, j, :] = np.matmul(Wi_t,psiXT_i.T).reshape((1,1,-1))
+    PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
 
 f,ax = plt.subplots(1,5,figsize = (10,1.5))
 for i in range(5):
-    c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI[:,:,i]), vmax=np.max(PSI[:,:,i]))
+    c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI_theo[:,:,i]), vmax=np.max(PSI_theo[:,:,i]))
     f.colorbar(c,ax = ax[i])
 f.show()
 f,ax = plt.subplots(1,5,figsize = (10,1.5))
 for i in range(5):
-    c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
+    c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI_theo[:,:,i]), vmax=np.max(PHI_theo[:,:,i]))
     f.colorbar(c,ax = ax[i])
 f.show()
 
 
+
+##
+P = PHI_theo[:,:,0].reshape((-1,1))
+for i in range(1,PHI_theo.shape[2]):
+    P = np.concatenate([P,PHI_theo[:,:,i].reshape((-1,1))],axis=1)
+ut,st,vt = np.linalg.svd(P)
+print(st)
+print(np.cumsum(st**2)/np.sum(st**2))
+import copy
+Q = copy.deepcopy(P)
+
+for i in range(0,PHI.shape[2]):
+    Q = np.concatenate([Q,PHI[:,:,i].reshape((-1,1))],axis=1)
+u,s,v = np.linalg.svd(Q)
+print(s)
+print(np.cumsum(s**2)/np.sum(s**2))
 

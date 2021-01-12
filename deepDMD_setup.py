@@ -125,12 +125,12 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 10
-# ls_process_runs = list(range(0,20))
+SYSTEM_NO = 10
+ls_process_runs = list(range(0,38))
 # SYSTEM_NO = 130
 # ls_process_runs = list(range(52,62))
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,30))
+# SYSTEM_NO = 53
+# ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,18))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
@@ -153,6 +153,7 @@ for run_no in ls_runs:
 df_error_deepDMD = pd.DataFrame(dict_error).T
 df_err_opt = pd.DataFrame(df_error_deepDMD.train + df_error_deepDMD.valid)
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
+print('Optimal Run:', opt_run)
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 5
@@ -224,6 +225,6 @@ ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + 
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
-# f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=True)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=False)
 
 

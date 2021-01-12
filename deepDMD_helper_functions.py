@@ -153,9 +153,12 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        # all_errors = np.square(dict_XY[i]['X'] - dict_XY[i]['X_n_step'])
-        all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_one_step'],dict_XY[i]['Y'] - dict_XY[i]['Y_one_step']],axis=1)
-        all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_n_step'], dict_XY[i]['Y'] - dict_XY[i]['Y_n_step']], axis=1)
+        # all_errors = np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled'])
+        # all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_one_step'],dict_XY[i]['Y'] - dict_XY[i]['Y_one_step']],axis=1)
+        all_errors = np.concatenate([dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled'],dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_one_step_scaled']],axis=1)
+        # all_errors = np.concatenate([dict_XY[i]['X_scaled'] - dict_XY[i]['X_n_step_scaled'],dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_n_step_scaled']], axis=1)
+        print(all_errors.shape)
+        # all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_n_step'], dict_XY[i]['Y'] - dict_XY[i]['Y_n_step']], axis=1)
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(np.square(all_errors)))
     # J_error = np.log10(np.max(J_error))
