@@ -135,13 +135,14 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,9))
 
 # SYSTEM_NO = 60
-# ls_process_runs = list(range(0,8))
+# ls_process_runs = list(range(0,20))
+# OPT_X_RUN = 14
 
 SYSTEM_NO = 53
 # ls_process_runs = list(range(0,20))
 OPT_X_RUN = 8
 # ls_process_runs = list(range(20,29))
-ls_process_runs = list(range(0,38))
+ls_process_runs = list(range(0,29))
 
 
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs,OPT_X_RUN)
@@ -166,7 +167,6 @@ df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.vali
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run: ', opt_run)
 ##
-opt_run = 7
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 5
     n_cols = 4
@@ -238,5 +238,6 @@ ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=False,one_step=False)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=False)
 
 

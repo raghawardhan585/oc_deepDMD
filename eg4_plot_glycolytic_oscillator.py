@@ -29,12 +29,16 @@ colors = np.asarray(colors);  # defines a color palette
 # RUN_NO = 47
 SYS_NO = 53
 RUN_NO = 344
-RUN_NO_HAMMERSTEIN = 0
+RUN_NO_HAMMERSTEIN_X = 8
+RUN_NO_HAMMERSTEIN_Y = 25
 RUN_NO_DEEPDMD = 22
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 run_folder_name_DEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_NO_DEEPDMD)
+run_folder_name_HAM_X = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_X)
+run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
+
 
 with open(sys_folder_name + '/System_' + str(SYS_NO) + '_SimulatedData.pickle', 'rb') as handle:
     dict_data = pickle.load(handle)
@@ -45,8 +49,8 @@ for items in dict_oc_data:
     dict_oc_data[items] = dict_oc_data[items][0:Ntrain]
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d_SEQ = pickle.load(handle)[RUN_NO]
-# with open(sys_folder_name + '/dict_predictions_Hammerstein.pickle', 'rb') as handle:
-#     d_HAM = pickle.load(handle)[RUN_NO_HAMMERSTEIN]
+with open(sys_folder_name + '/dict_predictions_Hammerstein.pickle', 'rb') as handle:
+    d_HAM = pickle.load(handle)[RUN_NO_HAMMERSTEIN_Y]
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_NO_DEEPDMD]
 
@@ -197,6 +201,34 @@ def eig_func_through_time(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_M
             print('Meh')
     return Phi, koop_modes, comp_modes, comp_modes_conj
 
+def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
+    dict_r2_empty_sample = {}
+    for i in ls_steps:
+        dict_r2_empty_sample[i] = 0
+    dict_r2 = {}
+    for CURVE_NO in ls_curves:
+        dict_r2[CURVE_NO] = copy.deepcopy(dict_r2_empty_sample)
+        for i in len(dict_data[CURVE_NO]['X']) - np.max(ls_steps) - 1:
+            xi = dict_data[CURVE_NO]['X'][i:i+1]
+            for step in range(np.max(ls_steps)):
+                xi = np.matmul(xi,)
+        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
+        X_scaled = dict_DATA_i['X']
+        Y_scaled = dict_DATA_i['Y']
+        psiX = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled})
+        for i in ls_steps:  # iterating through each step prediction
+            np_psiX_true = psiX[i:, :]
+            np_psiX_pred = np.matmul(psiX[:-i, :],
+                                     np.linalg.matrix_power(dict_params_curr['KxT_num'], i))  # i step prediction at each datapoint
+            Y_pred = np.matmul(np_psiX_pred, dict_params_curr['WhT_num'])
+            Y_true = Y_scaled[i:, :]
+            dict_r2[CURVE_NO][i] = np.max([0, (
+                        1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (
+                            np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
+    df_r2 = pd.DataFrame(dict_r2)
+    print(df_r2)
+    return df_r2
+
 
 dict_params = {}
 sess1 = tf.InteractiveSession()
@@ -213,6 +245,25 @@ sess2 = tf.InteractiveSession()
 dict_params['Deep'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess2)
 df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 Phi_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD = eig_func_through_time(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+tf.reset_default_graph()
+sess2.close()
+
+sess3 = tf.InteractiveSession()
+dict_params['Ham'] = {'x':{},'y':{}}
+saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
+dict_params['Ham']['x']['psix'] = tf.get_collection('psix')[0]
+dict_params['Ham']['x']['x_feed'] = tf.get_collection('x_feed')[0]
+dict_params['Ham']['x']['AT'] = tf.get_collection('AT')[0]
+dict_params['Ham']['x']['AT_num'] = sess3.run(dict_params['Ham']['x']['AT'])
+saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
+dict_params['Ham']['y']['psix'] = tf.get_collection('psix')[0]
+dict_params['Ham']['y']['x_feed'] = tf.get_collection('x_feed')[0]
+dict_params['Ham']['y']['AT'] = tf.get_collection('AT')[0]
+dict_params['Ham']['y']['AT_num'] = sess3.run(dict_params['Ham']['y']['AT'])
+
+df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data,dict_params['Ham'])
 tf.reset_default_graph()
 sess2.close()
 
@@ -234,6 +285,8 @@ plt.show()
 
 ## Figure 1 - 1 step prediction comparisons
 FONT_SIZE = 14
+DOWNSAMPLE = 4
+TRUTH_MARKER_SIZE = 15
 TICK_FONT_SIZE = 10
 plt.figure(figsize=(15,10))
 ax1 = plt.subplot2grid((13,2), (0,0), colspan=1, rowspan=5)
@@ -248,19 +301,19 @@ pl_min = 0
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
     l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
-    ax1.plot(d_SEQ[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
+    ax1.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
     ax1.plot(d_SEQ[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
     ax1.plot(d_DDMD[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
-    # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
     pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
     ax1.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
-    ax1.plot(d_SEQ[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
+    ax1.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     ax1.plot(d_SEQ[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     ax1.plot(d_DDMD[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-    # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[i])
+    plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # Shrink current axis by 20%
@@ -268,10 +321,10 @@ for i in range(n_outputs):
 # ax1.set_position([box.x0, box.y0, box.width * 0.5, box.height*0.8])
 # l1 = ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =4)
 # plt.gca().add_artist(l1)
-a1, = ax1.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
-a2, = ax1.plot([], linestyle = 'dashed',linewidth = 2,label='Sequential oc-deepDMD',color = 'grey')
-a3, = ax1.plot([], linestyle ='solid',linewidth = 2,label='direct oc-deepDMD',color = 'grey')
-a4, = ax1.plot([], linestyle ='dashdot',linewidth = 2,label='Hammerstein model',color = 'grey')
+# a1, = ax1.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
+# a2, = ax1.plot([], linestyle = 'dashed',linewidth = 2,label='Sequential oc-deepDMD',color = 'grey')
+# a3, = ax1.plot([], linestyle ='solid',linewidth = 2,label='direct oc-deepDMD',color = 'grey')
+# a4, = ax1.plot([], linestyle ='dashdot',linewidth = 2,label='Hammerstein model',color = 'grey')
 
 # l2 = ax1.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc='upper center', bbox_to_anchor=(0.5, -0.55),fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =4)
 ax1.set_xlabel('Time Index(k)',fontsize = FONT_SIZE)
@@ -291,24 +344,24 @@ pl_min = 0
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
     l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
-    plt.plot(d_SEQ[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
     plt.plot(d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
-    # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    plt.plot(d_HAM[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
     pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
     plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
-    plt.plot(d_SEQ[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-    # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[i])
+    plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # l1 = plt.legend(loc='lower right',fontsize = 14)
 # plt.gca().add_artist(l1)
-a1, = plt.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
+a1, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
 a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
 a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
 a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
@@ -323,7 +376,8 @@ plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xlim([0,100])
 
-
+plt.show()
+##
 
 
 plt.subplot2grid((13,2), (0,1), colspan=1, rowspan=5)
