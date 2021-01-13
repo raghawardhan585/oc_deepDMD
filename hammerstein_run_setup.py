@@ -138,9 +138,11 @@ hm.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,8))
 
 SYSTEM_NO = 53
-ls_process_runs = list(range(20,29))
-ls_process_runs = list(range(20,29))
+# ls_process_runs = list(range(0,20))
 OPT_X_RUN = 8
+# ls_process_runs = list(range(20,29))
+ls_process_runs = list(range(0,38))
+
 
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs,OPT_X_RUN)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
