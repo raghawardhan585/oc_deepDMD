@@ -132,7 +132,7 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
             for i in range(1,X_scaled.shape[0]):
                 psiX_nstep = np.concatenate([psiX_nstep, np.matmul(psiX_nstep[-1:],dict_params['KxT_num'])], axis=0)
             Y_nstep_scaled = np.matmul(psiX_nstep, dict_params['WhT_num'])
-            dict_predictions_deepDMD[run][data_index] = {'X': dict_DATA_i['X'], 'Y': dict_DATA_i['Y'], 'X_scaled': X_scaled, 'Y_scaled': Y_scaled}
+            dict_predictions_deepDMD[run][data_index] = {'X': dict_indexed_data[data_index]['X'], 'Y': dict_indexed_data[data_index]['Y'], 'X_scaled': X_scaled, 'Y_scaled': Y_scaled}
             dict_predictions_deepDMD[run][data_index]['psiX_one_step_scaled'] = psiX_1step
             dict_predictions_deepDMD[run][data_index]['psiX_n_step_scaled'] = psiX_nstep
             dict_predictions_deepDMD[run][data_index]['X_one_step_scaled'] = psiX_1step[:,0:len(X_scaled[0])]
@@ -157,7 +157,6 @@ def get_error(ls_indices,dict_XY):
         # all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_one_step'],dict_XY[i]['Y'] - dict_XY[i]['Y_one_step']],axis=1)
         all_errors = np.concatenate([dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled'],dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_one_step_scaled']],axis=1)
         # all_errors = np.concatenate([dict_XY[i]['X_scaled'] - dict_XY[i]['X_n_step_scaled'],dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_n_step_scaled']], axis=1)
-        print(all_errors.shape)
         # all_errors = np.concatenate([dict_XY[i]['X'] - dict_XY[i]['X_n_step'], dict_XY[i]['Y'] - dict_XY[i]['Y_n_step']], axis=1)
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
         J_error = np.append(J_error, np.mean(np.square(all_errors)))

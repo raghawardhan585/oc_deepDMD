@@ -113,7 +113,7 @@ def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr)
                             np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
     df_r2 = pd.DataFrame(dict_r2)
     print(df_r2)
-    CHECK_VAL = df_r2.iloc[-1, :].max()
+    CHECK_VAL = df_r2.iloc[-1, :].min()
     OPT_CURVE_NO = 0
     for i in range(200, 300):
         if df_r2.loc[df_r2.index[-1], i] == CHECK_VAL:
@@ -201,33 +201,33 @@ def eig_func_through_time(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_M
             print('Meh')
     return Phi, koop_modes, comp_modes, comp_modes_conj
 
-def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
-    dict_r2_empty_sample = {}
-    for i in ls_steps:
-        dict_r2_empty_sample[i] = 0
-    dict_r2 = {}
-    for CURVE_NO in ls_curves:
-        dict_r2[CURVE_NO] = copy.deepcopy(dict_r2_empty_sample)
-        for i in len(dict_data[CURVE_NO]['X']) - np.max(ls_steps) - 1:
-            xi = dict_data[CURVE_NO]['X'][i:i+1]
-            for step in range(np.max(ls_steps)):
-                xi = np.matmul(xi,)
-        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
-        X_scaled = dict_DATA_i['X']
-        Y_scaled = dict_DATA_i['Y']
-        psiX = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled})
-        for i in ls_steps:  # iterating through each step prediction
-            np_psiX_true = psiX[i:, :]
-            np_psiX_pred = np.matmul(psiX[:-i, :],
-                                     np.linalg.matrix_power(dict_params_curr['KxT_num'], i))  # i step prediction at each datapoint
-            Y_pred = np.matmul(np_psiX_pred, dict_params_curr['WhT_num'])
-            Y_true = Y_scaled[i:, :]
-            dict_r2[CURVE_NO][i] = np.max([0, (
-                        1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (
-                            np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
-    df_r2 = pd.DataFrame(dict_r2)
-    print(df_r2)
-    return df_r2
+# def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
+#     dict_r2_empty_sample = {}
+#     for i in ls_steps:
+#         dict_r2_empty_sample[i] = 0
+#     dict_r2 = {}
+#     for CURVE_NO in ls_curves:
+#         dict_r2[CURVE_NO] = copy.deepcopy(dict_r2_empty_sample)
+#         for i in len(dict_data[CURVE_NO]['X']) - np.max(ls_steps) - 1:
+#             xi = dict_data[CURVE_NO]['X'][i:i+1]
+#             for step in range(np.max(ls_steps)):
+#                 xi = np.matmul(xi,)
+#         dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
+#         X_scaled = dict_DATA_i['X']
+#         Y_scaled = dict_DATA_i['Y']
+#         psiX = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled})
+#         for i in ls_steps:  # iterating through each step prediction
+#             np_psiX_true = psiX[i:, :]
+#             np_psiX_pred = np.matmul(psiX[:-i, :],
+#                                      np.linalg.matrix_power(dict_params_curr['KxT_num'], i))  # i step prediction at each datapoint
+#             Y_pred = np.matmul(np_psiX_pred, dict_params_curr['WhT_num'])
+#             Y_true = Y_scaled[i:, :]
+#             dict_r2[CURVE_NO][i] = np.max([0, (
+#                         1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (
+#                             np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
+#     df_r2 = pd.DataFrame(dict_r2)
+#     print(df_r2)
+#     return df_r2
 
 
 dict_params = {}
@@ -248,24 +248,24 @@ Phi_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD = ei
 tf.reset_default_graph()
 sess2.close()
 
-sess3 = tf.InteractiveSession()
-dict_params['Ham'] = {'x':{},'y':{}}
-saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
-dict_params['Ham']['x']['psix'] = tf.get_collection('psix')[0]
-dict_params['Ham']['x']['x_feed'] = tf.get_collection('x_feed')[0]
-dict_params['Ham']['x']['AT'] = tf.get_collection('AT')[0]
-dict_params['Ham']['x']['AT_num'] = sess3.run(dict_params['Ham']['x']['AT'])
-saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
-dict_params['Ham']['y']['psix'] = tf.get_collection('psix')[0]
-dict_params['Ham']['y']['x_feed'] = tf.get_collection('x_feed')[0]
-dict_params['Ham']['y']['AT'] = tf.get_collection('AT')[0]
-dict_params['Ham']['y']['AT_num'] = sess3.run(dict_params['Ham']['y']['AT'])
-
-df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data,dict_params['Ham'])
-tf.reset_default_graph()
-sess2.close()
+# sess3 = tf.InteractiveSession()
+# dict_params['Ham'] = {'x':{},'y':{}}
+# saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+# saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
+# dict_params['Ham']['x']['psix'] = tf.get_collection('psix')[0]
+# dict_params['Ham']['x']['x_feed'] = tf.get_collection('x_feed')[0]
+# dict_params['Ham']['x']['AT'] = tf.get_collection('AT')[0]
+# dict_params['Ham']['x']['AT_num'] = sess3.run(dict_params['Ham']['x']['AT'])
+# saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+# saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
+# dict_params['Ham']['y']['psix'] = tf.get_collection('psix')[0]
+# dict_params['Ham']['y']['x_feed'] = tf.get_collection('x_feed')[0]
+# dict_params['Ham']['y']['AT'] = tf.get_collection('AT')[0]
+# dict_params['Ham']['y']['AT_num'] = sess3.run(dict_params['Ham']['y']['AT'])
+#
+# df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data,dict_params['Ham'])
+# tf.reset_default_graph()
+# sess2.close()
 
 
 
@@ -375,9 +375,6 @@ plt.ylim([pl_min,pl_max])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xlim([0,100])
-
-plt.show()
-##
 
 
 plt.subplot2grid((13,2), (0,1), colspan=1, rowspan=5)
