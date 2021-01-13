@@ -233,10 +233,10 @@ plt.show()
 
 
 ## Figure 1 - 1 step prediction comparisons
-
-
+FONT_SIZE = 14
+TICK_FONT_SIZE = 11
 plt.figure(figsize=(15,10))
-ax1 = plt.subplot2grid((2,2), (0,0), colspan=1, rowspan=1)
+ax1 = plt.subplot2grid((12,2), (0,0), colspan=1, rowspan=5)
 
 
 # CURVE_NO = 0
@@ -263,91 +263,100 @@ for i in range(n_outputs):
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # Shrink current axis by 20%
-box = ax1.get_position()
-ax1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-l1 = ax1.legend(loc=(1.04,0), borderaxespad=0,fontsize = 14)
-plt.gca().add_artist(l1)
+# box = ax1.get_position()
+# ax1.set_position([box.x0, box.y0, box.width * 0.5, box.height*0.8])
+# l1 = ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =4)
+# plt.gca().add_artist(l1)
 a1, = ax1.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
-a2, = ax1.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
-a3, = ax1.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
-a4, = ax1.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
-l2 = ax1.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = 14)
-ax1.set_xlabel('Time Index(k)')
-ax1.set_ylabel('States and Outputs[1 -step prediction]')
-ax1.set_title('(a)')
+a2, = ax1.plot([], linestyle = 'dashed',linewidth = 2,label='Sequential oc-deepDMD',color = 'grey')
+a3, = ax1.plot([], linestyle ='solid',linewidth = 2,label='direct oc-deepDMD',color = 'grey')
+a4, = ax1.plot([], linestyle ='dashdot',linewidth = 2,label='Hammerstein model',color = 'grey')
+
+# l2 = ax1.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc='upper center', bbox_to_anchor=(0.5, -0.55),fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =4)
+ax1.set_xlabel('Time Index(k)',fontsize = FONT_SIZE)
+ax1.set_ylabel('States and Outputs[1 -step prediction]',fontsize = FONT_SIZE)
+ax1.set_title('(a)',fontsize = FONT_SIZE)
 ax1.set_ylim([pl_min,pl_max])
 ax1.set_xlim([0,100])
+ax1.tick_params(axis ='x', labelsize = TICK_FONT_SIZE)
+ax1.tick_params(axis ='y', labelsize = TICK_FONT_SIZE)
 
-# plt.show()
-
-
-# # Figure 2 - n -step prediction comparisons
-# plt.subplot2grid((2,2), (1,0), colspan=1, rowspan=1)
-# n_states = d_SEQ[CURVE_NO]['X'].shape[1]
-# n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
-# pl_max = 0
-# pl_min = 0
-# for i in range(n_states):
-#     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
-#     l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
-#     plt.plot(d_SEQ[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
-#     plt.plot(d_SEQ[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
-#     plt.plot(d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
-#     # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
-#     pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
-#     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
-# for i in range(n_outputs):
-#     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
-#     plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
-#     plt.plot(d_SEQ[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
-#     plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
-#     plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-#     # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[i])
-#     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
-#     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+# Figure 2 - n -step prediction comparisons
+plt.subplot2grid((12,2), (6,0), colspan=1, rowspan=5)
+n_states = d_SEQ[CURVE_NO]['X'].shape[1]
+n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
+pl_max = 0
+pl_min = 0
+for i in range(n_states):
+    x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
+    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    plt.plot(d_SEQ[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
+    plt.plot(d_SEQ[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
+    plt.plot(d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
+    # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
+for i in range(n_outputs):
+    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
+    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    plt.plot(d_SEQ[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
+    plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
+    plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
+    # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[i])
+    pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # l1 = plt.legend(loc='lower right',fontsize = 14)
 # plt.gca().add_artist(l1)
-# a1, = plt.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
-# a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
-# a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
-# a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
-# l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = 14)
-# plt.xlabel('Time Index(k)')
-# plt.ylabel('States and Outputs[n -step prediction]')
-# plt.title('(b)')
-# plt.ylim([pl_min,pl_max])
-# plt.xlim([0,125])
+a1, = plt.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
+a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
+a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
+a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
+l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =4,title = '(a) and (b)')
+plt.gca().add_artist(l1)
+# l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
+plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+plt.ylabel('States and Outputs[n -step prediction]',fontsize = FONT_SIZE)
+plt.title('(b)',fontsize = FONT_SIZE)
+plt.ylim([pl_min,pl_max])
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks(fontsize = TICK_FONT_SIZE)
+plt.xlim([0,100])
 
 
 
-plt.subplot2grid((2,2), (0,1), colspan=1, rowspan=1)
+
+plt.subplot2grid((12,2), (0,1), colspan=1, rowspan=5)
 plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Sequential oc-deepDMD')
 plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='direct oc-deepDMD')
 # plt.plot(df_r2_HAM.index,df_r2_HAM.mean(axis=1),color = colors[2],label='Hammerstein model')
 plt.xlim([0.5,50.5])
 plt.ylim([80,100])
 STEPS = 10
-plt.legend()
+plt.legend(fontsize = TICK_FONT_SIZE)
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
-plt.xlabel('# Prediction Steps')
-plt.ylabel('$r^2$(in %)')
-plt.title('(c)')
-plt.show()
-##
+plt.xlabel('# Prediction Steps',fontsize = FONT_SIZE)
+plt.ylabel('$r^2$(in %)',fontsize = FONT_SIZE)
+plt.title('(c)',fontsize = FONT_SIZE)
 
-plt.subplot2grid((2,2), (1,1), colspan=1, rowspan=1)
+
+
+plt.subplot2grid((12,2), (6,1), colspan=1, rowspan=5)
 for i in range(Phi_SEQ.shape[0]):
     if i in comp_modes_conj_SEQ:
         continue
     elif i in comp_modes_SEQ:
         # plt.plot(Phi[i, :],label = 'lala')
-        plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1))
+        plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = 2)
     else:
-        plt.plot(Phi_SEQ[i, :], label='$\phi_{}(x)$'.format(i + 1))
-plt.legend()
-plt.xlabel('Time Index(k)')
-plt.ylabel('Evolution of eigenfunctions')
-plt.title('(d)')
+        plt.plot(Phi_SEQ[i, :], label='$\phi_{}(x)$'.format(i + 1), linewidth = 2)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3,title = '(d)')
+plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+plt.ylabel('Evolution of eigenfunctions',fontsize = FONT_SIZE)
+plt.title('(d)',fontsize = FONT_SIZE)
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks(fontsize = TICK_FONT_SIZE)
 
 # plt.subplot2grid((2,2), (1,1), colspan=1, rowspan=1)
 # for i in range(Phi_DEEPDMD.shape[0]):
@@ -368,4 +377,7 @@ plt.title('(d)')
 plt.savefig('Plots/eg4_GlycolyticOscillator.svg')
 plt.show()
 
+
+
+##
 
