@@ -38,8 +38,8 @@ dict_hp['x']['ls_nn_layers'] = [7,8,9]
 dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [7,8,9]
-dict_hp['y']['ls_nn_nodes'] = [3,6,9]
-process_variable = 'x'
+dict_hp['y']['ls_nn_nodes'] = [2,4,6]
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
