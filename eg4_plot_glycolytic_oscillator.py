@@ -202,7 +202,7 @@ dict_params = {}
 sess1 = tf.InteractiveSession()
 dict_params['Seq'] = get_dict_param(run_folder_name,SYS_NO,sess1)
 df_r2_SEQ, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-Phi_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ = eig_func_through_time(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+Phi_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ = eig_func_through_time(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess1.close()
 
@@ -234,10 +234,11 @@ plt.show()
 
 ## Figure 1 - 1 step prediction comparisons
 FONT_SIZE = 14
-TICK_FONT_SIZE = 11
+TICK_FONT_SIZE = 10
 plt.figure(figsize=(15,10))
-ax1 = plt.subplot2grid((12,2), (0,0), colspan=1, rowspan=5)
-
+ax1 = plt.subplot2grid((13,2), (0,0), colspan=1, rowspan=5)
+plt.rcParams["axes.edgecolor"] = "black"
+plt.rcParams["axes.linewidth"] = 1
 
 # CURVE_NO = 0
 n_states = d_SEQ[CURVE_NO]['X'].shape[1]
@@ -274,7 +275,7 @@ a4, = ax1.plot([], linestyle ='dashdot',linewidth = 2,label='Hammerstein model',
 
 # l2 = ax1.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc='upper center', bbox_to_anchor=(0.5, -0.55),fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =4)
 ax1.set_xlabel('Time Index(k)',fontsize = FONT_SIZE)
-ax1.set_ylabel('States and Outputs[1 -step prediction]',fontsize = FONT_SIZE)
+ax1.set_ylabel('States and Outputs\n[1 -step prediction]',fontsize = FONT_SIZE)
 ax1.set_title('(a)',fontsize = FONT_SIZE)
 ax1.set_ylim([pl_min,pl_max])
 ax1.set_xlim([0,100])
@@ -282,7 +283,7 @@ ax1.tick_params(axis ='x', labelsize = TICK_FONT_SIZE)
 ax1.tick_params(axis ='y', labelsize = TICK_FONT_SIZE)
 
 # Figure 2 - n -step prediction comparisons
-plt.subplot2grid((12,2), (6,0), colspan=1, rowspan=5)
+plt.subplot2grid((13,2), (7,0), colspan=1, rowspan=5)
 n_states = d_SEQ[CURVE_NO]['X'].shape[1]
 n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
 pl_max = 0
@@ -311,11 +312,11 @@ a1, = plt.plot([],'.',linewidth = 5,label='Truth',color = 'grey')
 a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
 a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
 a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
-l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =4,title = '(a) and (b)')
+l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =4)
 plt.gca().add_artist(l1)
 # l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
 plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
-plt.ylabel('States and Outputs[n -step prediction]',fontsize = FONT_SIZE)
+plt.ylabel('States and Outputs\n[n -step prediction]',fontsize = FONT_SIZE)
 plt.title('(b)',fontsize = FONT_SIZE)
 plt.ylim([pl_min,pl_max])
 plt.xticks(fontsize = TICK_FONT_SIZE)
@@ -325,14 +326,14 @@ plt.xlim([0,100])
 
 
 
-plt.subplot2grid((12,2), (0,1), colspan=1, rowspan=5)
+plt.subplot2grid((13,2), (0,1), colspan=1, rowspan=5)
 plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Sequential oc-deepDMD')
 plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='direct oc-deepDMD')
 # plt.plot(df_r2_HAM.index,df_r2_HAM.mean(axis=1),color = colors[2],label='Hammerstein model')
 plt.xlim([0.5,50.5])
 plt.ylim([80,100])
 STEPS = 10
-plt.legend(fontsize = TICK_FONT_SIZE)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
@@ -342,36 +343,40 @@ plt.title('(c)',fontsize = FONT_SIZE)
 
 
 
-plt.subplot2grid((12,2), (6,1), colspan=1, rowspan=5)
+plt.subplot2grid((13,2), (7,1), colspan=1, rowspan=5)
+p=0
 for i in range(Phi_SEQ.shape[0]):
     if i in comp_modes_conj_SEQ:
         continue
     elif i in comp_modes_SEQ:
         # plt.plot(Phi[i, :],label = 'lala')
         plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = 2)
+        p = p+1
     else:
-        plt.plot(Phi_SEQ[i, :], label='$\phi_{}(x)$'.format(i + 1), linewidth = 2)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3,title = '(d)')
+        plt.plot(Phi_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = 2)
+        p = p+1
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =np.int(np.ceil(p/2)))
 plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
 plt.ylabel('Evolution of eigenfunctions',fontsize = FONT_SIZE)
 plt.title('(d)',fontsize = FONT_SIZE)
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 
-# plt.subplot2grid((2,2), (1,1), colspan=1, rowspan=1)
+# plt.subplot2grid((13,2), (7,1), colspan=1, rowspan=5)
 # for i in range(Phi_DEEPDMD.shape[0]):
 #     if i in comp_modes_conj_DEEPDMD:
 #         continue
 #     elif i in comp_modes_DEEPDMD:
 #         # plt.plot(Phi[i, :],label = 'lala')
-#         plt.plot(Phi_DEEPDMD[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_DEEPDMD[comp_modes_DEEPDMD.index(i)]+1))
+#         plt.plot(Phi_DEEPDMD[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_DEEPDMD[comp_modes_DEEPDMD.index(i)]+1), linewidth = 2)
 #     else:
-#         plt.plot(Phi_DEEPDMD[i, :], label='$\phi_{}(x)$'.format(i + 1))
-# plt.legend()
-# plt.xlabel('Time Index(k)')
-# plt.ylabel('Evolution of eigenfunctions of deeepDMD')
-# plt.title('(d)')
-
+#         plt.plot(Phi_DEEPDMD[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = 2)
+# plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =5)
+# plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+# plt.ylabel('Evolution of eigenfunctions',fontsize = FONT_SIZE)
+# plt.title('(d)',fontsize = FONT_SIZE)
+# plt.xticks(fontsize = TICK_FONT_SIZE)
+# plt.yticks(fontsize = TICK_FONT_SIZE)
 
 
 plt.savefig('Plots/eg4_GlycolyticOscillator.svg')

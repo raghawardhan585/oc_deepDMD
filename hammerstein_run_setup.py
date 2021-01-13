@@ -34,12 +34,12 @@ dict_hp={}
 dict_hp['x']={}
 # dict_hp['x']['ls_nn_layers'] = [3,4,5]
 # dict_hp['x']['ls_nn_nodes'] = [2,4,6]
-dict_hp['x']['ls_nn_layers'] = [6,7,8,9]
-dict_hp['x']['ls_nn_nodes'] = [3,6,9,12,15]
+dict_hp['x']['ls_nn_layers'] = [7,8,9]
+dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 dict_hp['y']={}
-dict_hp['y']['ls_nn_layers'] = [3,4,5]
-dict_hp['y']['ls_nn_nodes'] = [5,10,15]
-process_variable = 'x'
+dict_hp['y']['ls_nn_layers'] = [7,8,9]
+dict_hp['y']['ls_nn_nodes'] = [3,6,9]
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -133,10 +133,10 @@ hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,9))
-SYSTEM_NO = 60
-ls_process_runs = list(range(0,8))
-# SYSTEM_NO = 53
-# ls_process_runs = list(range(0,10))
+# SYSTEM_NO = 60
+# ls_process_runs = list(range(0,8))
+SYSTEM_NO = 53
+ls_process_runs = list(range(0,20))
 
 hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -160,6 +160,7 @@ df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.vali
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run: ', opt_run)
 ##
+opt_run = 7
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 5
     n_cols = 4
@@ -228,8 +229,8 @@ plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=True)
+# f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=False,one_step=False)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
 
 
