@@ -133,12 +133,16 @@ hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,9))
+
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,8))
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,20))
 
-hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
+SYSTEM_NO = 53
+ls_process_runs = list(range(20,29))
+ls_process_runs = list(range(20,29))
+OPT_X_RUN = 8
+
+hm.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs,OPT_X_RUN)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
     d = pickle.load(handle)
