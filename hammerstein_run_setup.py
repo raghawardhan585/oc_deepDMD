@@ -37,9 +37,9 @@ dict_hp['x']['ls_nn_nodes'] = [1,2,4,8]
 # dict_hp['x']['ls_nn_layers'] = [7,8,9]
 # dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 dict_hp['y']={}
-dict_hp['y']['ls_nn_layers'] = [7,8,9]
-dict_hp['y']['ls_nn_nodes'] = [2,4,6]
-process_variable = 'x'
+dict_hp['y']['ls_nn_layers'] = [3,4,5]
+dict_hp['y']['ls_nn_nodes'] = [1,2,4,8]
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -131,16 +131,17 @@ for items in ls_files:
 ##
 hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 10
-# ls_process_runs = list(range(0,9))
+SYSTEM_NO = 10
+ls_process_runs = list(range(0,12))
+OPT_X_RUN = 10
 
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 14
 
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,20))
-OPT_X_RUN = 8
+# SYSTEM_NO = 53
+# ls_process_runs = list(range(0,20))
+# OPT_X_RUN = 8
 # ls_process_runs = list(range(20,29))
 # ls_process_runs = list(range(0,29))
 
