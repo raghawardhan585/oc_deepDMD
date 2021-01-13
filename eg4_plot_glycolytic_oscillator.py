@@ -92,10 +92,12 @@ def get_dict_param(run_folder_name_curr,SYS_NO,sess):
         print('No output info found')
     return dict_p
 def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
-    dict_rmse = {}
+    n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
+    # n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
+    # dict_rmse = {}
     dict_r2 = {}
     for CURVE_NO in ls_curves:
-        dict_rmse[CURVE_NO] = {}
+        # dict_rmse[CURVE_NO] = {}
         dict_r2[CURVE_NO] = {}
         dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
         X_scaled = dict_DATA_i['X']
@@ -107,10 +109,16 @@ def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr)
                                      np.linalg.matrix_power(dict_params_curr['KxT_num'], i))  # i step prediction at each datapoint
             Y_pred = np.matmul(np_psiX_pred, dict_params_curr['WhT_num'])
             Y_true = Y_scaled[i:, :]
-            dict_rmse[CURVE_NO][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
-            dict_r2[CURVE_NO][i] = np.max([0, (
-                        1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (
-                            np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
+
+            X = oc.inverse_transform_X(np_psiX_true[:,0:n_states], SYS_NO)
+            Y = oc.inverse_transform_Y(Y_true, SYS_NO)
+            Xhat = oc.inverse_transform_X(np_psiX_pred[:,0:n_states], SYS_NO)
+            Yhat = oc.inverse_transform_Y(Y_pred, SYS_NO)
+            SSE = np.sum(np.square(X - Xhat)) + np.sum(np.square(Y - Yhat))
+            SST = np.sum(np.square(X)) + np.sum(np.square(Y))
+            dict_r2[CURVE_NO][i] = np.max([0, 1 - (SSE / SST)]) * 100
+            # dict_rmse[CURVE_NO][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+            # dict_r2[CURVE_NO][i] = np.max([0, (1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
     df_r2 = pd.DataFrame(dict_r2)
     print(df_r2)
     CHECK_VAL = df_r2.iloc[-1, :].min()
@@ -200,34 +208,67 @@ def eig_func_through_time(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_M
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
     return Phi, koop_modes, comp_modes, comp_modes_conj
+def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
+    sess3 = tf.InteractiveSession()
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
+    dict_params_x = {}
+    dict_params_x['psix'] = tf.get_collection('psix')[0]
+    dict_params_x['x_feed'] = tf.get_collection('x_feed')[0]
+    dict_params_x['AT'] = tf.get_collection('AT')[0]
+    dict_params_x['AT_num'] = sess3.run(dict_params_x['AT'])
+    # Initialization
+    n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
+    n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
+    dict_X = {}
+    dict_X_pred = {}
+    dict_Y = {}
+    dict_Y_pred = {}
+    for step in ls_steps:
+        dict_X[step] = np.empty(shape=(0,n_states))
+        dict_X_pred[step] = np.empty(shape=(0, n_states))
+        dict_Y[step] = np.empty(shape=(0, n_outputs))
+        dict_Y_pred[step] = np.empty(shape=(0, n_outputs))
+    # Getting/Sorting the x component
+    for CURVE_NO in ls_curves:
+        dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
+        X_scaled = dict_DATA_i['X']
+        Y_scaled = dict_DATA_i['Y']
+        for i in range(len(X_scaled) - np.max(ls_steps) - 1):
+            xi = X_scaled[i:i+1]
+            for step in range(np.max(ls_steps)):
+                xi = np.matmul(xi,dict_params_x['AT_num']) + dict_params_x['psix'].eval(feed_dict={dict_params_x['x_feed']: xi})
+                if step in ls_steps:
+                    dict_X_pred[step] = np.concatenate([dict_X_pred[step],xi],axis=0)
+                    dict_X[step] = np.concatenate([dict_X[step], X_scaled[i+step:i+step+1] ], axis=0)
+                    dict_Y[step] = np.concatenate([dict_Y[step], Y_scaled[i + step:i + step + 1]],axis=0)
+    tf.reset_default_graph()
+    sess3.close()
 
-# def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
-#     dict_r2_empty_sample = {}
-#     for i in ls_steps:
-#         dict_r2_empty_sample[i] = 0
-#     dict_r2 = {}
-#     for CURVE_NO in ls_curves:
-#         dict_r2[CURVE_NO] = copy.deepcopy(dict_r2_empty_sample)
-#         for i in len(dict_data[CURVE_NO]['X']) - np.max(ls_steps) - 1:
-#             xi = dict_data[CURVE_NO]['X'][i:i+1]
-#             for step in range(np.max(ls_steps)):
-#                 xi = np.matmul(xi,)
-#         dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
-#         X_scaled = dict_DATA_i['X']
-#         Y_scaled = dict_DATA_i['Y']
-#         psiX = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled})
-#         for i in ls_steps:  # iterating through each step prediction
-#             np_psiX_true = psiX[i:, :]
-#             np_psiX_pred = np.matmul(psiX[:-i, :],
-#                                      np.linalg.matrix_power(dict_params_curr['KxT_num'], i))  # i step prediction at each datapoint
-#             Y_pred = np.matmul(np_psiX_pred, dict_params_curr['WhT_num'])
-#             Y_true = Y_scaled[i:, :]
-#             dict_r2[CURVE_NO][i] = np.max([0, (
-#                         1 - (np.sum(np.square(np_psiX_true - np_psiX_pred)) + np.sum(np.square(Y_true - Y_pred))) / (
-#                             np.sum(np.square(np_psiX_true)) + np.sum(np.square(Y_true)))) * 100])
-#     df_r2 = pd.DataFrame(dict_r2)
-#     print(df_r2)
-#     return df_r2
+    sess4 = tf.InteractiveSession()
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess4, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
+    dict_params_y = {}
+    dict_params_y['psix'] = tf.get_collection('psix')[0]
+    dict_params_y['x_feed'] = tf.get_collection('x_feed')[0]
+    dict_params_y['CT'] = tf.get_collection('AT')[0]
+    dict_params_y['CT_num'] = sess4.run(dict_params_y['CT'])
+    dict_r2 = {}
+    for step in ls_steps:
+        dict_Y_pred[step] = np.matmul(dict_X_pred[step],dict_params_y['CT_num']) + dict_params_y['psix'].eval(feed_dict={dict_params_y['x_feed']: dict_X_pred[step]})
+        # Compute the r^2
+        X = oc.inverse_transform_X(dict_X[step], SYS_NO)
+        Y = oc.inverse_transform_Y(dict_Y[step], SYS_NO)
+        Xhat = oc.inverse_transform_X(dict_X_pred[step], SYS_NO)
+        Yhat = oc.inverse_transform_Y(dict_Y_pred[step], SYS_NO)
+        SSE = np.sum(np.square(X - Xhat)) + np.sum(np.square(Y - Yhat))
+        SST = np.sum(np.square(X)) + np.sum(np.square(Y))
+        dict_r2[step] = [np.max([0, 1- (SSE/SST)])*100]
+    tf.reset_default_graph()
+    sess4.close()
+    df_r2 = pd.DataFrame(dict_r2)
+    print(df_r2)
+    return df_r2
 
 
 dict_params = {}
@@ -238,9 +279,6 @@ Phi_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ = eig_func_through_t
 tf.reset_default_graph()
 sess1.close()
 
-
-
-#
 sess2 = tf.InteractiveSession()
 dict_params['Deep'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess2)
 df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
@@ -248,27 +286,31 @@ Phi_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD = ei
 tf.reset_default_graph()
 sess2.close()
 
-# sess3 = tf.InteractiveSession()
-# dict_params['Ham'] = {'x':{},'y':{}}
-# saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-# saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
-# dict_params['Ham']['x']['psix'] = tf.get_collection('psix')[0]
-# dict_params['Ham']['x']['x_feed'] = tf.get_collection('x_feed')[0]
-# dict_params['Ham']['x']['AT'] = tf.get_collection('AT')[0]
-# dict_params['Ham']['x']['AT_num'] = sess3.run(dict_params['Ham']['x']['AT'])
-# saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-# saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
-# dict_params['Ham']['y']['psix'] = tf.get_collection('psix')[0]
-# dict_params['Ham']['y']['x_feed'] = tf.get_collection('x_feed')[0]
-# dict_params['Ham']['y']['AT'] = tf.get_collection('AT')[0]
-# dict_params['Ham']['y']['AT_num'] = sess3.run(dict_params['Ham']['y']['AT'])
-#
-# df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data,dict_params['Ham'])
-# tf.reset_default_graph()
-# sess2.close()
+df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data)
 
 
 
+## Saving Requied Stuff
+
+dict_dump = {}
+dict_dump['Seq'] = {'d_SEQ':d_SEQ,'df_r2_SEQ':df_r2_SEQ}
+dict_dump['Ham'] = {'d_HAM':d_HAM,'df_r2_HAM':df_r2_HAM}
+dict_dump['Deep'] = {'d_DDMD':d_DDMD,'df_r2_DEEPDMD':df_r2_DEEPDMD}
+dict_dump['CURVE_NO'] = CURVE_NO
+with open(sys_folder_name + '/FinalPlotData.pickle','wb') as handle:
+    pickle.dump(dict_dump,handle)
+
+
+# ## Unpack Required Stuff
+# with open(sys_folder_name + '/FinalPlotData.pickle','rb') as handle:
+#     d = pickle.load(handle)
+# d_SEQ = d['Seq']['d_SEQ']
+# d_HAM = d['Ham']['d_HAM']
+# d_DDMD = d['Deep']['d_DDMD']
+# df_r2_SEQ = d['Seq']['df_r2_SEQ']
+# df_r2_HAM = d['Ham']['df_r2_HAM']
+# df_r2_DEEPDMD = d['Deep']['df_r2_DEEPDMD']
+# CURVE_NO = d['CURVE_NO']
 
 ## Dynamic Modes
 
@@ -284,8 +326,10 @@ plt.show()
 
 
 ## Figure 1 - 1 step prediction comparisons
+# CURVE_NO = 265
 FONT_SIZE = 14
 DOWNSAMPLE = 4
+LINE_WIDTH_c_d = 3
 TRUTH_MARKER_SIZE = 15
 TICK_FONT_SIZE = 10
 plt.figure(figsize=(15,10))
@@ -313,7 +357,7 @@ for i in range(n_outputs):
     ax1.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     ax1.plot(d_SEQ[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     ax1.plot(d_DDMD[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-    plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
+    plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # Shrink current axis by 20%
@@ -330,7 +374,7 @@ for i in range(n_outputs):
 ax1.set_xlabel('Time Index(k)',fontsize = FONT_SIZE)
 ax1.set_ylabel('States and Outputs\n[1 -step prediction]',fontsize = FONT_SIZE)
 ax1.set_title('(a)',fontsize = FONT_SIZE)
-ax1.set_ylim([pl_min,pl_max])
+ax1.set_ylim([pl_min-0.1,pl_max+0.1])
 ax1.set_xlim([0,100])
 ax1.tick_params(axis ='x', labelsize = TICK_FONT_SIZE)
 ax1.tick_params(axis ='y', labelsize = TICK_FONT_SIZE)
@@ -356,7 +400,7 @@ for i in range(n_outputs):
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-    plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
+    plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # l1 = plt.legend(loc='lower right',fontsize = 14)
@@ -364,14 +408,14 @@ for i in range(n_outputs):
 a1, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
 a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Sequential oc-deepDMD',color = 'grey')
 a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='direct oc-deepDMD',color = 'grey')
-a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein model',color = 'grey')
+a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hammerstein nn-model',color = 'grey')
 l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =4)
 plt.gca().add_artist(l1)
 # l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
 plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
 plt.ylabel('States and Outputs\n[n -step prediction]',fontsize = FONT_SIZE)
 plt.title('(b)',fontsize = FONT_SIZE)
-plt.ylim([pl_min,pl_max])
+plt.ylim([pl_min-0.1,pl_max+0.1])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xlim([0,100])
@@ -379,10 +423,10 @@ plt.xlim([0,100])
 
 plt.subplot2grid((13,2), (0,1), colspan=1, rowspan=5)
 plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Sequential oc-deepDMD')
-plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='direct oc-deepDMD')
-# plt.plot(df_r2_HAM.index,df_r2_HAM.mean(axis=1),color = colors[2],label='Hammerstein model')
+plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='direct oc-deepDMD', linewidth = LINE_WIDTH_c_d )
+plt.plot(df_r2_HAM.T,color = colors[2],label='Hammerstein nn-model',linewidth = LINE_WIDTH_c_d )
 plt.xlim([0.5,50.5])
-plt.ylim([80,100])
+plt.ylim([85,100])
 STEPS = 10
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 plt.xticks(fontsize = TICK_FONT_SIZE)
@@ -401,10 +445,10 @@ for i in range(Phi_SEQ.shape[0]):
         continue
     elif i in comp_modes_SEQ:
         # plt.plot(Phi[i, :],label = 'lala')
-        plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = 2)
+        plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = LINE_WIDTH_c_d )
         p = p+1
     else:
-        plt.plot(Phi_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = 2)
+        plt.plot(Phi_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = LINE_WIDTH_c_d )
         p = p+1
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =np.int(np.ceil(p/2)))
 plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
