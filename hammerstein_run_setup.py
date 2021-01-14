@@ -138,9 +138,9 @@ hm.transfer_current_ocDeepDMD_run_files()
 
 
 SYSTEM_NO = 60
-ls_process_runs = list(range(0,19))
-OPT_X_RUN = 14
-# ls_process_runs = list(range(21,30))
+# ls_process_runs = list(range(0,20))
+OPT_X_RUN = 7
+ls_process_runs = list(range(20,32))
 
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,20))
@@ -249,9 +249,9 @@ random.shuffle(ls_test_curves)
 f1 = plot_fit_XY({k:dopt[k] for k in ls_test_curves[0:9]} ,plot_params,ls_test_curves[0:9],scaled= False,one_step=False)
 
 
-for i in d[7].keys():
-    SSE = np.sum(np.square(d[7][i]['X'] - d[7][i]['X_n_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
-    SST = np.sum(np.square(d[7][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
+for i in range(200,300):#d[28].keys():
+    SSE = np.sum(np.square(d[28][i]['X'] - d[28][i]['X_n_step'])) +  np.sum(np.square(d[28][i]['Y'] - d[28][i]['Y_one_step']))
+    SST = np.sum(np.square(d[28][i]['X'])) + np.sum(np.square(d[28][i]['Y']))
     r2 = np.max([0,(1-SSE/SST)])*100
     print(r2)
     if r2 <98:

@@ -27,13 +27,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 10
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [5,8]
-dict_hp['ls_nn_layers'] = [6,7,9,10]
+dict_hp['ls_dict_size'] = [3,4]
+dict_hp['ls_nn_layers'] = [4,5,6,7]
 dict_hp['ls_nn_nodes'] = [5,6,11,12]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
@@ -125,13 +125,13 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,38))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,38))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
 # ls_process_runs = list(range(0,62))
-# SYSTEM_NO = 60
-# ls_process_runs = list(range(0,36))
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,36))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
@@ -222,9 +222,9 @@ plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=False)
+# f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
+# f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
+f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
 
 
 ##

@@ -24,9 +24,9 @@ colors = np.asarray(colors);  # defines a color palette
 
 SYS_NO = 60
 RUN_NO = 67
-RUN_NO_HAMMERSTEIN_X = 14
-RUN_NO_HAMMERSTEIN_Y =
-RUN_NO_DEEPDMD =
+RUN_NO_HAMMERSTEIN_X = 7
+RUN_NO_HAMMERSTEIN_Y = 28
+RUN_NO_DEEPDMD = 6
 
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
