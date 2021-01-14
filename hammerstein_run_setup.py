@@ -27,19 +27,19 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 10
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
 NO_OF_ITERATIONS = 1
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_nn_layers'] = [3,4,5]
-dict_hp['x']['ls_nn_nodes'] = [1,2,4,8]
+dict_hp['x']['ls_nn_layers'] = [5,6,7,8]
+dict_hp['x']['ls_nn_nodes'] = [1,2,4,8,12]
 # dict_hp['x']['ls_nn_layers'] = [7,8,9]
 # dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 dict_hp['y']={}
 dict_hp['y']['ls_nn_layers'] = [3,4,5]
 dict_hp['y']['ls_nn_nodes'] = [1,2,4,8]
-process_variable = 'y'
+process_variable = 'x'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -131,18 +131,21 @@ for items in ls_files:
 ##
 hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,12))
-OPT_X_RUN = 10
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,12))
+# OPT_X_RUN = 10
+# ls_process_runs = list(range(12,24))
+
 
 # SYSTEM_NO = 60
-# ls_process_runs = list(range(0,20))
+# ls_process_runs = list(range(0,21))
 # OPT_X_RUN = 14
+# ls_process_runs = list(range(21,30))
 
-# SYSTEM_NO = 53
+SYSTEM_NO = 53
 # ls_process_runs = list(range(0,20))
-# OPT_X_RUN = 8
-# ls_process_runs = list(range(20,29))
+OPT_X_RUN = 8
+ls_process_runs = list(range(20,29))
 # ls_process_runs = list(range(0,29))
 
 
@@ -168,9 +171,10 @@ df_err_opt = pd.DataFrame(df_error_HAMMERSTEIN.train + df_error_HAMMERSTEIN.vali
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run: ', opt_run)
 ##
+dopt = d[opt_run]
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
-    n_rows = 5
-    n_cols = 4
+    n_rows = 3
+    n_cols = 3
     graphs_per_run = 2
     f,ax = plt.subplots(n_rows,n_cols,sharex=True,figsize = (plot_params['individual_fig_width']*n_cols,plot_params['individual_fig_height']*n_rows))
     i = 0
@@ -236,15 +240,25 @@ plot_params['individual_fig_width'] = 4#2.4
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
+random.shuffle(ls_train_curves)
+random.shuffle(ls_valid_curves)
+random.shuffle(ls_test_curves)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=False,one_step=False)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
-f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
+f1 = plot_fit_XY({k:dopt[k] for k in ls_test_curves[0:9]} ,plot_params,ls_test_curves[0:9],scaled= False,one_step=False)
 
 
-# for i in d[8].keys():
-#     SSE = np.sum(np.square(d[8][i]['X'] - d[8][i]['X_one_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
-#     SST = np.sum(np.square(d[8][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
-#     r2 = np.max([0,(1-SSE/SST)])*100
-#     if r2 <98:
-#         print('Curve: ', i, 'r2: ', r2)
+for i in d[8].keys():
+    SSE = np.sum(np.square(d[8][i]['X'] - d[8][i]['X_one_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
+    SST = np.sum(np.square(d[8][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
+    r2 = np.max([0,(1-SSE/SST)])*100
+    if r2 <98:
+        print('Curve: ', i, 'r2: ', r2)
+##
+# m = 0
+# plt.plot(di['X'][:,m],label ='True')
+# plt.plot(di['X_n_step'][:,m],label = 'n - step')
+# plt.plot(di['X_one_step'][:,m], label = '1 - step')
+# plt.legend()
+# plt.show()
