@@ -50,12 +50,13 @@ with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_NO_DEEPDMD]
 
 ##
-ls_steps = list(range(1,10,1))
+ls_steps = list(range(1,15,1))
 ls_curves = list(range(160, 240)) # test curves
 Senergy_THRESHOLD = 99.99
 REDUCED_MODES = False
 RIGHT_EIGEN_VECTORS = True
-
+CURVE_NO = 221 # random.choice(ls_curves)
+print(CURVE_NO)
 def phase_portrait_data():
     # System Parameters
     A = np.array([[0.86,0.],[0.8,0.4]])
@@ -262,7 +263,7 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
         else:
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
-    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj
+    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, E
 def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
     sess3 = tf.InteractiveSession()
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -369,8 +370,8 @@ dict_params = {}
 sess1 = tf.InteractiveSession()
 dict_params['Seq'] = get_dict_param(run_folder_name,SYS_NO,sess1)
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-_, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess1.close()
 
@@ -378,7 +379,7 @@ sess2 = tf.InteractiveSession()
 dict_params['Deep'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess2)
 df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess2.close()
 
@@ -398,8 +399,7 @@ df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data)
 # f.show()
 
 ## Figure 1
-CURVE_NO = random.choice(ls_curves)
-print(CURVE_NO)
+
 FONT_SIZE = 14
 DOWNSAMPLE = 4
 LINE_WIDTH_c_d = 3
@@ -443,7 +443,7 @@ plt.title('(a)',fontsize = FONT_SIZE)
 
 
 
-plt.subplot2grid((10,16), (0,6), colspan=4, rowspan=2)
+plt.subplot2grid((10,16), (5,0), colspan=4, rowspan=2)
 n_states = d_SEQ[CURVE_NO]['X'].shape[1]
 n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
 pl_max = 0
@@ -468,6 +468,7 @@ for i in range(n_outputs):
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
 plt.gca().add_artist(l1)
+# l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
 # plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
 plt.ylabel('x,y [1 -step]',fontsize = FONT_SIZE)
 plt.title('(b)',fontsize = FONT_SIZE)
@@ -475,7 +476,7 @@ plt.ylim([pl_min-0.1,pl_max+0.1])
 plt.xticks([])
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xlim([-0.5,29.5])
-plt.subplot2grid((10,16), (2,6), colspan=4, rowspan=2)
+plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
 pl_max = 0
 pl_min = 0
 for i in range(n_states):
@@ -515,124 +516,131 @@ plt.xlim([-0.5,29.5])
 
 
 
-plt.subplot2grid((10,16), (0,12), colspan=4, rowspan=4)
-plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Seq ocdDMD')
-plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
-plt.plot(df_r2_HAM.T,color = colors[2],label='Hamm nn-model',linewidth = LINE_WIDTH_c_d )
-plt.xlim([0.5,29.5])
-plt.ylim([85,100])
-STEPS = 5
+plt.subplot2grid((10,16), (0,6), colspan=4, rowspan=3)
+# plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Seq ocdDMD')
+# plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
+plt.bar(df_r2_SEQ.columns.to_numpy(),df_r2_SEQ.to_numpy().reshape(-1),color = colors[1],label='Seq ocdDMD')
+plt.plot(df_r2_DEEPDMD.columns.to_numpy(),df_r2_DEEPDMD.to_numpy().reshape(-1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
+plt.plot(df_r2_HAM.columns.to_numpy(),df_r2_HAM.to_numpy().reshape(-1),color = colors[2],label='Hamm nn-model',linewidth = LINE_WIDTH_c_d )
+plt.xlim([0.5,14.5])
+plt.ylim([85,101])
+STEPS = 2
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.xticks(ticks=np.arange(5, 31, step=STEPS),labels=range(5,31,STEPS))
+plt.xticks(ticks=np.arange(2, 15, step=STEPS),labels=range(2,15,STEPS))
 plt.xlabel('# Prediction Steps',fontsize = FONT_SIZE)
 plt.ylabel('$r^2$(in %)',fontsize = FONT_SIZE)
 plt.title('(c)',fontsize = FONT_SIZE)
 
+plt.subplot2grid((10,16), (0,12), colspan=4, rowspan=3)
+p=0
+for i in range(Phi_t_SEQ.shape[0]):
+    if i in comp_modes_conj_SEQ:
+        continue
+    elif i in comp_modes_SEQ:
+        # plt.plot(Phi[i, :],label = 'lala')
+        plt.plot(Phi_t_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = LINE_WIDTH_c_d )
+        p = p+1
+    else:
+        plt.plot(Phi_t_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = LINE_WIDTH_c_d )
+        p = p+1
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =np.int(np.ceil(p/2)))
+plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+plt.ylabel('$\phi[k]$',fontsize = FONT_SIZE)
+plt.title('(d)',fontsize = FONT_SIZE)
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks(fontsize = TICK_FONT_SIZE)
 
+
+
+p=0
+for i in range(PHI_SEQ.shape[2]):
+    title = ''
+    if p == 0:
+        f = plt.subplot2grid((10, 16), (5, 6-1), colspan=3, rowspan=2)
+    elif p == 1:
+        f = plt.subplot2grid((10, 16), (5, 10-1), colspan=3, rowspan=2)
+        title = title + '(e)\n'
+    elif p == 2:
+        f = plt.subplot2grid((10, 16), (5, 14-1), colspan=3, rowspan=2)
+    elif p == 3:
+        f = plt.subplot2grid((10, 16), (8, 8-1), colspan=3, rowspan=2)
+    elif p == 4:
+        f = plt.subplot2grid((10, 16), (8, 12-1), colspan=3, rowspan=2)
+    elif p==5:
+        break
+    if i in comp_modes_conj_SEQ:
+        continue
+    elif i in comp_modes_SEQ:
+        c = f.pcolor(X1_SEQ,X2_SEQ,PHI_SEQ[:,:,i],cmap='rainbow', vmin=np.min(PHI_SEQ[:,:,i]), vmax=np.max(PHI_SEQ[:,:,i]))
+        plt.colorbar(c,ax = f)
+        plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+        plt.ylabel('$x_2$', fontsize=FONT_SIZE)
+        plt.title(title + '$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)) + '+j' + str(round(E_SEQ[i,i+1],3)), fontsize=FONT_SIZE)
+        p = p+1
+    else:
+        c = f.pcolor(X1_SEQ, X2_SEQ, PHI_SEQ[:, :, i], cmap='rainbow', vmin=np.min(PHI_SEQ[:, :, i]),vmax=np.max(PHI_SEQ[:, :, i]))
+        plt.colorbar(c, ax=f)
+        plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+        plt.ylabel('$x_2$', fontsize=FONT_SIZE)
+        plt.title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)), fontsize=FONT_SIZE)
+        p = p+1
 plt.show()
+
 ##
 
 
-# CURVE_NO = 0
-plt.subplot2grid((7,18), (0,6), colspan=6, rowspan=4)
-n_states = d[CURVE_NO]['X'].shape[1]
-n_outputs = d[CURVE_NO]['Y'].shape[1]
-for i in range(n_states):
-    x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
-    l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
-    plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'dotted',color=colors[i])
-    plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
-for i in range(n_outputs):
-    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
-    plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
-    plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='dotted',color=colors[n_states+i])
-    plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
-l1 = plt.legend(loc="upper right")
-plt.gca().add_artist(l1)
-a1, = plt.plot(0,'.',linewidth = 5,label='Truth',color = 'grey')
-a2, = plt.plot(0, linestyle ='dotted',linewidth = 1,label='1-step',color = 'grey')
-a3, = plt.plot(0, linestyle = 'dashed',linewidth = 1,label='n-step',color = 'grey')
-l2 = plt.legend((a1,a2,a3),('Truth','1-step','n-step'),loc = "lower right")
-plt.xlabel('Time Index(k)')
-plt.ylabel('States and Outputs')
-plt.title('(b)')
-
-
-plt.subplot2grid((7,18), (0,12), colspan=6, rowspan=4)
-for i in range(nPC):
-    plt.plot(Phi[i,:],label='$\phi_{}(x)$'.format(i+1))
-plt.legend()
-plt.xlabel('Time Index(k)')
-plt.ylabel('Evolution of eigenfunctions')
-plt.title('(c)')
-
-
-plt.subplot2grid((7,18), (4,0), colspan=3, rowspan=2)
-plt.bar(df_r2.index,df_r2.mean(axis=1))
-plt.xlim([0.5,19.5])
-STEPS = 3
-plt.xticks(ticks=np.arange(1, 20, step=STEPS),labels=range(1,20,STEPS))
-plt.xlabel('# Prediction Steps')
-plt.ylabel('$r^2$(in %)')
-plt.title('(d)')
-
-
-for i in range(nPC):
-    f = plt.subplot2grid((7,18), (4, 3*(i+1)), colspan=3, rowspan=2)
-    c = f.pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
-    if i!=0:
-        plt.yticks([])
-    else:
-        plt.ylabel('$x_2$')
-    if i ==2:
-        plt.title('(e) \n $\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-    else:
-        plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-    plt.colorbar(c,ax = f)
-    plt.xlabel('$x_1$')
-plt.savefig('Plots/eg1_TheoreticalExample.svg')
-plt.show()
 
 
 
 
-
-
-
-
-
-
-
-f,ax = plt.subplots(1,5,figsize = (10,1.5))
-for i in range(5):
-    c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI_theo[:,:,i]), vmax=np.max(PSI_theo[:,:,i]))
-    f.colorbar(c,ax = ax[i])
-f.show()
-f,ax = plt.subplots(1,5,figsize = (10,1.5))
-for i in range(5):
-    c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI_theo[:,:,i]), vmax=np.max(PHI_theo[:,:,i]))
-    f.colorbar(c,ax = ax[i])
-f.show()
-
-
+# ##
+# for i in range(nPC):
+#     f = plt.subplot2grid((7,18), (4, 3*(i+1)), colspan=3, rowspan=2)
+#     c = f.pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
+#     if i!=0:
+#         plt.yticks([])
+#     else:
+#         plt.ylabel('$x_2$')
+#     if i ==2:
+#         plt.title('(e) \n $\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
+#     else:
+#         plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
+#     plt.colorbar(c,ax = f)
+#     plt.xlabel('$x_1$')
+# plt.savefig('Plots/eg1_TheoreticalExample.svg')
+# plt.show()
+#
+# f,ax = plt.subplots(1,5,figsize = (10,1.5))
+# for i in range(5):
+#     c = ax[i].pcolor(X1,X2,PSI[:,:,i],cmap='rainbow', vmin=np.min(PSI_theo[:,:,i]), vmax=np.max(PSI_theo[:,:,i]))
+#     f.colorbar(c,ax = ax[i])
+# f.show()
+# f,ax = plt.subplots(1,5,figsize = (10,1.5))
+# for i in range(5):
+#     c = ax[i].pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI_theo[:,:,i]), vmax=np.max(PHI_theo[:,:,i]))
+#     f.colorbar(c,ax = ax[i])
+# f.show()
+#
+#
+#
+# ##
+# P = PHI_theo[:,:,0].reshape((-1,1))
+# for i in range(1,PHI_theo.shape[2]):
+#     P = np.concatenate([P,PHI_theo[:,:,i].reshape((-1,1))],axis=1)
+# ut,st,vt = np.linalg.svd(P)
+# print(st)
+# print(np.cumsum(st**2)/np.sum(st**2))
+# import copy
+# Q = copy.deepcopy(P)
+#
+# for i in range(0,PHI.shape[2]):
+#     Q = np.concatenate([Q,PHI[:,:,i].reshape((-1,1))],axis=1)
+# u,s,v = np.linalg.svd(Q)
+# print(s)
+# print(np.cumsum(s**2)/np.sum(s**2))
+#
 
 ##
-P = PHI_theo[:,:,0].reshape((-1,1))
-for i in range(1,PHI_theo.shape[2]):
-    P = np.concatenate([P,PHI_theo[:,:,i].reshape((-1,1))],axis=1)
-ut,st,vt = np.linalg.svd(P)
-print(st)
-print(np.cumsum(st**2)/np.sum(st**2))
-import copy
-Q = copy.deepcopy(P)
-
-for i in range(0,PHI.shape[2]):
-    Q = np.concatenate([Q,PHI[:,:,i].reshape((-1,1))],axis=1)
-u,s,v = np.linalg.svd(Q)
-print(s)
-print(np.cumsum(s**2)/np.sum(s**2))
 
