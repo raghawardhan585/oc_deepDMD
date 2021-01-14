@@ -37,9 +37,9 @@ dict_hp['x']['ls_nn_nodes'] = [1,2,4,8,12]
 # dict_hp['x']['ls_nn_layers'] = [7,8,9]
 # dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 dict_hp['y']={}
-dict_hp['y']['ls_nn_layers'] = [3,4,5]
+dict_hp['y']['ls_nn_layers'] = [4,5,6]
 dict_hp['y']['ls_nn_nodes'] = [1,2,4,8]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
@@ -131,15 +131,15 @@ for items in ls_files:
 ##
 hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
+# SYSTEM_NO = 10
 # ls_process_runs = list(range(0,12))
-OPT_X_RUN = 10
-ls_process_runs = list(range(12,24))
+# OPT_X_RUN = 10
+# ls_process_runs = list(range(12,24))
 
 
-# SYSTEM_NO = 60
-# ls_process_runs = list(range(0,21))
-# OPT_X_RUN = 14
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,19))
+OPT_X_RUN = 14
 # ls_process_runs = list(range(21,30))
 
 # SYSTEM_NO = 53
@@ -249,10 +249,11 @@ random.shuffle(ls_test_curves)
 f1 = plot_fit_XY({k:dopt[k] for k in ls_test_curves[0:9]} ,plot_params,ls_test_curves[0:9],scaled= False,one_step=False)
 
 
-for i in d[8].keys():
-    SSE = np.sum(np.square(d[8][i]['X'] - d[8][i]['X_one_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
-    SST = np.sum(np.square(d[8][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
+for i in d[7].keys():
+    SSE = np.sum(np.square(d[7][i]['X'] - d[7][i]['X_n_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
+    SST = np.sum(np.square(d[7][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
     r2 = np.max([0,(1-SSE/SST)])*100
+    print(r2)
     if r2 <98:
         print('Curve: ', i, 'r2: ', r2)
 ##
