@@ -131,10 +131,10 @@ for items in ls_files:
 ##
 hm.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 10
+SYSTEM_NO = 10
 # ls_process_runs = list(range(0,12))
-# OPT_X_RUN = 10
-# ls_process_runs = list(range(12,24))
+OPT_X_RUN = 10
+ls_process_runs = list(range(12,24))
 
 
 # SYSTEM_NO = 60
@@ -142,10 +142,10 @@ hm.transfer_current_ocDeepDMD_run_files()
 # OPT_X_RUN = 14
 # ls_process_runs = list(range(21,30))
 
-SYSTEM_NO = 53
+# SYSTEM_NO = 53
 # ls_process_runs = list(range(0,20))
-OPT_X_RUN = 8
-ls_process_runs = list(range(20,29))
+# OPT_X_RUN = 8
+# ls_process_runs = list(range(20,29))
 # ls_process_runs = list(range(0,29))
 
 
