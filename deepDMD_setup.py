@@ -125,11 +125,11 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 10
-# ls_process_runs = list(range(0,38))
-SYSTEM_NO = 53
+SYSTEM_NO = 10
+ls_process_runs = list(range(0,38))
+# SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
-ls_process_runs = list(range(0,62))
+# ls_process_runs = list(range(0,62))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,36))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
@@ -226,4 +226,14 @@ f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_st
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=True,one_step=False)
 
+
+##
+
+
+for i in range(160,240):#d[1].keys():
+    SSE = np.sum(np.square(d[1][i]['X'] - d[1][i]['X_n_step'])) #+  np.sum(np.square(d[8][i]['Y'] - d[8][i]['Y_one_step']))
+    SST = np.sum(np.square(d[1][i]['X'])) #+ np.sum(np.square(d[8][i]['Y']))
+    r2 = np.max([0,(1-SSE/SST)])*100
+    # if r2 <98:
+    print('Curve: ', i, 'r2: ', r2)
 
