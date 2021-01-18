@@ -674,7 +674,7 @@ def data_gen_sys_combinatorial_promoter(sys_params, N_CURVES,SYSTEM_NO):
     sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data, SYSTEM_NO)
     return
 
-def data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO):
+def data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO,DOWNSAMPLE_FACTOR = -1):
     # Create a folder for the system and store the data
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
     if os.path.exists(storage_folder):
@@ -687,7 +687,7 @@ def data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO):
     else:
         os.mkdir(storage_folder)
     # Simulation
-    dict_indexed_data = {}
+    dict_indexed_data_in = {}
     # plt.figure()
     X0 = np.empty(shape=(0,7))
     t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
@@ -696,12 +696,26 @@ def data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO):
         X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
         X = odeint(glycolytic_oscillator, x0_curr, t, args = sys_params['sys_params_arc4s'])
         Y = 1 / (1 + (sys_params['Ka'] / X[:, 6:7])**0.5)
-        dict_indexed_data[i]= {'X':X,'Y':Y}
+        dict_indexed_data_in[i]= {'X':X,'Y':Y}
         # plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+
+    if DOWNSAMPLE_FACTOR == -1:
+        dict_indexed_data_out = dict_indexed_data_in
+    else:
+        dict_indexed_data_out = {}
+        for curve in range(N_CURVES):
+            dict_indexed_data_out[curve] = {}
+            # Downsample the data in X and ignore the last sample
+            dict_indexed_data_out[curve]['X'] = dict_indexed_data_in[curve]['X'][::DOWNSAMPLE_FACTOR][:-1]
+            # Concatenate the data in Y between the samples as the output
+            Y = np.empty(shape =(0, DOWNSAMPLE_FACTOR*dict_indexed_data_in[curve]['Y'].shape[1]))
+            for i in range(dict_indexed_data_out[curve]['X'].shape[0]):
+                Y = np.concatenate([Y,dict_indexed_data_in[curve]['Y'][i*DOWNSAMPLE_FACTOR:(i+1)*DOWNSAMPLE_FACTOR,:].reshape(1,-1)],axis=0)
+            dict_indexed_data_out[curve]['Y'] = Y
     # plt.plot(X0[:,0],X0[:,1],'o',color='salmon',fillstyle='none',markersize=5)
     # plt.show()
     # plt.figure()
-    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO)
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data_out,SYSTEM_NO)
     return
 
 

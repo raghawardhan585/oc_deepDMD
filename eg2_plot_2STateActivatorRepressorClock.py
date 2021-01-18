@@ -10,6 +10,7 @@ import tensorflow as tf
 import itertools
 import ocdeepdmd_simulation_examples_helper_functions as oc
 import copy
+import random
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -51,12 +52,12 @@ with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_NO_DEEPDMD]
 
 ##
-ls_steps = list(range(1,15,1))
-ls_curves = list(range(160, 240)) # test curves
+ls_steps = list(range(1,50,1))
+ls_curves = list(range(200, 300)) # test curves
 Senergy_THRESHOLD = 99.99
 REDUCED_MODES = False
 RIGHT_EIGEN_VECTORS = True
-CURVE_NO = 221 # random.choice(ls_curves)
+CURVE_NO = 260 # random.choice(ls_curves)
 print(CURVE_NO)
 def phase_portrait_data():
     # System Parameters
@@ -77,25 +78,24 @@ def phase_portrait_data():
     k_3n = 3.
     k_3d = 1.08
 
-    sys_params_arc2s = (
-    gamma_A, gamma_B, delta_A, delta_B, alpha_A0, alpha_B0, alpha_A, alpha_B, K_A, K_B, kappa_A, kappa_B, n, m)
+    sys_params_arc2s = (gamma_A, gamma_B, delta_A, delta_B, alpha_A0, alpha_B0, alpha_A, alpha_B, K_A, K_B, kappa_A, kappa_B, n, m)
     Ts = 0.1
     t_end = 40
     # Simulation Parameters
-    dict_data = {}
+    dict_phase_data = {}
     X0 = np.empty(shape=(0, 2))
     t = np.arange(0, t_end, Ts)
 
     # Phase Space Data
-    dict_data = {}
+    dict_phase_data = {}
     X0 = np.empty(shape=(0, 2))
     i = 0
     for x1, x2 in itertools.product(list(np.arange(1, 30., 3.5)), list(np.arange(1, 60., 8))):
-        dict_data[i] = {}
+        dict_phase_data[i] = {}
         x0_curr = np.array([x1, x2])
         X0 = np.concatenate([X0, np.array([[x1, x2]])], axis=0)
-        dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
-        dict_data[i]['Y'] = k_3n * dict_data[i]['X'][:, 1:2] / (k_3d + dict_data[i]['X'][:, 3:4])
+        dict_phase_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
+        dict_phase_data[i]['Y'] = k_3n * dict_phase_data[i]['X'][:, 1:2] / (k_3d + dict_phase_data[i]['X'][:, 3:4])
         i = i + 1
     return dict_phase_data
 def get_dict_param(run_folder_name_curr,SYS_NO,sess):
@@ -265,7 +265,7 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
         else:
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
-    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, E
+    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, eval
 def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
     sess3 = tf.InteractiveSession()
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -373,7 +373,7 @@ sess1 = tf.InteractiveSession()
 dict_params['Seq'] = get_dict_param(run_folder_name,SYS_NO,sess1)
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess1.close()
 
@@ -405,16 +405,19 @@ df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data)
 FONT_SIZE = 14
 DOWNSAMPLE = 4
 LINE_WIDTH_c_d = 3
-TRUTH_MARKER_SIZE = 15
+TRUTH_MARKER_SIZE = 10
 TICK_FONT_SIZE = 9
+HEADER_SIZE = 21
 plt.figure(figsize=(15,10))
 plt.rcParams["axes.edgecolor"] = "black"
 plt.rcParams["axes.linewidth"] = 1
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["mathtext.fontset"] = 'cm'
 
-plt.subplot2grid((10,16), (0,0), colspan=4, rowspan=4)
+plt.subplot2grid((10,16), (0,0), colspan=5, rowspan=4)
 alpha = 1.0
 epsilon = alpha - 0.01
-arrow_length = 0.3
+arrow_length = 1.2
 ls_pts = list(range(0,1))
 for i in list(dict_phase_data.keys())[0:]:
     for j in ls_pts:
@@ -429,19 +432,22 @@ for i in list(dict_phase_data.keys())[0:]:
             dx = (dict_phase_data[i]['X'][j + 1, 0] - dict_phase_data[i]['X'][j, 0]) * arrow_length
             dy = (dict_phase_data[i]['X'][j + 1, 1] - dict_phase_data[i]['X'][j, 1]) * arrow_length
             # print(x,' ',y,' ',dist)
-            if dist<2:
-                plt.arrow(x,y,dx,dy,head_width = 0.1,head_length=0.5,alpha=1,color='tab:green')
+            if dist<0.1:
+                plt.arrow(x,y,dx,dy,head_width = 0.02,head_length=0.03,alpha=1,color='tab:green')
             else:
-                plt.arrow(x, y, dx, dy, head_width=0.3, head_length=3, alpha=1, color='tab:green')
+                plt.arrow(x, y, dx, dy, head_width=1., head_length=0.9, alpha=1, color='tab:green')
 plt.xlabel('$x_1$',fontsize = FONT_SIZE)
 plt.ylabel('$x_2$',fontsize = FONT_SIZE)
-plt.plot([0],[0],'o',color='tab:red',markersize=10)
-plt.xlim([-10,10])
-plt.ylim([-126,16])
+plt.plot(dict_phase_data[0]['X'][200:,0],dict_phase_data[0]['X'][200:,1],color='tab:red',markersize=10)
+plt.plot(dict_phase_data[5]['X'][200:,0],dict_phase_data[5]['X'][200:,1],color='tab:red',markersize=10)
+plt.plot(dict_phase_data[10]['X'][200:,0],dict_phase_data[10]['X'][200:,1],color='tab:red',markersize=10)
+# plt.xlim([0,0.6])
+# plt.ylim([0,1.65])
+plt.xlim([-0.5,30])
+plt.ylim([-0.5,60])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.title('(a)',fontsize = FONT_SIZE)
-
+plt.title('(a)',fontsize = HEADER_SIZE,loc='left')
 
 
 
@@ -452,7 +458,7 @@ pl_max = 0
 pl_min = 0
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
-    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
     plt.plot(d_DDMD[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
@@ -461,7 +467,7 @@ for i in range(n_states):
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
-    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(y_scale))))
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     plt.plot(d_DDMD[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
@@ -472,12 +478,13 @@ l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.075),fancybox=True, 
 plt.gca().add_artist(l1)
 # l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
 # plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
-plt.ylabel('x,y [1 -step]',fontsize = FONT_SIZE)
-plt.title('(b)',fontsize = FONT_SIZE)
+# plt.ylabel('x,y [1 -step]',fontsize = FONT_SIZE)
+plt.text(32,2,'[1-step]',fontsize = FONT_SIZE)
 plt.ylim([pl_min-0.1,pl_max+0.1])
 plt.xticks([])
 plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.xlim([-0.5,29.5])
+plt.xlim([-0.5,100.5])
+plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
 plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
 pl_max = 0
 pl_min = 0
@@ -508,32 +515,36 @@ a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hamm nn-model',colo
 l1 = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 plt.gca().add_artist(l1)
 # l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
-plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
-plt.ylabel('x,y [n -step]',fontsize = FONT_SIZE)
+plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
+plt.text(32,2,'[n-step]',fontsize = FONT_SIZE)
+# plt.ylabel('x,y [n -step]',fontsize = FONT_SIZE)
+plt.text(-20,2,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
 # plt.title('(b)',fontsize = FONT_SIZE)
 plt.ylim([pl_min-0.1,pl_max+0.1])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.xlim([-0.5,29.5])
+plt.xlim([-0.5,100.5])
 
 
 
-plt.subplot2grid((10,16), (0,6), colspan=4, rowspan=3)
+
+plt.subplot2grid((10,16), (0,6), colspan=5, rowspan=3)
 # plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Seq ocdDMD')
 # plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
 plt.bar(df_r2_SEQ.columns.to_numpy(),df_r2_SEQ.to_numpy().reshape(-1),color = colors[1],label='Seq ocdDMD')
 plt.plot(df_r2_DEEPDMD.columns.to_numpy(),df_r2_DEEPDMD.to_numpy().reshape(-1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
 plt.plot(df_r2_HAM.columns.to_numpy(),df_r2_HAM.to_numpy().reshape(-1),color = colors[2],label='Hamm nn-model',linewidth = LINE_WIDTH_c_d )
-plt.xlim([0.5,14.5])
+plt.xlim([0.5,49.5])
 plt.ylim([85,101])
-STEPS = 2
+STEPS = 10
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.xticks(ticks=np.arange(2, 15, step=STEPS),labels=range(2,15,STEPS))
+plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
 plt.xlabel('# Prediction Steps',fontsize = FONT_SIZE)
 plt.ylabel('$r^2$(in %)',fontsize = FONT_SIZE)
-plt.title('(c)',fontsize = FONT_SIZE)
+plt.title('(c)',fontsize = HEADER_SIZE,loc='left')
+
 
 plt.subplot2grid((10,16), (0,12), colspan=4, rowspan=3)
 p=0
@@ -548,13 +559,12 @@ for i in range(Phi_t_SEQ.shape[0]):
         plt.plot(Phi_t_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = LINE_WIDTH_c_d )
         p = p+1
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =np.int(np.ceil(p/2)))
-plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
 plt.ylabel('$\phi[k]$',fontsize = FONT_SIZE)
-plt.title('(d)',fontsize = FONT_SIZE)
+plt.title('(d)',fontsize = HEADER_SIZE,loc='left')
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
-
-
+plt.xlim([0,100])
 
 p=0
 for i in range(PHI_SEQ.shape[2]):
@@ -563,32 +573,84 @@ for i in range(PHI_SEQ.shape[2]):
         f = plt.subplot2grid((10, 16), (5, 6-1), colspan=3, rowspan=2)
     elif p == 1:
         f = plt.subplot2grid((10, 16), (5, 10-1), colspan=3, rowspan=2)
-        title = title + '(e)\n'
+        # title = title + '(e)\n'
     elif p == 2:
         f = plt.subplot2grid((10, 16), (5, 14-1), colspan=3, rowspan=2)
     elif p == 3:
-        f = plt.subplot2grid((10, 16), (8, 8-1), colspan=3, rowspan=2)
+        f = plt.subplot2grid((10, 16), (8, 6-1), colspan=3, rowspan=2)
     elif p == 4:
-        f = plt.subplot2grid((10, 16), (8, 12-1), colspan=3, rowspan=2)
+        f = plt.subplot2grid((10, 16), (8, 10-1), colspan=3, rowspan=2)
     elif p==5:
+        f = plt.subplot2grid((10, 16), (8, 14-1), colspan=3, rowspan=2)
+    elif p==6:
         break
     if i in comp_modes_conj_SEQ:
         continue
     elif i in comp_modes_SEQ:
         c = f.pcolor(X1_SEQ,X2_SEQ,PHI_SEQ[:,:,i],cmap='rainbow', vmin=np.min(PHI_SEQ[:,:,i]), vmax=np.max(PHI_SEQ[:,:,i]))
         plt.colorbar(c,ax = f)
-        plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+        plt.xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         plt.ylabel('$x_2$', fontsize=FONT_SIZE)
-        plt.title(title + '$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)) + '+j' + str(round(E_SEQ[i,i+1],3)), fontsize=FONT_SIZE)
+        plt.xticks([-4, 0, 4])
+        plt.yticks([-4, 0, 4])
+        plt.title(title + '$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), fontsize=FONT_SIZE)
+        # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         p = p+1
     else:
         c = f.pcolor(X1_SEQ, X2_SEQ, PHI_SEQ[:, :, i], cmap='rainbow', vmin=np.min(PHI_SEQ[:, :, i]),vmax=np.max(PHI_SEQ[:, :, i]))
         plt.colorbar(c, ax=f)
-        plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+        plt.xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         plt.ylabel('$x_2$', fontsize=FONT_SIZE)
-        plt.title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)), fontsize=FONT_SIZE)
+        plt.xticks([-4, 0, 4])
+        plt.yticks([-4, 0, 4])
+        plt.title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE )
+        # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         p = p+1
+    if p ==1:
+        f.text(-5,5.5,'(e)',fontsize = HEADER_SIZE)
+
+# plt.savefig('Plots/eg2_2StateActivatorRespressorClock.svg')
+# plt.savefig('Plots/eg2_2StateActivatorRespressorClock_pycharm.png')
 plt.show()
+
+##
+
+# p=0
+# for i in range(PHI_SEQ.shape[2]):
+#     title = ''
+#     if p == 0:
+#         f = plt.subplot2grid((10, 16), (5, 6-1), colspan=3, rowspan=2)
+#     elif p == 1:
+#         f = plt.subplot2grid((10, 16), (5, 10-1), colspan=3, rowspan=2)
+#         title = title + '(e)\n'
+#     elif p == 2:
+#         f = plt.subplot2grid((10, 16), (5, 14-1), colspan=3, rowspan=2)
+#     elif p == 3:
+#         f = plt.subplot2grid((10, 16), (8, 8-1), colspan=3, rowspan=2)
+#     elif p == 4:
+#         f = plt.subplot2grid((10, 16), (8, 12-1), colspan=3, rowspan=2)
+#     elif p==5:
+#         break
+#     if i in comp_modes_conj_SEQ:
+#         continue
+#     elif i in comp_modes_SEQ:
+#         c = f.pcolor(X1_SEQ,X2_SEQ,PHI_SEQ[:,:,i],cmap='rainbow', vmin=np.min(PHI_SEQ[:,:,i]), vmax=np.max(PHI_SEQ[:,:,i]))
+#         plt.colorbar(c,ax = f)
+#         plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+#         plt.ylabel('$x_2$', fontsize=FONT_SIZE)
+#         plt.title(title + '$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)) + '+j' + str(round(E_SEQ[i,i+1],3)), fontsize=FONT_SIZE)
+#         p = p+1
+#     else:
+#         c = f.pcolor(X1_SEQ, X2_SEQ, PHI_SEQ[:, :, i], cmap='rainbow', vmin=np.min(PHI_SEQ[:, :, i]),vmax=np.max(PHI_SEQ[:, :, i]))
+#         plt.colorbar(c, ax=f)
+#         plt.xlabel('$x_1$', fontsize=FONT_SIZE)
+#         plt.ylabel('$x_2$', fontsize=FONT_SIZE)
+#         plt.title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + ',$\lambda=$' + str(round(E_SEQ[i,i],3)), fontsize=FONT_SIZE)
+#         p = p+1
+#
+# plt.savefig('Plots/eg2_2StateActivatorRespressorClock.svg')
+# plt.savefig('Plots/eg2_2StateActivatorRespressorClock.png')
+# plt.show()
 
 
 # ## Dynamic Modes
@@ -686,186 +748,180 @@ plt.show()
 #
 #
 # # Dynamic modes - Lambda*inv(W)*U.T*psiX
-
-## [Phase Portrait]
-
-# System Parameters
-gamma_A = 1.
-gamma_B = 0.5
-delta_A = 1.
-delta_B = 1.
-alpha_A0= 0.04
-alpha_B0= 0.004
-alpha_A = 50.
-alpha_B = 30.
-K_A = 1.
-K_B = 1.5
-kappa_A = 1.
-kappa_B = 1.
-n = 2.
-m = 2.
-k_3n = 3.
-k_3d = 1.08
-
-
-sys_params_arc2s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
-Ts = 0.1
-t_end = 40
-# Simulation Parameters
-dict_data = {}
-X0 = np.empty(shape=(0, 2))
-t = np.arange(0, t_end, Ts)
-
-# Phase Space Data
-dict_data = {}
-X0 = np.empty(shape=(0, 2))
-i=0
-for x1,x2 in itertools.product(list(np.arange(1,30.,3.5)), list(np.arange(1,60.,8))):
-    dict_data[i]={}
-    x0_curr =  np.array([x1,x2])
-    X0 = np.concatenate([X0, np.array([[x1,x2]])], axis=0)
-    dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
-    dict_data[i]['Y'] = k_3n * dict_data[i]['X'][:, 1:2] / (k_3d + dict_data[i]['X'][:, 3:4])
-    i = i+1
-
-## [R2 function of prediction steps] Calculate the accuracy as a funcation of the number of steps predicted
-CURVE_NO = 0
-ls_steps = list(range(1,50,1))
-dict_rmse = {}
-dict_r2 = {}
-for CURVE_NO in range(200,300):
-    dict_rmse[CURVE_NO] = {}
-    dict_r2[CURVE_NO] = {}
-    dict_DATA_i = oc.scale_data_using_existing_scaler_folder(d[CURVE_NO], SYS_NO)
-    X_scaled = dict_DATA_i['X']
-    Y_scaled = dict_DATA_i['Y']
-    psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
-    for i in ls_steps:  # iterating through each step prediction
-        np_psiX_true = psiX[i:, :]
-        np_psiX_pred = np.matmul(psiX[:-i, :], np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
-        Y_pred = np.matmul(np_psiX_pred, WhT_num)
-        Y_true = Y_scaled[i:, :]
-        dict_rmse[CURVE_NO][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
-        dict_r2[CURVE_NO][i] = np.max([0, (1 - (np.sum(np.square(np_psiX_true - np_psiX_pred))+np.sum(np.square(Y_true - Y_pred))) / (np.sum(np.square(np_psiX_true))+np.sum(np.square(Y_true)))) * 100])
-df_r2 = pd.DataFrame(dict_r2)
-print(df_r2)
-CHECK_VAL =df_r2.iloc[-1,:].max()
-for i in range(200,300):
-    if df_r2.loc[df_r2.index[-1],i] == CHECK_VAL:
-        CURVE_NO = i
-        break
-## Figure 1
-plt.figure(figsize=(18,7))
-plt.subplot2grid((7,18), (0,0), colspan=6, rowspan=4)
-alpha = 1.0
-epsilon = alpha - 0.01
-arrow_length = 1.2
-ls_pts = list(range(0,1))
-for i in list(dict_data.keys())[0:]:
-    for j in ls_pts:
-        if np.abs(dict_data[i]['X'][j, 0]) > 1 or j==0:
-            plt.plot(dict_data[i]['X'][j, 0], dict_data[i]['X'][j, 1], 'o',color='salmon',fillstyle='none',markersize=5)
-    plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.3)
-    if np.mod(i,1)==0:
-        for j in ls_pts:
-            dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
-            x = dict_data[i]['X'][j, 0]
-            y = dict_data[i]['X'][j, 1]
-            dx = (dict_data[i]['X'][j + 1, 0] - dict_data[i]['X'][j, 0]) * arrow_length
-            dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
-            # print(x,' ',y,' ',dist)
-            if dist<0.1:
-                plt.arrow(x,y,dx,dy,head_width = 0.02,head_length=0.03,alpha=1,color='tab:green')
-            else:
-                plt.arrow(x, y, dx, dy, head_width=1., head_length=0.9, alpha=1, color='tab:green')
-plt.xlabel('x1')
-plt.ylabel('x2')
-plt.plot(dict_data[0]['X'][200:,0],dict_data[0]['X'][200:,1],color='tab:red',markersize=10)
-plt.plot(dict_data[5]['X'][200:,0],dict_data[5]['X'][200:,1],color='tab:red',markersize=10)
-plt.plot(dict_data[10]['X'][200:,0],dict_data[10]['X'][200:,1],color='tab:red',markersize=10)
-# plt.xlim([0,0.6])
-# plt.ylim([0,1.65])
-plt.xlim([-0.1,30])
-plt.ylim([-0.1,60])
-
-
+#
+# ## [Phase Portrait]
+#
+# # System Parameters
+# gamma_A = 1.
+# gamma_B = 0.5
+# delta_A = 1.
+# delta_B = 1.
+# alpha_A0= 0.04
+# alpha_B0= 0.004
+# alpha_A = 50.
+# alpha_B = 30.
+# K_A = 1.
+# K_B = 1.5
+# kappa_A = 1.
+# kappa_B = 1.
+# n = 2.
+# m = 2.
+# k_3n = 3.
+# k_3d = 1.08
+#
+#
+# sys_params_arc2s = (gamma_A,gamma_B,delta_A,delta_B,alpha_A0,alpha_B0,alpha_A,alpha_B,K_A,K_B,kappa_A,kappa_B,n,m)
+# Ts = 0.1
+# t_end = 40
+# # Simulation Parameters
+# dict_data = {}
+# X0 = np.empty(shape=(0, 2))
+# t = np.arange(0, t_end, Ts)
+#
+# # Phase Space Data
+# dict_data = {}
+# X0 = np.empty(shape=(0, 2))
+# i=0
+# for x1,x2 in itertools.product(list(np.arange(1,30.,3.5)), list(np.arange(1,60.,8))):
+#     dict_data[i]={}
+#     x0_curr =  np.array([x1,x2])
+#     X0 = np.concatenate([X0, np.array([[x1,x2]])], axis=0)
+#     dict_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
+#     dict_data[i]['Y'] = k_3n * dict_data[i]['X'][:, 1:2] / (k_3d + dict_data[i]['X'][:, 3:4])
+#     i = i+1
+#
+# ## [R2 function of prediction steps] Calculate the accuracy as a funcation of the number of steps predicted
 # CURVE_NO = 0
-plt.subplot2grid((7,18), (0,6), colspan=6, rowspan=4)
-n_states = d[CURVE_NO]['X'].shape[1]
-n_outputs = d[CURVE_NO]['Y'].shape[1]
-for i in range(n_states):
-    x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
-    l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
-    plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'solid',color=colors[i])
-    plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
-for i in range(n_outputs):
-    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
-    plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
-    plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
-    plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='solid',color=colors[n_states+i])
-    plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
-l1 = plt.legend(loc="upper right")
-plt.gca().add_artist(l1)
-a1, = plt.plot(0,'.',linewidth = 5,label='Truth',color = 'grey')
-a2, = plt.plot(0, linestyle ='solid',linewidth = 1,label='1-step',color = 'grey')
-a3, = plt.plot(0, linestyle = 'dashed',linewidth = 1,label='n-step',color = 'grey')
-l2 = plt.legend((a1,a2,a3),('Truth','1-step','n-step'),loc = "lower right")
-plt.xlabel('Time Index(k)')
-plt.ylabel('States and Outputs')
-plt.title('(b)')
+# ls_steps = list(range(1,50,1))
+# dict_rmse = {}
+# dict_r2 = {}
+# for CURVE_NO in range(200,300):
+#     dict_rmse[CURVE_NO] = {}
+#     dict_r2[CURVE_NO] = {}
+#     dict_DATA_i = oc.scale_data_using_existing_scaler_folder(d[CURVE_NO], SYS_NO)
+#     X_scaled = dict_DATA_i['X']
+#     Y_scaled = dict_DATA_i['Y']
+#     psiX = psixfT.eval(feed_dict={xfT_feed: X_scaled})
+#     for i in ls_steps:  # iterating through each step prediction
+#         np_psiX_true = psiX[i:, :]
+#         np_psiX_pred = np.matmul(psiX[:-i, :], np.linalg.matrix_power(KxT_num, i))  # i step prediction at each datapoint
+#         Y_pred = np.matmul(np_psiX_pred, WhT_num)
+#         Y_true = Y_scaled[i:, :]
+#         dict_rmse[CURVE_NO][i] = np.sqrt(np.mean(np.square(np_psiX_true - np_psiX_pred)))
+#         dict_r2[CURVE_NO][i] = np.max([0, (1 - (np.sum(np.square(np_psiX_true - np_psiX_pred))+np.sum(np.square(Y_true - Y_pred))) / (np.sum(np.square(np_psiX_true))+np.sum(np.square(Y_true)))) * 100])
+# df_r2 = pd.DataFrame(dict_r2)
+# print(df_r2)
+# CHECK_VAL =df_r2.iloc[-1,:].max()
+# for i in range(200,300):
+#     if df_r2.loc[df_r2.index[-1],i] == CHECK_VAL:
+#         CURVE_NO = i
+#         break
+# ## Figure 1
+# plt.figure(figsize=(18,7))
+# plt.subplot2grid((7,18), (0,0), colspan=6, rowspan=4)
+# alpha = 1.0
+# epsilon = alpha - 0.01
+# arrow_length = 1.2
+# ls_pts = list(range(0,1))
+# for i in list(dict_data.keys())[0:]:
+#     for j in ls_pts:
+#         if np.abs(dict_data[i]['X'][j, 0]) > 1 or j==0:
+#             plt.plot(dict_data[i]['X'][j, 0], dict_data[i]['X'][j, 1], 'o',color='salmon',fillstyle='none',markersize=5)
+#     plt.plot(dict_data[i]['X'][:, 0], dict_data[i]['X'][:, 1], color='tab:blue',linewidth=0.3)
+#     if np.mod(i,1)==0:
+#         for j in ls_pts:
+#             dist = np.sqrt((dict_data[i]['X'][j, 0] - dict_data[i]['X'][j + 1, 0]) ** 2 + (dict_data[i]['X'][j, 1] - dict_data[i]['X'][j + 1, 1]) ** 2)
+#             x = dict_data[i]['X'][j, 0]
+#             y = dict_data[i]['X'][j, 1]
+#             dx = (dict_data[i]['X'][j + 1, 0] - dict_data[i]['X'][j, 0]) * arrow_length
+#             dy = (dict_data[i]['X'][j + 1, 1] - dict_data[i]['X'][j, 1]) * arrow_length
+#             # print(x,' ',y,' ',dist)
+#             if dist<0.1:
+#                 plt.arrow(x,y,dx,dy,head_width = 0.02,head_length=0.03,alpha=1,color='tab:green')
+#             else:
+#                 plt.arrow(x, y, dx, dy, head_width=1., head_length=0.9, alpha=1, color='tab:green')
+# plt.xlabel('x1')
+# plt.ylabel('x2')
+# plt.plot(dict_data[0]['X'][200:,0],dict_data[0]['X'][200:,1],color='tab:red',markersize=10)
+# plt.plot(dict_data[5]['X'][200:,0],dict_data[5]['X'][200:,1],color='tab:red',markersize=10)
+# plt.plot(dict_data[10]['X'][200:,0],dict_data[10]['X'][200:,1],color='tab:red',markersize=10)
+# # plt.xlim([0,0.6])
+# # plt.ylim([0,1.65])
+# plt.xlim([-0.1,30])
+# plt.ylim([-0.1,60])
+#
+#
+# # CURVE_NO = 0
+# plt.subplot2grid((7,18), (0,6), colspan=6, rowspan=4)
+# n_states = d[CURVE_NO]['X'].shape[1]
+# n_outputs = d[CURVE_NO]['Y'].shape[1]
+# for i in range(n_states):
+#     x_scale = 10**np.round(np.log10(np.max(np.abs(d[CURVE_NO]['X'][:,i]))))
+#     l1_i, = plt.plot(0, color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(x_scale))))
+#     plt.plot(d[CURVE_NO]['X'][:,i]/x_scale,'.',color = colors[i],linewidth = 5)
+#     plt.plot(d[CURVE_NO]['X_est_one_step'][:, i]/x_scale,linestyle = 'solid',color=colors[i])
+#     plt.plot(d[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
+# for i in range(n_outputs):
+#     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d[CURVE_NO]['Y'][:, i]))))
+#     plt.plot(0, color=colors[i], label=('$y_{}$').format(i + 1) + ('$[x10^{}]$').format(np.int(np.log10(y_scale))))
+#     plt.plot(d[CURVE_NO]['Y'][:,i]/y_scale, '.',color = colors[n_states+i],linewidth = 5)
+#     plt.plot(d[CURVE_NO]['Y_est_one_step'][:, i]/y_scale, linestyle ='solid',color=colors[n_states+i])
+#     plt.plot(d[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
+# l1 = plt.legend(loc="upper right")
+# plt.gca().add_artist(l1)
+# a1, = plt.plot(0,'.',linewidth = 5,label='Truth',color = 'grey')
+# a2, = plt.plot(0, linestyle ='solid',linewidth = 1,label='1-step',color = 'grey')
+# a3, = plt.plot(0, linestyle = 'dashed',linewidth = 1,label='n-step',color = 'grey')
+# l2 = plt.legend((a1,a2,a3),('Truth','1-step','n-step'),loc = "lower right")
+# plt.xlabel('Time Index(k)')
+# plt.ylabel('States and Outputs')
+# plt.title('(b)')
+#
+#
+# plt.subplot2grid((7,18), (0,12), colspan=6, rowspan=4)
+# for i in range(nPC):
+#     if i in comp_modes_conj:
+#         continue
+#     elif i in comp_modes:
+#         # plt.plot(Phi[i, :],label = 'lala')
+#         plt.plot(Phi[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj[comp_modes.index(i)]+1))
+#     else:
+#         plt.plot(Phi[i, :], label='$\phi_{}(x)$'.format(i + 1))
+# plt.legend()
+# plt.xlabel('Time Index(k)')
+# plt.ylabel('Evolution of eigenfunctions')
+# plt.title('(c)')
+#
+#
+# plt.subplot2grid((7,18), (4,0), colspan=3, rowspan=2)
+# plt.bar(df_r2.index,df_r2.mean(axis=1))
+# plt.xlim([0.5,50.5])
+# plt.ylim([50,100])
+# STEPS = 10
+# plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
+# plt.xlabel('# Prediction Steps \n (d)')
+# plt.ylabel('$r^2$(in %)')
+#
+#
+#
+# for i in range(nPC):
+#     f = plt.subplot2grid((7,18), (4, 3*(i+1)), colspan=3, rowspan=2)
+#     c = f.pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
+#     if i!=0:
+#         plt.yticks([])
+#     else:
+#         plt.ylabel('$x_2$')
+#     if i ==2:
+#         plt.xlabel('$x_1$ \n (e)')
+#         plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
+#     else:
+#         plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
+#         plt.xlabel('$x_1$')
+#     plt.colorbar(c,ax = f)
 
 
-plt.subplot2grid((7,18), (0,12), colspan=6, rowspan=4)
-for i in range(nPC):
-    if i in comp_modes_conj:
-        continue
-    elif i in comp_modes:
-        # plt.plot(Phi[i, :],label = 'lala')
-        plt.plot(Phi[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj[comp_modes.index(i)]+1))
-    else:
-        plt.plot(Phi[i, :], label='$\phi_{}(x)$'.format(i + 1))
-plt.legend()
-plt.xlabel('Time Index(k)')
-plt.ylabel('Evolution of eigenfunctions')
-plt.title('(c)')
+# plt.show()
 
 
-plt.subplot2grid((7,18), (4,0), colspan=3, rowspan=2)
-plt.bar(df_r2.index,df_r2.mean(axis=1))
-plt.xlim([0.5,50.5])
-plt.ylim([50,100])
-STEPS = 10
-plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
-plt.xlabel('# Prediction Steps \n (d)')
-plt.ylabel('$r^2$(in %)')
-
-
-
-for i in range(nPC):
-    f = plt.subplot2grid((7,18), (4, 3*(i+1)), colspan=3, rowspan=2)
-    c = f.pcolor(X1,X2,PHI[:,:,i],cmap='rainbow', vmin=np.min(PHI[:,:,i]), vmax=np.max(PHI[:,:,i]))
-    if i!=0:
-        plt.yticks([])
-    else:
-        plt.ylabel('$x_2$')
-    if i ==2:
-        plt.xlabel('$x_1$ \n (e)')
-        plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-    else:
-        plt.title('$\lambda_{} =$'.format(i+1) + str(round(eval[i],3)))
-        plt.xlabel('$x_1$')
-    plt.colorbar(c,ax = f)
-
-plt.savefig('Plots/eg2_2StateActivatorRespressorClock.svg')
-plt.show()
-
-
-## Theoretical results
-a11 = 0.86
-a21 = 0.8
-a22 = 0.4
-gamma = -0.9
-
-Kt = np.array([[a11,0,0,0,0],[a21,a22,gamma,0,0],[0,0,a11**2,0,0],[0,0,a11*a21,a11*a22,a11*gamma],[0,0,0,0,a11**3]])
+##
 

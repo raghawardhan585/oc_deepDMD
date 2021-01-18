@@ -126,8 +126,8 @@ dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
 SYSTEM_NO = 10
-ls_process_runs = list(range(0,38))
-ls_process_runs = list(range(38,70))
+# ls_process_runs = list(range(0,38))
+ls_process_runs = list(range(38,74))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
 # ls_process_runs = list(range(0,62))

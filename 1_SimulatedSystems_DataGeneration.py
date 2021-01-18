@@ -258,13 +258,13 @@ x_min = x_max/2
 # x_min = x_max
 sys_params_arc4s = (k1,k2,k3,k4,k5,k6,k7,K1,kappa,mu,q,J0,N,A)
 # Simulation Parameters
-sampling_time = 0.05
+sampling_time = 0.02
 simulation_time = 5
 N_CURVES = 300
 ls_prediction_steps=[1]
 sys_params = {'sys_params_arc4s': sys_params_arc4s , 'Ka':Ka, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 53
-oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO)
+SYSTEM_NO = 70
+oc.data_gen_sys_glycolytic_oscillator(sys_params, N_CURVES,SYSTEM_NO,DOWNSAMPLE_FACTOR = 10)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
