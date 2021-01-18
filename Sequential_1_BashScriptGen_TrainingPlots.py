@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [3,6]
+dict_hp['x']['ls_dict_size'] = [14,15]
 dict_hp['x']['ls_nn_layers'] = [3,4,7,8]
-dict_hp['x']['ls_nn_nodes'] = [6,9,12,15]
+dict_hp['x']['ls_nn_nodes'] = [18,21,24,27]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,2,3]
 dict_hp['y']['ls_nn_layers'] = [3,4]
@@ -153,15 +153,15 @@ seq.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,41)) # Runs for which we want to calculate the error
 # ls_process_runs = list(range(84,85))
 SYSTEM_NO = 70
-ls_process_runs = list(range(0,16)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,48)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
-SYSTEM_NO = 53
+# SYSTEM_NO = 53
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-ls_process_runs = [344]
+# ls_process_runs = [344]
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)
