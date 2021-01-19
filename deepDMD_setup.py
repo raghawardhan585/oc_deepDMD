@@ -32,9 +32,9 @@ NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [3,4]
+dict_hp['ls_dict_size'] = [3,6,9]
 dict_hp['ls_nn_layers'] = [4,5,6,7]
-dict_hp['ls_nn_nodes'] = [5,6,11,12]
+dict_hp['ls_nn_nodes'] = [9,12,15,18]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp['ls_dict_size']
