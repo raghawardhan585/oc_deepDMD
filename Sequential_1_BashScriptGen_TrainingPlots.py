@@ -39,10 +39,10 @@ dict_hp['y']['ls_dict_size'] = [1,2,3,4,5]
 dict_hp['y']['ls_nn_layers'] = [3,4]
 dict_hp['y']['ls_nn_nodes'] = [6,9,12]
 dict_hp['xy']={}
-dict_hp['xy']['ls_dict_size'] = [2,3,4]
+dict_hp['xy']['ls_dict_size'] = [2,3,4,5,6]
 dict_hp['xy']['ls_nn_layers'] = [3,4]
 dict_hp['xy']['ls_nn_nodes'] = [6,9,12]
-process_variable = 'y'
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -217,8 +217,10 @@ print(dict_hp)
 # ls_run_no = list(range(45,63))
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
-SYSTEM_NO = 60
-ls_run_no = list(range(42,60))
+# SYSTEM_NO = 60
+# ls_run_no = list(range(42,60))
+SYSTEM_NO = 70
+ls_run_no = list(range(80,110))
 plot_params ={}
 plot_params ={}
 plot_params['xy_label_font_size']=9
@@ -338,8 +340,10 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 # RUN_NO = 45
 # SYSTEM_NO = 53
 # RUN_NO = 308
-SYSTEM_NO = 60
-RUN_NO = 58
+# SYSTEM_NO = 60
+# RUN_NO = 58
+SYSTEM_NO = 70
+RUN_NO = 104
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
