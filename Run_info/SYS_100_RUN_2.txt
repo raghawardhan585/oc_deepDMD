@@ -1,0 +1,59 @@
+[INFO] Number of total samples: 24
+[INFO] Observable dimension of a sample: 1725
+[INFO] Xp.shape (E-DMD): (24, 1725)
+[INFO] Yf.shape (E-DMD): (24, 1725)
+Number of training snapshots: 24
+Number of validation snapshots: 0
+0.0411113225896519
+0.17320508075688773
+0.21483446221182986
+0.029356793348625038
+---------    TRAINING BEGINS   ---------
+0.037946302
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  1000
+Batch Size   :  8
+--------------------------------------
+Current Training Error  : 0.10743667
+Current Validation Error      : nan
+0.10743667
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.0000000e+00 1.0596969e+00 1.0061924e+00 ... 5.0774640e-10 2.7491359e-10
+ 2.7491359e-10]
+[COMP] The identified Koopman operator is UNSTABLE with  4 eigenvalues greater than 1
+                                    0
+MSE training                 0.107437
+MSE validation                    NaN
+activation flag                     2
+activation function               elu
+batch size                          8
+no of epochs                        1
+r^2 training accuracy        -231.968
+r^2 validation accuracy           inf
+step size                         0.5
+training error               0.107437
+validation error                  NaN
+x_hidden_variable_list   [50, 50, 15]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                0         1         2
+x_hidden_variable_list         50        50        15
+activation flag                 2         2         2
+activation function           elu       elu       elu
+no of epochs                    1         1         1
+batch size                      8         8         8
+step size                     0.5       0.5       0.5
+training error           0.107437  0.107437  0.107437
+validation error              NaN       NaN       NaN
+r^2 training accuracy    -231.968  -231.968  -231.968
+r^2 validation accuracy       inf       inf       inf
+MSE training             0.107437  0.107437  0.107437
+MSE validation                NaN       NaN       NaN
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
