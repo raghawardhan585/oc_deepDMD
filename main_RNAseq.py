@@ -21,7 +21,8 @@ dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, 
 
 
 ## Sorting the MAX dataset to deepDMD format
-dict_MAX = dict_DATA_filt2['MX']
+# dict_MAX = dict_DATA_filt2['MX']
+dict_MAX = dict_DATA['MX']
 
 ls_all_indices = list(dict_MAX.keys())
 random.shuffle(ls_all_indices)
@@ -64,4 +65,7 @@ with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle
 with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
     pickle.dump(dict_DATA_OUT, handle)
 
-##
+## DMD Stats
+
+dict_MAX = dict_DATA['MX']
+
