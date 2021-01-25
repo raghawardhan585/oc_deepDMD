@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 70
+SYSTEM_NO = 100
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -28,7 +28,7 @@ SYSTEM_NO = 70
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 1000
-TRAIN_PERCENT = 50
+TRAIN_PERCENT = 100
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
@@ -58,7 +58,7 @@ best_test_error = np.inf
 # 3 - Making both dynamics and output linear
 
 
-RUN_OPTIMIZATION = 3
+RUN_OPTIMIZATION = 1
 
 
 if RUN_OPTIMIZATION == 1:
@@ -73,16 +73,16 @@ elif RUN_OPTIMIZATION == 3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 400}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 8}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 400}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 400}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 400}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 400}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 8}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 8}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 8}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 8}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 400}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
@@ -393,8 +393,12 @@ def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
     for i in range(len(S)):
         A_hat = A_hat + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
         ls_error_train.append(np.mean(np.square((Xf_train - np.matmul(A_hat,Xp_train)))))
-        ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
-    ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
+        if Xp_valid.shape[1] != 0:
+            ls_error_valid.append(np.mean(np.square((Xf_valid - np.matmul(A_hat, Xp_valid)))))
+    if Xp_valid.shape[1] == 0:
+        ls_error = np.array(ls_error_train)
+    else:
+        ls_error = np.array(ls_error_train) + np.array(ls_error_valid)
     nPC_opt = np.where(ls_error==np.min(ls_error))[0][0] + 1
     A_hat_opt = np.zeros(shape = U.shape)
     for i in range(nPC_opt):

@@ -62,6 +62,6 @@ with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle
     pickle.dump(ls_all_indices, handle)  # Only training and validation indices are stored
 # Store the data in Koopman
 with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
-    pickle.dump(dict_DATA, handle)
+    pickle.dump(dict_DATA_OUT, handle)
 
 ##
