@@ -1,0 +1,59 @@
+[INFO] Number of total samples: 24
+[INFO] Observable dimension of a sample: 1725
+[INFO] Xp.shape (E-DMD): (24, 1725)
+[INFO] Yf.shape (E-DMD): (24, 1725)
+Number of training snapshots: 24
+Number of validation snapshots: 0
+0.0411113225896519
+0.17320508075688773
+0.2
+0.029272820655593355
+---------    TRAINING BEGINS   ---------
+0.069673285
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  1000
+Batch Size   :  8
+--------------------------------------
+Current Training Error  : 0.64589006
+Current Validation Error      : nan
+0.64589006
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.0000000e+00 1.0995207e+00 1.0027187e+00 ... 3.8232312e-10 7.7436904e-11
+ 1.6743759e-11]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+                                    0
+MSE training                  0.64589
+MSE validation                    NaN
+activation flag                     2
+activation function               elu
+batch size                          8
+no of epochs                        1
+r^2 training accuracy        -1374.23
+r^2 validation accuracy           NaN
+step size                         0.5
+training error                0.64589
+validation error                  NaN
+x_hidden_variable_list   [50, 50, 25]
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                               0        1        2
+x_hidden_variable_list        50       50       25
+activation flag                2        2        2
+activation function          elu      elu      elu
+no of epochs                   1        1        1
+batch size                     8        8        8
+step size                    0.5      0.5      0.5
+training error           0.64589  0.64589  0.64589
+validation error             NaN      NaN      NaN
+r^2 training accuracy   -1374.23 -1374.23 -1374.23
+r^2 validation accuracy      NaN      NaN      NaN
+MSE training             0.64589  0.64589  0.64589
+MSE validation               NaN      NaN      NaN
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
