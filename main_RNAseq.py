@@ -16,17 +16,17 @@ rnaf.organize_RNAseq_OD_to_RAWDATA()
 with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYData_RAW.pickle', 'rb') as handle:
     dict_DATA = pickle.load(handle)
 dict_DATA_filt0 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA)
-dict_DATA_filt1 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt0, MEAN_TPM_THRESHOLD = 10)
-dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.55)
+dict_DATA_filt1 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt0, MEAN_TPM_THRESHOLD = 100)
+dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 
 
 ## Sorting the MAX dataset to deepDMD format
-# dict_MAX = dict_DATA_filt2['MX']
-dict_MAX = dict_DATA['MX']
+dict_MAX = dict_DATA_filt2['MX']
+# dict_MAX = dict_DATA['MX']
 
 ls_all_indices = list(dict_MAX.keys())
 random.shuffle(ls_all_indices)
-ls_all_train_indices = ls_all_indices[0:5]
+ls_all_train_indices = ls_all_indices
 # ls_test_indices = ls_indices[0:5]
 
 n_states = dict_MAX[ls_all_train_indices[0]]['df_X_TPM'].shape[0]
