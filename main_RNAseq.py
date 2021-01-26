@@ -21,8 +21,8 @@ dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, 
 
 
 ## Sorting the MAX dataset to deepDMD format
-dict_MAX = dict_DATA_filt2['MX']
-# dict_MAX = dict_DATA['MX']
+# dict_MAX = dict_DATA_filt2['MX']
+dict_MAX = dict_DATA['MX']
 
 ls_all_indices = list(dict_MAX.keys())
 random.shuffle(ls_all_indices)
@@ -38,7 +38,7 @@ for i in ls_all_train_indices:
     dict_DMD1['Yp'] = np.concatenate([dict_DMD1['Yp'], np.array(dict_MAX[i]['Y'].iloc[:, 0:-1]).T], axis=0)
     dict_DMD1['Yf'] = np.concatenate([dict_DMD1['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
 
-SYSTEM_NO = 100
+SYSTEM_NO = 101
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
