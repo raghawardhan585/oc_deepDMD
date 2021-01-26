@@ -35,9 +35,9 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 5
-n_x_nn_layers = 6  # x_max_layers 3 works well
-n_x_nn_nodes = 5  # max width_limit -4 works well
+x_deep_dict_size = 12
+n_x_nn_layers = 4  # x_max_layers 3 works well
+n_x_nn_nodes = 25  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 1
