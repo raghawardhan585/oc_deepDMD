@@ -286,13 +286,11 @@ if len(sys.argv)>2:
     SYSTEM_NO = sys.argv[2]
     data_suffix = 'System_'+ str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 if len(sys.argv) > 3:
-    PROCESS_VARIABLE = sys.argv[3]
-if len(sys.argv) > 4:
-    RUN_NUMBER = np.int(sys.argv[4])
+    RUN_NUMBER = np.int(sys.argv[3])
+if len(sys.argv)>4:
+    n_layers = np.int(sys.argv[4])
 if len(sys.argv)>5:
-    n_layers = np.int(sys.argv[5])
-if len(sys.argv)>6:
-    n_nodes = np.int(sys.argv[6])
+    n_nodes = np.int(sys.argv[5])
 
 
 data_file = data_directory + data_suffix
