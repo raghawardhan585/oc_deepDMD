@@ -7,6 +7,8 @@ import itertools
 # from bioservices import UniProt
 import copy
 import pickle
+import matplotlib.pyplot as plt
+
 
 # Constants
 MAX_REPLICATES = 2
@@ -196,23 +198,102 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
             dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE2,axis=0)
     return dict_GrowthCurve
 
-def filter_gene_by_threshold(dict_GrowthCurve,MEAN_TPM_THRESHOLD = 10, ALL_CONDITIONS = ['MAX','MIN','NC']):
-    # Downselect the genes that have zero gene expression across all datasets
-    df_GENE_SCORE = pd.DataFrame([], columns=dict_GrowthCurve['MAX'][3].RNAdata.columns)
-    for COND, REPLICATE in itertools.product(ALL_CONDITIONS, range(1, 17, 1)):
-        df_GENE_SCORE = df_GENE_SCORE.append(dict_GrowthCurve[COND][REPLICATE].RNAdata)
-    df_GENE_SCORE = df_GENE_SCORE.mean(axis=0)
-    ls_GENE_REJECT = []
-    for gene in df_GENE_SCORE.index:
-        if (df_GENE_SCORE[gene] < MEAN_TPM_THRESHOLD):
-            ls_GENE_REJECT.append(gene)
-    print('The number of removed genes:', len(ls_GENE_REJECT))
-    for COND, REPLICATE in itertools.product(ALL_CONDITIONS, range(1, 17, 1)):
-        dict_GrowthCurve[COND][REPLICATE].RNAdata = dict_GrowthCurve[COND][REPLICATE].RNAdata.drop(ls_GENE_REJECT,axis=1)
-    print('Remaining Genes:', dict_GrowthCurve[COND][REPLICATE].RNAdata.shape[1])
-    return dict_GrowthCurve
 
 
+def denoise_using_PCA(dict_IN,PCA_THRESHOLD = 99,NORMALIZE = False,PLOT_SCREE=False):
+    # Denoising the data across each time point using all the
+    ls_curves = list(dict_IN.keys())
+    n_genes = dict_IN[ls_curves[0]]['df_X_TPM'].shape[0]
+    n_outputs = dict_IN[ls_curves[0]]['Y'].shape[0]
+    gene_list = dict_IN[ls_curves[0]]['df_X_TPM'].index
+    ls_time_pts = list(dict_IN[ls_curves[0]]['df_X_TPM'].columns)
+    dict_OUT = {}
+    # PCA to denoise the Growth curve outputs
+    Y = np.empty(shape=(n_outputs * len(ls_time_pts), 0))
+    for curve in ls_curves:
+        Y = np.concatenate([Y, np.array(dict_IN[curve]['Y']).T.reshape(-1, 1)], axis=1)
+    Uy, Sy, VyT = np.linalg.svd(Y)
+    if PLOT_SCREE:
+        plt.stem(np.concatenate([np.array([100]), (1 - np.cumsum(Sy ** 2) / np.sum(Sy ** 2)) * 100], axis=0))
+        plt.ylabel('Uncaptured % of signal')
+        plt.xlabel('Number of Principal Components')
+        plt.title('Scree plot of all outputs')
+        plt.show()
+    Yhat = np.matmul(Uy[:, 0:1], VyT[0:1, :]) * Sy[0]
+    for i in range(len(ls_curves)):
+        dict_OUT[ls_curves[i]] = {'df_X_TPM':{},'Y':pd.DataFrame(Yhat[:,i].reshape(-1,n_outputs).T,columns=ls_time_pts,index = ['y' + str(i+1) for i in range(n_outputs)])}
+
+    # Making all entries nonzero
+    for curve in ls_curves:
+        dict_IN[curve]['df_X_TPM'] = dict_IN[curve]['df_X_TPM'].replace(0,1e-5)
+    # PCA to denoise the states
+    for time_point in range(1,8):
+        X = np.empty(shape=(n_genes, 0))
+        for curve in ls_curves:
+            X = np.concatenate([X,np.array(dict_IN[curve]['df_X_TPM'].loc[:,time_point]).reshape(-1,1)],axis=1)
+        if NORMALIZE:
+            # Normalize the data
+            X_mu = np.mean(X,axis=1).reshape(-1,1)
+            X_sigma = np.std(X, axis=1).reshape(-1, 1)
+            for i in range(X_sigma.shape[0]):
+                if X_sigma[i][0] == 0:
+                    X_sigma[i][0] = 1e-10
+        else:
+            X_mu = 0
+            X_sigma = 1
+        X_norm = (X - X_mu)/X_sigma
+        # SVD of all the data
+        U,S,VT = np.linalg.svd(X_norm)
+        if PLOT_SCREE:
+            # Plot the SVD scree plot
+            plt.stem(np.concatenate([np.array([100]), (1-np.cumsum(S**2)/np.sum(S**2))*100],axis=0))
+            plt.ylabel('Uncaptured % of signal')
+            plt.xlabel('Number of Principal Components')
+            plt.title('Scree plot of Timepoint - ' + str(time_point))
+            plt.show()
+        # Data Reconstruction and storage
+        nPC_opt = np.nonzero(S * (np.cumsum(S ** 2) / np.sum(S ** 2) * 100 > PCA_THRESHOLD))[0][0]+1
+        X_norm_hat = np.matmul(U[:,0:nPC_opt],np.matmul(np.linalg.inv(np.diag(S[0:nPC_opt])),VT[0:nPC_opt,:]))
+        if PLOT_SCREE:
+            # Plot the error in each gene across time
+            SSE = np.sum(((X_norm_hat*X_sigma + X_mu) - X)**2,axis=1)
+            SST = np.sum(X**2,axis=1)
+            r2 = np.maximum(0,(1-SSE/SST)*100)
+            plt.figure(figsize=(10,2))
+            plt.plot(r2)
+            plt.ylabel('$r^2$')
+            plt.xlabel('Gene_Locus Tag')
+            plt.title('Reconstruction Error of Timepoint - ' + str(time_point))
+            plt.show()
+        for curve in ls_curves:
+            df_temp = pd.DataFrame(X_norm_hat[:, curve:(curve + 1)]*X_sigma +X_mu, index=gene_list, columns=[time_point])
+            if time_point == 1:
+                dict_OUT[curve]['df_X_TPM'] = copy.deepcopy(df_temp)
+            else:
+                dict_OUT[curve]['df_X_TPM'] = pd.concat([dict_OUT[curve]['df_X_TPM'],copy.deepcopy(df_temp)],axis=1)
+
+    # Coefficient of variation of all the genes
+    n_curves = len(ls_curves)
+    Xtrue = np.empty(shape=(n_genes, n_curves, len(ls_time_pts)))
+    Xhat = np.empty(shape=(n_genes, n_curves, len(ls_time_pts)))
+    for curve, time_pt in itertools.product(range(n_curves), ls_time_pts):
+        Xtrue[:, curve:(curve + 1), (time_pt - 1):time_pt] = np.array(dict_IN[curve]['df_X_TPM'].loc[:, time_pt]).reshape(-1, 1, 1)
+        Xhat[:, curve:(curve + 1), (time_pt - 1):time_pt] = np.array(dict_OUT[curve]['df_X_TPM'].loc[:, time_pt]).reshape(-1, 1, 1)
+    #
+    plt.figure(figsize=(10, 6))
+    for time_pt in range(len(ls_time_pts)):
+        X_i_hat = copy.deepcopy(Xhat[:, :, time_pt]).reshape(n_genes, -1)
+        plt.plot(np.mean(X_i_hat, axis=1) / np.std(X_i_hat, axis=1),label='Timepoint ' + str(time_pt + 1))  # , color='green')
+    for time_pt in range(len(ls_time_pts)):
+        X_i_true = copy.deepcopy(Xtrue[:, :, time_pt]).reshape(n_genes, -1)
+        if time_pt == 1:
+            plt.plot(np.mean(X_i_true, axis=1) / np.std(X_i_true, axis=1), '.', color='blue',label = 'All timepoints \n before filtering')
+        else:
+            plt.plot(np.mean(X_i_true, axis=1) / np.std(X_i_true, axis=1), '.', color='blue')
+    plt.legend()
+    plt.show()
+    print('Denoising using PCA is complete')
+    return dict_OUT
 
 
 
