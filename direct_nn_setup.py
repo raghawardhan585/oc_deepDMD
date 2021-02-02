@@ -27,13 +27,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 60
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 53
 NO_OF_ITERATIONS = 1
 
 dict_hp={}
 dict_hp['x']={}
 dict_hp['x']['ls_nn_layers'] = [5,6,7,8]
-dict_hp['x']['ls_nn_nodes'] = [2,3,4,5,6]
+dict_hp['x']['ls_nn_nodes'] = [4,5,6,7,8]
 # dict_hp['x']['ls_nn_layers'] = [7,8,9]
 # dict_hp['x']['ls_nn_nodes'] = [3,6,9]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
@@ -127,14 +127,14 @@ for items in ls_files:
 ##
 dn.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,20))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 10
 # ls_process_runs = list(range(12,24))
 
 #
-# SYSTEM_NO = 60
-# # ls_process_runs = list(range(0,20))
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 7
 # ls_process_runs = list(range(20,32))
 
