@@ -132,14 +132,15 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
         tf.reset_default_graph()
         sess.close()
     # Saving the dict_predictions folder
-    with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle', 'wb') as handle:
+    with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'wb') as handle:
         pickle.dump(dict_predictions, handle)
     return
 
 def get_error(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        all_errors = np.concatenate([np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled']),np.square(dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_one_step_scaled'])],axis=1)
+        # all_errors = np.concatenate([np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled']),np.square(dict_XY[i]['Y_scaled'] - dict_XY[i]['Y_one_step_scaled'])],axis=1)
+        all_errors = np.square(dict_XY[i]['X_scaled'] - dict_XY[i]['X_one_step_scaled'])
         J_error = np.append(J_error, np.mean(all_errors))
     # J_error = np.log10(np.max(J_error))
     J_error = np.mean(J_error)
