@@ -149,7 +149,7 @@ dn.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/dict_predictions_HAMMERSTEIN.pickle','rb') as handle:
+with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle','rb') as handle:
     d = pickle.load(handle)
 N_CURVES = len(d[list(d.keys())[0]].keys())
 ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
@@ -170,6 +170,7 @@ opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run: ', opt_run)
 ##
 dopt = d[opt_run]
+del d
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 3
     n_cols = 3
@@ -244,7 +245,8 @@ random.shuffle(ls_test_curves)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=True)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=False,one_step=False)
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
-f1 = plot_fit_XY({k:dopt[k] for k in ls_test_curves[0:9]} ,plot_params,ls_train_curves[0:9],scaled= False,one_step=False)
+f1 = plot_fit_XY({k:dopt[k] for k in ls_test_curves[0:9]} ,plot_params,ls_test_curves[0:9],scaled= False,one_step=False)
+# f1 = plot_fit_XY({k:dopt[k] for k in ls_train_curves[0:9]} ,plot_params,ls_train_curves[0:9],scaled= False,one_step=False)
 
 
 # for i in range(200,300):#d[28].keys():
