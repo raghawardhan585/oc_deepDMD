@@ -47,22 +47,22 @@ best_test_error = np.inf
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 1000}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 1000}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1000}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 20000, 'batch_size': 1000}
-ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1000}
 # ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 20000, 'batch_size': 1000}
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 1000}
-ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# # ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# # ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 1000}
 # ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
-# ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# # ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
+# # ls_dict_training_params.append(dict_training_params)
 
 
 sess = tf.InteractiveSession()
@@ -75,8 +75,8 @@ def load_pickle_data(file_path,LEARN_DYNAMICS= True):
         output_vec = pickle.load(handle)
     Xp = output_vec['Xp']
     Xf = output_vec['Xf']
-    Yf = output_vec['Yf']
-    return Xp,Xf,Yf
+    Yp = output_vec['Yp']
+    return Xp,Xf,Yp
 
 def weight_variable(shape):
     std_dev = math.sqrt(3.0 / (shape[0] + shape[1]))
@@ -165,7 +165,7 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
 
 def objective_func_state(dict_feed,psix):
     dict_model_perf_metrics ={}
-    y_true = tf.concat([dict_feed['xf'],dict_feed['yf']],axis=1)
+    y_true = tf.concat([dict_feed['xf'],dict_feed['yp']],axis=1)
     y_prediction_error = y_true - psix
     dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(y_prediction_error))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
@@ -202,8 +202,8 @@ def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
 
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories, dict_run_info,x_params_list={}):
-    fed_dict_train ={dict_feed['xp']: dict_train['Xp'],dict_feed['xf']: dict_train['Xf'],dict_feed['yf']: dict_train['Yf']}
-    fed_dict_valid = {dict_feed['xp']: dict_valid['Xp'],dict_feed['xf']: dict_valid['Xf'], dict_feed['yf']: dict_valid['Yf']}
+    fed_dict_train ={dict_feed['xp']: dict_train['Xp'],dict_feed['xf']: dict_train['Xf'],dict_feed['yp']: dict_train['Yp']}
+    fed_dict_valid = {dict_feed['xp']: dict_valid['Xp'],dict_feed['xf']: dict_valid['Xf'], dict_feed['yp']: dict_valid['Yp']}
     print(dict_model_metrics['MSE'].eval(feed_dict = fed_dict_train))
     # --------
     try :
@@ -245,7 +245,7 @@ def train_net_v2(dict_train, feed_dict_train, feed_dict_valid, dict_feed, dict_m
             else:
                 # Last run with the residual data
                 train_indices = all_train_indices[run_i * dict_run_params['batch_size']: N_train_samples]
-            fed_dict_train_curr = {dict_feed['xp']: dict_train['Xp'][train_indices],dict_feed['xf']: dict_train['Xf'][train_indices],dict_feed['yf']: dict_train['Yf'][train_indices],dict_feed['step_size']:  dict_run_params['step_size_val']}
+            fed_dict_train_curr = {dict_feed['xp']: dict_train['Xp'][train_indices],dict_feed['xf']: dict_train['Xf'][train_indices],dict_feed['yp']: dict_train['Yp'][train_indices],dict_feed['step_size']:  dict_run_params['step_size_val']}
             dict_model_metrics['optimizer'].run(feed_dict=fed_dict_train_curr)
         # After training 1 epoch
         training_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
@@ -294,10 +294,10 @@ if len(sys.argv)>5:
 
 
 data_file = data_directory + data_suffix
-Xp,Xf,Yf = load_pickle_data(data_file)
+Xp,Xf,Yp = load_pickle_data(data_file)
 num_states = len(Xp[0])
 num_all_samples = len(Xp)
-num_outputs = len(Yf[0])
+num_outputs = len(Yp[0])
 
 # Train/Test Split for Benchmarking Forecasting Later
 num_trains = np.int(num_all_samples * TRAIN_PERCENT / 100)
@@ -309,8 +309,8 @@ dict_train['Xp'] = Xp[train_indices]
 dict_valid['Xp'] = Xp[valid_indices]
 dict_train['Xf'] = Xf[train_indices]
 dict_valid['Xf'] = Xf[valid_indices]
-dict_train['Yf'] = Yf[train_indices]
-dict_valid['Yf'] = Yf[valid_indices]
+dict_train['Yp'] = Yp[train_indices]
+dict_valid['Yp'] = Yp[valid_indices]
 
 # Hidden layer creation
 hidden_vars_list = np.asarray([n_nodes] * n_layers)
@@ -320,7 +320,7 @@ hidden_vars_list[-1] = num_states + num_outputs  # The last hidden layer being d
 print("[INFO] Number of total samples: " + repr(num_all_samples))
 print("[INFO] Observable dimension of a sample: " + repr(num_states))
 print("[INFO] X shape : " + repr(Xp.shape))
-print("[INFO] Y shape : " + repr(Yf.shape))
+print("[INFO] Y shape : " + repr(Yp.shape))
 print("Number of training snapshots: " + repr(len(train_indices)))
 print("Number of validation snapshots: " + repr(len(valid_indices)))
 print("[INFO] STATE - hidden_vars_list: " + repr(hidden_vars_list))
@@ -333,7 +333,7 @@ with tf.device(DEVICE_NAME):
     # Feed Variable definitions
     xp_feed = tf.placeholder(tf.float32, shape=[None, num_states])
     xf_feed = tf.placeholder(tf.float32, shape=[None, num_states])
-    yf_feed = tf.placeholder(tf.float32, shape=[None, num_outputs])
+    yp_feed = tf.placeholder(tf.float32, shape=[None, num_outputs])
     step_size_feed = tf.placeholder(tf.float32, shape=[])
     # Tensorflow graph
     Wx1_list, bx1_list = initialize_Wblist(num_states, hidden_vars_list)
@@ -343,7 +343,7 @@ with tf.device(DEVICE_NAME):
     # Psi variables
     psixz_list, psix = initialize_tensorflow_graph(x_params_list, xp_feed)
     # Objective Function Variables
-    dict_feed = { 'xp': xp_feed, 'xf': xf_feed, 'yf': yf_feed, 'step_size': step_size_feed}
+    dict_feed = { 'xp': xp_feed, 'xf': xf_feed, 'yp': yp_feed, 'step_size': step_size_feed}
     # First optimization
     print('---------    TRAINING BEGINS   ---------')
     # print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
@@ -361,9 +361,9 @@ with tf.device(DEVICE_NAME):
 
 dict_psi = {'f': psix[:,0:num_states], 'g': psix[:,num_states:]}
 fed_dict_train = {dict_feed['xp']: dict_train['Xp'], dict_feed['xf']: dict_train['Xf'],
-                  dict_feed['yf']: dict_train['Yf']}
+                  dict_feed['yp']: dict_train['Yp']}
 fed_dict_valid = {dict_feed['xp']: dict_valid['Xp'], dict_feed['xf']: dict_valid['Xf'],
-                  dict_feed['yf']: dict_valid['Yf']}
+                  dict_feed['yp']: dict_valid['Yp']}
 # train_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
 # valid_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
 
