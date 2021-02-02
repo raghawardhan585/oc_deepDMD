@@ -1,0 +1,50 @@
+[INFO] Number of total samples: 19800
+[INFO] Observable dimension of a sample: 7
+[INFO] X shape : (19800, 7)
+[INFO] Y shape : (19800, 1)
+Number of training snapshots: 9900
+Number of validation snapshots: 9900
+[INFO] STATE - hidden_vars_list: array([4, 4, 4, 4, 8])
+0.5222329678670935
+0.6123724356957945
+0.6123724356957945
+0.6123724356957945
+0.5
+---------    TRAINING BEGINS   ---------
+1.8326219
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-06
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  1000
+--------------------------------------
+Epoch No:  1000  |   Training error:  0.021136336
+                   Validation error:  0.024193421
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.018114159
+                   Validation error:  0.020970173
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.018114159
+Current Validation Error      : 0.020970173
+0.018114159
+---   TRAINING COMPLETE   ---
+------ ------ -----
+----- Run Info ----
+------ ------ -----
+                                 0          1          2          3          4
+x_hidden_variable_list           4          4          4          4          8
+activation flag                  2          2          2          2          2
+activation function            elu        elu        elu        elu        elu
+no of epochs                  2000       2000       2000       2000       2000
+batch size                    1000       1000       1000       1000       1000
+step size                      0.5        0.5        0.5        0.5        0.5
+training error           0.0181142  0.0181142  0.0181142  0.0181142  0.0181142
+validation error         0.0209702  0.0209702  0.0209702  0.0209702  0.0209702
+r^2 training accuracy      96.4555    96.4555    96.4555    96.4555    96.4555
+r^2 validation accuracy    96.1816    96.1816    96.1816    96.1816    96.1816
+MSE training             0.0181142  0.0181142  0.0181142  0.0181142  0.0181142
+MSE validation           0.0209702  0.0209702  0.0209702  0.0209702  0.0209702
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
