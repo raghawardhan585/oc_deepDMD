@@ -133,13 +133,13 @@ dn.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(12,24))
 
 #
-# SYSTEM_NO = 60
-# ls_process_runs = list(range(0,20))
+SYSTEM_NO = 60
+ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 7
 # ls_process_runs = list(range(20,32))
 
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,20))
+# SYSTEM_NO = 53
+# ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 8
 # ls_process_runs = list(range(20,29))
 # ls_process_runs = list(range(0,29))
