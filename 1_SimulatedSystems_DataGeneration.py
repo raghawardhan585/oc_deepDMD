@@ -269,6 +269,30 @@ oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
 
+
+# ==========================
+## System 6 - Duffing Oscillator
+# ==========================
+# System Parameters
+alpha = 1
+beta = -1
+delta =0.5
+gamma = 0.05
+
+x_min= np.asarray([-2,-2]) # original
+x_max= np.asarray([2,2])
+sys_params_duffosc = (alpha,beta,delta)
+# Simulation Parameters
+sampling_time = 0.1
+simulation_time = 15
+N_CURVES = 300
+ls_prediction_steps=[1]
+sys_params = {'sys_params_duffosc': sys_params_duffosc , 'gamma': gamma ,'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+SYSTEM_NO = 80
+oc.data_gen_sys_duffing_oscillator(sys_params, N_CURVES,SYSTEM_NO)
+oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
+oc.plot_training_valid_test_states(SYSTEM_NO)
+
 #-----------------------------------------------------------------------------------------------------------------------
 ## Bash Script Generator
 #

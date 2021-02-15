@@ -15,7 +15,8 @@ import seaborn as sb
 
 ##
 # To get the RNAseq and OD data to RAW format of X and Y data
-# rnaf.rnaforganize_RNAseq_OD_to_RAWDATA()
+rnaf.organize_RNAseq_OD_to_RAWDATA(diff_Y = True)
+# rnaf.organize_RNAseq_OD_to_RAWDATA(diff_Y = False)
 
 ## Open the RAW datafile
 
@@ -23,21 +24,25 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
     dict_DATA_ORIGINAL = pickle.load(handle)
 # dict_DATA = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA, MEAN_TPM_THRESHOLD = 1, ALL_CONDITIONS= ['MX'])
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
-dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=True)
+# dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
 
 
 # dict_DATA_filt1 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt0, MEAN_TPM_THRESHOLD = 100)
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
-dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10,ALL_CONDITIONS=['MX'])['MX']
+dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
 # dict_MAX = dict_DATA
 # MEAN THRES = 100
 ##
 curve = 0
 f,ax = plt.subplots(7,1,sharex=True,figsize=(30,14))
 for time_pt in range(1,8):
+    # for curve in range(16):
     ax[time_pt-1].plot(np.array(dict_DATA_ORIGINAL['MX'][curve]['df_X_TPM'].loc[:, time_pt]))
-    ax[time_pt - 1].plot(np.array(dict_DATA_max_denoised['MX'][curve]['df_X_TPM'].loc[:,time_pt]))
+    # ax[time_pt - 1].plot(np.array(dict_DATA_max_denoised['MX'][curve]['df_X_TPM'].loc[:,time_pt]))
+    # ax[time_pt - 1].plot(np.array(dict_MAX[curve]['df_X_TPM'].loc[:, time_pt]))
+    ax[time_pt - 1].set_xlim([1200,1250])
+    ax[time_pt - 1].set_ylim([0, 1000])
     ax[time_pt-1].set_title('Time Point : ' + str(time_pt),fontsize=24)
 ax[-1].set_xlabel('Gene Locus Tag')
 f.show()
@@ -81,7 +86,7 @@ if os.path.exists(storage_folder):
 else:
     os.mkdir(storage_folder)
 
-_, dict_Scaler, _ = oc.scale_train_data(dict_DMD1, 'standard')
+_, dict_Scaler, _ = oc.scale_train_data(dict_DMD1, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = False, WITH_MEAN_FOR_STANDARD_SCALER_Y = False)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
     pickle.dump(dict_Scaler, handle)
 dict_DATA_OUT = oc.scale_data_using_existing_scaler_folder(dict_DMD1, SYSTEM_NO)
@@ -134,7 +139,7 @@ def REMOVE_BIAS_COLUMN(X_IN,ADD_BIAS):
     return X_OUT
 
 
-SYSTEM_NO = 102
+SYSTEM_NO = 104
 ADD_BIAS = False
 data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 with open(data_path,'rb') as handle:
@@ -188,8 +193,10 @@ for i in range(nPC_opt_A):
 # TODO - Might have to alter the last row of A
 
 
-E = np.linalg.eigvals(A_hat_opt)
+
 ##
+E = np.linalg.eigvals(A_hat_opt)
+
 fig = plt.figure(figsize=(3.5,6))
 ax = fig.add_subplot(2, 1, 2)
 circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
@@ -502,7 +509,29 @@ plt.title('Modes as a function of time')
 plt.xlabel('Time [hr]')
 plt.show()
 
+## Attempting Regularization
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
+import numpy as np
+from sklearn.metrics import make_scorer,r2_score
+# X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3)
+##
+# kf = KFold(n_splits=3)
+X = np.random.normal(0,5,size=(100,3))
+Y = np.matmul(X,np.random.normal(0,1,size=(3,3))) + np.random.normal(0,1,size=(100,3))
+kf = KFold(n_splits=5,shuffle=False,random_state=None)
+# for train_index,test_index in kf.split(X):
+#     X_train,X_test,Y_train,Y_test = X[train_index,:],X[test_index,:])
 
+
+# cross_val_score(Ridge(),X,Y)
+# my_scorer = make_scorer(r2_score,multioutput='variance_weighted')
+my_scorer = make_scorer(r2_score,multioutput='uniform_average')
+cross_val_score(LinearRegression(fit_intercept=False),X,Y,cv=kf.split(X), scoring= my_scorer)
+
+##
 
 
 

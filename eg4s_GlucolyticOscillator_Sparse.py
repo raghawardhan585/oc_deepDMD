@@ -209,6 +209,7 @@ def eig_func_through_time(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_M
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
     return Phi, koop_modes, comp_modes, comp_modes_conj
+
 # def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
 #     sess3 = tf.InteractiveSession()
 #     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -309,10 +310,23 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
     print(df_r2)
     return df_r2
 
+def get_output_modes(A,C,X,nPC=-1):
+    U,S,_ = np.linalg.svd(X)
+    if nPC>0:
+        Ur = U[:,0:nPC]
+    else:
+        Ur = U
+    Atilde = np.matmul(Ur.T,np.matmul(A,Ur))
+    e,v = np.linalg.eig(Atilde)
+    E,V,_,__ = resolve_complex_right_eigenvalues(np.diag(e), v)
+    Wout = np.matmul(C,np.matmul(Ur,V))
+    return Wout
+
 ##
 dict_params = {}
 sess1 = tf.InteractiveSession()
 dict_params['Seq'] = get_dict_param(run_folder_name,SYS_NO,sess1)
+output_modes_seq =  get_output_modes(dict_params['Seq']['KxT_num'].T,dict_params['Seq']['WhT_num'].T,dict_params['Seq']['psixpT'].eval(feed_dict = {dict_params['Seq']['xpT_feed'] : dict_oc_data['Xp']}).T)
 # df_r2_SEQ, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 Phi_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ = eig_func_through_time(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
@@ -366,7 +380,7 @@ sb.heatmap(koop_modes_DEEPDMD,cmap = "YlOrBr",vmin=0.0)
 plt.show()
 
 
-## Figure 1 - 1 step prediction comparisons
+##
 # CURVE_NO = 265
 FONT_SIZE = 14
 DOWNSAMPLE = 2
@@ -376,7 +390,7 @@ TRUTH_MARKER_SIZE = 10
 TICK_FONT_SIZE = 9
 HEADER_SIZE = 21
 plt.figure(figsize=(15,5))
-plt.subplot2grid((6,4), (0,0), colspan=1, rowspan=4)
+
 plt.rcParams["axes.edgecolor"] = "black"
 plt.rcParams["axes.linewidth"] = 1
 plt.rcParams["font.family"] = "Times New Roman"
@@ -390,6 +404,10 @@ pl_max = 0
 pl_min = 0
 x_val_x = np.arange(0,n_samples)* n_outputs
 x_val_y = np.arange(0,n_samples* n_outputs)
+
+
+# # Figure 1 - 1 step prediction comparisons
+# plt.subplot2grid((6,4), (0,0), colspan=1, rowspan=4)
 # for i in range(n_states):
 #     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
 #     l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
@@ -428,55 +446,56 @@ x_val_y = np.arange(0,n_samples* n_outputs)
 # plt.tick_params(axis ='y', labelsize = TICK_FONT_SIZE)
 # plt.title('(a)',fontsize = HEADER_SIZE,loc='left')
 # plt.text(5,2.8,'[1 - step]',fontsize = FONT_SIZE)
-
-
-
-
 #
-# Figure 2 - n -step prediction comparisons
-plt.subplot2grid((6,4), (0,1), colspan=1, rowspan=4)
-n_states = d_SEQ[CURVE_NO]['X'].shape[1]
-n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
-pl_max = 0
-pl_min = 0
-for i in range(n_states):
-    x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
-    # l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
-    plt.plot(x_val_x[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
-    plt.plot(x_val_x,d_SEQ[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
-    plt.plot(x_val_x,d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
-    # plt.plot(d_HAM[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
-    pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
-    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
-for i in range(1):
-    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
-    # plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
-    plt.plot(x_val_y[0::DOWNSAMPLE_Y],(d_SEQ[CURVE_NO]['Y']/y_scale).reshape(-1)[0::DOWNSAMPLE_Y], '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
-    plt.plot(x_val_y, (d_SEQ[CURVE_NO]['Y_est_n_step']/y_scale).reshape(-1), linestyle = 'dashed', color=colors[n_states+i])
-    plt.plot(x_val_y, (d_DDMD[CURVE_NO]['Y_n_step'] / y_scale).reshape(-1), linestyle='solid', color=colors[n_states+i])
-    # plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
-    pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
-    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
-# l1 = plt.legend(loc='lower right',fontsize = 14)
-# plt.gca().add_artist(l1)
-a1, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
-a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Seq ocdDMD',color = 'grey')
-a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='Dir ocdDMD',color = 'grey')
-a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hamm nn-model',color = 'grey')
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
-# l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
-plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
-# plt.ylabel('States and Outputs\n[n -step prediction]',fontsize = FONT_SIZE)
-# plt.title('(b)',fontsize = FONT_SIZE)
-plt.ylim([pl_min-0.1,pl_max+0.1])
-plt.xticks(fontsize = TICK_FONT_SIZE)
-plt.yticks(fontsize = TICK_FONT_SIZE)
-plt.xlim([-3,220])
-plt.ylim([-0.1,3.1])
-plt.yticks([])
-plt.text(5,2.8,'[n - step]',fontsize = FONT_SIZE)
-plt.show()
-
+#
+#
+#
+# #
+# # Figure 2 - n -step prediction comparisons
+# plt.subplot2grid((6,4), (0,1), colspan=1, rowspan=4)
+# n_states = d_SEQ[CURVE_NO]['X'].shape[1]
+# n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
+# pl_max = 0
+# pl_min = 0
+# for i in range(n_states):
+#     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
+#     # l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+#     plt.plot(x_val_x[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
+#     plt.plot(x_val_x,d_SEQ[CURVE_NO]['X_est_n_step'][:, i]/x_scale,linestyle =  'dashed', color=colors[i])
+#     plt.plot(x_val_x,d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
+#     # plt.plot(d_HAM[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+#     pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
+#     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
+# for i in range(1):
+#     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
+#     # plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + ('$[x10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+#     plt.plot(x_val_y[0::DOWNSAMPLE_Y],(d_SEQ[CURVE_NO]['Y']/y_scale).reshape(-1)[0::DOWNSAMPLE_Y], '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
+#     plt.plot(x_val_y, (d_SEQ[CURVE_NO]['Y_est_n_step']/y_scale).reshape(-1), linestyle = 'dashed', color=colors[n_states+i])
+#     plt.plot(x_val_y, (d_DDMD[CURVE_NO]['Y_n_step'] / y_scale).reshape(-1), linestyle='solid', color=colors[n_states+i])
+#     # plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
+#     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+#     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+# # l1 = plt.legend(loc='lower right',fontsize = 14)
+# # plt.gca().add_artist(l1)
+# a1, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
+# a2, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Seq ocdDMD',color = 'grey')
+# a3, = plt.plot([], linestyle ='solid',linewidth = 1,label='Dir ocdDMD',color = 'grey')
+# a4, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Hamm nn-model',color = 'grey')
+# plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
+# # l2 = plt.legend((a1,a2,a3),('Truth','Sequential oc-deepDMD','direct oc-deepDMD','Hammerstein model'),loc = "upper right",fontsize = FONT_SIZE)
+# plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
+# # plt.ylabel('States and Outputs\n[n -step prediction]',fontsize = FONT_SIZE)
+# # plt.title('(b)',fontsize = FONT_SIZE)
+# plt.ylim([pl_min-0.1,pl_max+0.1])
+# plt.xticks(fontsize = TICK_FONT_SIZE)
+# plt.yticks(fontsize = TICK_FONT_SIZE)
+# plt.xlim([-3,220])
+# plt.ylim([-0.1,3.1])
+# plt.yticks([])
+# plt.text(5,2.8,'[n - step]',fontsize = FONT_SIZE)
+# plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
+#
+# # Figure 3 - n -step prediction comparisons
 # plt.subplot2grid((6,4), (0,2), colspan=1, rowspan=4)
 # # plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Seq ocdDMD')
 # # plt.plot(df_r2_DEEPDMD.index,df_r2_DEEPDMD.mean(axis=1),color = colors[0],label='Dir ocdDMD', linewidth = LINE_WIDTH_c_d )
@@ -484,40 +503,41 @@ plt.show()
 # plt.bar(df_r2_SEQ.columns.to_numpy(),df_r2_SEQ.to_numpy().reshape(-1),color = colors[1],label='Seq ocdDMD')
 # plt.plot(df_r2_DEEPDMD.columns.to_numpy(),df_r2_DEEPDMD.to_numpy().reshape(-1),color = colors[0],label='dir ocdDMD', linewidth = LINE_WIDTH_c_d )
 # # plt.plot(df_r2_HAM.columns.to_numpy(),df_r2_HAM.to_numpy().reshape(-1),color = colors[2],label='Hamm nn-model',linewidth = LINE_WIDTH_c_d )
-# plt.xlim([0.5,50.5])
+# plt.xlim([0.5,10.5])
 # plt.ylim([85,100])
-# STEPS = 10
+# STEPS = 4
 # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =2)
 # plt.xticks(fontsize = TICK_FONT_SIZE)
 # plt.yticks(fontsize = TICK_FONT_SIZE)
-# plt.xticks(ticks=np.arange(10, 51, step=STEPS),labels=range(10,51,STEPS))
+# plt.xticks(ticks=np.arange(STEPS, 21, step=STEPS),labels=range(STEPS,21,STEPS))
 # plt.xlabel('# Prediction Steps',fontsize = FONT_SIZE)
 # plt.ylabel('$r^2$(in %)',fontsize = FONT_SIZE)
-# plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
-
-
-
-
-# plt.subplot2grid((6,4), (0,3), colspan=1, rowspan=4)
-# p=0
-# for i in range(Phi_SEQ.shape[0] - 1):
-#     if i in comp_modes_conj_SEQ:
-#         continue
-#     elif i in comp_modes_SEQ:
-#         # plt.plot(Phi[i, :],label = 'lala')
-#         plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = LINE_WIDTH_c_d )
-#         p = p+1
-#     else:
-#         plt.plot(Phi_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = LINE_WIDTH_c_d )
-#         p = p+1
-# plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
-# plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
-# plt.ylabel('$\phi[k]$',fontsize = FONT_SIZE)
 # plt.title('(c)',fontsize = HEADER_SIZE,loc='left')
-# plt.xticks(fontsize = TICK_FONT_SIZE)
-# plt.yticks(fontsize = TICK_FONT_SIZE)
 
 
+
+
+
+plt.subplot2grid((6,4), (0,3), colspan=1, rowspan=4)
+p=0
+for i in range(Phi_SEQ.shape[0] - 1):
+    if i in comp_modes_conj_SEQ:
+        continue
+    elif i in comp_modes_SEQ:
+        # plt.plot(Phi[i, :],label = 'lala')
+        plt.plot(Phi_SEQ[i,:],label='$\phi_{{{},{}}}(x)$'.format(i+1,comp_modes_conj_SEQ[comp_modes_SEQ.index(i)]+1), linewidth = LINE_WIDTH_c_d )
+        p = p+1
+    else:
+        plt.plot(Phi_SEQ[i, :], label='$\phi_{{{}}}(x)$'.format(i + 1), linewidth = LINE_WIDTH_c_d )
+        p = p+1
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
+plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
+plt.ylabel('$\phi[k]$',fontsize = FONT_SIZE)
+plt.title('(d)',fontsize = HEADER_SIZE,loc='left')
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks(fontsize = TICK_FONT_SIZE)
+
+plt.show()
 
 
 

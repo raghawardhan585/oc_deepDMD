@@ -98,9 +98,14 @@ def process_microplate_reader_txtfile(filename):
     return df_OD_DATA
 
 
+def get_dataframe_with_differenced_data(df_IN):
+    df_indices = list(df_IN.index)
+    df_columns = list(df_IN.columns)
+    np_diff = np.concatenate([np.array([0]), np.diff(df_IN.to_numpy().T.reshape(-1))], axis=0)
+    df_OUT = pd.DataFrame(np_diff.reshape(len(df_columns),len(df_indices)).T,columns = df_columns,index = df_indices)
+    return df_OUT
 
-
-def organize_RNAseq_OD_to_RAWDATA():
+def organize_RNAseq_OD_to_RAWDATA(diff_Y = True):
     # Processing the OD data - Inupts are IGNORED
     # TODO - Include the inputs of Casein and Glucose if need be for later
     df_OD_RAW = process_microplate_reader_txtfile(OD_FILE)
@@ -157,11 +162,18 @@ def organize_RNAseq_OD_to_RAWDATA():
             # Sort the dataframes
             dict_DATA[cond][curve_no]['df_X_TPM'] = dict_DATA[cond][curve_no]['df_X_TPM'].reindex(sorted( dict_DATA[cond][curve_no]['df_X_TPM'].columns),axis=1)
             # Assign the output
-            dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:,dict_DATA[cond][curve_no]['df_X_TPM'].columns])
+            dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].loc[:,np.int(np.min(dict_DATA[cond][curve_no]['df_X_TPM'].columns))-1].to_numpy()[-1]
+            if diff_Y:
+                df_intermediate = get_dataframe_with_differenced_data(dict_OD[cond][curve_no])
+                dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(df_intermediate.loc[:,dict_DATA[cond][curve_no]['df_X_TPM'].columns])
+            else:
+                dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns])
     # Saving the data
     with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYData_RAW.pickle','wb') as handle:
         pickle.dump(dict_DATA,handle)
     return
+
+
 
 
 # ====================================================================================================================
@@ -189,6 +201,8 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
     temp_mean = temp_np.mean(axis=1)
     ls_GENE_ALLOW2 = [ls_GENE_ALLOW[i] for i in range(len(ls_GENE_ALLOW)) if temp_mean[i] > MEAN_TPM_THRESHOLD]
     ls_GENE_REMOVE2 = list(set(ls_GENE_ALLOW) - set(ls_GENE_ALLOW2))
+    for items in ls_GENE_REMOVE2:
+        print(items)
     print('The number of removed genes:', len(ls_GENE_REMOVE2))
     print('Remaining Genes:', len(ls_GENE_ALLOW2))
     print('---------------------------------------------------')
@@ -295,15 +309,44 @@ def denoise_using_PCA(dict_IN,PCA_THRESHOLD = 99,NORMALIZE = False,PLOT_SCREE=Fa
     print('Denoising using PCA is complete')
     return dict_OUT
 
+def get_gene_conversion_info():
+    RNA_FILE_LOCATION = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/raw_rnaseq_files'
+    ls_RNA_files = os.listdir(RNA_FILE_LOCATION)
+    df_temp = pd.read_csv(RNA_FILE_LOCATION + '/' + ls_RNA_files[0])
+    df_temp.index = df_temp.locus_tag
+    df_temp = df_temp.loc[:,['Name', 'protein_id', 'gene']]
+    return df_temp
+
+from bioservices import UniProt
+# ====================================================================================================================
+# Functions to query Uniprot
+# ====================================================================================================================
+# The file format is ALWAYS set to tab delimited
+# For the valid column names refer to the website: https://www.uniprot.org/help/uniprotkb_column_names
 
 
-# from bioservices import UniProt
-# # ====================================================================================================================
-# # Functions to query Uniprot
-# # ====================================================================================================================
-# # The file format is ALWAYS set to tab delimited
-# # For the valid column names refer to the website: https://www.uniprot.org/help/uniprotkb_column_names
-# def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123',
+def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', search_columns='entry name,length,id, genes,comment(FUNCTION)'):
+    for locus_tag in ls_all_locus_tags:#ls_all_locus_tags[0:-1]:
+        query_search = locus_tag + ' AND ' + species_id
+        up = UniProt()
+        search_result = up.search(query_search, frmt='tab',columns=search_columns)
+
+        # Creating the dataframe with the obtained entries
+        # up - uniprot
+        str_up_ALL = search_result.split('\n')
+        ls_up = []
+        for each_line in str_up_ALL[1:]:
+            ls_up.append(each_line.split('\t'))
+        df_inter = pd.DataFrame(ls_up[0:-1])
+        df_inter.columns = str_up_ALL[0].split('\t')
+        try:
+            df_up = pd.concat([df_up,df_inter],axis=0)
+        except:
+            df_up = copy.deepcopy(df_inter)
+    return df_up
+
+
+# def get_gene_Uniprot_DATA_old(species_id='KT2440', ls_all_locus_tags='PP_0123',
 #                           search_columns='entry name,length,id, genes,comment(FUNCTION)'):
 #     query_search =''
 #     for locus_tag in ls_all_locus_tags[0:-1]:
@@ -311,7 +354,7 @@ def denoise_using_PCA(dict_IN,PCA_THRESHOLD = 99,NORMALIZE = False,PLOT_SCREE=Fa
 #     query_search = query_search + ls_all_locus_tags[-1] + ' AND ' + species_id
 #     up = UniProt()
 #     search_result = up.search(query_search, frmt='tab',columns=search_columns)
-
+#
 #     # Creating the dataframe with the obtained entries
 #     # up - uniprot
 #     str_up_ALL = search_result.split('\n')
