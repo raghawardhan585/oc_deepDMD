@@ -32,8 +32,8 @@ NO_OF_ITERATIONS_PER_GPU = 1
 NO_OF_ITERATIONS_IN_CPU = 1
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [3,4,5,6]
-dict_hp['ls_nn_layers'] = [3,4,5,6,7]
+dict_hp['ls_dict_size'] = [7,8,9]
+dict_hp['ls_nn_layers'] = [8,9,10]
 dict_hp['ls_nn_nodes'] = [6,9,12]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
@@ -231,7 +231,13 @@ ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 # f1 = plot_fit_XY(d[opt_run],plot_params,ls_train_curves[0:20],scaled=True,one_step=False)
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
 
+## Optimal hyperparameters
 
+with open(sys_folder_name + '/deepDMD/RUN_' + str(opt_run) + '/run_info.pickle','rb') as handle:
+    run_info_opt = pickle.load(handle)
+x_nn_opt = run_info_opt[0]['x_hidden_variable_list']
+dict_hyperparam_opt = {'n_layers': len(x_nn_opt), 'n_nodes': x_nn_opt[0], 'n_dictionary': x_nn_opt[-1]}
+print(dict_hyperparam_opt)
 ##
 
 
