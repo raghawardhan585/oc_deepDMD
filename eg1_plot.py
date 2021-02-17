@@ -58,7 +58,7 @@ with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as hand
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
 with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
-    d_NN = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
+    d_NN = pickle.load(handle)[RUN_NN]
 
 ##
 ls_steps = list(range(1,15,1))
@@ -107,34 +107,42 @@ def phase_portrait_data():
         PHI_theo[i, j, :] = np.matmul(Wi_t, psiXT_i.T).reshape((1, 1, -1))
         PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
     return dict_phase_data, PHI_theo, PSI_theo
-def get_dict_param(run_folder_name_curr,SYS_NO,sess):
+def get_dict_param(run_folder_name_curr,SYS_NO,sess,nn=False):
     dict_p = {}
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_curr + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
     saver.restore(sess, tf.train.latest_checkpoint(run_folder_name_curr))
-    try:
-        psixpT = tf.get_collection('psixpT')[0]
-        psixfT = tf.get_collection('psixfT')[0]
-        xpT_feed = tf.get_collection('xpT_feed')[0]
-        xfT_feed = tf.get_collection('xfT_feed')[0]
-        KxT = tf.get_collection('KxT')[0]
-        KxT_num = sess.run(KxT)
-        dict_p['psixpT'] = psixpT
-        dict_p['psixfT'] = psixfT
-        dict_p['xpT_feed'] = xpT_feed
-        dict_p['xfT_feed'] = xfT_feed
-        dict_p['KxT_num'] = KxT_num
-    except:
-        print('State info not found')
-    try:
-        ypT_feed = tf.get_collection('ypT_feed')[0]
-        yfT_feed = tf.get_collection('yfT_feed')[0]
-        dict_p['ypT_feed'] = ypT_feed
-        dict_p['yfT_feed'] = yfT_feed
-        WhT = tf.get_collection('WhT')[0];
-        WhT_num = sess.run(WhT)
-        dict_p['WhT_num'] = WhT_num
-    except:
-        print('No output info found')
+    if not nn:
+        try:
+            psixpT = tf.get_collection('psixpT')[0]
+            psixfT = tf.get_collection('psixfT')[0]
+            xpT_feed = tf.get_collection('xpT_feed')[0]
+            xfT_feed = tf.get_collection('xfT_feed')[0]
+            KxT = tf.get_collection('KxT')[0]
+            KxT_num = sess.run(KxT)
+            dict_p['psixpT'] = psixpT
+            dict_p['psixfT'] = psixfT
+            dict_p['xpT_feed'] = xpT_feed
+            dict_p['xfT_feed'] = xfT_feed
+            dict_p['KxT_num'] = KxT_num
+        except:
+            print('State info not found')
+        try:
+            ypT_feed = tf.get_collection('ypT_feed')[0]
+            yfT_feed = tf.get_collection('yfT_feed')[0]
+            dict_p['ypT_feed'] = ypT_feed
+            dict_p['yfT_feed'] = yfT_feed
+            WhT = tf.get_collection('WhT')[0];
+            WhT_num = sess.run(WhT)
+            dict_p['WhT_num'] = WhT_num
+        except:
+            print('No output info found')
+    else:
+        try:
+            dict_p['xpT_feed'] = tf.get_collection('xp_feed')[0]
+            dict_p['f'] = tf.get_collection('f')[0]
+            dict_p['g'] = tf.get_collection('g')[0]
+        except:
+            print('Neural network model info not found')
     return dict_p
 def r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params_curr):
     n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
@@ -275,72 +283,117 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
     return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, eval
-def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
-    sess3 = tf.InteractiveSession()
-    saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-    saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
-    dict_params_x = {}
-    dict_params_x['psix'] = tf.get_collection('psix')[0]
-    dict_params_x['x_feed'] = tf.get_collection('x_feed')[0]
-    dict_params_x['AT'] = tf.get_collection('AT')[0]
-    dict_params_x['AT_num'] = sess3.run(dict_params_x['AT'])
-    # Initialization
+# def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
+#     sess3 = tf.InteractiveSession()
+#     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+#     saver.restore(sess3, tf.train.latest_checkpoint(run_folder_name_HAM_X))
+#     dict_params_x = {}
+#     dict_params_x['psix'] = tf.get_collection('psix')[0]
+#     dict_params_x['x_feed'] = tf.get_collection('x_feed')[0]
+#     dict_params_x['AT'] = tf.get_collection('AT')[0]
+#     dict_params_x['AT_num'] = sess3.run(dict_params_x['AT'])
+#     # Initialization
+#     n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
+#     n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
+#     dict_X = {}
+#     dict_X_pred = {}
+#     dict_Y = {}
+#     dict_Y_pred = {}
+#     for step in ls_steps:
+#         dict_X[step] = np.empty(shape=(0,n_states))
+#         dict_X_pred[step] = np.empty(shape=(0, n_states))
+#         dict_Y[step] = np.empty(shape=(0, n_outputs))
+#         dict_Y_pred[step] = np.empty(shape=(0, n_outputs))
+#     # Getting/Sorting the x component
+#     for CURVE_NO in ls_curves:
+#         dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
+#         X_scaled = dict_DATA_i['X']
+#         Y_scaled = dict_DATA_i['Y']
+#         for i in range(len(X_scaled) - np.max(ls_steps) - 1):
+#             xi = X_scaled[i:i+1]
+#             for step in range(1,1+np.max(ls_steps)):
+#                 xi = np.matmul(xi,dict_params_x['AT_num']) + dict_params_x['psix'].eval(feed_dict={dict_params_x['x_feed']: xi})
+#                 if step in ls_steps:
+#                     dict_X_pred[step] = np.concatenate([dict_X_pred[step],xi],axis=0)
+#                     dict_X[step] = np.concatenate([dict_X[step], X_scaled[i+step:i+step+1] ], axis=0)
+#                     dict_Y[step] = np.concatenate([dict_Y[step], Y_scaled[i + step:i + step + 1]],axis=0)
+#     tf.reset_default_graph()
+#     sess3.close()
+#
+#     sess4 = tf.InteractiveSession()
+#     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+#     saver.restore(sess4, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
+#     dict_params_y = {}
+#     dict_params_y['psix'] = tf.get_collection('psix')[0]
+#     dict_params_y['x_feed'] = tf.get_collection('x_feed')[0]
+#     dict_params_y['CT'] = tf.get_collection('AT')[0]
+#     dict_params_y['CT_num'] = sess4.run(dict_params_y['CT'])
+#     dict_r2 = {}
+#     for step in ls_steps:
+#         dict_Y_pred[step] = np.matmul(dict_X_pred[step],dict_params_y['CT_num']) + dict_params_y['psix'].eval(feed_dict={dict_params_y['x_feed']: dict_X_pred[step]})
+#         # Compute the r^2
+#         X = oc.inverse_transform_X(dict_X[step], SYS_NO)
+#         Y = oc.inverse_transform_Y(dict_Y[step], SYS_NO)
+#         Xhat = oc.inverse_transform_X(dict_X_pred[step], SYS_NO)
+#         Yhat = oc.inverse_transform_Y(dict_Y_pred[step], SYS_NO)
+#         SSE = np.sum(np.square(X - Xhat)) + np.sum(np.square(Y - Yhat))
+#         SST = np.sum(np.square(X)) + np.sum(np.square(Y))
+#         dict_r2[step] = [np.max([0, 1- (SSE/SST)])*100]
+#     tf.reset_default_graph()
+#     sess4.close()
+#     df_r2 = pd.DataFrame(dict_r2)
+#     print(df_r2)
+#     return df_r2
+def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr,with_output = True):
     n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
-    n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
     dict_X = {}
     dict_X_pred = {}
-    dict_Y = {}
-    dict_Y_pred = {}
+    if with_output:
+        n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
+        dict_Y = {}
+        dict_Y_pred = {}
     for step in ls_steps:
-        dict_X[step] = np.empty(shape=(0,n_states))
+        dict_X[step] = np.empty(shape=(0, n_states))
         dict_X_pred[step] = np.empty(shape=(0, n_states))
-        dict_Y[step] = np.empty(shape=(0, n_outputs))
-        dict_Y_pred[step] = np.empty(shape=(0, n_outputs))
-    # Getting/Sorting the x component
+        if with_output:
+            dict_Y[step] = np.empty(shape=(0, n_outputs))
+            dict_Y_pred[step] = np.empty(shape=(0, n_outputs))
     for CURVE_NO in ls_curves:
         dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_data[CURVE_NO], SYS_NO)
         X_scaled = dict_DATA_i['X']
-        Y_scaled = dict_DATA_i['Y']
-        for i in range(len(X_scaled) - np.max(ls_steps) - 1):
-            xi = X_scaled[i:i+1]
-            for step in range(1,1+np.max(ls_steps)):
-                xi = np.matmul(xi,dict_params_x['AT_num']) + dict_params_x['psix'].eval(feed_dict={dict_params_x['x_feed']: xi})
+        if with_output:
+            Y_scaled = dict_DATA_i['Y']
+        for i in range(len(X_scaled) - np.max(ls_steps) - 2):
+            psi_xi = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled[i:i + 1]})
+            for step in range(1,np.max(ls_steps)+1):
+                psi_xi = np.matmul(psi_xi,dict_params_curr['KxT_num'])
                 if step in ls_steps:
-                    dict_X_pred[step] = np.concatenate([dict_X_pred[step],xi],axis=0)
+                    dict_X_pred[step] = np.concatenate([dict_X_pred[step],psi_xi[:,0:n_states]],axis=0)
                     dict_X[step] = np.concatenate([dict_X[step], X_scaled[i+step:i+step+1] ], axis=0)
-                    dict_Y[step] = np.concatenate([dict_Y[step], Y_scaled[i + step:i + step + 1]],axis=0)
-    tf.reset_default_graph()
-    sess3.close()
-
-    sess4 = tf.InteractiveSession()
-    saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_Y + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-    saver.restore(sess4, tf.train.latest_checkpoint(run_folder_name_HAM_Y))
-    dict_params_y = {}
-    dict_params_y['psix'] = tf.get_collection('psix')[0]
-    dict_params_y['x_feed'] = tf.get_collection('x_feed')[0]
-    dict_params_y['CT'] = tf.get_collection('AT')[0]
-    dict_params_y['CT_num'] = sess4.run(dict_params_y['CT'])
+                    if with_output:
+                        dict_Y_pred[step] = np.concatenate([dict_Y_pred[step],np.matmul(psi_xi,dict_params_curr['WhT_num'])],axis=0)
+                        dict_Y[step] = np.concatenate([dict_Y[step], Y_scaled[i + step:i + step + 1]],axis=0)
     dict_r2 = {}
     for step in ls_steps:
-        dict_Y_pred[step] = np.matmul(dict_X_pred[step],dict_params_y['CT_num']) + dict_params_y['psix'].eval(feed_dict={dict_params_y['x_feed']: dict_X_pred[step]})
         # Compute the r^2
         X = oc.inverse_transform_X(dict_X[step], SYS_NO)
-        Y = oc.inverse_transform_Y(dict_Y[step], SYS_NO)
         Xhat = oc.inverse_transform_X(dict_X_pred[step], SYS_NO)
-        Yhat = oc.inverse_transform_Y(dict_Y_pred[step], SYS_NO)
-        SSE = np.sum(np.square(X - Xhat)) + np.sum(np.square(Y - Yhat))
-        SST = np.sum(np.square(X)) + np.sum(np.square(Y))
-        dict_r2[step] = [np.max([0, 1- (SSE/SST)])*100]
-    tf.reset_default_graph()
-    sess4.close()
+        SSE = np.sum(np.square(X - Xhat))
+        SST = np.sum(np.square(X))
+        if with_output:
+            Y = oc.inverse_transform_Y(dict_Y[step], SYS_NO)
+            Yhat = oc.inverse_transform_Y(dict_Y_pred[step], SYS_NO)
+            SSE = SSE + np.sum(np.square(Y - Yhat))
+            SST = SST + np.sum(np.square(Y))
+        dict_r2[step] = [np.max([0, 1 - (SSE / SST)]) * 100]
     df_r2 = pd.DataFrame(dict_r2)
     print(df_r2)
     return df_r2
-def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr):
+def r2_n_step_prediction_accuracy_nn(ls_steps,ls_curves,dict_data,dict_params_curr):
     n_states = len(dict_data[list(dict_data.keys())[0]]['X'][0])
-    n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
     dict_X = {}
     dict_X_pred = {}
+    n_outputs = len(dict_data[list(dict_data.keys())[0]]['Y'][0])
     dict_Y = {}
     dict_Y_pred = {}
     for step in ls_steps:
@@ -353,9 +406,9 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
         X_scaled = dict_DATA_i['X']
         Y_scaled = dict_DATA_i['Y']
         for i in range(len(X_scaled) - np.max(ls_steps) - 2):
-            psi_xi = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled[i:i + 1]})
+            xi = dict_params_curr['f'].eval(feed_dict={dict_params_curr['xpT_feed']: X_scaled[i:i + 1]})
             for step in range(1,np.max(ls_steps)+1):
-                psi_xi = np.matmul(psi_xi,dict_params_curr['KxT_num'])
+                xi = np.matmul(psi_xi,dict_params_curr['KxT_num'])
                 if step in ls_steps:
                     dict_X_pred[step] = np.concatenate([dict_X_pred[step],psi_xi[:,0:n_states]],axis=0)
                     dict_X[step] = np.concatenate([dict_X[step], X_scaled[i+step:i+step+1] ], axis=0)
@@ -368,33 +421,49 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
         Y = oc.inverse_transform_Y(dict_Y[step], SYS_NO)
         Xhat = oc.inverse_transform_X(dict_X_pred[step], SYS_NO)
         Yhat = oc.inverse_transform_Y(dict_Y_pred[step], SYS_NO)
-        SSE = np.sum(np.square(X - Xhat)) + np.sum(np.square(Y - Yhat))
+        SSE = np.sum(np.square(X - Xhat))+ np.sum(np.square(Y - Yhat))
         SST = np.sum(np.square(X)) + np.sum(np.square(Y))
         dict_r2[step] = [np.max([0, 1 - (SSE / SST)]) * 100]
     df_r2 = pd.DataFrame(dict_r2)
     print(df_r2)
     return df_r2
 dict_phase_data, PHI_theo, PSI_theo = phase_portrait_data()
-
+##
 
 dict_params = {}
 sess1 = tf.InteractiveSession()
-dict_params['Seq'] = get_dict_param(run_folder_name,SYS_NO,sess1)
+dict_params['DeepX'] = get_dict_param(run_folder_name_DEEPDMD ,SYS_NO,sess1)
+df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['DeepX'],with_output=False)
+# _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+PHI_DEEP_X,PSI_DEEP_X, Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X,X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['DeepX'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+tf.reset_default_graph()
+sess1.close()
+
+dict_params = {}
+sess2 = tf.InteractiveSession()
+dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD ,SYS_NO,sess2)
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = True,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
-sess1.close()
+sess2.close()
 
-sess2 = tf.InteractiveSession()
-dict_params['Deep'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess2)
+sess3 = tf.InteractiveSession()
+dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD ,SYS_NO,sess3)
 df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
-sess2.close()
+sess3.close()
 
-df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data)
+sess4 = tf.InteractiveSession()
+dict_params['nn'] = get_dict_param(run_folder_name_NN ,SYS_NO,sess4,nn= True)
+df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['nn'])
+# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+tf.reset_default_graph()
+sess3.close()
+
+# df_r2_HAM = r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data)
 
 # ## Observables
 # f,ax = plt.subplots(1,n_observables,figsize = (2*n_observables,1.5))
@@ -453,9 +522,7 @@ plt.ylim([-126,16])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.title('(a)',fontsize = HEADER_SIZE,loc='left')
-plt.show()
 
-##
 
 
 plt.subplot2grid((10,16), (5,0), colspan=4, rowspan=2)
@@ -510,7 +577,7 @@ for i in range(n_outputs):
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i]/y_scale, linestyle = 'dashed', color=colors[n_states+i])
     plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states+i])
-    plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
+    # plt.plot(d_HAM[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
 # l1 = plt.legend(loc='lower right',fontsize = 14)
@@ -532,7 +599,9 @@ plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.xlim([-0.5,29.5])
 
+plt.show()
 
+##
 
 plt.subplot2grid((10,16), (0,6), colspan=5, rowspan=3)
 # plt.bar(df_r2_SEQ.index,df_r2_SEQ.mean(axis=1),color = colors[1],label='Seq ocdDMD')
