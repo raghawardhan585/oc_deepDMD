@@ -23,16 +23,25 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 SYS_NO = 10
-RUN_NO = 78
-RUN_NO_HAMMERSTEIN_X = 10
-RUN_NO_HAMMERSTEIN_Y = 23
-RUN_NO_DEEPDMD = 52 #1
+# RUN_NO = 78
+# RUN_NO_HAMMERSTEIN_X = 10
+# RUN_NO_HAMMERSTEIN_Y = 23
+# RUN_NO_DEEPDMD = 52 #1
+
+RUN_DIRECT_DEEPDMD = 52
+RUN_SEQ_DEEPDMD = 78
+DIR_DEEPDMD_X = 0
+RUN_NN = 4
+
+
 
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
-run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
-run_folder_name_DEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_NO_DEEPDMD)
-run_folder_name_HAM_X = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_X)
-run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
+run_folder_name_DEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(DIR_DEEPDMD_X)
+run_folder_name_SEQ_ocDEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_SEQ_DEEPDMD)
+run_folder_name_DIR_ocDEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD)
+run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
+# run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
+# run_folder_name_HAM_X = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_X)
 
 
 with open(sys_folder_name + '/System_' + str(SYS_NO) + '_SimulatedData.pickle', 'rb') as handle:
@@ -43,11 +52,13 @@ Ntrain = round(len(dict_oc_data['Xp'])/2)
 for items in dict_oc_data:
     dict_oc_data[items] = dict_oc_data[items][0:Ntrain]
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
-    d_SEQ = pickle.load(handle)[RUN_NO]
-with open(sys_folder_name + '/dict_predictions_Hammerstein.pickle', 'rb') as handle:
-    d_HAM = pickle.load(handle)[RUN_NO_HAMMERSTEIN_Y]
+    d_SEQ = pickle.load(handle)[RUN_SEQ_DEEPDMD]
+with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+    d_DDMD_X = pickle.load(handle)[DIR_DEEPDMD_X]
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
-    d_DDMD = pickle.load(handle)[RUN_NO_DEEPDMD]
+    d_DDMD = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
+with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
+    d_NN = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
 
 ##
 ls_steps = list(range(1,15,1))
@@ -442,6 +453,9 @@ plt.ylim([-126,16])
 plt.xticks(fontsize = TICK_FONT_SIZE)
 plt.yticks(fontsize = TICK_FONT_SIZE)
 plt.title('(a)',fontsize = HEADER_SIZE,loc='left')
+plt.show()
+
+##
 
 
 plt.subplot2grid((10,16), (5,0), colspan=4, rowspan=2)

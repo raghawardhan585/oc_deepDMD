@@ -127,8 +127,8 @@ for items in ls_files:
 ##
 dn.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
-# SYSTEM_NO = 10
-# ls_process_runs = list(range(0,20))
+SYSTEM_NO = 10
+ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 10
 # ls_process_runs = list(range(12,24))
 
@@ -138,8 +138,8 @@ dn.transfer_current_ocDeepDMD_run_files()
 # OPT_X_RUN = 7
 # ls_process_runs = list(range(20,32))
 
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,20))
+# SYSTEM_NO = 53
+# ls_process_runs = list(range(0,20))
 # OPT_X_RUN = 8
 # ls_process_runs = list(range(20,29))
 # ls_process_runs = list(range(0,29))
@@ -168,6 +168,14 @@ df_error = pd.DataFrame(dict_error).T
 df_err_opt = pd.DataFrame(df_error.train + df_error.valid)
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run: ', opt_run)
+## Optimal hyperparameters
+
+with open(sys_folder_name + '/Direct_nn/RUN_' + str(opt_run) + '/run_info.pickle','rb') as handle:
+    run_info_opt = pickle.load(handle)
+x_nn_opt = run_info_opt[0]['x_hidden_variable_list']
+dict_hyperparam_opt = {'n_layers': len(x_nn_opt), 'n_nodes': x_nn_opt[0]}
+print(dict_hyperparam_opt)
+
 ##
 dopt = d[opt_run]
 del d

@@ -213,14 +213,16 @@ print(dict_hp)
 #========================================================================================================================
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
-# SYSTEM_NO = 10
-# ls_run_no = list(range(45,63))
+SYSTEM_NO = 10
+ls_run_no = list(range(45,63))
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
 # SYSTEM_NO = 60
 # ls_run_no = list(range(42,60))
-SYSTEM_NO = 70
-ls_run_no = list(range(80,110))
+# SYSTEM_NO = 70
+# ls_run_no = list(range(80,110))
+# SYSTEM_NO = 80
+# ls_run_no = list(range(0,0))
 plot_params ={}
 plot_params ={}
 plot_params['xy_label_font_size']=9
@@ -274,14 +276,16 @@ print(dict_hp)
 
 
 # Final Runs
-# SYSTEM_NO = 10
-# ls_process_runs = list(range(63,81))
+SYSTEM_NO = 10
+ls_process_runs = list(range(63,81))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(316,348))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(60,78))
-SYSTEM_NO = 70
-ls_process_runs = list(range(110,170))
+# SYSTEM_NO = 70
+# ls_process_runs = list(range(110,170))
+# SYSTEM_NO = 80
+# ls_process_runs = list(range(0,0))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
@@ -319,6 +323,8 @@ plot_params['individual_fig_height']=5
 f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 
 ## RUN 1 - Saving the Optimal first run result
+# SYSTEM_NO = 10
+# RUN_NO = 0
 # SYSTEM_NO = 53# Run no 115 for system 23
 # RUN_NO = 234
 # SYSTEM_NO = 60
@@ -338,7 +344,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
     pickle.dump(d,handle)
 
 ## RUN 2 - Saving the Optimal Results of the Second Run
-# SYSTEM_NO = 10 #153 Maybe for system 7 or 23
+# SYSTEM_NO = 10
 # RUN_NO = 45
 # SYSTEM_NO = 53
 # RUN_NO = 308

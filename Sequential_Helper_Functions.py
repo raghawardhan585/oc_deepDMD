@@ -355,7 +355,10 @@ def get_run_performance_stats(SYSTEM_NO,RUN_NO):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
         dict_run = pickle.load(handle)[RUN_NO]
-    N_CURVES = len(dict_run.keys())
+    if 'observables' in dict_run.keys():
+        N_CURVES = len(dict_run.keys()) - 4
+    else:
+        N_CURVES = len(dict_run.keys())
     ls_train_curves = list(range(int(np.floor(N_CURVES / 3))))
     ls_valid_curves = list(range(ls_train_curves[-1] + 1, ls_train_curves[-1] + 1 + int(np.floor(N_CURVES / 3))))
     ls_test_curves = list(range(ls_valid_curves[-1] + 1, N_CURVES))
