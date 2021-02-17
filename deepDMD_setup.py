@@ -125,8 +125,8 @@ for items in ls_files:
 dp.transfer_current_ocDeepDMD_run_files()
 
 ## RUN 1 PROCESSING - Generate predictions and error
-SYSTEM_NO = 10
-ls_process_runs = list(range(0,74))
+# SYSTEM_NO = 10
+# ls_process_runs = list(range(0,74))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
 # ls_process_runs = list(range(0,62))
@@ -134,8 +134,8 @@ ls_process_runs = list(range(0,74))
 # ls_process_runs = list(range(0,36))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
-# SYSTEM_NO = 80
-# ls_process_runs = list(range(0,60))
+SYSTEM_NO = 80
+ls_process_runs = list(range(0,88))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
