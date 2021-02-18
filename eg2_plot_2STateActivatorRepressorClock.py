@@ -33,8 +33,8 @@ RUN_NO_DEEPDMD = 6
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYS_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 run_folder_name_DEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_NO_DEEPDMD)
-run_folder_name_HAM_X = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_X)
-run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
+# run_folder_name_HAM_X = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_X)
+# run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
 
 
 with open(sys_folder_name + '/System_' + str(SYS_NO) + '_SimulatedData.pickle', 'rb') as handle:
@@ -46,8 +46,8 @@ for items in dict_oc_data:
     dict_oc_data[items] = dict_oc_data[items][0:Ntrain]
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d_SEQ = pickle.load(handle)[RUN_NO]
-with open(sys_folder_name + '/dict_predictions_Hammerstein.pickle', 'rb') as handle:
-    d_HAM = pickle.load(handle)[RUN_NO_HAMMERSTEIN_Y]
+# with open(sys_folder_name + '/dict_predictions_Hammerstein.pickle', 'rb') as handle:
+#     d_HAM = pickle.load(handle)[RUN_NO_HAMMERSTEIN_Y]
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_NO_DEEPDMD]
 
@@ -924,4 +924,59 @@ plt.show()
 
 
 ##
+
+##
+title = ''
+FONT_SIZE = 14
+# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_SEQ.shape[-1],PHI_DEEPDMD.shape[-1]])
+max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
+# plt.figure(figsize=(30,5))
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
+for row_i in range(3):
+    if row_i ==0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_DEEP_X
+        comp_modes = comp_modes_DEEP_X
+        PHI = PHI_DEEP_X
+        X1 = X1_DEEP_X
+        X2 = X2_DEEP_X
+        E = E_DEEP_X
+    elif row_i ==1:
+        continue
+        # # Seq ocdDMD modes
+        # comp_modes_conj = comp_modes_conj_SEQ
+        # comp_modes = comp_modes_SEQ
+        # PHI = PHI_SEQ
+        # X1 = X1_SEQ
+        # X2 = X2_SEQ
+        # E = E_SEQ
+    elif row_i ==2:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+    for i in range(PHI.shape[-1]):
+        if i in comp_modes_conj:
+            continue
+        elif i in comp_modes:
+            c = ax[row_i,i].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+            f.colorbar(c, ax=ax[row_i,i])
+            ax[row_i,i].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i,i].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        else:
+            c = ax[row_i,i].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+            f.colorbar(c, ax=ax[row_i,i])
+            ax[row_i,i].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i,i].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        ax[row_i,i].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+        ax[row_i, i].set_xticks([-8, 0, 8])
+        ax[row_i, i].set_yticks([-8, 0, 8])
+
+
+f.show()
 
