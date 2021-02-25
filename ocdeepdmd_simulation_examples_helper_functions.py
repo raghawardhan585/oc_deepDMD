@@ -457,8 +457,8 @@ def sim_sys_1_2(sys_params):
     X = sys_params['x0']
     for i in range(sys_params['N_data_points']-1):
         # Autonomous Linear Components0
-        x1_next = sys_params['A'][0,0] * X[-1, 0] + sys_params['A'][0,1] * X[-1, 0] #+ sys_params['delta']* U[i,0]**2
-        x2_next = sys_params['A'][1,0] * X[-1, 1] + sys_params['A'][1,1] * X[-1,0] #+ sys_params['epsilon']*X[-1,1]**2*U[i,0]
+        x1_next = sys_params['A'][0,0] * X[-1, 0] + sys_params['A'][0,1] * X[-1, 1] #+ sys_params['delta']* U[i,0]**2
+        x2_next = sys_params['A'][1,0] * X[-1, 0] + sys_params['A'][1,1] * X[-1,1] #+ sys_params['epsilon']*X[-1,1]**2*U[i,0]
         # Nonlinear dynamics components
         x2_next = x2_next + sys_params['gamma'] * X[-1,0]**2
         X = np.concatenate([X,np.array([[x1_next,x2_next]])],axis=0)

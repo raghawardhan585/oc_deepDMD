@@ -37,11 +37,11 @@ oc.data_gen_sys_1_2(sys_params, N_CURVES, SYSTEM_NO)
 ## System 2 Data Generation
 # ==========================
 # System Parameters
-A = np.array([[0.86,0.],[0.8,0.4]])
+A = np.array([[0.9,0.],[-0.4,-0.8]])
 gamma = -0.9
 # Simulation Parameters
-N_data_points = 30
-N_CURVES = 240
+N_data_points = 20
+N_CURVES = 300
 sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
 SYSTEM_NO = 11
 ls_prediction_steps=[1]

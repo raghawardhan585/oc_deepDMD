@@ -31,9 +31,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [1,2,3]
-dict_hp['x']['ls_nn_layers'] = [3,4,7,8,9]
-dict_hp['x']['ls_nn_nodes'] = [2,3,4,5]
+dict_hp['x']['ls_dict_size'] = [1,1,1,1,1]
+dict_hp['x']['ls_nn_layers'] = [7,8,9]
+dict_hp['x']['ls_nn_nodes'] = [2,3]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [2,3,4]
 dict_hp['y']['ls_nn_layers'] = [3,4]
@@ -145,6 +145,8 @@ seq.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,45)) # Runs for which we want to calculate the error
+SYSTEM_NO = 11
+ls_process_runs = list(range(0,60)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 30
 # ls_process_runs = list(range(52,62)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 53
@@ -154,8 +156,8 @@ seq.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(84,85))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,80)) # Runs for which we want to calculate the error
-SYSTEM_NO = 80
-ls_process_runs = list(range(0,106)) # Runs for which we want to calculate the error
+# SYSTEM_NO = 80
+# ls_process_runs = list(range(0,106)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
@@ -203,9 +205,9 @@ del var_i
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=False,one_step=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=False,observables=True,one_step=False)
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves[0:20],scaled=True,observables=True,one_step=True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=True,observables=False,one_step=True)
+# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves[0:20],scaled=False,observables=False,one_step=True)
 
 ## RUN 1 PROCESSING - Display the hyper parameters
 # opt_run = 25 # Use this only if we want to see the hyperparameters of a specific run
@@ -547,3 +549,15 @@ print('1 - step Testing r2 accuracy: ', np.mean(dict_error['test']['r2'] ))
 print('N - step Training r2 accuracy: ', np.mean(dict_error['train']['r2_n'] ))
 print('N - step Validation r2 accuracy: ', np.mean(dict_error['valid']['r2_n'] ))
 print('N - step Testing r2 accuracy: ', np.mean(dict_error['test']['r2_n'] ))
+
+##
+SYSTEM_NO = 80
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle','rb') as handle:
+    d = pickle.load(handle)
+##
+RUN_NO = 99
+plt.figure()
+for i in range(300):
+    plt.plot(d[RUN_NO][i]['X_est_n_step'][:,0])
+plt.show()
