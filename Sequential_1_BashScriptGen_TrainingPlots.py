@@ -35,14 +35,14 @@ dict_hp['x']['ls_dict_size'] = [1,1,1,1,1]
 dict_hp['x']['ls_nn_layers'] = [7,8,9]
 dict_hp['x']['ls_nn_nodes'] = [2,3]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [2,3,4]
-dict_hp['y']['ls_nn_layers'] = [3,4]
-dict_hp['y']['ls_nn_nodes'] = [7,8,9]
+dict_hp['y']['ls_dict_size'] = [1,1]
+dict_hp['y']['ls_nn_layers'] = [7,8,9]
+dict_hp['y']['ls_nn_nodes'] = [2,3,4]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [7,8,9,10,11]
 dict_hp['xy']['ls_nn_layers'] = [3,4]
 dict_hp['xy']['ls_nn_nodes'] = [15,18,21]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -329,14 +329,16 @@ f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 ## RUN 1 - Saving the Optimal first run result
 # SYSTEM_NO = 10
 # RUN_NO = 0
+SYSTEM_NO = 11
+RUN_NO = 5
 # SYSTEM_NO = 53# Run no 115 for system 23
 # RUN_NO = 234
 # SYSTEM_NO = 60
 # RUN_NO = 19
 # SYSTEM_NO = 70
 # RUN_NO = 56
-SYSTEM_NO = 80
-RUN_NO = 99
+# SYSTEM_NO = 80
+# RUN_NO = 99
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:

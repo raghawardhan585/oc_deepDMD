@@ -29,7 +29,7 @@ SYS_NO = 11
 # RUN_NO_DEEPDMD = 52 #1
 
 RUN_DIRECT_DEEPDMD_SUBOPT = 6
-RUN_DIRECT_DEEPDMD = 20 #6
+RUN_DIRECT_DEEPDMD = 31
 # RUN_SEQ_DEEPDMD = 78
 DIR_DEEPDMD_X = 5
 # RUN_NN = 4
@@ -40,7 +40,7 @@ sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_D
 run_folder_name_DEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(DIR_DEEPDMD_X)
 # run_folder_name_SEQ_ocDEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_SEQ_DEEPDMD)
 run_folder_name_DIR_ocDEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD)
-run_folder_name_DIR_ocDEEPDMD_SUBOPT = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD)
+run_folder_name_DIR_ocDEEPDMD_SUBOPT = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD_SUBOPT)
 # run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
 
 # run_folder_name_HAM_Y = sys_folder_name + '/Hammerstein/RUN_' + str(RUN_NO_HAMMERSTEIN_Y)
