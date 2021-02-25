@@ -220,7 +220,7 @@ print(dict_hp)
 # SYSTEM_NO = 10
 # ls_run_no = list(range(45,63))
 SYSTEM_NO = 11
-ls_run_no = list(range(30,48))
+ls_run_no = list(range(30,34)) #48
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
 # SYSTEM_NO = 60
