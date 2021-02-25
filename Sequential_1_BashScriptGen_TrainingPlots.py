@@ -42,7 +42,7 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [1,1]
 dict_hp['xy']['ls_nn_layers'] = [7,8,9]
 dict_hp['xy']['ls_nn_nodes'] = [2,3,4]
-process_variable = 'y'
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -355,12 +355,14 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 ## RUN 2 - Saving the Optimal Results of the Second Run
 # SYSTEM_NO = 10
 # RUN_NO = 45
+SYSTEM_NO = 11
+RUN_NO = 32
 # SYSTEM_NO = 53
 # RUN_NO = 308
 # SYSTEM_NO = 60
 # RUN_NO = 58
-SYSTEM_NO = 70
-RUN_NO = 104
+# SYSTEM_NO = 70
+# RUN_NO = 104
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
