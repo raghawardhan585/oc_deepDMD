@@ -90,11 +90,11 @@ def phase_portrait_data():
     a21 = -0.4
     a22 = -0.8
     gamma = -0.9
-    # K_t = np.array(
-    #     [[a11, 0, 0, 0, 0], [a21, a22, gamma, 0, 0], [0, 0, a11 ** 2, 0, 0], [0, 0, a11 * a21, a11 * a22, a11 * gamma],
-    #      [0, 0, 0, 0, a11 ** 3]])
     K_t = np.array(
-        [[a11, 0, 0], [a21, a22, gamma], [0, 0, a11 ** 2]])
+        [[a11, 0, 0, 0, 0], [a21, a22, gamma, 0, 0], [0, 0, a11 ** 2, 0, 0], [0, 0, a11 * a21, a11 * a22, a11 * gamma],
+         [0, 0, 0, 0, a11 ** 3]])
+    # K_t = np.array(
+    #     [[a11, 0, 0], [a21, a22, gamma], [0, 0, a11 ** 2]])
     eval_t, W_t = np.linalg.eig(K_t)
     E = np.diag(eval_t)
     E, W_t, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, W_t)
@@ -103,15 +103,15 @@ def phase_portrait_data():
     x1 = np.arange(-10, 10.5, 0.5)
     x2 = np.arange(-150, 20, 5)
     X1, X2 = np.meshgrid(x1, x2)
-    PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
-    PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
-    # PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
-    # PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
+    # PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
+    # PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
+    PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
+    PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
     for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
         x1_i = X1[i, j]
         x2_i = X2[i, j]
-        psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2]]))
-        # psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
+        # psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2]]))
+        psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
         PHI_theo[i, j, :] = np.matmul(Wi_t, psiXT_i.T).reshape((1, 1, -1))
         PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
     return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, W_t, comp_modes, comp_modes_conj
@@ -691,7 +691,8 @@ sess1.close()
 NORMALIZE = True
 title = ''
 FONT_SIZE = 14
-max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X)])
+max_eigs = 5
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X)])
 # max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
 # max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_SEQ.shape[-1],PHI_DEEPDMD.shape[-1]])
 # plt.figure(figsize=(30,5))
