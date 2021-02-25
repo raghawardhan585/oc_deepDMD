@@ -39,9 +39,9 @@ dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [7,8,9]
 dict_hp['y']['ls_nn_nodes'] = [2,3,4]
 dict_hp['xy']={}
-dict_hp['xy']['ls_dict_size'] = [7,8,9,10,11]
-dict_hp['xy']['ls_nn_layers'] = [3,4]
-dict_hp['xy']['ls_nn_nodes'] = [15,18,21]
+dict_hp['xy']['ls_dict_size'] = [1,1]
+dict_hp['xy']['ls_nn_layers'] = [7,8,9]
+dict_hp['xy']['ls_nn_nodes'] = [2,3,4]
 process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
@@ -217,8 +217,10 @@ print(dict_hp)
 #========================================================================================================================
 
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
-SYSTEM_NO = 10
-ls_run_no = list(range(45,63))
+# SYSTEM_NO = 10
+# ls_run_no = list(range(45,63))
+SYSTEM_NO = 11
+ls_run_no = list(range(30,48))
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
 # SYSTEM_NO = 60
@@ -227,7 +229,6 @@ ls_run_no = list(range(45,63))
 # ls_run_no = list(range(80,110))
 # SYSTEM_NO = 80
 # ls_run_no = list(range(0,0))
-plot_params ={}
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
