@@ -92,10 +92,10 @@ def phase_portrait_data():
     K_t = np.array(
         [[a11, 0, 0, 0, 0], [a21, a22, gamma, 0, 0], [0, 0, a11 ** 2, 0, 0], [0, 0, a11 * a21, a11 * a22, a11 * gamma],
          [0, 0, 0, 0, a11 ** 3]])
-    eval_t, W_t = np.linalg.eig(K_t)
+    eval_t, WL_t = np.linalg.eig(K_t.T)
     E = np.diag(eval_t)
-    E, W_t, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, W_t)
-    Wi_t = np.linalg.inv(W_t)
+    E, WL_t, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, WL_t)
+    # Wi_t = np.linalg.inv(W_t)
     sampling_resolution = 0.5
     x1 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
     x2 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
@@ -106,9 +106,9 @@ def phase_portrait_data():
         x1_i = X1[i, j]
         x2_i = X2[i, j]
         psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
-        PHI_theo[i, j, :] = np.matmul(Wi_t, psiXT_i.T).reshape((1, 1, -1))
+        PHI_theo[i, j, :] = np.matmul(WL_t, psiXT_i.T).reshape((1, 1, -1))
         PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
-    return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, W_t, comp_modes, comp_modes_conj
+    return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, WL_t, comp_modes, comp_modes_conj
 def get_dict_param(run_folder_name_curr,SYS_NO,sess,nn=False):
     dict_p = {}
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_curr + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -268,14 +268,15 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
             print('Meh')
     else:
         if RIGHT_EIGEN_VECTORS:
-            eval, W = np.linalg.eig(K)
+            eval, WL = np.linalg.eig(K.T)
             E = np.diag(eval)
-            E, W, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, W)
-            Winv = np.linalg.inv(W)
+            E, WL, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, WL)
+            # Winv = np.linalg.inv(W)
+            Winv = WL
             Phi_t = np.matmul(E, np.matmul(Winv,Phi0.T))
             # for i in range(1, len(dict_data_curr['X'])):
             #     Phi = np.concatenate([Phi, np.matmul(E, Phi[:, -1:])], axis=1)
-            koop_modes = W
+            koop_modes = np.linalg.inv(WL)
             PHI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_observables))
             PSI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_observables))
             for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):

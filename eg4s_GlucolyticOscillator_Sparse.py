@@ -314,12 +314,16 @@ def get_output_modes(A,C,X,nPC=-1):
     U,S,_ = np.linalg.svd(X)
     if nPC>0:
         Ur = U[:,0:nPC]
+        Atilde = np.matmul(Ur.T, np.matmul(A, Ur))
     else:
         Ur = U
-    Atilde = np.matmul(Ur.T,np.matmul(A,Ur))
+        Atilde = A
     e,v = np.linalg.eig(Atilde)
     E,V,_,__ = resolve_complex_right_eigenvalues(np.diag(e), v)
-    Wout = np.matmul(C,np.matmul(Ur,V))
+    if nPC>0:
+        Wout = np.matmul(C,np.matmul(Ur,V))
+    else:
+        Wout = np.matmul(C,V)
     return Wout
 
 ##
