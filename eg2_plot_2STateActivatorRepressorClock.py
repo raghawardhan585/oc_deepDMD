@@ -970,7 +970,7 @@ for row_i in range(3):
             continue
         elif i in comp_modes:
             if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(PHI[:, :, i]), cmap='rainbow', vmin=0, vmax=1)
+                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
             else:
                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
             f.colorbar(c, ax=ax[row_i,p])
@@ -979,7 +979,7 @@ for row_i in range(3):
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         else:
             if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(PHI[:, :, i]), cmap='rainbow', vmin=0,vmax=1)
+                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
             else:
                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
             f.colorbar(c, ax=ax[row_i,p])

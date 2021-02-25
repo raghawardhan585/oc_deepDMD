@@ -146,7 +146,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,45)) # Runs for which we want to calculate the error
 SYSTEM_NO = 11
-ls_process_runs = list(range(0,60)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,30)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 30
 # ls_process_runs = list(range(52,62)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 53
