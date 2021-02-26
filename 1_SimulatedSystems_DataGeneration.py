@@ -130,8 +130,10 @@ kappa_A = 1.
 kappa_B = 1.
 n = 2.
 m = 2.
-k_3n = 3.
-k_3d = 1.08
+k_3n = 1.
+k_3d = 0.6
+cooperativity_1 = 1
+cooperativity_2 = 3
 
 # gamma_A = 1.
 # gamma_B = 0.5
@@ -159,8 +161,8 @@ sampling_time = 0.5
 simulation_time = 50
 N_CURVES = 300
 
-sys_params = {'sys_params_arc2s': sys_params_arc2s , 'k_3n':k_3n, 'k_3d':k_3d, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 60
+sys_params = {'sys_params_arc2s': sys_params_arc2s , 'k_3n':k_3n, 'k_3d':k_3d, 'cooperativity_1':cooperativity_1, 'cooperativity_2': cooperativity_2, 'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+SYSTEM_NO = 61
 oc.data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)

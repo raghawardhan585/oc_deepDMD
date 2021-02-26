@@ -640,7 +640,7 @@ def data_gen_sys_arc2s(sys_params, N_CURVES,SYSTEM_NO):
         x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'])
         X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
         X = odeint(activator_repressor_clock_2states, x0_curr, t, args = sys_params['sys_params_arc2s'])
-        Y = sys_params['k_3n'] * X[:, 0:1] / (sys_params['k_3d'] + X[:, 1:2])
+        Y = sys_params['k_3n'] * X[:, 1:2]**sys_params['cooperativity_1'] / (1 + sys_params['k_3d']*X[:, 0:1]**sys_params['cooperativity_2'])
         dict_indexed_data[i]= {'X':X,'Y':Y}
         plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
     plt.plot(X0[:,0],X0[:,1],'*')
