@@ -12,8 +12,10 @@ import Sequential_Helper_Functions as seq
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import itertools
-
+import copy
+from scipy.stats import pearsonr as corr
 import ocdeepdmd_simulation_examples_helper_functions as oc
+
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
           [0.83137256, 0.53333336, 0.6156863],
@@ -568,3 +570,60 @@ plt.figure()
 for i in range(300):
     plt.plot(d[RUN_NO][i]['X_est_n_step'][:,0])
 plt.show()
+
+
+## SPECIFIC TO SYSTEM 1 - Comparing the computed output with the
+SYSTEM_NO = 11
+ls_output_runs = list(range(30,42))
+NORMALIZE = True
+
+x1 = np.arange(-10, 10.5, 0.5)
+x2 = np.arange(-10, 10.5, 0.5)
+# x2 = np.arange(-150, 20, 4)
+X1, X2 = np.meshgrid(x1, x2)
+Y_theo = np.zeros(shape=(X1.shape[0], X1.shape[1],1))
+for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+    Y_theo[i,j,0] = X1[i, j]*X2[i, j]
+
+N_RUNS = len(ls_output_runs)
+N_COLS = np.int(np.ceil(np.sqrt(N_RUNS+1)))
+N_ROWS = np.int(np.ceil((N_RUNS+1)/N_COLS))
+
+f,ax = plt.subplots(N_ROWS,N_COLS,sharex=True,sharey=True,figsize=(3*N_COLS,3*N_ROWS))
+ax = ax.reshape(-1)
+if NORMALIZE:
+    c = ax[0].pcolor(X1, X2, Y_theo[:,:,0] / np.max(np.abs(Y_theo[:,:,0])), cmap='rainbow', vmin=-1, vmax=1)
+else:
+    c = ax[0].pcolor(X1, X2, Y_theo[:,:,0], cmap='rainbow', vmin=np.min(Y_theo[:,:,0]), vmax=np.max(Y_theo))
+p = 1
+
+
+
+Y_all = copy.deepcopy(Y_theo)
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+for run_i in ls_output_runs:
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(i)
+    if os.path.exists(run_folder_name):
+        print('RUN: ', run_i)
+        sess = tf.InteractiveSession()
+        dict_params, _, dict_indexed_data = seq.get_all_run_info_output(SYSTEM_NO, run_i, sess)
+        Y_now = np.zeros(shape=(X1.shape[0], X1.shape[1], 1))
+        for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+            Y_now[i,j,0] = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: np.array([[X1[i, j], X2[i, j]]])})[0][-1]
+        if NORMALIZE:
+            c = ax[p].pcolor(X1, X2, Y_now[:, :, 0] / np.max(np.abs(Y_now[:, :, 0])), cmap='rainbow', vmin=-1, vmax=1)
+        else:
+            c = ax[p].pcolor(X1, X2, Y_now[:, :, 0], cmap='rainbow', vmin=np.min(Y_now[:, :, 0]), vmax=np.max(Y_now[:, :, 0]))
+        Y_all = np.concatenate([Y_all,Y_now],axis=2)
+        if np.mod(p+1,N_COLS) == 0:
+            f.colorbar(c, ax=ax[p])
+        ax[p].set_xticks([-8, 0, 8])
+        ax[p].set_yticks([-8, 0, 8])
+        ax[p].set_title('Run- ' + str(run_i) + ' corr - ' + str(round(corr(Y_theo.reshape(-1),Y_now.reshape(-1))[0],2)))
+        tf.reset_default_graph()
+        sess.close()
+        p = p + 1
+
+
+f.show()
+

@@ -72,10 +72,79 @@ REDUCED_MODES = False
 RIGHT_EIGEN_VECTORS = True
 CURVE_NO = 221 # random.choice(ls_curves)
 print(CURVE_NO)
-def phase_portrait_data():
-    # System Parameters
-    A = np.array([[0.9,0.],[-0.4,-0.8]])
+def get_transform_matrices(dict_data):
+    # Sorting into deep DMD format
+    N_CURVES = len(dict_data)
+    ls_all_indices = np.arange(int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
+    # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
+    print('[INFO]: Shape of Y : ', dict_data[0]['Y'].shape)
+    n_data_pts = dict_data[0]['X'].shape[0]
+    Xp = np.empty((0, dict_data[0]['X'].shape[1]))
+    Xf = np.empty((0, dict_data[0]['X'].shape[1]))
+    Yp = np.empty((0, dict_data[0]['Y'].shape[1]))
+    Yf = np.empty((0, dict_data[0]['Y'].shape[1]))
+    for i in ls_all_indices:
+        Xp = np.concatenate([Xp, dict_data[i]['X'][0:-1, :]], axis=0)
+        Xf = np.concatenate([Xf, dict_data[i]['X'][1:, :]], axis=0)
+        Yp = np.concatenate([Yp, dict_data[i]['Y'][0:-1, :]], axis=0)
+        Yf = np.concatenate([Yf, dict_data[i]['Y'][1:, :]], axis=0)
+    dict_DATA_RAW = {'Xp': Xp, 'Xf': Xf, 'Yp': Yp, 'Yf': Yf}
+    n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
+    dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
+                           'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
+    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
+    _, dict_Scaler, transform_matrices = oc.scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
+    Px = transform_matrices['X_PT']
+    bx = transform_matrices['X_bT'].T
+    Py = transform_matrices['Y_PT']
+    by = transform_matrices['Y_bT'].T
+    return Px,bx,Py,by
+
+def get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True):
+    a11, a21, a22, gamma = get_sys_params()
+    if WITH_OUTPUT:
+        K_11 = np.array([[a11, 0], [a21, a22]])
+        K_12 = np.array([[0, 0, 0], [gamma, 0, 0]])
+        K_21 = np.array([[0, 0], [0, 0] , [0,0]])
+        K_22 = np.array([[a11 ** 2, 0, 0], [a11 * a21, a11 * a22, a11 * gamma],[0, 0, a11 ** 3]])
+    else:
+        K_11 = np.array([[a11, 0], [a21, a22]])
+        K_12 = np.array([[0], [gamma]])
+        K_21 = np.array([[0, 0]])
+        K_22 = np.array([[a11 ** 2]])
+    if TRANSFORMED:
+        Px,bx,Py,by = get_transform_matrices(dict_data)
+        # Transforming the matrix
+        K_11_t = np.matmul(Px,np.matmul(K_11,np.linalg.inv(Px)))
+        K_12_t = np.matmul(Px,K_12)
+        K_13_t = np.matmul(np.eye(len(K_11)) - K_11_t,bx)
+        K_21_t = np.matmul(K_21,np.linalg.inv(Px))
+        K_22_t = K_22
+        K_23_t = np.matmul(K_21_t,bx)
+        # Forming the complete matrix
+        K_1_t = np.concatenate([np.concatenate([K_11_t,K_12_t],axis=1),K_13_t],axis=1)
+        K_2_t = np.concatenate([np.concatenate([K_21_t,K_22_t],axis=1),K_23_t],axis=1)
+        K_3_t = np.zeros(shape=(1,len(K_1_t[0])))
+        K_3_t[-1,-1] = 1
+        K = np.concatenate([np.concatenate([K_1_t,K_2_t],axis=0),K_3_t],axis=0)
+    else:
+        K_1 = np.concatenate([K_11, K_12], axis=1)
+        K_2 = np.concatenate([K_21, K_22], axis=1)
+        K = np.concatenate([K_1, K_2], axis=0)
+    return K
+
+def get_sys_params():
+    a11 = 0.9
+    a21 = -0.4
+    a22 = -0.8
     gamma = -0.9
+    return a11,a21,a22,gamma
+
+
+def phase_portrait_data(TRANSFORMED= True):
+    # System Parameters
+    a11, a21, a22, gamma = get_sys_params()
+    A = np.array([[a11,0.],[a21,a22]])
     # Simulation Parameters
     N_data_points = 30
     sys_params = {'A':A , 'gamma': gamma, 'N_data_points': N_data_points}
@@ -89,13 +158,10 @@ def phase_portrait_data():
         dict_phase_data[i] = oc.sim_sys_1_2(sys_params)
         i = i+1
     # Theoretical results
-    a11 = 0.9
-    a21 = -0.4
-    a22 = -0.8
-    gamma = -0.9
-    K_t = np.array(
-        [[a11, 0, 0, 0, 0], [a21, a22, gamma, 0, 0], [0, 0, a11 ** 2, 0, 0], [0, 0, a11 * a21, a11 * a22, a11 * gamma],
-         [0, 0, 0, 0, a11 ** 3]])
+    if TRANSFORMED:
+        K_t = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True)
+    else:
+        K_t = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = False)
     eval_t, W_t = np.linalg.eig(K_t)
     idx = eval_t.argsort()
     eval_t = eval_t[idx]
@@ -108,20 +174,28 @@ def phase_portrait_data():
     # x2 = np.arange(-10, 10.5, 0.5)
     x2 = np.arange(-150, 20, 4)
     X1, X2 = np.meshgrid(x1, x2)
-    # PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
-    # PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 3))
-    PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
-    PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
+    if TRANSFORMED:
+        PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 6))
+        PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 6))
+    else:
+        PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
+        PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
+
     for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
         x1_i = X1[i, j]
         x2_i = X2[i, j]
-        # psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2]]))
-        psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
+        if TRANSFORMED:
+            psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3, 1]]))
+        else:
+            psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
         PHI_theo[i, j, :] = np.matmul(Wi_t, psiXT_i.T).reshape((1, 1, -1))
         PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
 
-    K_t3 = np.array(
-        [[a11, 0, 0], [a21, a22, gamma], [0, 0, a11 ** 2]])
+    if TRANSFORMED:
+        K_t3 = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=True)
+    else:
+        K_t3 = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=False)
+    # K_t3 = np.array([[a11, 0, 0], [a21, a22, gamma], [0, 0, a11 ** 2]])
     eval_t3, W_t3 = np.linalg.eig(K_t3)
     idx = eval_t3.argsort()
     eval_t3 = eval_t3[idx]
@@ -134,15 +208,23 @@ def phase_portrait_data():
     # x2_3 = np.arange(-10, 10.5, 0.5)
     x2_3 = np.arange(-150, 20, 4)
     X1_3, X2_3 = np.meshgrid(x1_3, x2_3)
-    PHI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 3))
-    PSI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 3))
+    if TRANSFORMED:
+        PHI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 4))
+        PSI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 4))
+    else:
+        PHI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 3))
+        PSI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 3))
     for i, j in itertools.product(range(X1_3.shape[0]), range(X1_3.shape[1])):
         x1_i3 = X1_3[i, j]
         x2_i3 = X2_3[i, j]
-        psiXT_i3 = np.array(([[x1_i3, x2_i3, x1_i3 ** 2]]))
+        if TRANSFORMED:
+            psiXT_i3 = np.array(([[x1_i3, x2_i3, x1_i3 ** 2,1]]))
+        else:
+            psiXT_i3 = np.array(([[x1_i3, x2_i3, x1_i3 ** 2]]))
         PHI_theo3[i, j, :] = np.matmul(Wi_t3, psiXT_i3.T).reshape((1, 1, -1))
         PSI_theo3[i, j, :] = psiXT_i3.reshape((1, 1, -1))
     return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, W_t, comp_modes, comp_modes_conj, PHI_theo3, PSI_theo3, X1_3, X2_3, E3, W_t3, comp_modes3, comp_modes_conj3
+
 def get_dict_param(run_folder_name_curr,SYS_NO,sess,nn=False):
     dict_p = {}
     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_curr + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -446,7 +528,10 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
     df_r2 = pd.DataFrame(dict_r2)
     print(df_r2)
     return df_r2
-dict_phase_data, PHI_theo, PSI_theo, X1_theo, X2_theo, E_theo, W_theo, comp_modes_theo, comp_modes_conj_theo, PHI_theo3, PSI_theo3, X1_theo3, X2_theo3, E_theo3, W_theo3, comp_modes_theo3, comp_modes_conj_theo3 = phase_portrait_data()
+
+
+TRANSFORMATION_STATUS = True
+dict_phase_data, PHI_theo, PSI_theo, X1_theo, X2_theo, E_theo, W_theo, comp_modes_theo, comp_modes_conj_theo, PHI_theo3, PSI_theo3, X1_theo3, X2_theo3, E_theo3, W_theo3, comp_modes_theo3, comp_modes_conj_theo3 = phase_portrait_data(TRANSFORMATION_STATUS )
 # ##
 #
 dict_params = {}
@@ -752,7 +837,7 @@ for row_i in range(6):
         X1 = X1_theo3
         X2 = X2_theo3
         E = np.diag(E_theo3)
-    if row_i == 1:
+    if row_i == 3:
         # x DMD modes
         comp_modes_conj = comp_modes_conj_theo
         comp_modes = comp_modes_theo
@@ -761,7 +846,7 @@ for row_i in range(6):
         X1 = X1_theo
         X2 = X2_theo
         E = np.diag(E_theo)
-    elif row_i ==2:
+    elif row_i ==1:
         # x DMD modes
         comp_modes_conj = comp_modes_conj_DEEP_X
         comp_modes = comp_modes_DEEP_X
@@ -769,7 +854,7 @@ for row_i in range(6):
         X1 = X1_DEEP_X
         X2 = X2_DEEP_X
         E = E_DEEP_X
-    elif row_i ==3:
+    elif row_i ==2:
         # Dir ocdDMD modes
         comp_modes_conj = comp_modes_conj_DEEPDMD_SUBOPT
         comp_modes = comp_modes_DEEPDMD_SUBOPT
@@ -945,62 +1030,8 @@ f.show()
 
 ## Theoretical with scaling
 
-def get_transform_matrices(dict_data):
-    # Sorting into deep DMD format
-    N_CURVES = len(dict_data)
-    ls_all_indices = np.arange(int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
-    # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
-    print('[INFO]: Shape of Y : ', dict_data[0]['Y'].shape)
-    n_data_pts = dict_data[0]['X'].shape[0]
-    Xp = np.empty((0, dict_data[0]['X'].shape[1]))
-    Xf = np.empty((0, dict_data[0]['X'].shape[1]))
-    Yp = np.empty((0, dict_data[0]['Y'].shape[1]))
-    Yf = np.empty((0, dict_data[0]['Y'].shape[1]))
-    for i in ls_all_indices:
-        Xp = np.concatenate([Xp, dict_data[i]['X'][0:-1, :]], axis=0)
-        Xf = np.concatenate([Xf, dict_data[i]['X'][1:, :]], axis=0)
-        Yp = np.concatenate([Yp, dict_data[i]['Y'][0:-1, :]], axis=0)
-        Yf = np.concatenate([Yf, dict_data[i]['Y'][1:, :]], axis=0)
-    dict_DATA_RAW = {'Xp': Xp, 'Xf': Xf, 'Yp': Yp, 'Yf': Yf}
-    n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
-    dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
-                           'Yp': dict_DATA_RAW['Yp'][0:n_train], 'Yf': dict_DATA_RAW['Yf'][0:n_train]}
-    # _, dict_Scaler, _ = scale_train_data(dict_DATA_TRAIN_RAW, 'min max')
-    _, dict_Scaler, transform_matrices = oc.scale_train_data(dict_DATA_TRAIN_RAW, 'standard')
-    Px = transform_matrices['X_PT']
-    bx = transform_matrices['X_bT'].T
-    Py = transform_matrices['Y_PT']
-    by = transform_matrices['Y_bT'].T
-    return Px,bx,Py,by
-##
-Px,bx,Py,by = get_transform_matrices(dict_data)
-a11 = 0.9
-a21 = -0.4
-a22 = -0.8
-gamma = -0.9
-K_11 = np.array([[a11, 0], [a21, a22]])
-K_12 = np.array([[0, 0, 0], [gamma, 0, 0]])
-K_21 = np.array([[0, 0], [0, 0] , [0,0]])
-K_22 = np.array([[a11 ** 2, 0, 0], [a11 * a21, a11 * a22, a11 * gamma],[0, 0, a11 ** 3]])
-
-
-K_11_t = np.matmul(Px,np.matmul(K_11,np.linalg.inv(Px)))
-K_12_t = np.matmul(Px,K_12)
-K_13_t = np.matmul(np.eye(len(K_11)) - K_11_t,bx)
-K_21_t = np.matmul(K_21,np.linalg.inv(Px))
-K_22_t = K_22
-K_23_t = np.matmul(K_21_t,bx)
-
-K_1_t = np.concatenate([np.concatenate([K_11_t,K_12_t],axis=1),K_13_t],axis=1)
-K_2_t = np.concatenate([np.concatenate([K_21_t,K_22_t],axis=1),K_23_t],axis=1)
-K_3_t = np.zeros(shape=(1,len(K_1_t[0])))
-K_3_t[-1,-1] = 1
-K_t = np.concatenate([np.concatenate([K_1_t,K_2_t],axis=0),K_3_t],axis=0)
-
-
-K = np.array(
-    [[a11, 0, 0, 0, 0], [a21, a22, gamma, 0, 0], [0, 0, a11 ** 2, 0, 0], [0, 0, a11 * a21, a11 * a22, a11 * gamma],
-     [0, 0, 0, 0, a11 ** 3]])
-
-SYSTEM_NO = 11
-
+for i in range(5):
+    print(corr(PHI_SEQ[:,:,i].reshape(-1),PHI_theo[:,:,i].reshape(-1))[0])
+print('-----')
+for i in range(5):
+    print(corr(PHI_DEEPDMD[:,:,i].reshape(-1),PHI_theo[:,:,i].reshape(-1))[0])

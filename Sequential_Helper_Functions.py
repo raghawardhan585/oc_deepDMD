@@ -319,7 +319,8 @@ def generate_predictions_pickle_file_output_only(SYSTEM_NO,ls_process_run_indice
 def get_error_output(ls_indices,dict_Y):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
-        all_errors = np.square(dict_Y[i]['Y'] - dict_Y[i]['Y_pred'])
+        # all_errors = np.square(dict_Y[i]['Y'] - dict_Y[i]['Y_pred'])
+        all_errors = np.square(dict_Y[i]['Y_scaled'] - dict_Y[i]['Y_scaled_pred'])
         J_error = np.append(J_error, np.mean(all_errors))
     # J_error = np.log10(np.max(J_error))
     J_error = np.mean(J_error)
