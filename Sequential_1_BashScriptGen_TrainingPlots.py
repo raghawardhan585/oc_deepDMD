@@ -41,10 +41,10 @@ dict_hp['y']['ls_dict_size'] = [1,1,1]
 dict_hp['y']['ls_nn_layers'] = [7,8,9]
 dict_hp['y']['ls_nn_nodes'] = [2,4]
 dict_hp['xy']={}
-dict_hp['xy']['ls_dict_size'] = [1,1]
+dict_hp['xy']['ls_dict_size'] = [1,1,1]
 dict_hp['xy']['ls_nn_layers'] = [7,8,9]
 dict_hp['xy']['ls_nn_nodes'] = [2,3,4]
-process_variable = 'y'
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -225,7 +225,7 @@ print(dict_hp)
 # SYSTEM_NO = 10
 # ls_run_no = list(range(45,63))
 SYSTEM_NO = 11
-ls_run_no = list(range(30,42)) #48
+ls_run_no = list(range(30,60)) #48
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
 # SYSTEM_NO = 60
@@ -363,7 +363,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 # SYSTEM_NO = 10
 # RUN_NO = 45
 SYSTEM_NO = 11
-RUN_NO = 32
+RUN_NO = 57#32
 # SYSTEM_NO = 53
 # RUN_NO = 308
 # SYSTEM_NO = 60
@@ -577,7 +577,7 @@ plt.show()
 
 ## SPECIFIC TO SYSTEM 1 - Comparing the computed output with the
 SYSTEM_NO = 11
-ls_output_runs = list(range(30,42))
+ls_output_runs = list(range(30,60))
 NORMALIZE = True
 
 x1 = np.arange(-10, 10.5, 0.5)
