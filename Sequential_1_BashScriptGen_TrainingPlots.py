@@ -147,14 +147,17 @@ seq.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,45)) # Runs for which we want to calculate the error
-SYSTEM_NO = 11
-ls_process_runs = list(range(0,30)) # Runs for which we want to calculate the error
+# SYSTEM_NO = 11
+# ls_process_runs = list(range(0,30)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 30
 # ls_process_runs = list(range(52,62)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,283)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,41)) # Runs for which we want to calculate the error
+# ls_process_runs = list(range(84,85))
+SYSTEM_NO = 61
+ls_process_runs = list(range(0,18))
 # ls_process_runs = list(range(84,85))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,80)) # Runs for which we want to calculate the error

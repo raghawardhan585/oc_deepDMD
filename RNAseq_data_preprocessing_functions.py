@@ -325,25 +325,44 @@ from bioservices import UniProt
 # For the valid column names refer to the website: https://www.uniprot.org/help/uniprotkb_column_names
 
 
-def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', search_columns='entry name,length,id, genes,comment(FUNCTION)'):
-    for locus_tag in ls_all_locus_tags:#ls_all_locus_tags[0:-1]:
-        query_search = locus_tag + ' AND ' + species_id
-        up = UniProt()
-        search_result = up.search(query_search, frmt='tab',columns=search_columns)
 
-        # Creating the dataframe with the obtained entries
-        # up - uniprot
-        str_up_ALL = search_result.split('\n')
-        ls_up = []
-        for each_line in str_up_ALL[1:]:
-            ls_up.append(each_line.split('\t'))
-        df_inter = pd.DataFrame(ls_up[0:-1])
-        df_inter.columns = str_up_ALL[0].split('\t')
-        try:
-            df_up = pd.concat([df_up,df_inter],axis=0)
-        except:
-            df_up = copy.deepcopy(df_inter)
+def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', search_columns='entry name,length,id, genes,comment(FUNCTION)'):
+    query_search = '\"' + species_id + '\" AND ('
+    for locus_tag in ls_all_locus_tags[0:-1]:
+        query_search = query_search + '\"' + locus_tag + '\" OR '
+    query_search = query_search + '\"' + ls_all_locus_tags[-1] + '\")'
+    up = UniProt()
+    search_result = up.search(query_search, frmt='tab',columns=search_columns)
+    # Creating the dataframe with the obtained entries
+    # up - uniprot
+    str_up_ALL = search_result.split('\n')
+    ls_up = []
+    for each_line in str_up_ALL[1:]:
+        ls_up.append(each_line.split('\t'))
+    df_up = pd.DataFrame(ls_up[0:-1])
+    df_up.columns = str_up_ALL[0].split('\t')
     return df_up
+
+# SUB OPTIMAL CODE
+# def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', search_columns='entry name,length,id, genes,comment(FUNCTION)'):
+#     for locus_tag in ls_all_locus_tags:#ls_all_locus_tags[0:-1]:
+#         query_search = locus_tag + ' AND ' + species_id
+#         up = UniProt()
+#         search_result = up.search(query_search, frmt='tab',columns=search_columns)
+#
+#         # Creating the dataframe with the obtained entries
+#         # up - uniprot
+#         str_up_ALL = search_result.split('\n')
+#         ls_up = []
+#         for each_line in str_up_ALL[1:]:
+#             ls_up.append(each_line.split('\t'))
+#         df_inter = pd.DataFrame(ls_up[0:-1])
+#         df_inter.columns = str_up_ALL[0].split('\t')
+#         try:
+#             df_up = pd.concat([df_up,df_inter],axis=0)
+#         except:
+#             df_up = copy.deepcopy(df_inter)
+#     return df_up
 
 
 # def get_gene_Uniprot_DATA_old(species_id='KT2440', ls_all_locus_tags='PP_0123',
