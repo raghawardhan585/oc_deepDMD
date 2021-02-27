@@ -41,10 +41,10 @@ dict_hp['y']['ls_dict_size'] = [1,1,1]
 dict_hp['y']['ls_nn_layers'] = [7,8,9]
 dict_hp['y']['ls_nn_nodes'] = [2,4]
 dict_hp['xy']={}
-dict_hp['xy']['ls_dict_size'] = [1,1,1]
-dict_hp['xy']['ls_nn_layers'] = [7,8,9]
-dict_hp['xy']['ls_nn_nodes'] = [2,3,4]
-process_variable = 'y'
+dict_hp['xy']['ls_dict_size'] = [1,1,1,2,2,2,3,3]
+dict_hp['xy']['ls_nn_layers'] = [8,9]
+dict_hp['xy']['ls_nn_nodes'] = [3,4]
+process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -224,12 +224,14 @@ print(dict_hp)
 ## RUN 2 - Training error plot [USELESS UNLESS DEBUGGING]
 # SYSTEM_NO = 10
 # ls_run_no = list(range(45,63))
-SYSTEM_NO = 11
-ls_run_no = list(range(30,60)) #48
+# SYSTEM_NO = 11
+# ls_run_no = list(range(30,60)) #48
 # SYSTEM_NO = 53
 # ls_run_no = list(range(284,316))
 # SYSTEM_NO = 60
 # ls_run_no = list(range(42,60))
+SYSTEM_NO = 61
+ls_run_no = list(range(18,32))
 # SYSTEM_NO = 70
 # ls_run_no = list(range(80,110))
 # SYSTEM_NO = 80
@@ -364,12 +366,14 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 ## RUN 2 - Saving the Optimal Results of the Second Run
 # SYSTEM_NO = 10
 # RUN_NO = 45
-SYSTEM_NO = 11
-RUN_NO = 57#32
+# SYSTEM_NO = 11
+# RUN_NO = 57#32
 # SYSTEM_NO = 53
 # RUN_NO = 308
 # SYSTEM_NO = 60
 # RUN_NO = 58
+SYSTEM_NO = 61
+RUN_NO = 18 #27
 # SYSTEM_NO = 70
 # RUN_NO = 104
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -459,8 +463,10 @@ plt.show()
 
 
 ## SPECIFIC TO SYSTEM 11 - Comparing the computed output with the
-SYSTEM_NO = 11
-ls_output_runs = list(range(30,60))
+# SYSTEM_NO = 11
+# ls_output_runs = list(range(30,60))
+SYSTEM_NO = 61
+ls_output_runs = list(range(18,32))
 NORMALIZE = True
 
 x1 = np.arange(-10, 10.5, 0.5)
@@ -468,8 +474,13 @@ x2 = np.arange(-10, 10.5, 0.5)
 # x2 = np.arange(-150, 20, 4)
 X1, X2 = np.meshgrid(x1, x2)
 Y_theo = np.zeros(shape=(X1.shape[0], X1.shape[1],1))
-for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
-    Y_theo[i,j,0] = X1[i, j]*X2[i, j]
+
+if SYSTEM_NO in [10,11]:
+    for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+        Y_theo[i,j,0] = X1[i, j]*X2[i, j]
+elif SYSTEM_NO in [61]:
+    for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
+        Y_theo[i,j,0] = X2[i, j] / (1 + 0.6 * X1[i, j] ** 3)
 
 N_RUNS = len(ls_output_runs)
 N_COLS = np.int(np.ceil(np.sqrt(N_RUNS+1)))
@@ -485,7 +496,7 @@ p = 1
 Y_all = copy.deepcopy(Y_theo)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 for run_i in ls_output_runs:
-    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(i)
+    run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(run_i)
     if os.path.exists(run_folder_name):
         print('RUN: ', run_i)
         sess = tf.InteractiveSession()
