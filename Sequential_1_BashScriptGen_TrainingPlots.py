@@ -397,126 +397,7 @@ for run_i in ls_process_runs:
         ls_filtered_runs.append(run_i)
 print(ls_filtered_runs)
 
-## SYSTEM 1 ANALYSIS
-SYSTEM_NO = 7
-ls_process_runs = list(range(0, 72))
-ls_steps = list(range(3,25,3))
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
-    var_i = pickle.load(handle)
-N_CURVES = len(var_i.keys())
-del var_i
-ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
-ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
-ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-ls_train_and_valid_curves = list(range(int(np.floor(2*N_CURVES/3))))
-dict_obs = {}
-ls_obs_unique = []
-# Get the unique observables
-for run in ls_process_runs:
-    with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
-        d = pickle.load(handle)
-    obs_curr = (d['x_obs'],d['y_obs'],d['xy_obs'])
-    dict_obs[run] = obs_curr
-    if obs_curr not in ls_obs_unique:
-        ls_obs_unique.append(obs_curr)
-
-dict_run_sorted_by_obs ={}
-for obs in ls_obs_unique:
-    dict_run_sorted_by_obs[obs] = []
-    for i in dict_obs.keys():
-        if dict_obs[i] == obs:
-            dict_run_sorted_by_obs[obs].append(i)
-dict_opt_runs={}
-dict_r2_opt={}
-for items in dict_run_sorted_by_obs.keys():
-    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
-    opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
-    dict_opt_runs[items] = opt_index
-    dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
-##
-df_r2_opt = pd.DataFrame(dict_r2_opt)
-plt.figure()
-i=0
-for items in df_r2_opt.columns:
-    label_curr = 'n_x = ' + str(items[0]) + '  n_y = ' + str(items[1]) + ' n_xy = ' + str(items[2])
-    plt.plot(df_r2_opt[items],color = colors[i],label = label_curr)
-    i=i+1
-plt.legend()
-plt.ylim([99.975,100])
-plt.show()
-
-# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
-#     dict_indexed_data = pickle.load(handle)
-
-## SYSTEM 2 ANALYSIS
-
-SYSTEM_NO = 53
-ls_process_runs = list(range(0,204))#set(range(0, 120)).union(range(216,260))
-# ls_process_runs = list(range(124, 164))
-ls_steps = list(range(1,20,1))
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
-    var_i = pickle.load(handle)
-N_CURVES = len(var_i.keys())
-del var_i
-ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
-ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
-ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-ls_train_and_valid_curves = list(range(int(np.floor(2*N_CURVES/3))))
-
-dict_obs = {}
-ls_obs_unique = []
-# Get the unique observables
-for run in ls_process_runs:
-    with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
-        d = pickle.load(handle)
-    # obs_curr = (d['x_obs'],d['y_obs'],d['xy_obs'])
-    obs_curr = d['x_obs']
-    # obs_curr = d['xy_obs']
-    dict_obs[run] = obs_curr
-    if obs_curr not in ls_obs_unique:
-        ls_obs_unique.append(obs_curr)
-
-
-dict_run_sorted_by_obs ={}
-for obs in ls_obs_unique:
-    dict_run_sorted_by_obs[obs] = []
-    for i in dict_obs.keys():
-        if dict_obs[i] == obs:
-            dict_run_sorted_by_obs[obs].append(i)
-
-dict_r2_opt={}
-dict_opt_runs={}
-for items in dict_run_sorted_by_obs.keys():
-    # df_r2, df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO, dict_run_sorted_by_obs[items], ls_steps,ls_train_curves)
-    df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,dict_run_sorted_by_obs[items],ls_steps,ls_train_and_valid_curves)
-    opt_index = df_r2.mean(axis=0)[df_r2.mean(axis=0) ==df_r2.mean(axis=0).max()].index[0]
-    dict_opt_runs[items] = opt_index
-    dict_r2_opt[items] = df_r2.loc[:,opt_index].to_dict()
-
-##
-df_r2_opt = pd.DataFrame(dict_r2_opt)
-df_r2_opt = df_r2_opt.sort_index(axis=1)
-plt.figure()
-i=0
-for items in df_r2_opt.columns:
-    label_curr = ' n_x = ' + str(items)
-    # label_curr = ' n_xy = ' + str(items)
-    plt.plot(df_r2_opt[items],color = colors[np.mod(i,7)],linewidth = np.int(i/7)+1 ,label = label_curr)
-    i=i+1
-plt.legend()
-# plt.ylim([99.975,100])
-plt.xlabel('Number of prediction steps')
-plt.ylabel('r^2 accuracy(in %)')
-plt.show()
-##
-
-df_r2,df_rmse = seq.n_step_prediction_error_table(SYSTEM_NO,[8],ls_steps,ls_test_curves)
-
-
-## Calculating the required error statistics
+## Calculating the required error statistics [TO PUT IN THE PAPER]
 
 SYS_NO = 53
 RUN_NO = 344
@@ -577,7 +458,7 @@ for i in range(300):
 plt.show()
 
 
-## SPECIFIC TO SYSTEM 1 - Comparing the computed output with the
+## SPECIFIC TO SYSTEM 11 - Comparing the computed output with the
 SYSTEM_NO = 11
 ls_output_runs = list(range(30,60))
 NORMALIZE = True
@@ -601,9 +482,6 @@ if NORMALIZE:
 else:
     c = ax[0].pcolor(X1, X2, Y_theo[:,:,0], cmap='rainbow', vmin=np.min(Y_theo[:,:,0]), vmax=np.max(Y_theo))
 p = 1
-
-
-
 Y_all = copy.deepcopy(Y_theo)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 for run_i in ls_output_runs:
@@ -628,7 +506,29 @@ for run_i in ls_output_runs:
         tf.reset_default_graph()
         sess.close()
         p = p + 1
-
-
 f.show()
+
+##
+
+N_STEPS = 1000
+SYSTEM_NO = 61
+RUN_NO = 2
+# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+sess = tf.InteractiveSession()
+dict_params, _, dict_indexed_data = seq.get_all_run_info(SYSTEM_NO, RUN_NO, sess)
+f2,ax = plt.subplots(3,1)
+x_i_range = np.arange(-2,-1.5,0.5)
+for x0_1,x0_2 in itertools.product(x_i_range,x_i_range):
+    X = np.array([[x0_1,x0_2]])
+    psiXT = dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: X[-1:]})
+    for i in range(N_STEPS):
+        psiXT = np.matmul(psiXT,dict_params['KxT_num'])
+        X = np.concatenate([X,psiXT[:,0:2]],axis=0)
+    ax[0].plot(X[:,0],X[:,1],'b')
+    ax[1].plot(X[:,0],'b')
+    ax[2].plot(X[:,1],'b')
+f2.show()
+tf.reset_default_graph()
+sess.close()
+
 
