@@ -311,7 +311,7 @@ x_max= np.asarray([2,2])
 MEMS_accel = (m,k1_l,c,k3_nl)
 # Simulation Parameters
 sampling_time = 0.1
-simulation_time = 15
+simulation_time = 10
 N_CURVES = 300
 ls_prediction_steps=[1]
 sys_params = {'sys_params_MEMS_accel': MEMS_accel , 'Vs': Vs, 'd':d ,'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
