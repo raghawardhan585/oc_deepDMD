@@ -553,6 +553,11 @@ def duffing_oscillator(x,t,alpha,beta,delta):
     x2dot = - delta*x[1] - x[0] *(beta + alpha*(x[0]**2))
     return np.array([x1dot,x2dot])
 
+def MEMS_accelerometer(x,t,m,k,c,k3):
+    x1dot = x[1]
+    x2dot = - k/m*x[0] - c/m*x[1]  - k3/m*x[0]**3
+    return np.array([x1dot,x2dot])
+
 def incoherent_feedforward_loop(x,t,k1,gamma1,k2n,k2d,gamma2):
     x1dot = k1 - gamma1*x[0]
     x2dot = - gamma2 * x[1] + k2n/(k2d+x[0])
@@ -676,6 +681,40 @@ def data_gen_sys_duffing_oscillator(sys_params, N_CURVES,SYSTEM_NO):
         Y1 = np.exp(sys_params['gamma'] * X[:, 1:2])*np.cos(X[:, 0:1])
         Y2 = np.exp(X[:, 0:1] + X[:, 1:2])
         Y = np.concatenate([Y1,Y2],axis=1)
+        print(Y.shape)
+        dict_indexed_data[i]= {'X':X,'Y':Y}
+        plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
+    plt.plot(X0[:,0],X0[:,1],'*')
+    plt.show()
+    plt.figure()
+    sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO)
+    return
+
+def data_gen_sys_MEMS_accelerometer(sys_params, N_CURVES,SYSTEM_NO):
+    # Create a folder for the system and store the data
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        shutil.rmtree(storage_folder)
+        os.mkdir(storage_folder)
+        # get_input = input('Do you wanna delete the existing system[y/n]? ')
+        # if get_input == 'y':
+        #     shutil.rmtree(storage_folder)
+        #     os.mkdir(storage_folder)
+        # else:
+        #     return
+    else:
+        os.mkdir(storage_folder)
+    # Simulation
+    dict_indexed_data = {}
+    plt.figure()
+    X0 = np.empty(shape=(0,2))
+    t = np.arange(0, sys_params['t_end'], sys_params['Ts'])
+    for i in range(N_CURVES):
+        x0_curr = np.random.uniform(sys_params['x_min'],sys_params['x_max'])
+        X0 = np.concatenate([X0,x0_curr.reshape(1,-1)],axis=0)
+        X = odeint(MEMS_accelerometer, x0_curr, t, args = sys_params['sys_params_MEMS_accel'])
+        print(X.shape)
+        Y = -X[:, 0:1]*sys_params['Vs']/ (sys_params['d'] + X[:, 0:1])
         print(Y.shape)
         dict_indexed_data[i]= {'X':X,'Y':Y}
         plt.plot(dict_indexed_data[i]['X'][:,0],dict_indexed_data[i]['X'][:,1])
