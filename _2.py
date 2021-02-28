@@ -529,7 +529,8 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
     print(df_r2)
     return df_r2
 
-
+SPARSE_K = False
+SPARSE_THRESHOLD = 1e-2
 TRANSFORMATION_STATUS = True
 dict_phase_data, PHI_theo, PSI_theo, X1_theo, X2_theo, E_theo, W_theo, comp_modes_theo, comp_modes_conj_theo, PHI_theo3, PSI_theo3, X1_theo3, X2_theo3, E_theo3, W_theo3, comp_modes_theo3, comp_modes_conj_theo3 = phase_portrait_data(TRANSFORMATION_STATUS )
 # ##
@@ -546,6 +547,12 @@ sess1.close()
 # dict_params = {}
 sess2 = tf.InteractiveSession()
 dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD ,SYS_NO,sess2)
+print(dict_params['Seq']['KxT_num'])
+if SPARSE_K:
+    for i, j in itertools.product(range(len(dict_params['Seq']['KxT_num'])),range(len(dict_params['Seq']['KxT_num'][0]))):
+        if np.abs(dict_params['Seq']['KxT_num'][i, j]) < SPARSE_THRESHOLD:
+            dict_params['Seq']['KxT_num'][i, j] = 0
+print(dict_params['Seq']['KxT_num'])
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
@@ -554,6 +561,12 @@ sess2.close()
 
 sess3 = tf.InteractiveSession()
 dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD ,SYS_NO,sess3)
+print(dict_params['Deep']['KxT_num'])
+if SPARSE_K:
+    for i, j in itertools.product(range(len(dict_params['Deep']['KxT_num'])),range(len(dict_params['Deep']['KxT_num'][0]))):
+        if np.abs(dict_params['Deep']['KxT_num'][i, j]) < SPARSE_THRESHOLD:
+            dict_params['Deep']['KxT_num'][i, j] = 0
+print(dict_params['Deep']['KxT_num'])
 df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
