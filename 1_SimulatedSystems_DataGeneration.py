@@ -295,6 +295,29 @@ oc.data_gen_sys_duffing_oscillator(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
 
+# ==========================
+## System 7 - Nonlinear MEMS accelerometer with Capacitive Sensing
+# ==========================
+# System Parameters
+m = 1
+k1_l = 1
+c = 0.7
+k3_nl = 0.9
+
+x_min= np.asarray([-2,-2]) # original
+x_max= np.asarray([2,2])
+sys_params_duffosc = (m,k1_l,c,k3_nl)
+# Simulation Parameters
+sampling_time = 0.1
+simulation_time = 15
+N_CURVES = 300
+ls_prediction_steps=[1]
+sys_params = {'sys_params_duffosc': sys_params_duffosc , 'gamma': gamma ,'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
+SYSTEM_NO = 80
+oc.data_gen_sys_duffing_oscillator(sys_params, N_CURVES,SYSTEM_NO)
+oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
+oc.plot_training_valid_test_states(SYSTEM_NO)
+
 #-----------------------------------------------------------------------------------------------------------------------
 ## Bash Script Generator
 #

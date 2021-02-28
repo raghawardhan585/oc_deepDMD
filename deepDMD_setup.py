@@ -32,7 +32,7 @@ NO_OF_ITERATIONS_PER_GPU = 1
 NO_OF_ITERATIONS_IN_CPU = 1
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [5,5,5,6,6]
+dict_hp['ls_dict_size'] = [4,4,3,3,6]
 dict_hp['ls_nn_layers'] = [9,10]
 dict_hp['ls_nn_nodes'] = [10,12]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
@@ -127,14 +127,15 @@ dp.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,74))
-SYSTEM_NO = 11
-# ls_process_runs = list(range(0,18))
-ls_process_runs = list(range(0,54))
+# SYSTEM_NO = 11
+# ls_process_runs = list(range(0,54))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
 # ls_process_runs = list(range(0,62))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(0,36))
+SYSTEM_NO = 61
+ls_process_runs = list(range(0,20))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 80

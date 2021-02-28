@@ -4,10 +4,10 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
-python3 deepDMD.py '/gpu:0' 61 0 5 10 10 > Run_info/SYS_61_RUN_0.txt &
-python3 deepDMD.py '/gpu:1' 61 1 5 10 12 > Run_info/SYS_61_RUN_1.txt &
-python3 deepDMD.py '/gpu:2' 61 2 5 9 10 > Run_info/SYS_61_RUN_2.txt &
-python3 deepDMD.py '/gpu:3' 61 3 5 9 12 > Run_info/SYS_61_RUN_3.txt &
+python3 deepDMD.py '/gpu:0' 61 0 4 10 10 > Run_info/SYS_61_RUN_0.txt &
+python3 deepDMD.py '/gpu:1' 61 1 4 10 12 > Run_info/SYS_61_RUN_1.txt &
+python3 deepDMD.py '/gpu:2' 61 2 3 9 10 > Run_info/SYS_61_RUN_2.txt &
+python3 deepDMD.py '/gpu:3' 61 3 3 9 12 > Run_info/SYS_61_RUN_3.txt &
 wait 
 python3 deepDMD.py '/gpu:0' 61 4 6 9 10 > Run_info/SYS_61_RUN_4.txt &
 python3 deepDMD.py '/gpu:1' 61 5 6 9 12 > Run_info/SYS_61_RUN_5.txt &
