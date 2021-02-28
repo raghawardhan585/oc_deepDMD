@@ -290,12 +290,14 @@ print(dict_hp)
 # Final Runs
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(63,81))
-SYSTEM_NO = 11
-ls_process_runs = list(range(60,87))
+# SYSTEM_NO = 11
+# ls_process_runs = list(range(60,87))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(316,348))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(60,78))
+SYSTEM_NO = 61
+ls_process_runs = list(range(32,64))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(110,170))
 # SYSTEM_NO = 80
@@ -313,9 +315,13 @@ with open(sys_folder_name + '/Sequential/RUN_' + str(opt_run) + '/dict_hyperpara
     dict_hp = pickle.load(handle)
 print('Optimal Run Hyperparameters')
 print(dict_hp)
-
+df_opt_stat = seq.get_run_performance_stats(SYSTEM_NO,opt_run)
 dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
+
+
 ##
+
+
 plot_params ={}
 plot_params['individual_fig_height'] = 5 #2
 plot_params['individual_fig_width'] = 4#2.4
@@ -328,7 +334,8 @@ ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 # f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True,one_step = True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=False)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=True)
+
 ## Plotting the observables
 plot_params={}
 plot_params['xy_label_font_size']=5

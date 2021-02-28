@@ -48,7 +48,8 @@ def get_error_x_and_y(ls_indices,dict_XY):
     J_error = np.empty(shape=(0,1))
     for i in ls_indices:
         # all_errors = np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step'])
-        all_errors = np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step'])
+        # all_errors = np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step'])
+        all_errors = np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_one_step'])
         # all_errors = np.square(dict_XY[i]['psiX'][:, 0:5] - dict_XY[i]['psiX_est_n_step'][:, 0:5])
         # all_errors = np.append(np.square(dict_XY[i]['X'] - dict_XY[i]['X_est_n_step']) , np.square(dict_XY[i]['Y'] - dict_XY[i]['Y_est_n_step']))
         # all_errors = np.append(all_errors, np.square(dict_XY[i]['psiX'] - dict_XY[i]['psiX_est_n_step']))
