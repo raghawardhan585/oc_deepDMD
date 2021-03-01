@@ -310,12 +310,12 @@ x_min= np.asarray([-2,-2]) # original
 x_max= np.asarray([2,2])
 MEMS_accel = (m,k1_l,c,k3_nl)
 # Simulation Parameters
-sampling_time = 0.1
-simulation_time = 10
+sampling_time = 0.5
+simulation_time = 15
 N_CURVES = 300
 ls_prediction_steps=[1]
 sys_params = {'sys_params_MEMS_accel': MEMS_accel , 'Vs': Vs, 'd':d ,'Ts': sampling_time, 't_end': simulation_time,'N_CURVES': N_CURVES, 'x_min': x_min, 'x_max':x_max}
-SYSTEM_NO = 90
+SYSTEM_NO = 91
 oc.data_gen_sys_MEMS_accelerometer(sys_params, N_CURVES,SYSTEM_NO)
 oc.plot_one_curve(SYSTEM_NO,CURVE_NO=0)
 oc.plot_training_valid_test_states(SYSTEM_NO)
