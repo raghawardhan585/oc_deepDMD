@@ -170,9 +170,9 @@ seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
 
 ## RUN 1 - Display hyperparameters of the runs
-# SYSTEM_NO = 53
+SYSTEM_NO = 11
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# ls_process_runs = [344]
+ls_process_runs = list(range(0,88))
 for run in ls_process_runs:
     with open(sys_folder_name + '/Sequential/RUN_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
         dict_hp = pickle.load(handle)

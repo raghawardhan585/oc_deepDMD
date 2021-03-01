@@ -23,7 +23,7 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.20784314, 0.81568629, 0.89411765],
           '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
-
+plt.rcParams["font.family"] = "Times"
 
 SYS_NO = 11
 # RUN_NO = 78
@@ -1060,9 +1060,9 @@ n_states = d_SEQ[CURVE_NO]['X'].shape[1]
 n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
 DOWNSAMPLE =1
 TRUTH_MARKER_SIZE = 15
-TICK_FONT_SIZE = 9
+TICK_FONT_SIZE = 12
 HEADER_SIZE = 21
-FONT_SIZE = 12
+FONT_SIZE = 14
 pl_max = 0
 pl_min = 0
 plt.figure()
@@ -1104,14 +1104,14 @@ a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Model 3',color = 'g
 a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Model 4',color = 'grey')
 
 
-l2 = plt.legend((a0,a1,a2,a3,a4),('Truth','Model 1','Model 2','Model 3','Model 4'),loc = "lower right",fontsize = FONT_SIZE)
+l2 = plt.legend((a0,a1,a2,a3,a4),('Truth','Model 1','Model 2','Model 3','Model 4'),loc = "lower right",fontsize = FONT_SIZE,ncol=2)
 plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
 plt.ylabel('n -step prediction of states and outputs',fontsize = FONT_SIZE)
 # plt.text(-6,0,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
 # plt.title('(b)',fontsize = FONT_SIZE)
-plt.ylim([pl_min-0.05,pl_max+0.5])
-plt.xticks(fontsize = TICK_FONT_SIZE)
-plt.yticks([],fontsize = TICK_FONT_SIZE)
+plt.ylim([pl_min-0.4,pl_max+0.8])
+plt.xticks([0,4,8,12,16,20],fontsize = TICK_FONT_SIZE)
+plt.yticks([-2,-1,0,1,2],fontsize = TICK_FONT_SIZE)
 plt.xlim([-0.1,19.1])
 
 plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
@@ -1121,3 +1121,5 @@ plt.show()
 # plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
 ##
 
+from sklearn.metrics import r2_score
+r2_score()
