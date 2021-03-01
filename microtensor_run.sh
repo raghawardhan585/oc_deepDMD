@@ -8,9 +8,13 @@ python3 ocdeepDMD_Sequential.py '/cpu:0' 91 0  3 8 6 1 1 1 1 1 1 > Run_info/SYS_
 wait 
 python3 ocdeepDMD_Sequential.py '/cpu:0' 91 1  3 8 8 1 1 1 1 1 1 > Run_info/SYS_91_RUN_1.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 2  3 9 6 1 1 1 1 1 1 > Run_info/SYS_91_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 2  4 8 8 1 1 1 1 1 1 > Run_info/SYS_91_RUN_2.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 3  3 9 8 1 1 1 1 1 1 > Run_info/SYS_91_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 3  4 8 10 1 1 1 1 1 1 > Run_info/SYS_91_RUN_3.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 4  5 8 10 1 1 1 1 1 1 > Run_info/SYS_91_RUN_4.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 5  5 8 6 1 1 1 1 1 1 > Run_info/SYS_91_RUN_5.txt &
 wait 
 wait 
 echo "All sessions are complete" 

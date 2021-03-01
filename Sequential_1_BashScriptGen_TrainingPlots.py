@@ -33,9 +33,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [3,3,3,4,4]
-dict_hp['x']['ls_nn_layers'] = [8,9]
-dict_hp['x']['ls_nn_nodes'] = [6,8]
+dict_hp['x']['ls_dict_size'] = [3,3,3,4,4,4,5,5,5]
+dict_hp['x']['ls_nn_layers'] = [8]
+dict_hp['x']['ls_nn_nodes'] = [6,8,10]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1,1]
 dict_hp['y']['ls_nn_layers'] = [7,8,9]
@@ -163,8 +163,10 @@ seq.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,80)) # Runs for which we want to calculate the error
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,106)) # Runs for which we want to calculate the error
-SYSTEM_NO = 90
-ls_process_runs = list(range(0,68)) # Runs for which we want to calculate the error
+# SYSTEM_NO = 90
+# ls_process_runs = list(range(0,68)) # Runs for which we want to calculate the error
+SYSTEM_NO = 91
+ls_process_runs = list(range(0,20)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
