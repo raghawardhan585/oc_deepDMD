@@ -15,11 +15,13 @@ from scipy.stats import pearsonr as corr
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
+          [0.37109375, 0.67578125, 0.38671875],
           [0.83137256, 0.53333336, 0.6156863],
           [0.03529412, 0.01960784, 0.14509805],
-          [0.90980393, 0.59607846, 0.78039217],
+          [0.8125   , 0.609375 , 0.0703125], #[0.90980393, 0.59607846, 0.78039217],
           [0.69803923, 0.87843138, 0.72941178],
-          [0.20784314, 0.81568629, 0.89411765]];
+          [0.20784314, 0.81568629, 0.89411765],
+          '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
 
 
@@ -55,12 +57,14 @@ with open(sys_folder_name + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle', 
 Ntrain = round(len(dict_oc_data['Xp'])/2)
 for items in dict_oc_data:
     dict_oc_data[items] = dict_oc_data[items][0:Ntrain]
-# with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
-#     d_SEQ = pickle.load(handle)[RUN_SEQ_DEEPDMD]
+with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
+    d_SEQ = pickle.load(handle)[RUN_SEQ_DEEPDMD]
 with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as handle:
     d_DDMD_X = pickle.load(handle)[DIR_DEEPDMD_X]
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
+with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
+    d_DDMD_SUBOPT = pickle.load(handle)[RUN_DIRECT_DEEPDMD_SUBOPT]
 # with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
 #     d_NN = pickle.load(handle)[RUN_NN]
 
@@ -1048,3 +1052,72 @@ for i in range(5):
 print('-----')
 for i in range(5):
     print(corr(PHI_DEEPDMD[:,:,i].reshape(-1),PHI_theo[:,:,i].reshape(-1))[0])
+
+
+##
+CURVE_NO = 250
+n_states = d_SEQ[CURVE_NO]['X'].shape[1]
+n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
+DOWNSAMPLE =1
+TRUTH_MARKER_SIZE = 15
+TICK_FONT_SIZE = 9
+HEADER_SIZE = 21
+FONT_SIZE = 12
+pl_max = 0
+pl_min = 0
+plt.figure()
+for i in range(n_states):
+    x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
+    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
+    plt.plot(d_DDMD_X[CURVE_NO]['X_est_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i],linewidth = 2)
+    plt.plot(d_DDMD_SUBOPT[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    plt.plot(d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashed', color=colors[i])
+    plt.plot(d_SEQ[CURVE_NO]['X_est_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
+    # plt.plot(d_NN[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
+for i in range(n_outputs):
+    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
+    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
+    plt.plot(d_DDMD_SUBOPT[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
+    plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashed', color=colors[n_states+i])
+    plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states + i])
+    # plt.plot(d_NN[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
+    # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
+    pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =1)
+# l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE)
+plt.gca().add_artist(l1)
+# l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
+# plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+# plt.ylabel('x,y [1 -step]',fontsize = FONT_SIZE)
+# plt.text(20,-1,'[1-step]',fontsize = FONT_SIZE)
+
+a0, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
+a1, = plt.plot([], linestyle ='dashdot',linewidth = 2,label='Model 1',color = 'grey')
+a2, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Model 2',color = 'grey')
+a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Model 3',color = 'grey')
+a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Model 4',color = 'grey')
+
+
+l2 = plt.legend((a0,a1,a2,a3,a4),('Truth','Model 1','Model 2','Model 3','Model 4'),loc = "lower right",fontsize = FONT_SIZE)
+plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
+plt.ylabel('n -step prediction of states and outputs',fontsize = FONT_SIZE)
+# plt.text(-6,0,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
+# plt.title('(b)',fontsize = FONT_SIZE)
+plt.ylim([pl_min-0.05,pl_max+0.5])
+plt.xticks(fontsize = TICK_FONT_SIZE)
+plt.yticks([],fontsize = TICK_FONT_SIZE)
+plt.xlim([-0.1,19.1])
+
+plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
+plt.savefig('Plots/eg1_TheoreticalExample_fit_pycharm.png')
+# plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
+plt.show()
+# plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
+##
+
