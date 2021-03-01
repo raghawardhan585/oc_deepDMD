@@ -68,7 +68,7 @@ with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
 # with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
 #     d_NN = pickle.load(handle)[RUN_NN]
 
-##
+#
 ls_steps = list(range(1,15,1))
 ls_curves = list(range(160, 240)) # test curves
 Senergy_THRESHOLD = 99.99
@@ -843,18 +843,34 @@ max_eigs = 6
 # ls_eig_order = np.array(list(set(ls_eig_order).union(set(E_theo))))
 # ls_eig_order = np.concatenate([ls_eig_order,np.array([1])],axis=0)
 epsilon = 0.001
-f,ax = plt.subplots(6,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,18))
-for row_i in range(6):
-    if row_i ==0:
-        # x DMD modes
-        comp_modes_conj = comp_modes_conj_theo3
-        comp_modes = comp_modes_theo3
-        PHI = PHI_theo3
-        # PHI = PSI_theo
-        X1 = X1_theo3
-        X2 = X2_theo3
-        E = np.diag(E_theo3)
-    if row_i == 3:
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(2.5*max_eigs,9))
+for row_i in range(3):
+    # if row_i ==0:
+    #     # x DMD modes
+    #     comp_modes_conj = comp_modes_conj_theo3
+    #     comp_modes = comp_modes_theo3
+    #     PHI = PHI_theo3
+    #     # PHI = PSI_theo
+    #     X1 = X1_theo3
+    #     X2 = X2_theo3
+    #     E = np.diag(E_theo3)
+    # elif row_i ==1:
+    #     # x DMD modes
+    #     comp_modes_conj = comp_modes_conj_DEEP_X
+    #     comp_modes = comp_modes_DEEP_X
+    #     PHI = PHI_DEEP_X
+    #     X1 = X1_DEEP_X
+    #     X2 = X2_DEEP_X
+    #     E = E_DEEP_X
+    # elif row_i ==2:
+    #     # Dir ocdDMD modes
+    #     comp_modes_conj = comp_modes_conj_DEEPDMD_SUBOPT
+    #     comp_modes = comp_modes_DEEPDMD_SUBOPT
+    #     PHI = PHI_DEEPDMD_SUBOPT
+    #     X1 = X1_DEEPDMD_SUBOPT
+    #     X2 = X2_DEEPDMD_SUBOPT
+    #     E = E_DEEPDMD_SUBOPT
+    if row_i == 0:
         # x DMD modes
         comp_modes_conj = comp_modes_conj_theo
         comp_modes = comp_modes_theo
@@ -864,22 +880,6 @@ for row_i in range(6):
         X2 = X2_theo
         E = np.diag(E_theo)
     elif row_i ==1:
-        # x DMD modes
-        comp_modes_conj = comp_modes_conj_DEEP_X
-        comp_modes = comp_modes_DEEP_X
-        PHI = PHI_DEEP_X
-        X1 = X1_DEEP_X
-        X2 = X2_DEEP_X
-        E = E_DEEP_X
-    elif row_i ==2:
-        # Dir ocdDMD modes
-        comp_modes_conj = comp_modes_conj_DEEPDMD_SUBOPT
-        comp_modes = comp_modes_DEEPDMD_SUBOPT
-        PHI = PHI_DEEPDMD_SUBOPT
-        X1 = X1_DEEPDMD_SUBOPT
-        X2 = X2_DEEPDMD_SUBOPT
-        E = E_DEEPDMD_SUBOPT
-    elif row_i ==4:
         # Dir ocdDMD modes
         comp_modes_conj = comp_modes_conj_DEEPDMD
         comp_modes = comp_modes_DEEPDMD
@@ -887,7 +887,7 @@ for row_i in range(6):
         X1 = X1_DEEPDMD
         X2 = X2_DEEPDMD
         E = E_DEEPDMD
-    elif row_i ==5:
+    elif row_i ==2:
         # Seq ocdDMD modes
         comp_modes_conj = comp_modes_conj_SEQ
         comp_modes = comp_modes_SEQ
@@ -904,7 +904,6 @@ for row_i in range(6):
                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow',vmin=-1, vmax=1)
             else:
                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
             ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
             ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
@@ -913,7 +912,6 @@ for row_i in range(6):
                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
             else:
                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
             ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
             ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
@@ -921,6 +919,8 @@ for row_i in range(6):
         ax[row_i, p].set_xticks([-8, 0, 8])
         ax[row_i, p].set_yticks(np.arange(-140,10,20))
         p = p+1
+        if p == PHI.shape[-1]:
+            f.colorbar(c, ax=ax[row_i, p-1])
 
 f.show()
 
@@ -1119,7 +1119,84 @@ plt.savefig('Plots/eg1_TheoreticalExample_fit_pycharm.png')
 # plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
 plt.show()
 # plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
+
+
+## MODES FIGURE
+NORMALIZE = True
+title = ''
+FONT_SIZE = 14
+max_eigs = 6
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X)])
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
+# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_SEQ.shape[-1],PHI_DEEPDMD.shape[-1]])
+# plt.figure(figsize=(30,5))
+# ls_eig_order = np.diag(E_theo3)
+# ls_eig_order = np.array(list(set(ls_eig_order).union(set(E_theo))))
+# ls_eig_order = np.concatenate([ls_eig_order,np.array([1])],axis=0)
+epsilon = 0.001
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(2.5*max_eigs,9))
+for row_i in range(3):
+    if row_i == 0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_theo
+        comp_modes = comp_modes_theo
+        PHI = PHI_theo
+        # PHI = PSI_theo
+        X1 = X1_theo
+        X2 = X2_theo
+        E = np.diag(E_theo)
+        y0_title = 'Theoretical \n '
+    elif row_i ==1:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+        y0_title = 'Model 3 \n $x_2$'
+    elif row_i ==2:
+        # Seq ocdDMD modes
+        comp_modes_conj = comp_modes_conj_SEQ
+        comp_modes = comp_modes_SEQ
+        PHI = PHI_SEQ
+        X1 = X1_SEQ
+        X2 = X2_SEQ
+        E = E_SEQ
+        y0_title = 'Model 4 \n '
+    p = 0
+    for i in range(PHI.shape[-1]):
+        if i in comp_modes_conj:
+            continue
+        elif i in comp_modes:
+            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow',vmin=-1, vmax=1)
+            ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+            if row_i ==0:
+                ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        else:
+            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            if row_i ==0:
+                ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+            else:
+                correlation = corr(PHI[:, :, i].reshape(-1), PHI_theo[:, :, i].reshape(-1))[0]
+                if p ==5:
+                    correlation = 1
+                ax[row_i, p].set_title(title + '$\lambda=$' + str(round(np.real(E[i]), 2)) + '\n $\\rho = $' + str(round(correlation, 2)),fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        if p==0:
+            ax[row_i,p].set_ylabel(y0_title, fontsize=FONT_SIZE)
+            ax[row_i, p].set_yticks(np.arange(-140, 10, 20))
+        if row_i ==0:
+            ax[row_i, p].set_xticks([-8, 0, 8])
+
+        p = p+1
+        if p == PHI.shape[-1]:
+            f.colorbar(c, ax=ax[row_i, p-1])
+
+ax[2,2].set_xlabel('$x_1$', fontsize=FONT_SIZE)
+
+f.show()
+
 ##
 
-from sklearn.metrics import r2_score
-r2_score()
