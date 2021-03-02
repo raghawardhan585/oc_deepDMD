@@ -18,7 +18,7 @@ import sys # For command line inputs and for sys.exit() function
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 90
+SYSTEM_NO = 91
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -799,6 +799,8 @@ with tf.device(DEVICE_NAME):
         psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
         psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
     elif RUN_2_SAVED:
+        # psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
+        # psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
         with open('System_' + str(SYSTEM_NO) + '_BestRun_2.pickle', 'rb') as handle:
             var_i = pickle.load(handle)
         y_deep_dict_size = var_i['y_obs']
@@ -809,6 +811,11 @@ with tf.device(DEVICE_NAME):
         Wh1T_num = var_i['Wh_num']
         x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
         x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
+        x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list_num,
+                          'b_list': bx2_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+                          'res_net': res_net}
+        psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
+        psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
     else:
         print('[INFO] Run 2 was not done - No output was trained')
 
@@ -845,6 +852,8 @@ with tf.device(DEVICE_NAME):
         x3_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x3_hidden_vars_list, 'W_list': Wx3_list,
                           'b_list': bx3_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
         # Data Required
+        psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
+        psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
         psix2p_num = psix2p_const.eval(feed_dict={xp_feed: Xp})
         psix2f_num = psix2f_const.eval(feed_dict={xf_feed: Xf})
         dict_train3 = {'Xp': Xp[train_indices], 'Xf': Xf[train_indices], 'psiX1p': psix1p_num[train_indices], 'psiX2p': psix2p_num[train_indices],'psiX2f': psix2f_num[train_indices]}
@@ -852,6 +861,8 @@ with tf.device(DEVICE_NAME):
         # K Variables
         KxT_2 = weight_variable([x_deep_dict_size + num_bas_obs + y_deep_dict_size + xy_deep_dict_size + 1, y_deep_dict_size + xy_deep_dict_size])
         # Feed variables
+        psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
+        psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
         psix2p_feed = tf.placeholder(tf.float32, shape=[None, psix2p_num.shape[1]])
         psix2f_feed = tf.placeholder(tf.float32, shape=[None, psix2f_num.shape[1]])
         # Psi variables
