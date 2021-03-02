@@ -237,7 +237,7 @@ ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
 f1 = plot_fit_XY(d[opt_run],plot_params,ls_test_curves[0:20],scaled=False,one_step=False)
 
 ## Optimal hyperparameters
-opt_run = 49
+# opt_run = 49
 with open(sys_folder_name + '/deepDMD/RUN_' + str(opt_run) + '/run_info.pickle','rb') as handle:
     run_info_opt = pickle.load(handle)
 x_nn_opt = run_info_opt[0]['x_hidden_variable_list']

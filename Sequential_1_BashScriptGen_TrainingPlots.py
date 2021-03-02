@@ -340,8 +340,8 @@ del var_i
 ls_train_curves = list(range(int(np.floor(N_CURVES/3))))
 ls_valid_curves = list(range(ls_train_curves[-1] + 1 ,ls_train_curves[-1] + 1 + int(np.floor(N_CURVES/3))))
 ls_test_curves = list(range(ls_valid_curves[-1]+1,N_CURVES))
-# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_train_curves,scaled=True,observables=True,one_step = True)
-f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=True)
+# f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step = True)
+f1 = seq.plot_fit_XY(dict_predictions_opt_run,plot_params,ls_test_curves,scaled=False,observables=True,one_step=False)
 
 ## Plotting the observables
 plot_params={}
