@@ -1176,12 +1176,14 @@ for row_i in range(3):
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         else:
             c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            if row_i ==2 and p==5:
+                cf = c
             if row_i ==0:
                 ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
             else:
                 correlation = corr(PHI[:, :, i].reshape(-1), PHI_theo[:, :, i].reshape(-1))[0]
                 if p ==5:
-                    correlation = 1
+                    correlation = 1.
                 ax[row_i, p].set_title(title + '$\lambda=$' + str(round(np.real(E[i]), 2)) + '\n $\\rho = $' + str(round(correlation, 2)),fontsize=FONT_SIZE)
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         if p==0:
@@ -1191,12 +1193,19 @@ for row_i in range(3):
             ax[row_i, p].set_xticks([-8, 0, 8])
 
         p = p+1
-        if p == PHI.shape[-1]:
-            f.colorbar(c, ax=ax[row_i, p-1])
+        # if p == PHI.shape[-1]:
+        #     f.colorbar(c, ax=ax[row_i, p-1])
 
 ax[2,2].set_xlabel('$x_1$', fontsize=FONT_SIZE)
-
-f.show()
+# f.text(0.5, 0.02, '$x_1$', ha='center', fontsize=FONT_SIZE)
+# f.text(0.04, 0.5, 'common Y', va='center', rotation='vertical', fontsize=FONT_SIZE)
+# f.subplots_adjust(bottom=0.1, top=0.9, left=0.1, right=0.8,
+#                     wspace=0.02, hspace=0.02)
+# cb_ax = f.add_axes([0.83, 0.1, 0.02, 0.8])
+# cbar = f.colorbar(c, cax=cb_ax)
+cbar = f.colorbar(cf, ax=ax.ravel().tolist(), shrink=0.95)
+# f.colorbar(c, ax=ax[row_i, p-1])
+plt.show()
 
 ##
 
