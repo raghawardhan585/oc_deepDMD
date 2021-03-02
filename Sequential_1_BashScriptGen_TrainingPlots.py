@@ -38,13 +38,13 @@ dict_hp['x']['ls_nn_layers'] = [3,4]
 dict_hp['x']['ls_nn_nodes'] = [8,10,12,15]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1,1]
-dict_hp['y']['ls_nn_layers'] = [7,8,9]
-dict_hp['y']['ls_nn_nodes'] = [2,4]
+dict_hp['y']['ls_nn_layers'] = [3,4,7,8,9]
+dict_hp['y']['ls_nn_nodes'] = [2,4,6,8]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [1,1,1,2,2,2,3,3]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
 dict_hp['xy']['ls_nn_nodes'] = [3,4]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
@@ -166,7 +166,7 @@ seq.transfer_current_ocDeepDMD_run_files()
 # SYSTEM_NO = 90
 # ls_process_runs = list(range(0,68)) # Runs for which we want to calculate the error
 SYSTEM_NO = 91
-ls_process_runs = list(range(0,67)) # Runs for which we want to calculate the error
+ls_process_runs = list(range(0,107)) # Runs for which we want to calculate the error
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =True,ls_process_runs=ls_process_runs)
 seq.generate_df_error(SYSTEM_NO,ls_process_runs)
 
@@ -366,7 +366,7 @@ f2 = seq.plot_observables(dict_predictions_opt_run,plot_params)
 # SYSTEM_NO = 90
 # RUN_NO = 40
 SYSTEM_NO = 91
-RUN_NO = 19
+RUN_NO = 91
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
