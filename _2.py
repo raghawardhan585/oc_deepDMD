@@ -174,9 +174,9 @@ def phase_portrait_data(TRANSFORMED= True):
     E, W_t, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(E, W_t)
     Wi_t = np.linalg.inv(W_t)
     sampling_resolution = 0.5
-    x1 = np.arange(-10, 10.5, 0.5)
-    # x2 = np.arange(-10, 10.5, 0.5)
-    x2 = np.arange(-150, 20, 4)
+    x1 = np.arange(-4, 4, 0.1)
+    x2 = np.arange(-10, 2, 0.1)
+    # x2 = np.arange(-150, 20, 4)
     X1, X2 = np.meshgrid(x1, x2)
     if TRANSFORMED:
         PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 6))
@@ -208,9 +208,9 @@ def phase_portrait_data(TRANSFORMED= True):
     E3, W_t3, comp_modes3, comp_modes_conj3 = resolve_complex_right_eigenvalues(E3, W_t3)
     Wi_t3 = np.linalg.inv(W_t3)
     sampling_resolution = 0.5
-    x1_3 = np.arange(-10, 10.5, 0.5)
-    # x2_3 = np.arange(-10, 10.5, 0.5)
-    x2_3 = np.arange(-150, 20, 4)
+    x1_3 = np.arange(-4, 4, 0.1)
+    x2_3 = np.arange(-10, 2, 0.1)
+    # x2_3 = np.arange(-150, 20, 4)
     X1_3, X2_3 = np.meshgrid(x1_3, x2_3)
     if TRANSFORMED:
         PHI_theo3 = np.zeros(shape=(X1_3.shape[0], X1_3.shape[1], 4))
@@ -337,10 +337,12 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
     # sampling_resolution = 0.1
     # x1 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
     # x2 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
-    sampling_resolution = 0.5
-    x1 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
+    # sampling_resolution = 0.5
+    # x1 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
     # x2 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
-    x2 = np.arange(-150, 20 , 4)
+    x1 = np.arange(-4, 4, 0.1)
+    x2 = np.arange(-10, 2, 0.1)
+    # x2 = np.arange(-150, 20 , 4)
     X1, X2 = np.meshgrid(x1, x2)
     if SHOW_PCA_X:
         _, s, _T = np.linalg.svd(dict_oc_data['Xp'])
@@ -1188,9 +1190,10 @@ for row_i in range(3):
             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
         if p==0:
             ax[row_i,p].set_ylabel(y0_title, fontsize=FONT_SIZE)
-            ax[row_i, p].set_yticks(np.arange(-140, 10, 20))
+            # ax[row_i, p].set_yticks(np.arange(-140, 10, 20))
+            ax[row_i, p].set_yticks([-8, -4, 0])
         if row_i ==0:
-            ax[row_i, p].set_xticks([-8, 0, 8])
+            ax[row_i, p].set_xticks([-3, 0, 3])
 
         p = p+1
         # if p == PHI.shape[-1]:
@@ -1205,6 +1208,8 @@ ax[2,2].set_xlabel('$x_1$', fontsize=FONT_SIZE)
 # cbar = f.colorbar(c, cax=cb_ax)
 cbar = f.colorbar(cf, ax=ax.ravel().tolist(), shrink=0.95)
 # f.colorbar(c, ax=ax[row_i, p-1])
+plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.svg')
+plt.savefig('Plots/eg1_TheoreticalExample_eigfunc_pycharm.png')
 plt.show()
 
 ##
