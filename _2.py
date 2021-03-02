@@ -1057,6 +1057,10 @@ for i in range(5):
 
 
 ##
+# import matplotlib
+# matplotlib.rc('xtick', labelsize=FONT_SIZE)
+# matplotlib.rc('ytick', labelsize=FONT_SIZE)
+
 CURVE_NO = 250
 n_states = d_SEQ[CURVE_NO]['X'].shape[1]
 n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
@@ -1124,9 +1128,15 @@ plt.show()
 
 
 ## MODES FIGURE
+
+# import matplotlib
+# matplotlib.rc('xtick', labelsize=FONT_SIZE)
+# matplotlib.rc('ytick', labelsize=FONT_SIZE)
+
+
 NORMALIZE = True
 title = ''
-FONT_SIZE = 14
+FONT_SIZE = 20
 max_eigs = 6
 # max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X)])
 # max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
@@ -1136,7 +1146,7 @@ max_eigs = 6
 # ls_eig_order = np.array(list(set(ls_eig_order).union(set(E_theo))))
 # ls_eig_order = np.concatenate([ls_eig_order,np.array([1])],axis=0)
 epsilon = 0.001
-f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(2.5*max_eigs+5,9+3))
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(4*max_eigs,9))
 for row_i in range(3):
     if row_i == 0:
         # x DMD modes
@@ -1168,47 +1178,33 @@ for row_i in range(3):
         y0_title = 'Model 4 \n '
     p = 0
     for i in range(PHI.shape[-1]):
-        if i in comp_modes_conj:
-            continue
-        elif i in comp_modes:
-            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow',vmin=-1, vmax=1)
-            ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
-            if row_i ==0:
-                ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+        if row_i ==0:
+            ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
         else:
-            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
-            if row_i ==2 and p==5:
-                cf = c
-            if row_i ==0:
-                ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
-            else:
-                correlation = corr(PHI[:, :, i].reshape(-1), PHI_theo[:, :, i].reshape(-1))[0]
-                if p ==5:
-                    correlation = 1.
-                ax[row_i, p].set_title(title + '$\lambda=$' + str(round(np.real(E[i]), 2)) + '\n $\\rho = $' + str(round(correlation, 2)),fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+            correlation = corr(PHI[:, :, i].reshape(-1), PHI_theo[:, :, i].reshape(-1))[0]
+            if p ==5:
+                correlation = 1.
+            ax[row_i, p].set_title(title + '$\lambda=$' + str(round(np.real(E[i]), 2)) + ', $\\rho = $' + str(round(correlation, 2)),fontsize=FONT_SIZE)
+        # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        if row_i ==2:
+            ax[row_i, p].set_xlabel(' ', fontsize=FONT_SIZE)
+            ax[row_i, p].set_xticks([-3, 0, 3])
+            ax[row_i, p].set_xticklabels([-3,0,3], fontsize=FONT_SIZE)
         if p==0:
             ax[row_i,p].set_ylabel(y0_title, fontsize=FONT_SIZE)
-            # ax[row_i, p].set_yticks(np.arange(-140, 10, 20))
             ax[row_i, p].set_yticks([-8, -4, 0])
-        if row_i ==0:
-            ax[row_i, p].set_xticks([-3, 0, 3])
+            ax[row_i, p].set_yticklabels([-8, -4, 0], fontsize=FONT_SIZE)
 
         p = p+1
         # if p == PHI.shape[-1]:
         #     f.colorbar(c, ax=ax[row_i, p-1])
 
-ax[2,2].set_xlabel('$x_1$', fontsize=FONT_SIZE)
-# f.text(0.5, 0.02, '$x_1$', ha='center', fontsize=FONT_SIZE)
-# f.text(0.04, 0.5, 'common Y', va='center', rotation='vertical', fontsize=FONT_SIZE)
-# f.subplots_adjust(bottom=0.1, top=0.9, left=0.1, right=0.8,
-#                     wspace=0.02, hspace=0.02)
-# cb_ax = f.add_axes([0.83, 0.1, 0.02, 0.8])
-# cbar = f.colorbar(c, cax=cb_ax)
-cbar = f.colorbar(cf, ax=ax.ravel().tolist(), shrink=0.95)
+cbar = f.colorbar(c, ax=ax.ravel().tolist(), shrink=0.95,  ticks = [-1.,-0.5,0,0.5,1.])
+cbar.ax.set_yticklabels([-1.,-0.5,0,0.5,1.], fontsize=FONT_SIZE)
+ax[2,2].text(4.5,-14,'$x_1$' , fontsize=FONT_SIZE)
 # f.colorbar(c, ax=ax[row_i, p-1])
-plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.svg')
+# plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.svg')
 plt.savefig('Plots/eg1_TheoreticalExample_eigfunc_pycharm.png')
 plt.show()
 
