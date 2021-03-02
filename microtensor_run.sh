@@ -8,25 +8,17 @@ python3 ocdeepDMD_Sequential.py '/cpu:0' 91 0  1 1 1 1 3 2 1 1 1 > Run_info/SYS_
 wait 
 python3 ocdeepDMD_Sequential.py '/cpu:0' 91 1  1 1 1 1 3 4 1 1 1 > Run_info/SYS_91_RUN_1.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 2  1 1 1 1 7 6 1 1 1 > Run_info/SYS_91_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 2  1 1 1 1 8 6 1 1 1 > Run_info/SYS_91_RUN_2.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 3  1 1 1 1 7 8 1 1 1 > Run_info/SYS_91_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 3  1 1 1 1 8 8 1 1 1 > Run_info/SYS_91_RUN_3.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 4  1 1 1 1 3 2 1 1 1 > Run_info/SYS_91_RUN_4.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 4  1 1 1 1 4 2 1 1 1 > Run_info/SYS_91_RUN_4.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 5  1 1 1 1 3 4 1 1 1 > Run_info/SYS_91_RUN_5.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 5  1 1 1 1 4 4 1 1 1 > Run_info/SYS_91_RUN_5.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 6  1 1 1 1 7 6 1 1 1 > Run_info/SYS_91_RUN_6.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 6  1 1 1 1 9 6 1 1 1 > Run_info/SYS_91_RUN_6.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 7  1 1 1 1 7 8 1 1 1 > Run_info/SYS_91_RUN_7.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 8  1 1 1 1 3 2 1 1 1 > Run_info/SYS_91_RUN_8.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 9  1 1 1 1 3 4 1 1 1 > Run_info/SYS_91_RUN_9.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 10  1 1 1 1 7 6 1 1 1 > Run_info/SYS_91_RUN_10.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 91 11  1 1 1 1 7 8 1 1 1 > Run_info/SYS_91_RUN_11.txt &
+python3 ocdeepDMD_Sequential.py '/cpu:0' 91 7  1 1 1 1 9 8 1 1 1 > Run_info/SYS_91_RUN_7.txt &
 wait 
 wait 
 echo "All sessions are complete" 
