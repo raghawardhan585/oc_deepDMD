@@ -1136,7 +1136,7 @@ max_eigs = 6
 # ls_eig_order = np.array(list(set(ls_eig_order).union(set(E_theo))))
 # ls_eig_order = np.concatenate([ls_eig_order,np.array([1])],axis=0)
 epsilon = 0.001
-f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(2.5*max_eigs,9))
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(2.5*max_eigs+5,9+3))
 for row_i in range(3):
     if row_i == 0:
         # x DMD modes
