@@ -41,9 +41,9 @@ dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [3,4,8,9]
 dict_hp['y']['ls_nn_nodes'] = [2,4,6,8]
 dict_hp['xy']={}
-dict_hp['xy']['ls_dict_size'] = [1,1,2,2,3]
-dict_hp['xy']['ls_nn_layers'] = [3,8,9]
-dict_hp['xy']['ls_nn_nodes'] = [3,6]
+dict_hp['xy']['ls_dict_size'] = [4,5]
+dict_hp['xy']['ls_nn_layers'] = [8,9]
+dict_hp['xy']['ls_nn_nodes'] = [4,6,8]
 process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
@@ -293,7 +293,6 @@ print(dict_hp)
 
 ## ------------------------------------------------------------------------------------------------------------------------------
 
-
 # Final Runs
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(63,81))
@@ -310,7 +309,7 @@ print(dict_hp)
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,0))
 SYSTEM_NO = 91
-ls_process_runs  = list(range(145,151))
+ls_process_runs  = list(range(145,181))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
