@@ -12,6 +12,7 @@ import ocdeepdmd_simulation_examples_helper_functions as oc
 import copy
 import random
 from scipy.stats import pearsonr as corr
+import direct_nn_helper_functions as dn
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -863,67 +864,72 @@ sess3.close()
 
 # plt.show()
 
-NORMALIZE = True
-title = ''
-FONT_SIZE = 14
-max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
-# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
-# plt.figure(figsize=(30,5))
-f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
-for row_i in range(3):
-    if row_i ==0:
-        # x DMD modes
-        comp_modes_conj = comp_modes_conj_DEEP_X
-        comp_modes = comp_modes_DEEP_X
-        PHI = PHI_DEEP_X
-        X1 = X1_DEEP_X
-        X2 = X2_DEEP_X
-        E = E_DEEP_X
-    elif row_i ==1:
-        # Seq ocdDMD modes
-        comp_modes_conj = comp_modes_conj_SEQ
-        comp_modes = comp_modes_SEQ
-        PHI = PHI_SEQ
-        X1 = X1_SEQ
-        X2 = X2_SEQ
-        E = E_SEQ
-    elif row_i ==2:
-        # Dir ocdDMD modes
-        comp_modes_conj = comp_modes_conj_DEEPDMD
-        comp_modes = comp_modes_DEEPDMD
-        PHI = PHI_DEEPDMD
-        X1 = X1_DEEPDMD
-        X2 = X2_DEEPDMD
-        E = E_DEEPDMD
-    p = 0
-    for i in range(PHI.shape[-1]):
-        if i in comp_modes_conj:
-            continue
-        elif i in comp_modes:
-            if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
-            else:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
-            ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
-            ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-        else:
-            if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
-            else:
-                c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
-            ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
-            ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-        ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
-        ax[row_i, p].set_xticks([-8, 0, 8])
-        ax[row_i, p].set_yticks([-8, 0, 8])
-        p = p+1
 
 
-f.show()
+######
+
+
+# NORMALIZE = True
+# title = ''
+# FONT_SIZE = 14
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
+# # max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
+# # plt.figure(figsize=(30,5))
+# f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
+# for row_i in range(3):
+#     if row_i ==0:
+#         # x DMD modes
+#         comp_modes_conj = comp_modes_conj_DEEP_X
+#         comp_modes = comp_modes_DEEP_X
+#         PHI = PHI_DEEP_X
+#         X1 = X1_DEEP_X
+#         X2 = X2_DEEP_X
+#         E = E_DEEP_X
+#     elif row_i ==1:
+#         # Seq ocdDMD modes
+#         comp_modes_conj = comp_modes_conj_SEQ
+#         comp_modes = comp_modes_SEQ
+#         PHI = PHI_SEQ
+#         X1 = X1_SEQ
+#         X2 = X2_SEQ
+#         E = E_SEQ
+#     elif row_i ==2:
+#         # Dir ocdDMD modes
+#         comp_modes_conj = comp_modes_conj_DEEPDMD
+#         comp_modes = comp_modes_DEEPDMD
+#         PHI = PHI_DEEPDMD
+#         X1 = X1_DEEPDMD
+#         X2 = X2_DEEPDMD
+#         E = E_DEEPDMD
+#     p = 0
+#     for i in range(PHI.shape[-1]):
+#         if i in comp_modes_conj:
+#             continue
+#         elif i in comp_modes:
+#             if NORMALIZE:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
+#             else:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+#             f.colorbar(c, ax=ax[row_i,p])
+#             ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+#             ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
+#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+#         else:
+#             if NORMALIZE:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+#             else:
+#                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+#             f.colorbar(c, ax=ax[row_i,p])
+#             ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+#             ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
+#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+#         ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+#         ax[row_i, p].set_xticks([-8, 0, 8])
+#         ax[row_i, p].set_yticks([-8, 0, 8])
+#         p = p+1
+#
+#
+# f.show()
 
 
 ##
@@ -943,11 +949,12 @@ def get_sys_params():
 # x0_1_vals = np.arange(-0.5,3.6,0.5) # assumed scaled
 # x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
 SUBPLOTS = True
+SUBPLOT_LINEWIDTH = 0.7
 x0_1_vals =  np.arange(-4,4.1,2) # assumed scaled  np.array([-4.,4])
 x0_2_vals =  np.arange(-6,6.1,3) # assumed scaled np.array([-6.,6])
 N_STEPS = 10
 if SUBPLOTS:
-    f,ax = plt.subplots(1,3,sharey=True,figsize=(9,3))
+    f,ax = plt.subplots(2,2,sharey=True,sharex=True,figsize=(9,9))
 else:
     plt.figure()
 
@@ -967,27 +974,41 @@ for items in ['Theo','Seq','Deep','nn']:
             x_scaled = oc.scale_data_using_existing_scaler_folder({'X': x_unscaled}, SYS_NO)['X']
             dict_phase_data[items] = np.concatenate([dict_phase_data[items] , x_scaled],axis=0)
             if SUBPLOTS:
-                ax[0].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0], linewidth=0.2)
-                ax[0].set_xticks([-4,0,4])
-                ax[0].set_xlim([-5, 5])
-                ax[0].set_yticks([-4, 0, 4])
-                ax[0].set_ylim([-6.5, 6.5])
-                ax[0].set_title('Simulated \n System')
-                ax[0].set_ylabel('$x_2$')
-                ax[0].set_xlabel('$x_1$')
+                ax[0,0].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[8], linewidth=SUBPLOT_LINEWIDTH)
+                ax[0,0].set_xticks([-4,0,4])
+                ax[0,0].set_xlim([-5, 5])
+                ax[0,0].set_yticks([-4, 0, 4])
+                ax[0,0].set_ylim([-6.5, 6.5])
+                ax[0,0].set_title('Simulated \n System')
+                ax[0,0].set_ylabel('$x_2$')
+                # ax[0,0].set_xlabel('$x_1$')
             else:
                 plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
             # break
         if SUBPLOTS:
-            ax[0].plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
+            ax[0,0].plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
         else:
             plt.plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
     elif items in ['nn']:
         sess_temp = tf.InteractiveSession()
-        dict_params[items] = get_dict_param(run_folder_name_NN, SYS_NO, sess_temp)
+        dict_params[items] = dn.get_all_run_info(SYS_NO, RUN_NN, sess_temp)
         for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
-            x = np.array([[x0_1,x0_2]])
-
+            x_scaled = np.array([[x0_1,x0_2]])
+            for i in range(N_STEPS):
+                x_scaled = np.concatenate([x_scaled,dict_params[items]['f'].eval(feed_dict={dict_params[items]['xp_feed']:x_scaled[-1:]})],axis=0)
+            dict_phase_data[items] = np.concatenate([dict_phase_data[items], x_scaled], axis=0)
+            if SUBPLOTS:
+                ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
+                ax[0,1].set_xticks([-4,0,4])
+                ax[0,1].set_xlim([-5, 5])
+                ax[0,1].set_yticks([-4, 0, 4])
+                ax[0,1].set_ylim([-6.5, 6.5])
+                ax[0,1].set_title('Neural network \n $\\rho =$')
+                # ax[0,1].set_ylabel('$x_2$')
+                # ax[0,0].set_xlabel('$x_1$')
+                ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+            else:
+                plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
     else:
         if items == 'Deep':
             run_folder = run_folder_name_DIR_ocDEEPDMD
@@ -1002,23 +1023,22 @@ for items in ['Theo','Seq','Deep','nn']:
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], psi_x[:, 0:2]], axis=0)
             if SUBPLOTS:
                 if items == 'Deep':
-                    ax[1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=0.2)
-                    ax[1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-                    ax[1].set_xticks([-4, 0, 4])
-                    ax[1].set_xlim([-5, 5])
-                    ax[1].set_yticks([-4, 0, 4])
-                    ax[1].set_ylim([-6.5, 6.5])
-
-                    ax[1].set_xlabel('$x_1$')
+                    ax[1,0].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+                    ax[1,0].set_xticks([-4, 0, 4])
+                    ax[1,0].set_xlim([-5, 5])
+                    ax[1,0].set_yticks([-4, 0, 4])
+                    ax[1,0].set_ylim([-6.5, 6.5])
+                    ax[1,0].set_ylabel('$x_2$')
+                    ax[1,0].set_xlabel('$x_1$')
                 elif items == 'Seq':
-                    ax[2].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=0.2)
-                    ax[2].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-                    ax[2].set_xticks([-4, 0, 4])
-                    ax[2].set_xlim([-5, 5])
-                    ax[2].set_yticks([-4, 0, 4])
-                    ax[2].set_ylim([-6.5, 6.5])
-                    ax[2].set_title('Sequential ocdeepDMD')
-                    ax[2].set_xlabel('$x_1$')
+                    ax[1,1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+                    # ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+                    ax[1,1].set_xticks([-4, 0, 4])
+                    ax[1,1].set_xlim([-5, 5])
+                    ax[1,1].set_yticks([-4, 0, 4])
+                    ax[1,1].set_ylim([-6.5, 6.5])
+                    ax[1,1].set_title('Sequential ocdeepDMD')
+                    ax[1,1].set_xlabel('$x_1$')
             else:
                 if items == 'Deep':
                     plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[4], linewidth=0.5)
@@ -1030,11 +1050,14 @@ for items in ['Theo','Seq','Deep','nn']:
         sess_temp.close()
 # plt.xlim([-0.5,4])
 # plt.ylim([-0.5,2.5])
-ax[1].set_title('Direct ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],2)))
-ax[2].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],2)))
+ax[1,0].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+ax[0,1].set_title('Neural network \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0],3)))
+ax[1,0].set_title('Direct ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],3)))
+ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
 plt.show()
 
-
+print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0])
 ##
