@@ -242,7 +242,7 @@ print(dict_hp)
 # SYSTEM_NO = 80
 # ls_run_no = list(range(0,0))
 SYSTEM_NO = 91
-ls_run_no = list(range(115,144))
+ls_run_no = list(range(115,145))
 plot_params ={}
 plot_params['xy_label_font_size']=9
 plot_params['individual_fig_width']=2
@@ -303,12 +303,14 @@ print(dict_hp)
 # ls_process_runs = list(range(316,348))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(60,78))
-SYSTEM_NO = 61
-ls_process_runs = list(range(32,64))
+# SYSTEM_NO = 61
+# ls_process_runs = list(range(32,64))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(110,170))
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,0))
+SYSTEM_NO = 91
+ls_process_runs  = list(range(145,151))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)
