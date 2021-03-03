@@ -169,7 +169,10 @@ oc.plot_training_valid_test_states(SYSTEM_NO)
 
 ## EMBEDDED DATA OF THE ABOVE EXAMPLE
 
-SYSTEM_NO = 62
+# SYSTEM_NO = 62
+# EMBEDDING = 4
+SYSTEM_NO = 63
+EMBEDDING = 5
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     shutil.rmtree(storage_folder)
@@ -185,7 +188,7 @@ else:
 with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_61/System_61_SimulatedData.pickle', 'rb') as handle:
     dict_indexed_data = pickle.load(handle)
 N_CURVES = 300
-oc.sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO,EMBEDDING_NUMBER = 4)
+oc.sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO,EMBEDDING_NUMBER = EMBEDDING )
 
 
 
