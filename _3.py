@@ -926,3 +926,91 @@ f.show()
 
 ##
 
+def get_sys_params():
+    # System Parameters
+    gamma_A = 1.
+    gamma_B = 0.5
+    delta_A = 1.
+    delta_B = 1.
+    alpha_A0 = 0.04
+    alpha_B0 = 0.004
+    alpha_A = 50.
+    alpha_B = 30.
+    K_A = 1.
+    K_B = 1.5
+    kappa_A = 1.
+    kappa_B = 1.
+    n = 2.
+    m = 2.
+    k_3n = 3.
+    k_3d = 1.08
+    sys_params_arc2s = (gamma_A, gamma_B, delta_A, delta_B, alpha_A0, alpha_B0, alpha_A, alpha_B, K_A, K_B, kappa_A, kappa_B, n, m)
+    return sys_params_arc2s,k_3n,k_3d
+
+    # Ts = 0.1
+    # t_end = 40
+    # # Simulation Parameters
+    # dict_phase_data = {}
+    # X0 = np.empty(shape=(0, 2))
+    # t = np.arange(0, t_end, Ts)
+    #
+    # # Phase Space Data
+    # dict_phase_data = {}
+    # X0 = np.empty(shape=(0, 2))
+    # i = 0
+    # for x1, x2 in itertools.product(list(np.arange(1, 30., 3.5)), list(np.arange(1, 60., 8))):
+    #     dict_phase_data[i] = {}
+    #     x0_curr = np.array([x1, x2])
+    #     X0 = np.concatenate([X0, np.array([[x1, x2]])], axis=0)
+    #     dict_phase_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
+    #     dict_phase_data[i]['Y'] = k_3n * dict_phase_data[i]['X'][:, 1:2] / (k_3d + dict_phase_data[i]['X'][:, 3:4])
+    #     i = i + 1
+    # return dict_phase_data
+
+
+
+# x0_1_vals = np.arange(-0.5,3.6,0.5) # assumed scaled
+# x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
+
+x0_1_vals = np.arange(0,1.1,0.5) # assumed scaled
+x0_2_vals = np.arange(0,1.1,0.5) # assumed scaled
+N_STEPS = 100
+plt.figure()
+
+for items in ['Theo','Seq','Deep']:
+    if items is 'Theo':
+        sys_params_arc2s, _, _ = get_sys_params()
+        Ts = 0.5
+        t_end = N_STEPS*Ts
+        t = np.arange(0, t_end, Ts)
+        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
+            x0_unscaled = oc.inverse_transform_X(np.array([x0_1, x0_2]), SYS_NO)
+            x_unscaled = oc.odeint(oc.activator_repressor_clock_2states, x0_unscaled, t, args=sys_params_arc2s)
+            x_scaled = oc.scale_data_using_existing_scaler_folder({'X': x_unscaled}, SYS_NO)['X']
+            # break
+            plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0],linewidth = 0.5)
+    else:
+        if items == 'Deep':
+            run_folder = run_folder_name_DIR_ocDEEPDMD
+        elif items == 'Seq':
+            run_folder = run_folder_name_SEQ_ocDEEPDMD
+        sess_temp = tf.InteractiveSession()
+        dict_params[items] = get_dict_param(run_folder,SYS_NO,sess_temp)
+        for x0_1,x0_2 in itertools.product(x0_1_vals,x0_2_vals):
+            psi_x = dict_params[items]['psixpT'].eval(feed_dict = {dict_params[items]['xpT_feed']: np.array([[x0_1,x0_2]])})
+            print(psi_x)
+            for i in range(N_STEPS):
+                psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:],dict_params[items]['KxT_num'])])
+            # break
+            if items == 'Deep':
+                plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[4], linewidth=0.5)
+            elif items == 'Seq':
+                plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=1)
+        print('=========================')
+        tf.reset_default_graph()
+        sess_temp.close()
+# plt.xlim([-0.5,4])
+# plt.ylim([-0.5,2.5])
+plt.show()
+##
+
