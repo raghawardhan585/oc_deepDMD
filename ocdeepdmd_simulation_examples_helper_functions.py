@@ -24,21 +24,36 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
 colors = np.asarray(colors);  # defines a color palette
 
 # Help to store data for oc_deepDMD
-def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
+def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO,EMBEDDING_NUMBER = 1):
     # Sorting into deep DMD format
     ls_all_indices = np.arange(int(np.ceil(2 / 3 * N_CURVES)))  # We take 2/3rd of the data - The training and validation set
     # random.shuffle(ls_all_indices) # Not required as the initial conditions are already shuffled
     print('[INFO]: Shape of Y : ',dict_indexed_data[0]['Y'].shape)
     n_data_pts = dict_indexed_data[0]['X'].shape[0]
-    Xp = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
-    Xf = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
-    Yp = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
-    Yf = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
-    for i in ls_all_indices:
-        Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][0:-1, :]], axis=0)
-        Xf = np.concatenate([Xf, dict_indexed_data[i]['X'][1:, :]], axis=0)
-        Yp = np.concatenate([Yp, dict_indexed_data[i]['Y'][0:-1, :]], axis=0)
-        Yf = np.concatenate([Yf, dict_indexed_data[i]['Y'][1:, :]], axis=0)
+    n_embedded_data_pts = np.int(np.floor(n_data_pts/EMBEDDING_NUMBER))
+    print('[INFO] Data points =', n_data_pts)
+    print('[INFO] Embedded Data points =', n_embedded_data_pts)
+    if EMBEDDING_NUMBER == 1:
+        Xp = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+        Xf = np.empty((0, dict_indexed_data[0]['X'].shape[1]))
+        Yp = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
+        Yf = np.empty((0, dict_indexed_data[0]['Y'].shape[1]))
+        for i in ls_all_indices:
+            Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][0:-1, :]], axis=0)
+            Xf = np.concatenate([Xf, dict_indexed_data[i]['X'][1:, :]], axis=0)
+            Yp = np.concatenate([Yp, dict_indexed_data[i]['Y'][0:-1, :]], axis=0)
+            Yf = np.concatenate([Yf, dict_indexed_data[i]['Y'][1:, :]], axis=0)
+    elif EMBEDDING_NUMBER>1:
+        Xp = np.empty((0, EMBEDDING_NUMBER*dict_indexed_data[0]['X'].shape[1]))
+        Xf = np.empty((0, EMBEDDING_NUMBER*dict_indexed_data[0]['X'].shape[1]))
+        Yp = np.empty((0, EMBEDDING_NUMBER*dict_indexed_data[0]['Y'].shape[1]))
+        Yf = np.empty((0, EMBEDDING_NUMBER*dict_indexed_data[0]['Y'].shape[1]))
+        for i in ls_all_indices:
+            for j in range(n_embedded_data_pts-1):
+                Xp = np.concatenate([Xp, dict_indexed_data[i]['X'][EMBEDDING_NUMBER*j:EMBEDDING_NUMBER*(j+1),:].reshape(1,-1)], axis=0)
+                Xf = np.concatenate([Xf, dict_indexed_data[i]['X'][EMBEDDING_NUMBER*(j+1):EMBEDDING_NUMBER*(j+2),:].reshape(1,-1)], axis=0)
+                Yp = np.concatenate([Yp, dict_indexed_data[i]['Y'][EMBEDDING_NUMBER*j:EMBEDDING_NUMBER*(j+1),:].reshape(1,-1)], axis=0)
+                Yf = np.concatenate([Yf, dict_indexed_data[i]['Y'][EMBEDDING_NUMBER*(j+1):EMBEDDING_NUMBER*(j+2),:].reshape(1,-1)], axis=0)
     dict_DATA_RAW = {'Xp': Xp, 'Xf': Xf, 'Yp': Yp, 'Yf': Yf}
     n_train = int(np.ceil(len(dict_DATA_RAW['Xp']) / 2))  # Segregate half of data as training
     dict_DATA_TRAIN_RAW = {'Xp': dict_DATA_RAW['Xp'][0:n_train], 'Xf': dict_DATA_RAW['Xf'][0:n_train],
@@ -55,8 +70,7 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO):
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle', 'wb') as handle:
         pickle.dump(ls_all_indices, handle)  # Only training and validation indices are stored
     # Store the data in Koopman
-    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle',
-              'wb') as handle:
+    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
         pickle.dump(dict_DATA, handle)
     return
 def sort_to_DMD_folder_multi_step(storage_folder, N_CURVES, dict_indexed_data,ls_prediction_steps,SYSTEM_NO):
