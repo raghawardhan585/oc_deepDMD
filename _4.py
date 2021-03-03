@@ -30,7 +30,7 @@ SYS_NO = 91
 RUN_DIRECT_DEEPDMD = 13
 RUN_SEQ_DEEPDMD = 156#41
 RUN_DEEPDMD_X = 91
-# RUN_NN = 4
+RUN_NN = 4
 
 
 
@@ -39,7 +39,7 @@ run_folder_name_DEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_DEEPDMD
 run_folder_name_SEQ_ocDEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_SEQ_DEEPDMD)
 run_folder_name_DIR_ocDEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD)
 # run_folder_name_DIR_ocDEEPDMD_SUBOPT = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD_SUBOPT)
-# run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
+run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
 
 with open(sys_folder_name + '/System_' + str(SYS_NO) + '_SimulatedData.pickle', 'rb') as handle:
     dict_data = pickle.load(handle)
@@ -54,8 +54,8 @@ with open(sys_folder_name + '/dict_predictions_SEQUENTIAL.pickle', 'rb') as hand
     d_DDMD_X = pickle.load(handle)[RUN_DEEPDMD_X]
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
-# with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
-#     d_DDMD_SUBOPT = pickle.load(handle)[RUN_DIRECT_DEEPDMD_SUBOPT]
+with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
+    d_NN = pickle.load(handle)[RUN_NN]
 
 
 
@@ -952,7 +952,7 @@ else:
     plt.figure()
 
 dict_phase_data ={}
-for items in ['Theo','Seq','Deep']:
+for items in ['Theo','Seq','Deep','nn']:
     dict_phase_data[items] = np.empty(shape=(0,2))
     if items is 'Theo':
         sys_params_MEMS_accel, _, _ = get_sys_params()
@@ -982,6 +982,12 @@ for items in ['Theo','Seq','Deep']:
             ax[0].plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
         else:
             plt.plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
+    elif items in ['nn']:
+        sess_temp = tf.InteractiveSession()
+        dict_params[items] = get_dict_param(run_folder_name_NN, SYS_NO, sess_temp)
+        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
+            x = np.array([[x0_1,x0_2]])
+
     else:
         if items == 'Deep':
             run_folder = run_folder_name_DIR_ocDEEPDMD
