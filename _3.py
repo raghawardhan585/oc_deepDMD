@@ -10,7 +10,11 @@ import tensorflow as tf
 import itertools
 import ocdeepdmd_simulation_examples_helper_functions as oc
 import copy
+import deepDMD_helper_functions as dp
 import random
+from scipy.stats import pearsonr as corr
+import direct_nn_helper_functions as dn
+plt.rcParams["font.family"] = "Times"
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -1012,5 +1016,149 @@ for items in ['Theo','Seq','Deep']:
 # plt.xlim([-0.5,4])
 # plt.ylim([-0.5,2.5])
 plt.show()
+
+
 ##
+
+def get_sys_params():
+    # System Parameters
+    gamma_A = 1.
+    gamma_B = 0.5
+    delta_A = 1.
+    delta_B = 1.
+    alpha_A0 = 0.04
+    alpha_B0 = 0.004
+    alpha_A = 50.
+    alpha_B = 30.
+    K_A = 1.
+    K_B = 1.5
+    kappa_A = 1.
+    kappa_B = 1.
+    n = 2.
+    m = 2.
+    k_3n = 3.
+    k_3d = 1.08
+    sys_params_arc2s = (gamma_A, gamma_B, delta_A, delta_B, alpha_A0, alpha_B0, alpha_A, alpha_B, K_A, K_B, kappa_A, kappa_B, n, m)
+    return sys_params_arc2s,k_3n,k_3d
+
+
+# x0_1_vals = np.arange(-0.5,3.6,0.5) # assumed scaled
+# x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
+SUBPLOTS = True
+SUBPLOT_LINEWIDTH = 0.7
+x0_1_vals = np.arange(0,1.1,0.5) # assumed scaled
+x0_2_vals = np.arange(0,1.1,0.5) # assumed scaled
+N_STEPS = 10
+if SUBPLOTS:
+    f,ax = plt.subplots(2,2,sharey=True,sharex=True,figsize=(9,9))
+else:
+    plt.figure()
+
+dict_phase_data ={}
+for items in ['Theo','Seq','Deep','Deep_E1']:
+    dict_phase_data[items] = np.empty(shape=(0,2))
+    if items is 'Theo':
+        sys_params_arc2s, _, _ = get_sys_params()
+        Ts = 0.5
+        t_end = (N_STEPS+1)*Ts
+        t = np.arange(0, t_end, Ts)
+        X0 = np.empty(shape=(0,2))
+        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
+            X0 = np.concatenate([X0,np.array([[x0_1, x0_2]])],axis=0)
+            x0_unscaled = oc.inverse_transform_X(np.array([x0_1, x0_2]), SYS_NO)
+            x_unscaled = oc.odeint(oc.activator_repressor_clock_2states, x0_unscaled, t, args=sys_params_arc2s)
+            x_scaled = oc.scale_data_using_existing_scaler_folder({'X': x_unscaled}, SYS_NO)['X']
+            dict_phase_data[items] = np.concatenate([dict_phase_data[items] , x_scaled],axis=0)
+            if SUBPLOTS:
+                ax[0,0].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[8], linewidth=SUBPLOT_LINEWIDTH)
+                ax[0,0].set_xticks([-4,0,4])
+                ax[0,0].set_xlim([-5, 5])
+                ax[0,0].set_yticks([-4, 0, 4])
+                ax[0,0].set_ylim([-6.5, 6.5])
+                ax[0,0].set_title('Simulated \n System')
+                ax[0,0].set_ylabel('$x_2$')
+                # ax[0,0].set_xlabel('$x_1$')
+            else:
+                plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
+            # break
+        if SUBPLOTS:
+            ax[0,0].plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
+        else:
+            plt.plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
+    elif items in ['nn']:
+        sess_temp = tf.InteractiveSession()
+        dict_params[items] = dn.get_all_run_info(SYS_NO, RUN_NN, sess_temp)
+        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
+            x_scaled = np.array([[x0_1,x0_2]])
+            for i in range(N_STEPS):
+                x_scaled = np.concatenate([x_scaled,dict_params[items]['f'].eval(feed_dict={dict_params[items]['xp_feed']:x_scaled[-1:]})],axis=0)
+            dict_phase_data[items] = np.concatenate([dict_phase_data[items], x_scaled], axis=0)
+            if SUBPLOTS:
+                ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
+                ax[0,1].set_xticks([-4,0,4])
+                ax[0,1].set_xlim([-5, 5])
+                ax[0,1].set_yticks([-4, 0, 4])
+                ax[0,1].set_ylim([-6.5, 6.5])
+                ax[0,1].set_title('Neural network \n $\\rho =$')
+                # ax[0,1].set_ylabel('$x_2$')
+                # ax[0,0].set_xlabel('$x_1$')
+                ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+            else:
+                plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
+    elif items == 'deep_E1':
+
+    else:
+        if items == 'Deep':
+            run_folder = run_folder_name_DIR_ocDEEPDMD
+        elif items == 'Seq':
+            run_folder = run_folder_name_SEQ_ocDEEPDMD
+        sess_temp = tf.InteractiveSession()
+        dict_params[items] = get_dict_param(run_folder,SYS_NO,sess_temp)
+        for x0_1,x0_2 in itertools.product(x0_1_vals,x0_2_vals):
+            psi_x = dict_params[items]['psixpT'].eval(feed_dict = {dict_params[items]['xpT_feed']: np.array([[x0_1,x0_2]])})
+            for i in range(N_STEPS):
+                psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:],dict_params[items]['KxT_num'])])
+            dict_phase_data[items] = np.concatenate([dict_phase_data[items], psi_x[:, 0:2]], axis=0)
+            if SUBPLOTS:
+                if items == 'Deep':
+                    ax[1,0].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+                    ax[1,0].set_xticks([-4, 0, 4])
+                    ax[1,0].set_xlim([-5, 5])
+                    ax[1,0].set_yticks([-4, 0, 4])
+                    ax[1,0].set_ylim([-6.5, 6.5])
+                    ax[1,0].set_ylabel('$x_2$')
+                    ax[1,0].set_xlabel('$x_1$')
+                elif items == 'Seq':
+                    ax[1,1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+                    # ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+                    ax[1,1].set_xticks([-4, 0, 4])
+                    ax[1,1].set_xlim([-5, 5])
+                    ax[1,1].set_yticks([-4, 0, 4])
+                    ax[1,1].set_ylim([-6.5, 6.5])
+                    ax[1,1].set_title('Sequential ocdeepDMD')
+                    ax[1,1].set_xlabel('$x_1$')
+            else:
+                if items == 'Deep':
+                    plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[4], linewidth=0.5)
+                elif items == 'Seq':
+                    plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=1)
+            # break
+        print('=========================')
+        tf.reset_default_graph()
+        sess_temp.close()
+# plt.xlim([-0.5,4])
+# plt.ylim([-0.5,2.5])
+ax[1,0].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+ax[0,1].set_title('Neural network \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0],3)))
+ax[1,0].set_title('Direct ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],3)))
+ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
+plt.show()
+
+print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0])
+print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0])
+print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0])
+##
+
+
 
