@@ -281,6 +281,7 @@ def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
     A_hat_opt = np.zeros(shape = U.shape)
     for i in range(nPC_opt):
         A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+    print('Optimal Linear model Error: ',np.mean(np.square((Xf_train - np.matmul(A_hat_opt, Xp_train)))))
     return  A_hat_opt.T
 
 # ==============================================================================================================================
