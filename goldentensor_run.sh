@@ -3,14 +3,17 @@ rm -rf _current_run_saved_files
 mkdir _current_run_saved_files 
 rm -rf Run_info 
 mkdir Run_info 
-# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
-python3 deepDMD.py '/gpu:0' 62 0 4 3 6 > Run_info/SYS_62_RUN_0.txt &
-python3 deepDMD.py '/gpu:1' 62 1 4 3 9 > Run_info/SYS_62_RUN_1.txt &
-python3 deepDMD.py '/gpu:2' 62 2 4 4 6 > Run_info/SYS_62_RUN_2.txt &
-python3 deepDMD.py '/gpu:3' 62 3 4 4 9 > Run_info/SYS_62_RUN_3.txt &
+# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_layers] [n_nodes] [write_to_file] 
+python3 direct_nn_identification.py '/gpu:0' 91 0 6 3 > Run_info/SYS_91_RUN_0.txt &
+python3 direct_nn_identification.py '/gpu:1' 91 1 6 4 > Run_info/SYS_91_RUN_1.txt &
+python3 direct_nn_identification.py '/gpu:2' 91 2 6 5 > Run_info/SYS_91_RUN_2.txt &
+python3 direct_nn_identification.py '/gpu:3' 91 3 6 6 > Run_info/SYS_91_RUN_3.txt &
 wait 
-python3 deepDMD.py '/gpu:0' 62 4 5 8 6 > Run_info/SYS_62_RUN_4.txt &
-python3 deepDMD.py '/gpu:1' 62 5 5 8 9 > Run_info/SYS_62_RUN_5.txt &
+python3 direct_nn_identification.py '/gpu:0' 91 4 8 3 > Run_info/SYS_91_RUN_4.txt &
+python3 direct_nn_identification.py '/gpu:1' 91 5 8 4 > Run_info/SYS_91_RUN_5.txt &
+python3 direct_nn_identification.py '/gpu:2' 91 6 8 5 > Run_info/SYS_91_RUN_6.txt &
+python3 direct_nn_identification.py '/gpu:3' 91 7 8 6 > Run_info/SYS_91_RUN_7.txt &
+wait 
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 
