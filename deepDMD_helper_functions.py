@@ -90,11 +90,53 @@ def get_all_run_info(SYSTEM_NO,RUN_NO,sess):
         print('Error in Output Matrix')
     return dict_params
 
+def get_embedded_data(dict_indexed_data):
+    try:
+        EMBEDDING_NUMBER = dict_indexed_data['EMBEDDING_NO']
+        dict_data_embedded = {}
+        for data_index in set(dict_indexed_data.keys()) - set({'EMBEDDING_NO'}):
+            dict_data_embedded[data_index] = {}
+            num_data_pts = len(dict_indexed_data[data_index]['X'])
+            num_embed_data_pts = np.int(np.floor(num_data_pts / EMBEDDING_NUMBER))
+            for items in dict_indexed_data[data_index]:
+                dict_data_embedded[data_index][items] = np.empty(
+                    shape=(0, len(dict_indexed_data[data_index][items][0]) * EMBEDDING_NUMBER))
+                for i in range(num_embed_data_pts):
+                    dict_data_embedded[data_index][items] = np.concatenate([dict_data_embedded[data_index][items],
+                                                                            dict_indexed_data[data_index][items][i * EMBEDDING_NUMBER:(i + 1) * EMBEDDING_NUMBER,:].reshape(1, -1)], axis=0)
+        dict_data_embedded['EMBEDDING_NO'] = EMBEDDING_NUMBER
+    except:
+        print('No data embedding found')
+        dict_data_embedded = dict_indexed_data
+        EMBEDDING_NUMBER = 1
+    return dict_data_embedded,EMBEDDING_NUMBER
+
+def get_deembedded_data(dict_data_embedded):
+    try:
+        EMBEDDING_NUMBER = dict_data_embedded['EMBEDDING_NO']
+        dict_data = {}
+        for data_index in set(dict_data_embedded.keys()) - set({'EMBEDDING_NO'}):
+            dict_data[data_index] = {}
+            num_embed_data_pts = len(dict_data_embedded[data_index]['X'])
+            num_data_pts = EMBEDDING_NUMBER*num_embed_data_pts
+            for items in dict_data_embedded[data_index]:
+                num_vals_per_point = np.int(len(dict_data_embedded[data_index][items][0]) /EMBEDDING_NUMBER)
+                dict_data[data_index][items] = np.empty(shape=(0,num_vals_per_point ))
+                for i in range(num_embed_data_pts):
+                    dict_data[data_index][items] = np.concatenate([dict_data[data_index][items],dict_data_embedded[data_index][items][i:(i + 1):].reshape(EMBEDDING_NUMBER, num_vals_per_point)], axis=0)
+        dict_data['EMBEDDING_NO'] = EMBEDDING_NUMBER
+    except:
+        print('No data embedding found')
+        dict_data = dict_data_embedded
+    return dict_data
+
+
 def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
     sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     # -----------------------------------Get the required data
     with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle', 'rb') as handle:
         dict_indexed_data = pickle.load(handle)  # No scaling appplied here
+
     # -----------------------------------Make a predictions folder if one doesn't exist
     if os.path.exists(sys_folder_name + '/dict_predictions_deepDMD.pickle'):
         with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
@@ -118,9 +160,10 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
         dict_predictions_deepDMD[run] = {}
         sess = tf.InteractiveSession()
         dict_params = get_all_run_info(SYSTEM_NO, run, sess)
+        dict_embedded_data,EMBEDDING_NUMBER = get_embedded_data(dict_indexed_data)
         # Get the 1-step and n-step prediction data
-        for data_index in dict_indexed_data.keys():
-            dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_indexed_data[data_index], SYSTEM_NO)
+        for data_index in set(dict_embedded_data.keys()) - set({'EMBEDDING_NO'}):
+            dict_DATA_i = oc.scale_data_using_existing_scaler_folder(dict_embedded_data[data_index], SYSTEM_NO)
             X_scaled = dict_DATA_i['X']
             Y_scaled = dict_DATA_i['Y']
             psiX =  dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: X_scaled})
@@ -136,14 +179,32 @@ def generate_predictions_pickle_file(SYSTEM_NO, ls_process_runs):
             dict_predictions_deepDMD[run][data_index] = {'X': dict_indexed_data[data_index]['X'], 'Y': dict_indexed_data[data_index]['Y'], 'psiX': psiX, 'X_scaled': X_scaled, 'Y_scaled': Y_scaled}
             dict_predictions_deepDMD[run][data_index]['psiX_one_step_scaled'] = psiX_1step
             dict_predictions_deepDMD[run][data_index]['psiX_n_step_scaled'] = psiX_nstep
-            dict_predictions_deepDMD[run][data_index]['X_one_step_scaled'] = psiX_1step[:,0:len(X_scaled[0])]
-            dict_predictions_deepDMD[run][data_index]['X_n_step_scaled'] = psiX_nstep[:,0:len(X_scaled[0])]
-            dict_predictions_deepDMD[run][data_index]['X_one_step'] = oc.inverse_transform_X(psiX_1step[:, 0:len(X_scaled[0])], SYSTEM_NO)
-            dict_predictions_deepDMD[run][data_index]['X_n_step'] = oc.inverse_transform_X(psiX_nstep[:, 0:len(X_scaled[0])], SYSTEM_NO)
-            dict_predictions_deepDMD[run][data_index]['Y_one_step_scaled'] = Y_1step_scaled
-            dict_predictions_deepDMD[run][data_index]['Y_n_step_scaled'] = Y_nstep_scaled
-            dict_predictions_deepDMD[run][data_index]['Y_one_step'] = oc.inverse_transform_Y(Y_1step_scaled, SYSTEM_NO)
-            dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_Y(Y_nstep_scaled, SYSTEM_NO)
+            if EMBEDDING_NUMBER == 1:
+                dict_predictions_deepDMD[run][data_index]['X'] = dict_embedded_data[data_index]['X']
+                dict_predictions_deepDMD[run][data_index]['Y'] = dict_embedded_data[data_index]['Y']
+                dict_predictions_deepDMD[run][data_index]['X_scaled'] = X_scaled
+                dict_predictions_deepDMD[run][data_index]['Y_scaled'] = Y_scaled
+                dict_predictions_deepDMD[run][data_index]['X_one_step_scaled'] = psiX_1step[:,0:len(X_scaled[0])]
+                dict_predictions_deepDMD[run][data_index]['X_n_step_scaled'] = psiX_nstep[:,0:len(X_scaled[0])]
+                dict_predictions_deepDMD[run][data_index]['X_one_step'] = oc.inverse_transform_X(psiX_1step[:, 0:len(X_scaled[0])], SYSTEM_NO)
+                dict_predictions_deepDMD[run][data_index]['X_n_step'] = oc.inverse_transform_X(psiX_nstep[:, 0:len(X_scaled[0])], SYSTEM_NO)
+                dict_predictions_deepDMD[run][data_index]['Y_one_step_scaled'] = Y_1step_scaled
+                dict_predictions_deepDMD[run][data_index]['Y_n_step_scaled'] = Y_nstep_scaled
+                dict_predictions_deepDMD[run][data_index]['Y_one_step'] = oc.inverse_transform_Y(Y_1step_scaled, SYSTEM_NO)
+                dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_Y(Y_nstep_scaled, SYSTEM_NO)
+            else:
+                dict_predictions_deepDMD[run][data_index]['X'] = dict_embedded_data[data_index]['X'].reshape((EMBEDDING_NUMBER*len(dict_embedded_data[data_index]['X']),-1))
+                dict_predictions_deepDMD[run][data_index]['Y'] = dict_embedded_data[data_index]['Y'].reshape((EMBEDDING_NUMBER * len(dict_embedded_data[data_index]['Y']), -1))
+                dict_predictions_deepDMD[run][data_index]['X_scaled'] = X_scaled.reshape((EMBEDDING_NUMBER * len(X_scaled), -1))
+                dict_predictions_deepDMD[run][data_index]['Y_scaled'] = Y_scaled.reshape((EMBEDDING_NUMBER * len(Y_scaled), -1))
+                dict_predictions_deepDMD[run][data_index]['X_one_step_scaled'] = psiX_1step[:, 0:len(X_scaled[0])].reshape((EMBEDDING_NUMBER*len(psiX_1step),-1))
+                dict_predictions_deepDMD[run][data_index]['X_n_step_scaled'] = psiX_nstep[:, 0:len(X_scaled[0])].reshape((EMBEDDING_NUMBER*len(psiX_nstep),-1))
+                dict_predictions_deepDMD[run][data_index]['X_one_step'] = oc.inverse_transform_X(psiX_1step[:, 0:len(X_scaled[0])], SYSTEM_NO).reshape((EMBEDDING_NUMBER*len(psiX_1step),-1))
+                dict_predictions_deepDMD[run][data_index]['X_n_step'] = oc.inverse_transform_X(psiX_nstep[:, 0:len(X_scaled[0])], SYSTEM_NO).reshape((EMBEDDING_NUMBER*len(psiX_nstep),-1))
+                dict_predictions_deepDMD[run][data_index]['Y_one_step_scaled'] = Y_1step_scaled.reshape((EMBEDDING_NUMBER*len(Y_1step_scaled),-1))
+                dict_predictions_deepDMD[run][data_index]['Y_n_step_scaled'] = Y_nstep_scaled.reshape((EMBEDDING_NUMBER*len(Y_nstep_scaled),-1))
+                dict_predictions_deepDMD[run][data_index]['Y_one_step'] = oc.inverse_transform_Y(Y_1step_scaled,SYSTEM_NO).reshape((EMBEDDING_NUMBER*len(Y_1step_scaled),-1))
+                dict_predictions_deepDMD[run][data_index]['Y_n_step'] = oc.inverse_transform_Y(Y_nstep_scaled,SYSTEM_NO).reshape((EMBEDDING_NUMBER*len(Y_nstep_scaled),-1))
         tf.reset_default_graph()
         sess.close()
     # Saving the dict_predictions folder
