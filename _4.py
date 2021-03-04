@@ -25,6 +25,7 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
 plt.rcParams["font.family"] = "Times"
+plt.rcParams["font.size"] = 22
 
 SYS_NO = 91
 # RUN_DIRECT_DEEPDMD_SUBOPT = 6
