@@ -869,67 +869,67 @@ sess3.close()
 ######
 
 
-# NORMALIZE = True
-# title = ''
-# FONT_SIZE = 14
-# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
-# # max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
-# # plt.figure(figsize=(30,5))
-# f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
-# for row_i in range(3):
-#     if row_i ==0:
-#         # x DMD modes
-#         comp_modes_conj = comp_modes_conj_DEEP_X
-#         comp_modes = comp_modes_DEEP_X
-#         PHI = PHI_DEEP_X
-#         X1 = X1_DEEP_X
-#         X2 = X2_DEEP_X
-#         E = E_DEEP_X
-#     elif row_i ==1:
-#         # Seq ocdDMD modes
-#         comp_modes_conj = comp_modes_conj_SEQ
-#         comp_modes = comp_modes_SEQ
-#         PHI = PHI_SEQ
-#         X1 = X1_SEQ
-#         X2 = X2_SEQ
-#         E = E_SEQ
-#     elif row_i ==2:
-#         # Dir ocdDMD modes
-#         comp_modes_conj = comp_modes_conj_DEEPDMD
-#         comp_modes = comp_modes_DEEPDMD
-#         PHI = PHI_DEEPDMD
-#         X1 = X1_DEEPDMD
-#         X2 = X2_DEEPDMD
-#         E = E_DEEPDMD
-#     p = 0
-#     for i in range(PHI.shape[-1]):
-#         if i in comp_modes_conj:
-#             continue
-#         elif i in comp_modes:
-#             if NORMALIZE:
-#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
-#             else:
-#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-#             f.colorbar(c, ax=ax[row_i,p])
-#             ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
-#             ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
-#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-#         else:
-#             if NORMALIZE:
-#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
-#             else:
-#                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-#             f.colorbar(c, ax=ax[row_i,p])
-#             ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
-#             ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
-#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-#         ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
-#         ax[row_i, p].set_xticks([-8, 0, 8])
-#         ax[row_i, p].set_yticks([-8, 0, 8])
-#         p = p+1
-#
-#
-# f.show()
+NORMALIZE = True
+title = ''
+FONT_SIZE = 14
+max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
+# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
+# plt.figure(figsize=(30,5))
+f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
+for row_i in range(3):
+    if row_i ==0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_DEEP_X
+        comp_modes = comp_modes_DEEP_X
+        PHI = PHI_DEEP_X
+        X1 = X1_DEEP_X
+        X2 = X2_DEEP_X
+        E = E_DEEP_X
+    elif row_i ==1:
+        # Seq ocdDMD modes
+        comp_modes_conj = comp_modes_conj_SEQ
+        comp_modes = comp_modes_SEQ
+        PHI = PHI_SEQ
+        X1 = X1_SEQ
+        X2 = X2_SEQ
+        E = E_SEQ
+    elif row_i ==2:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+    p = 0
+    for i in range(PHI.shape[-1]):
+        if i in comp_modes_conj:
+            continue
+        elif i in comp_modes:
+            if NORMALIZE:
+                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
+            else:
+                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+            f.colorbar(c, ax=ax[row_i,p])
+            ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        else:
+            if NORMALIZE:
+                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            else:
+                c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+            f.colorbar(c, ax=ax[row_i,p])
+            ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+        ax[row_i, p].set_xticks([-8, 0, 8])
+        ax[row_i, p].set_yticks([-8, 0, 8])
+        p = p+1
+
+
+f.show()
 
 
 ##
