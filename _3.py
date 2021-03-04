@@ -1032,8 +1032,10 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
         sys_params_arc2s, _, _ = get_sys_params()
         # dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
         # EMBEDDING_NUMBER = 4
-        dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
-        EMBEDDING_NUMBER = 5
+        # dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
+        # EMBEDDING_NUMBER = 5
+        dict_params[items] = dp.get_all_run_info(64, 5, sess_temp)
+        EMBEDDING_NUMBER = 6
         N_EMBED_STEPS = np.int(np.ceil(N_STEPS/EMBEDDING_NUMBER))
         Ts = 0.5
         t_end = EMBEDDING_NUMBER * Ts

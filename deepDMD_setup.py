@@ -142,7 +142,7 @@ dp.transfer_current_ocDeepDMD_run_files()
 # SYSTEM_NO = 63 #EMBEDDING = 5
 # ls_process_runs = list(range(0,18))# BEST RUN: 15
 SYSTEM_NO = 64 #EMBEDDING = 6
-ls_process_runs = list(range(0,18))# BEST RUN: 15
+ls_process_runs = list(range(0,9))# BEST RUN: 15
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 80
