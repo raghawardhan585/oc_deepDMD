@@ -1103,7 +1103,7 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
 X_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,0])), np.ceil(np.max(dict_phase_data['Theo'][:,0]))]
 Y_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,1])), np.ceil(np.max(dict_phase_data['Theo'][:,1]))]
 X_TICKS = np.arange(X_LIM[0]+1,X_LIM[1],1)
-X_TICKS = np.arange(Y_LIM[0]+1,Y_LIM[1],1)
+Y_TICKS = np.arange(Y_LIM[0]+1,Y_LIM[1],1)
 for axes_plot in ax.reshape(-1):
     axes_plot.set_xticks(X_TICKS)
     axes_plot.set_xlim(X_LIM)
