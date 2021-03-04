@@ -58,9 +58,9 @@ best_test_error = np.inf
 # 2 - Fitting the output
 # 3 - Making both dynamics and output linear
 
-RUN_OPTIMIZATION = 3
+RUN_OPTIMIZATION = 2
 RUN_1_SAVED = True
-RUN_2_SAVED = True
+RUN_2_SAVED = False
 RUN_3_SAVED = False
 
 
@@ -93,11 +93,11 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 2030}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 2030}
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 40000, 'batch_size': 2030}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': 2030}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 40000, 'batch_size': 2030}
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
