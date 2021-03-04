@@ -1106,6 +1106,8 @@ for items in ['Theo','Seq','Deep','Deep_E1']:
             else:
                 plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
     elif items == 'deep_E1':
+        sess_temp = tf.InteractiveSession()
+        dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
 
     else:
         if items == 'Deep':
