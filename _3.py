@@ -32,7 +32,7 @@ SYS_NO = 61
 RUN_DIRECT_DEEPDMD = 25
 RUN_SEQ_DEEPDMD = 37#41
 RUN_DEEPDMD_X = 2
-# RUN_NN = 4
+RUN_NN = 18
 
 
 
@@ -318,30 +318,33 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
 dict_phase_data = phase_portrait_data()
 
 
-dict_params = {}
-sess1 = tf.InteractiveSession()
-dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD,SYS_NO,sess1)
-df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-# _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-tf.reset_default_graph()
-sess1.close()
+# dict_params = {}
+# sess1 = tf.InteractiveSession()
+# dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD,SYS_NO,sess1)
+# df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+# # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+# PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# tf.reset_default_graph()
+# sess1.close()
+#
+# sess2 = tf.InteractiveSession()
+# dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD,SYS_NO,sess2)
+# df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+# # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+# PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# tf.reset_default_graph()
+# sess2.close()
+#
+# sess3 = tf.InteractiveSession()
+# dict_params['Deep_X'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess3)
+# # df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_X'])
+# # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+# PHI_DEEP_X,PSI_DEEP_X,Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X, X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_X'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# tf.reset_default_graph()
+# sess3.close()
 
-sess2 = tf.InteractiveSession()
-dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD,SYS_NO,sess2)
-df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-tf.reset_default_graph()
-sess2.close()
 
-sess3 = tf.InteractiveSession()
-dict_params['Deep_X'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess3)
-# df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_X'])
-# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-PHI_DEEP_X,PSI_DEEP_X,Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X, X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_X'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-tf.reset_default_graph()
-sess3.close()
+##
 
 # ## Figure 1
 #
@@ -865,157 +868,69 @@ sess3.close()
 
 # plt.show()
 
-NORMALIZE = True
-title = ''
-FONT_SIZE = 14
-max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
-# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
-# plt.figure(figsize=(30,5))
-f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
-for row_i in range(3):
-    if row_i ==0:
-        # x DMD modes
-        comp_modes_conj = comp_modes_conj_DEEP_X
-        comp_modes = comp_modes_DEEP_X
-        PHI = PHI_DEEP_X
-        X1 = X1_DEEP_X
-        X2 = X2_DEEP_X
-        E = E_DEEP_X
-    elif row_i ==1:
-        # Seq ocdDMD modes
-        comp_modes_conj = comp_modes_conj_SEQ
-        comp_modes = comp_modes_SEQ
-        PHI = PHI_SEQ
-        X1 = X1_SEQ
-        X2 = X2_SEQ
-        E = E_SEQ
-    elif row_i ==2:
-        # Dir ocdDMD modes
-        comp_modes_conj = comp_modes_conj_DEEPDMD
-        comp_modes = comp_modes_DEEPDMD
-        PHI = PHI_DEEPDMD
-        X1 = X1_DEEPDMD
-        X2 = X2_DEEPDMD
-        E = E_DEEPDMD
-    p = 0
-    for i in range(PHI.shape[-1]):
-        if i in comp_modes_conj:
-            continue
-        elif i in comp_modes:
-            if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
-            else:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
-            ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
-            ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-        else:
-            if NORMALIZE:
-                c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
-            else:
-                c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
-            f.colorbar(c, ax=ax[row_i,p])
-            ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
-            ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
-            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
-        ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
-        ax[row_i, p].set_xticks([-8, 0, 8])
-        ax[row_i, p].set_yticks([-8, 0, 8])
-        p = p+1
+## IMPORTANT PLOT
+# NORMALIZE = True
+# title = ''
+# FONT_SIZE = 14
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
+# # max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_DEEPDMD.shape[-1]])
+# # plt.figure(figsize=(30,5))
+# f,ax = plt.subplots(3,max_eigs,sharex=True,sharey=True,figsize=(3*max_eigs,9))
+# for row_i in range(3):
+#     if row_i ==0:
+#         # x DMD modes
+#         comp_modes_conj = comp_modes_conj_DEEP_X
+#         comp_modes = comp_modes_DEEP_X
+#         PHI = PHI_DEEP_X
+#         X1 = X1_DEEP_X
+#         X2 = X2_DEEP_X
+#         E = E_DEEP_X
+#     elif row_i ==1:
+#         # Seq ocdDMD modes
+#         comp_modes_conj = comp_modes_conj_SEQ
+#         comp_modes = comp_modes_SEQ
+#         PHI = PHI_SEQ
+#         X1 = X1_SEQ
+#         X2 = X2_SEQ
+#         E = E_SEQ
+#     elif row_i ==2:
+#         # Dir ocdDMD modes
+#         comp_modes_conj = comp_modes_conj_DEEPDMD
+#         comp_modes = comp_modes_DEEPDMD
+#         PHI = PHI_DEEPDMD
+#         X1 = X1_DEEPDMD
+#         X2 = X2_DEEPDMD
+#         E = E_DEEPDMD
+#     p = 0
+#     for i in range(PHI.shape[-1]):
+#         if i in comp_modes_conj:
+#             continue
+#         elif i in comp_modes:
+#             if NORMALIZE:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1, vmax=1)
+#             else:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+#             f.colorbar(c, ax=ax[row_i,p])
+#             ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+#             ax[row_i,p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[comp_modes.index(i)] + 1),fontsize=FONT_SIZE)
+#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+#         else:
+#             if NORMALIZE:
+#                 c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+#             else:
+#                 c = ax[row_i,p].pcolor(X1, X2, PHI[:, :, i], cmap='rainbow', vmin=np.min(PHI[:, :, i]),vmax=np.max(PHI[:, :, i]))
+#             f.colorbar(c, ax=ax[row_i,p])
+#             ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+#             ax[row_i,p].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
+#             # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+#         ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+#         ax[row_i, p].set_xticks([-8, 0, 8])
+#         ax[row_i, p].set_yticks([-8, 0, 8])
+#         p = p+1
+#
+#
+# f.show()
 
-
-f.show()
-
-
-##
-
-def get_sys_params():
-    # System Parameters
-    gamma_A = 1.
-    gamma_B = 0.5
-    delta_A = 1.
-    delta_B = 1.
-    alpha_A0 = 0.04
-    alpha_B0 = 0.004
-    alpha_A = 50.
-    alpha_B = 30.
-    K_A = 1.
-    K_B = 1.5
-    kappa_A = 1.
-    kappa_B = 1.
-    n = 2.
-    m = 2.
-    k_3n = 3.
-    k_3d = 1.08
-    sys_params_arc2s = (gamma_A, gamma_B, delta_A, delta_B, alpha_A0, alpha_B0, alpha_A, alpha_B, K_A, K_B, kappa_A, kappa_B, n, m)
-    return sys_params_arc2s,k_3n,k_3d
-
-    # Ts = 0.1
-    # t_end = 40
-    # # Simulation Parameters
-    # dict_phase_data = {}
-    # X0 = np.empty(shape=(0, 2))
-    # t = np.arange(0, t_end, Ts)
-    #
-    # # Phase Space Data
-    # dict_phase_data = {}
-    # X0 = np.empty(shape=(0, 2))
-    # i = 0
-    # for x1, x2 in itertools.product(list(np.arange(1, 30., 3.5)), list(np.arange(1, 60., 8))):
-    #     dict_phase_data[i] = {}
-    #     x0_curr = np.array([x1, x2])
-    #     X0 = np.concatenate([X0, np.array([[x1, x2]])], axis=0)
-    #     dict_phase_data[i]['X'] = oc.odeint(oc.activator_repressor_clock_2states, x0_curr, t, args=sys_params_arc2s)
-    #     dict_phase_data[i]['Y'] = k_3n * dict_phase_data[i]['X'][:, 1:2] / (k_3d + dict_phase_data[i]['X'][:, 3:4])
-    #     i = i + 1
-    # return dict_phase_data
-
-
-
-# x0_1_vals = np.arange(-0.5,3.6,0.5) # assumed scaled
-# x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
-
-x0_1_vals = np.arange(0,1.1,0.5) # assumed scaled
-x0_2_vals = np.arange(0,1.1,0.5) # assumed scaled
-N_STEPS = 100
-plt.figure()
-
-for items in ['Theo','Seq','Deep']:
-    if items is 'Theo':
-        sys_params_arc2s, _, _ = get_sys_params()
-        Ts = 0.5
-        t_end = N_STEPS*Ts
-        t = np.arange(0, t_end, Ts)
-        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
-            x0_unscaled = oc.inverse_transform_X(np.array([x0_1, x0_2]), SYS_NO)
-            x_unscaled = oc.odeint(oc.activator_repressor_clock_2states, x0_unscaled, t, args=sys_params_arc2s)
-            x_scaled = oc.scale_data_using_existing_scaler_folder({'X': x_unscaled}, SYS_NO)['X']
-            # break
-            plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0],linewidth = 0.5)
-    else:
-        if items == 'Deep':
-            run_folder = run_folder_name_DIR_ocDEEPDMD
-        elif items == 'Seq':
-            run_folder = run_folder_name_SEQ_ocDEEPDMD
-        sess_temp = tf.InteractiveSession()
-        dict_params[items] = get_dict_param(run_folder,SYS_NO,sess_temp)
-        for x0_1,x0_2 in itertools.product(x0_1_vals,x0_2_vals):
-            psi_x = dict_params[items]['psixpT'].eval(feed_dict = {dict_params[items]['xpT_feed']: np.array([[x0_1,x0_2]])})
-            print(psi_x)
-            for i in range(N_STEPS):
-                psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:],dict_params[items]['KxT_num'])])
-            # break
-            if items == 'Deep':
-                plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[4], linewidth=0.5)
-            elif items == 'Seq':
-                plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=1)
-        print('=========================')
-        tf.reset_default_graph()
-        sess_temp.close()
-# plt.xlim([-0.5,4])
-# plt.ylim([-0.5,2.5])
-plt.show()
 
 
 ##
@@ -1046,16 +961,21 @@ def get_sys_params():
 # x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
 SUBPLOTS = True
 SUBPLOT_LINEWIDTH = 0.7
-x0_1_vals = np.arange(0,1.1,0.5) # assumed scaled
-x0_2_vals = np.arange(0,1.1,0.5) # assumed scaled
-N_STEPS = 10
+x0_1_vals = np.arange(-0.6,3.3,1) # assumed scaled
+x0_2_vals = np.arange(-1.2,2.1,1) # assumed scaled
+X_LIM = [-1.5,2.5]
+Y_LIM = [-1.5,2.5]
+X_TICKS =np.arange(-2,5,1)
+Y_TICKS =np.arange(-2,5,1)
+N_STEPS = 200
 if SUBPLOTS:
     f,ax = plt.subplots(2,2,sharey=True,sharex=True,figsize=(9,9))
 else:
     plt.figure()
 
+dict_params={}
 dict_phase_data ={}
-for items in ['Theo','Seq','Deep','Deep_E1']:
+for items in ['Theo','nn','Seq','Deep','Deep_E1']:
     dict_phase_data[items] = np.empty(shape=(0,2))
     if items is 'Theo':
         sys_params_arc2s, _, _ = get_sys_params()
@@ -1071,10 +991,10 @@ for items in ['Theo','Seq','Deep','Deep_E1']:
             dict_phase_data[items] = np.concatenate([dict_phase_data[items] , x_scaled],axis=0)
             if SUBPLOTS:
                 ax[0,0].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[8], linewidth=SUBPLOT_LINEWIDTH)
-                ax[0,0].set_xticks([-4,0,4])
-                ax[0,0].set_xlim([-5, 5])
-                ax[0,0].set_yticks([-4, 0, 4])
-                ax[0,0].set_ylim([-6.5, 6.5])
+                # ax[0,0].set_xticks(X_TICKS)
+                # ax[0,0].set_xlim(X_LIM )
+                # ax[0,0].set_yticks(Y_TICKS)
+                # ax[0,0].set_ylim(Y_LIM)
                 ax[0,0].set_title('Simulated \n System')
                 ax[0,0].set_ylabel('$x_2$')
                 # ax[0,0].set_xlabel('$x_1$')
@@ -1095,21 +1015,48 @@ for items in ['Theo','Seq','Deep','Deep_E1']:
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], x_scaled], axis=0)
             if SUBPLOTS:
                 ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
-                ax[0,1].set_xticks([-4,0,4])
-                ax[0,1].set_xlim([-5, 5])
-                ax[0,1].set_yticks([-4, 0, 4])
-                ax[0,1].set_ylim([-6.5, 6.5])
+                # ax[0,1].set_xticks(X_TICKS)
+                # ax[0,1].set_xlim(X_LIM )
+                # ax[0,1].set_yticks(Y_TICKS)
+                # ax[0,1].set_ylim(Y_LIM)
                 ax[0,1].set_title('Neural network \n $\\rho =$')
                 # ax[0,1].set_ylabel('$x_2$')
                 # ax[0,0].set_xlabel('$x_1$')
                 ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
             else:
                 plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
-    elif items == 'deep_E1':
+        tf.reset_default_graph()
+        sess_temp.close()
+    elif items == 'Deep_E1':
         sess_temp = tf.InteractiveSession()
-        dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
-
-    else:
+        sys_params_arc2s, _, _ = get_sys_params()
+        # dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
+        # EMBEDDING_NUMBER = 4
+        dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
+        EMBEDDING_NUMBER = 5
+        N_EMBED_STEPS = np.int(np.ceil(N_STEPS/EMBEDDING_NUMBER))
+        Ts = 0.5
+        t_end = EMBEDDING_NUMBER * Ts
+        t = np.arange(0, t_end, Ts)
+        for x0_1, x0_2 in itertools.product(x0_1_vals, x0_2_vals):
+            x0_unscaled = oc.inverse_transform_X(np.array([x0_1, x0_2]), SYS_NO)
+            x_unscaled = oc.odeint(oc.activator_repressor_clock_2states, x0_unscaled, t, args=sys_params_arc2s)
+            x_scaled = oc.scale_data_using_existing_scaler_folder({'X': x_unscaled}, SYS_NO)['X'].reshape((1,-1))
+            psi_x = dict_params[items]['psixpT'].eval(feed_dict={dict_params[items]['xpT_feed']: x_scaled})
+            for i in range(N_EMBED_STEPS):
+                psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:], dict_params[items]['KxT_num'])])
+            x  = psi_x[:,0:2*EMBEDDING_NUMBER].reshape((-1,2))[0:N_STEPS+1,:]
+            dict_phase_data[items] = np.concatenate([dict_phase_data[items], x], axis=0)
+            ax[1, 1].plot(x[:, 0], x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+            # ax[1, 1].set_xticks(X_TICKS)
+            # ax[1, 1].set_xlim(X_LIM )
+            # ax[1, 1].set_yticks(Y_TICKS)
+            # ax[1, 1].set_ylim(Y_LIM)
+            ax[1, 1].set_ylabel('$x_2$')
+            ax[1, 1].set_xlabel('$x_1$')
+        tf.reset_default_graph()
+        sess_temp.close()
+    elif items in ['Deep']:#,'Seq']:
         if items == 'Deep':
             run_folder = run_folder_name_DIR_ocDEEPDMD
         elif items == 'Seq':
@@ -1124,19 +1071,19 @@ for items in ['Theo','Seq','Deep','Deep_E1']:
             if SUBPLOTS:
                 if items == 'Deep':
                     ax[1,0].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
-                    ax[1,0].set_xticks([-4, 0, 4])
-                    ax[1,0].set_xlim([-5, 5])
-                    ax[1,0].set_yticks([-4, 0, 4])
-                    ax[1,0].set_ylim([-6.5, 6.5])
+                    # ax[1,0].set_xticks(X_TICKS)
+                    # ax[1,0].set_xlim(X_LIM )
+                    # ax[1,0].set_yticks(Y_TICKS)
+                    # ax[1,0].set_ylim(Y_LIM)
                     ax[1,0].set_ylabel('$x_2$')
                     ax[1,0].set_xlabel('$x_1$')
                 elif items == 'Seq':
                     ax[1,1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
                     # ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-                    ax[1,1].set_xticks([-4, 0, 4])
-                    ax[1,1].set_xlim([-5, 5])
-                    ax[1,1].set_yticks([-4, 0, 4])
-                    ax[1,1].set_ylim([-6.5, 6.5])
+                    # ax[1,1].set_xticks(X_TICKS)
+                    # ax[1,1].set_xlim(X_LIM )
+                    # ax[1,1].set_yticks(Y_TICKS)
+                    # ax[1,1].set_ylim(Y_LIM)
                     ax[1,1].set_title('Sequential ocdeepDMD')
                     ax[1,1].set_xlabel('$x_1$')
             else:
@@ -1150,17 +1097,29 @@ for items in ['Theo','Seq','Deep','Deep_E1']:
         sess_temp.close()
 # plt.xlim([-0.5,4])
 # plt.ylim([-0.5,2.5])
+X_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,0])), np.ceil(np.max(dict_phase_data['Theo'][:,0]))]
+Y_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,1])), np.ceil(np.max(dict_phase_data['Theo'][:,1]))]
+X_TICKS = np.arange(X_LIM[0]+1,X_LIM[1],1)
+X_TICKS = np.arange(Y_LIM[0]+1,Y_LIM[1],1)
+for axes_plot in ax.reshape(-1):
+    axes_plot.set_xticks(X_TICKS)
+    axes_plot.set_xlim(X_LIM)
+    axes_plot.set_yticks(Y_TICKS)
+    axes_plot.set_ylim(Y_LIM)
 ax[1,0].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
 ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
 ax[0,1].set_title('Neural network \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0],3)))
 ax[1,0].set_title('Direct ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],3)))
-ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
+ax[1,1].set_title('Embedded Direct ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep_E1'].reshape(-1))[0],3)))
+# ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
 plt.show()
 
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0])
-print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0])
+print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep_E1'].reshape(-1))[0])
 ##
 
+from sklearn.metrics import r2_score
 
+r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))
 
