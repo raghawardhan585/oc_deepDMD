@@ -1061,5 +1061,28 @@ plt.show()
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0])
-##
 
+
+
+
+## OUTPUT STUFF
+# Wh_SEQ = np.matmul(dict_params['Seq']['WhT_num'].T,koop_modes_SEQ)
+# # Wh_DEEP = np.matmul(dict_params['Deep']['WhT_num'].T,koop_modes_DEEPDMD)
+# Wh_SEQ = Wh_SEQ/ np.max(np.abs(Wh_SEQ))
+# # Wh_DEEP = Wh_DEEP/ np.max(np.abs(Wh_DEEP))
+# Wh_SEQ = np.abs(Wh_SEQ)
+# # Wh_DEEP =np.abs(Wh_DEEP)
+# fig,ax = plt.subplots()
+# # ax = fig.add_axes([0,0,1,1])
+# X = np.arange(1,1+len(Wh_SEQ[0]))
+# # X = np.arange(1,len(Wh_DEEP[0])+1)
+# # x_labels = [str(round(items.real,2) + round(items.imag,2) *1j) for items in np.diag(E_SEQ)]
+# ax.bar(X + 0.00,Wh_SEQ.reshape(-1),color='b',label = 'Sequential ocdeepDMD', width = 0.25)
+# # ax.bar(X + 0.,Wh_DEEP.reshape(-1),color='g',label = 'Direct ocdeepDMD', width = 0.25)
+# ax.set_xticks(X+0.)
+# ax.set_xticklabels(X)
+# # ax.set_xticklabels(x_labels)
+# ax.set_xlabel('Eigenvalue $\lambda$')
+# ax.set_ylabel('Relative $W_h$ value')
+# ax.legend()
+# plt.show()

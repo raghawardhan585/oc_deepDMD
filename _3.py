@@ -1126,3 +1126,23 @@ from sklearn.metrics import r2_score
 
 r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))
 
+##
+##
+# Wh_SEQ = np.matmul(dict_params['Seq']['WhT_num'].T,koop_modes_SEQ)
+# Wh_DEEP = np.matmul(dict_params['Deep']['WhT_num'].T,koop_modes_DEEPDMD)
+# Wh_SEQ = Wh_SEQ/ np.max(np.abs(Wh_SEQ))
+# Wh_DEEP = Wh_DEEP/ np.max(np.abs(Wh_DEEP))
+# Wh_SEQ = np.abs(Wh_SEQ)
+# Wh_DEEP =np.abs(Wh_DEEP)
+# fig,ax = plt.subplots()
+# # ax = fig.add_axes([0,0,1,1])
+# X = np.arange(len(Wh_SEQ[0]))
+# x_labels = [str(round(items,2)) for items in np.diag()]
+# ax.bar(X + 0.00,Wh_SEQ.reshape(-1),color='b',label = 'Sequential ocdeepDMD', width = 0.25)
+# ax.bar(X + 0.25,Wh_DEEP.reshape(-1),color='g',label = 'Direct ocdeepDMD', width = 0.25)
+# ax.set_xticks(X+0.5)
+# ax.set_xticklabels(x_labels)
+# ax.set_xlabel('Eigenvalue $\lambda$')
+# ax.set_ylabel('Relative $W_h$ value')
+# ax.legend()
+# plt.show()
