@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 62
+SYSTEM_NO = 66
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -79,7 +79,11 @@ def estimate_K_stability(Kx, print_Kx=False):
 def load_pickle_data(file_path):
     with open(file_path,'rb') as handle:
         output_vec = pickle.load(handle)
-    return output_vec['Xp'], output_vec['Xf'], output_vec['Yp'], output_vec['Yf']
+    try:
+        EMBEDDING_NO = output_vec['EMBEDDING_NO']
+    except:
+        EMBEDDING_NO = 1
+    return output_vec['Xp'], output_vec['Xf'], output_vec['Yp'], output_vec['Yf'], EMBEDDING_NO
 
 def weight_variable(shape):
     std_dev = math.sqrt(3.0 / (shape[0] + shape[1]))
@@ -322,7 +326,7 @@ if len(sys.argv)>6:
     n_x_nn_nodes = np.int(sys.argv[6])
 
 data_file = data_directory + data_suffix
-Xp, Xf, Yp, Yf = load_pickle_data(data_file)
+Xp, Xf, Yp, Yf, EMBEDDING_NO = load_pickle_data(data_file)
 num_bas_obs = len(Xp[0])
 num_all_samples = len(Xp)
 num_outputs = len(Yf[0])

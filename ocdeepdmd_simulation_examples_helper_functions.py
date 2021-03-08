@@ -63,6 +63,7 @@ def sort_to_DMD_folder(storage_folder, N_CURVES, dict_indexed_data,SYSTEM_NO,EMB
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
         pickle.dump(dict_Scaler, handle)
     dict_DATA = scale_data_using_existing_scaler_folder(dict_DATA_RAW, SYSTEM_NO)
+    dict_DATA['EMBEDDING_NO'] = EMBEDDING_NUMBER
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
         pickle.dump(dict_DATA, handle)
     dict_indexed_data['EMBEDDING_NO'] =EMBEDDING_NUMBER

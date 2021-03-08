@@ -12,6 +12,8 @@ import ocdeepdmd_simulation_examples_helper_functions as oc
 import copy
 import random
 from scipy.stats import pearsonr as corr
+from sklearn.metrics import r2_score
+
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -23,7 +25,6 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.20784314, 0.81568629, 0.89411765],
           '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
-plt.rcParams["font.family"] = "Times"
 plt.rcParams["font.family"] = "Times"
 plt.rcParams["font.size"] = 22
 SYS_NO = 11
@@ -1228,3 +1229,42 @@ ax.set_xlabel('Eigenvalue $\lambda$')
 ax.set_ylabel('Relative $W_h$ value')
 ax.legend()
 plt.show()
+
+## COMPUTE THE STATISTICS REQUIRED FOR THE TABLE
+x_sim_test = np.empty(shape=(0,2))
+x_dir_test = np.empty(shape=(0,2))
+x_dir_subopt_test = np.empty(shape=(0,2))
+x_seq_test = np.empty(shape=(0,2))
+x_dmd_test = np.empty(shape=(0,2))
+y_sim_test = np.empty(shape=(0,1))
+y_dir_test = np.empty(shape=(0,1))
+y_dir_subopt_test = np.empty(shape=(0,1))
+y_seq_test = np.empty(shape=(0,1))
+
+for i in range(200,300):
+    x_sim_test = np.concatenate([x_sim_test,d_DDMD[i]['X']],axis=0)
+    x_dmd_test = np.concatenate([x_dmd_test,d_DDMD_X[i]['X_est_n_step']],axis=0)
+    x_dir_subopt_test = np.concatenate([x_dir_subopt_test, d_DDMD_SUBOPT[i]['X_n_step']], axis=0)
+    x_dir_test = np.concatenate([x_dir_test, d_DDMD[i]['X_n_step']], axis=0)
+    x_seq_test = np.concatenate([x_seq_test, d_SEQ[i]['X_est_n_step']], axis=0)
+    y_sim_test = np.concatenate([y_sim_test, d_DDMD[i]['Y']], axis=0)
+    y_dir_subopt_test = np.concatenate([y_dir_subopt_test, d_DDMD_SUBOPT[i]['Y_one_step']], axis=0)
+    y_dir_test = np.concatenate([y_dir_test, d_DDMD[i]['Y_one_step']], axis=0)
+    y_seq_test = np.concatenate([y_seq_test, d_SEQ[i]['Y_est_one_step']], axis=0)
+
+print('STATE STATS')
+print('deepDMD:',round(r2_score(x_sim_test,x_dmd_test)*100,2))
+print('Neural Network: - ')
+print('Suboptimal Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_subopt_test)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_test)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(x_sim_test,x_seq_test)*100,2))
+print('---------------------------------------')
+print('OUTPPUT STATS')
+print('Neural Network: - ')
+print('Suboptimal Direct ocdeepDMD:',round(r2_score(y_sim_test,y_dir_subopt_test)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(y_sim_test,y_dir_test)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(y_sim_test,y_seq_test)*100,2))
+print('---------------------------------------')
+##
+##
+

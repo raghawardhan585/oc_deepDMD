@@ -141,14 +141,14 @@ dp.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,18)) # BEST RUN: 9
 # SYSTEM_NO = 63 #EMBEDDING = 5
 # ls_process_runs = list(range(0,18))# BEST RUN: 15
-SYSTEM_NO = 64 #EMBEDDING = 6
-ls_process_runs = list(range(0,9))# BEST RUN: 15
+# SYSTEM_NO = 64 #EMBEDDING = 6
+# ls_process_runs = list(range(0,9))# BEST RUN: 15
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,87))
-# SYSTEM_NO = 91
-# ls_process_runs = list(range(0,40))
+SYSTEM_NO = 91
+ls_process_runs = list(range(0,40))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:
@@ -251,6 +251,14 @@ with open(sys_folder_name + '/deepDMD/RUN_' + str(opt_run) + '/run_info.pickle',
 x_nn_opt = run_info_opt[0]['x_hidden_variable_list']
 dict_hyperparam_opt = {'n_layers': len(x_nn_opt), 'n_nodes': x_nn_opt[0], 'n_dictionary': x_nn_opt[-1]}
 print(dict_hyperparam_opt)
+
+## Optimal hyperparameters
+for runs in ls_process_runs:
+    with open(sys_folder_name + '/deepDMD/RUN_' + str(runs) + '/run_info.pickle','rb') as handle:
+        run_info_opt = pickle.load(handle)
+    x_nn_opt = run_info_opt[0]['x_hidden_variable_list']
+    dict_hyperparam_opt = {'n_layers': len(x_nn_opt), 'n_nodes': x_nn_opt[0], 'n_dictionary': x_nn_opt[-1]}
+    print('Run:', runs, dict_hyperparam_opt)
 ##
 
 

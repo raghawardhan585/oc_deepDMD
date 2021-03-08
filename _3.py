@@ -14,6 +14,9 @@ import deepDMD_helper_functions as dp
 import random
 from scipy.stats import pearsonr as corr
 import direct_nn_helper_functions as dn
+from sklearn.metrics import r2_score
+
+
 plt.rcParams["font.family"] = "Times"
 plt.rcParams["font.size"] = 22
 
@@ -33,7 +36,7 @@ SYS_NO = 61
 RUN_DIRECT_DEEPDMD = 25
 RUN_SEQ_DEEPDMD = 37#41
 RUN_DEEPDMD_X = 2
-RUN_NN = 18
+RUN_NN = 9
 
 
 
@@ -42,7 +45,7 @@ run_folder_name_DEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_DEEPDMD
 run_folder_name_SEQ_ocDEEPDMD = sys_folder_name + '/Sequential/RUN_' + str(RUN_SEQ_DEEPDMD)
 run_folder_name_DIR_ocDEEPDMD = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD)
 # run_folder_name_DIR_ocDEEPDMD_SUBOPT = sys_folder_name + '/deepDMD/RUN_' + str(RUN_DIRECT_DEEPDMD_SUBOPT)
-# run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
+run_folder_name_NN = sys_folder_name + '/Direct_nn/RUN_' + str(RUN_NN)
 
 with open(sys_folder_name + '/System_' + str(SYS_NO) + '_SimulatedData.pickle', 'rb') as handle:
     dict_data = pickle.load(handle)
@@ -59,7 +62,8 @@ with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
     d_DDMD = pickle.load(handle)[RUN_DIRECT_DEEPDMD]
 # with open(sys_folder_name + '/dict_predictions_deepDMD.pickle', 'rb') as handle:
 #     d_DDMD_SUBOPT = pickle.load(handle)[RUN_DIRECT_DEEPDMD_SUBOPT]
-
+with open(sys_folder_name + '/dict_predictions_Direct_nn.pickle', 'rb') as handle:
+    d_NN = pickle.load(handle)[RUN_NN]
 
 
 ##
@@ -319,30 +323,30 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
 dict_phase_data = phase_portrait_data()
 
 
-# dict_params = {}
-# sess1 = tf.InteractiveSession()
-# dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD,SYS_NO,sess1)
-# df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-# # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-# PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-# tf.reset_default_graph()
-# sess1.close()
-#
-# sess2 = tf.InteractiveSession()
-# dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD,SYS_NO,sess2)
-# df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-# # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-# PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-# tf.reset_default_graph()
-# sess2.close()
-#
-# sess3 = tf.InteractiveSession()
-# dict_params['Deep_X'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess3)
-# # df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_X'])
-# # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-# PHI_DEEP_X,PSI_DEEP_X,Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X, X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_X'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-# tf.reset_default_graph()
-# sess3.close()
+dict_params = {}
+sess1 = tf.InteractiveSession()
+dict_params['Seq'] = get_dict_param(run_folder_name_SEQ_ocDEEPDMD,SYS_NO,sess1)
+df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+# _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+tf.reset_default_graph()
+sess1.close()
+
+sess2 = tf.InteractiveSession()
+dict_params['Deep'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD,SYS_NO,sess2)
+df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+tf.reset_default_graph()
+sess2.close()
+
+sess3 = tf.InteractiveSession()
+dict_params['Deep_X'] = get_dict_param(run_folder_name_DEEPDMD,SYS_NO,sess3)
+# df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_X'])
+# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+PHI_DEEP_X,PSI_DEEP_X,Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X, X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_X'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+tf.reset_default_graph()
+sess3.close()
 
 
 ##
@@ -1146,3 +1150,127 @@ r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))
 # ax.set_ylabel('Relative $W_h$ value')
 # ax.legend()
 # plt.show()
+
+## COMPUTE THE STATISTICS REQUIRED FOR THE TABLE
+x_sim_test = np.empty(shape=(0,2))
+x_dir_test_1_step = np.empty(shape=(0,2))
+x_seq_test_1_step = np.empty(shape=(0,2))
+x_nn_test_1_step = np.empty(shape=(0,2))
+x_dir_test_n_step = np.empty(shape=(0,2))
+x_seq_test_n_step = np.empty(shape=(0,2))
+x_nn_test_n_step = np.empty(shape=(0,2))
+y_sim_test = np.empty(shape=(0,1))
+y_dir_test = np.empty(shape=(0,1))
+y_seq_test = np.empty(shape=(0,1))
+y_nn_test = np.empty(shape=(0,1))
+for i in range(200,300):
+    x_sim_test = np.concatenate([x_sim_test,d_DDMD[i]['X']],axis=0)
+    x_nn_test_1_step = np.concatenate([x_nn_test_1_step,d_NN[i]['X_one_step']],axis=0)
+    x_dir_test_1_step = np.concatenate([x_dir_test_1_step, d_DDMD[i]['X_one_step']], axis=0)
+    x_seq_test_1_step = np.concatenate([x_seq_test_1_step, d_SEQ[i]['X_est_one_step']], axis=0)
+    x_nn_test_n_step = np.concatenate([x_nn_test_n_step, d_NN[i]['X_n_step']], axis=0)
+    x_dir_test_n_step = np.concatenate([x_dir_test_n_step, d_DDMD[i]['X_n_step']], axis=0)
+    x_seq_test_n_step = np.concatenate([x_seq_test_n_step, d_SEQ[i]['X_est_n_step']], axis=0)
+    y_sim_test = np.concatenate([y_sim_test, d_DDMD[i]['Y']], axis=0)
+    y_nn_test = np.concatenate([y_nn_test, d_NN[i]['Y_one_step']], axis=0)
+    y_dir_test = np.concatenate([y_dir_test, d_DDMD[i]['Y_one_step']], axis=0)
+    y_seq_test = np.concatenate([y_seq_test, d_SEQ[i]['Y_est_one_step']], axis=0)
+
+print('STATE STATS 1 STEP')
+print('Neural Network:',round(r2_score(x_sim_test,x_nn_test_1_step)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_test_1_step)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(x_sim_test,x_seq_test_1_step)*100,2))
+print('---------------------------------------')
+print('STATE STATS N- STEP')
+print('Neural Network:',round(r2_score(x_sim_test,x_nn_test_n_step)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_test_n_step)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(x_sim_test,x_seq_test_n_step)*100,2))
+print('---------------------------------------')
+print('OUTPPUT STATS')
+print('Neural Network:',round(r2_score(y_sim_test,y_nn_test)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(y_sim_test,y_dir_test)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(y_sim_test,y_seq_test)*100,2))
+print('---------------------------------------')
+##
+
+## Observability rank
+Wh_SEQ = dict_params['Seq']['WhT_num'].T
+K_SEQ = dict_params['Seq']['KxT_num'].T
+Wh_DIR = dict_params['Deep']['WhT_num'].T
+K_DIR = dict_params['Deep']['KxT_num'].T
+N = 10
+
+Ob_SEQ = np.empty(shape=(0,len(Wh_SEQ[0])))
+for i in range(N):
+    Ob_SEQ = np.concatenate([Ob_SEQ,np.matmul(Wh_SEQ,np.linalg.matrix_power(K_SEQ,i))],axis=0)
+
+print('Raw rank of Observability Matrix :', np.linalg.matrix_rank(Ob_SEQ))
+_,S,_ = np.linalg.svd(Ob_SEQ)
+print('Singular Values: ', S)
+
+S_sig = ( np.cumsum(S**2)/np.sum(S**2))*100
+for items in S_sig:
+    print(round(items,2))
+
+# Reconstruction of the initial conditions
+N_steps = len(d_SEQ[1]['X'])
+
+Ob_SEQ  = np.empty(shape=(0,len(Wh_SEQ[0])))
+Ob_DIR  = np.empty(shape=(0,len(Wh_DIR[0])))
+for i in range(N_steps):
+    Ob_SEQ  = np.concatenate([Ob_SEQ ,np.matmul(Wh_SEQ,np.linalg.matrix_power(K_SEQ,i))],axis=0)
+    Ob_DIR = np.concatenate([Ob_DIR, np.matmul(Wh_DIR, np.linalg.matrix_power(K_DIR, i))], axis=0)
+Ob_SEQ_pseodoinverse = np.matmul(np.linalg.inv(np.matmul(Ob_SEQ.T,Ob_SEQ)),Ob_SEQ.T)
+Ob_DIR_pseodoinverse = np.matmul(np.linalg.inv(np.matmul(Ob_DIR.T,Ob_DIR)),Ob_DIR.T)
+psiX0_SEQ_sim = np.empty(shape=(len(d_SEQ[0]['psiX'][0]),0))
+psiX0_SEQ = np.empty(shape=(len(d_SEQ[0]['psiX'][0]),0))
+psiX0_DIR_sim = np.empty(shape=(len(d_DDMD[0]['psiX'][0]),0))
+psiX0_DIR = np.empty(shape=(len(d_DDMD[0]['psiX'][0]),0))
+for i in range(300):
+    psiX0_SEQ_sim = np.concatenate([psiX0_SEQ_sim,d_SEQ[i]['psiX'][0:1].T],axis=1)
+    psiX0_SEQ = np.concatenate([psiX0_SEQ, np.matmul(Ob_SEQ_pseodoinverse,d_SEQ[i]['Y_est_n_step'])],axis=1)
+    psiX0_DIR_sim = np.concatenate([psiX0_DIR_sim, d_DDMD[i]['psiX'][0:1].T],axis=1)
+    psiX0_DIR = np.concatenate([psiX0_DIR, np.matmul(Ob_DIR_pseodoinverse, d_DDMD[i]['Y_n_step'])],axis=1)
+
+print('---------------------------')
+print('SEQUENTIAL RECONSTRUCTION ACCURACY')
+print('---------------------------')
+for i in range(len(psiX0_SEQ)):
+    print('psi' + str(i+1) + ' :',r2_score(psiX0_SEQ_sim[i],psiX0_SEQ[i]))
+print('---------------------------')
+print('SEQUENTIAL RECONSTRUCTION ACCURACY')
+print('---------------------------')
+for i in range(len(psiX0_SEQ)):
+    print('psi' + str(i+1) + ' :',r2_score(psiX0_DIR_sim[i],psiX0_DIR[i]))
+print('---------------------------')
+
+
+## COMPUTE THE STATISTICS REQUIRED FOR THE TABLE
+x_sim_test = np.empty(shape=(0,2))
+x_dir_test = np.empty(shape=(0,2))
+x_seq_test = np.empty(shape=(0,2))
+x_nn_test = np.empty(shape=(0,2))
+y_sim_test = np.empty(shape=(0,1))
+y_dir_test = np.empty(shape=(0,1))
+y_seq_test = np.empty(shape=(0,1))
+y_nn_test = np.empty(shape=(0,1))
+for i in range(200,300):
+    x_sim_test = np.concatenate([x_sim_test,d_DDMD[i]['X']],axis=0)
+    x_nn_test = np.concatenate([x_nn_test,d_NN[i]['X_one_step']],axis=0)
+    x_dir_test = np.concatenate([x_dir_test, d_DDMD[i]['X_one_step']], axis=0)
+    x_seq_test = np.concatenate([x_seq_test, d_SEQ[i]['X_est_one_step']], axis=0)
+    y_sim_test = np.concatenate([y_sim_test, d_DDMD[i]['Y']], axis=0)
+    y_nn_test = np.concatenate([y_nn_test, d_NN[i]['Y_one_step']], axis=0)
+    y_dir_test = np.concatenate([y_dir_test, d_DDMD[i]['Y_one_step']], axis=0)
+    y_seq_test = np.concatenate([y_seq_test, d_SEQ[i]['Y_est_one_step']], axis=0)
+
+print('STATE STATS')
+print('Neural Network:',round(r2_score(x_sim_test,x_nn_test)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_test)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(x_sim_test,x_seq_test)*100,2))
+print('---------------------------------------')
+print('OUTPPUT STATS')
+print('Neural Network:',round(r2_score(y_sim_test,y_nn_test)*100,2))
+print('Direct ocdeepDMD:',round(r2_score(y_sim_test,y_dir_test)*100,2))
+print('Sequential ocdeepDMD:',round(r2_score(y_sim_test,y_seq_test)*100,2))
+print('---------------------------------------')
