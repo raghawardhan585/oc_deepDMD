@@ -975,7 +975,7 @@ X_TICKS =np.arange(-2,5,1)
 Y_TICKS =np.arange(-2,5,1)
 N_STEPS = 300
 if SUBPLOTS:
-    f,ax = plt.subplots(2,2,sharey=True,sharex=True,figsize=(9,9))
+    f,ax = plt.subplots(2,4,sharey=True,sharex=True,figsize=(18,9))
 else:
     plt.figure()
 
@@ -1002,16 +1002,9 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
                 ax[0, 0].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
                                head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
                                color=colors[8])  # 'tab:green')
-                # ax[0,0].set_xticks(X_TICKS)
-                # ax[0,0].set_xlim(X_LIM )
-                # ax[0,0].set_yticks(Y_TICKS)
-                # ax[0,0].set_ylim(Y_LIM)
                 ax[0,0].set_title('Simulated \n System')
-                ax[0,0].set_ylabel('$x_2$')
-                # ax[0,0].set_xlabel('$x_1$')
             else:
                 plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
-            # break
         if SUBPLOTS:
             ax[0,0].plot(X0[:,0], X0[:,1], 'o', color='salmon',fillstyle='none', markersize=5)
         else:
@@ -1024,34 +1017,36 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
             for i in range(N_STEPS):
                 x_scaled = np.concatenate([x_scaled,dict_params[items]['f'].eval(feed_dict={dict_params[items]['xp_feed']:x_scaled[-1:]})],axis=0)
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], x_scaled], axis=0)
-            if SUBPLOTS:
-                ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
-                dx = (x_scaled[1, 0] - x_scaled[0, 0]) * ARROW_PARAMS['arrow length']
-                dy = (x_scaled[1, 1] - x_scaled[0, 1]) * ARROW_PARAMS['arrow length']
-                ax[0, 1].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
-                               head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
-                               color=colors[2])  # 'tab:green')
-                # ax[0,1].set_xticks(X_TICKS)
-                # ax[0,1].set_xlim(X_LIM )
-                # ax[0,1].set_yticks(Y_TICKS)
-                # ax[0,1].set_ylim(Y_LIM)
-                ax[0,1].set_title('Neural network \n $\\rho =$')
-                # ax[0,1].set_ylabel('$x_2$')
-                # ax[0,0].set_xlabel('$x_1$')
-                ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-            else:
-                plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
+            ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
+            dx = (x_scaled[1, 0] - x_scaled[0, 0]) * ARROW_PARAMS['arrow length']
+            dy = (x_scaled[1, 1] - x_scaled[0, 1]) * ARROW_PARAMS['arrow length']
+            ax[0, 1].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                           head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                           color=colors[2])  # 'tab:green')
+            ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+        ax[0, 1].set_title('Neural network \n $\\rho =$ ' + str(
+                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['nn'].reshape(-1))[0], 3)))
         tf.reset_default_graph()
         sess_temp.close()
-    elif items == 'Deep_E1':
+    elif items in ['Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
         sess_temp = tf.InteractiveSession()
         sys_params_arc2s, _, _ = get_sys_params()
-        dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
-        EMBEDDING_NUMBER = 4
-        # dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
-        # EMBEDDING_NUMBER = 5
-        # dict_params[items] = dp.get_all_run_info(64, 5, sess_temp)
-        # EMBEDDING_NUMBER = 6
+        if items == 'Deep_E1':
+            dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
+            EMBEDDING_NUMBER = 4
+            plt_col_id =0
+        elif items == 'Deep_E2':
+            dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
+            EMBEDDING_NUMBER = 5
+            plt_col_id = 1
+        elif items == 'Deep_E3':
+            dict_params[items] = dp.get_all_run_info(64, 4, sess_temp)
+            EMBEDDING_NUMBER = 6
+            plt_col_id = 2
+        elif items == 'Deep_E4':
+            dict_params[items] = dp.get_all_run_info(64, 4, sess_temp)
+            EMBEDDING_NUMBER = 6
+            plt_col_id = 3
         N_EMBED_STEPS = np.int(np.ceil(N_STEPS/EMBEDDING_NUMBER))
         Ts = 0.5
         t_end = EMBEDDING_NUMBER * Ts
@@ -1065,21 +1060,16 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
                 psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:], dict_params[items]['KxT_num'])])
             x  = psi_x[:,0:2*EMBEDDING_NUMBER].reshape((-1,2))[0:N_STEPS+1,:]
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], x], axis=0)
-            ax[1, 1].plot(x[:, 0], x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+            ax[1, plt_col_id].plot(x[:, 0], x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
             dx = (x[1, 0] - x[0, 0]) * ARROW_PARAMS['arrow length']
             dy = (x[1, 1] - x[0, 1]) * ARROW_PARAMS['arrow length']
-            ax[1, 1].arrow(x[0, 0], x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
-                           head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
-                           color=colors[7])  # 'tab:green')
-            # ax[1, 1].set_xticks(X_TICKS)
-            # ax[1, 1].set_xlim(X_LIM )
-            # ax[1, 1].set_yticks(Y_TICKS)
-            # ax[1, 1].set_ylim(Y_LIM)
-            ax[1, 1].set_ylabel('$x_2$')
-            ax[1, 1].set_xlabel('$x_1$')
+            ax[1, plt_col_id].arrow(x[0, 0], x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                           head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'], color=colors[7])  # 'tab:green')
+        ax[1, plt_col_id].set_title(' Direct ocdeepDMD \n $n_d =$' +str(EMBEDDING_NUMBER) + '  ' + '\\rho =$ ' + str(
+                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data[items].reshape(-1))[0], 3)))
         tf.reset_default_graph()
         sess_temp.close()
-    elif items in ['Deep']:#,'Seq']:
+    elif items in ['Deep','Seq']:
         if items == 'Deep':
             run_folder = run_folder_name_DIR_ocDEEPDMD
         elif items == 'Seq':
@@ -1091,43 +1081,33 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
             for i in range(N_STEPS):
                 psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:],dict_params[items]['KxT_num'])])
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], psi_x[:, 0:2]], axis=0)
-            if SUBPLOTS:
-                if items == 'Deep':
-                    ax[1,0].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
-                    dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
-                    dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
-                    ax[1, 0].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
-                                   head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
-                                   color=colors[5])  # 'tab:green')
-                    # ax[1,0].set_xticks(X_TICKS)
-                    # ax[1,0].set_xlim(X_LIM )
-                    # ax[1,0].set_yticks(Y_TICKS)
-                    # ax[1,0].set_ylim(Y_LIM)
-                    ax[1,0].set_ylabel('$x_2$')
-                    ax[1,0].set_xlabel('$x_1$')
-                elif items == 'Seq':
-                    ax[1,1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
-                    dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
-                    dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
-                    ax[1, 1].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
-                                   head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
-                                   color=colors[7])  # 'tab:green')
-                    # ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-                    # ax[1,1].set_xticks(X_TICKS)
-                    # ax[1,1].set_xlim(X_LIM )
-                    # ax[1,1].set_yticks(Y_TICKS)
-                    # ax[1,1].set_ylim(Y_LIM)
-                    ax[1,1].set_title('Sequential ocdeepDMD')
-                    ax[1,1].set_xlabel('$x_1$')
-            else:
-                if items == 'Deep':
-                    plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[4], linewidth=0.5)
-                elif items == 'Seq':
-                    plt.plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=1)
-            # break
+            if items == 'Deep':
+                ax[0,2].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+                dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
+                dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
+                ax[0,2].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                               head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                               color=colors[7])  # 'tab:green')
+            elif items == 'Seq':
+                ax[0,3].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+                dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
+                dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
+                ax[0,3].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                               head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                               color=colors[5])  # 'tab:green')
+        if items == 'Deep':
+            ax[0, 2].set_title(' Direct ocdeepDMD \n $\\rho =$ ' + str(
+                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Deep'].reshape(-1))[0], 3)))
+        elif items == 'Seq':
+            ax[0, 3].set_title('Sequential ocdeepDMD \n $\\rho =$ ' + str(
+                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Seq'].reshape(-1))[0], 3)))
         print('=========================')
         tf.reset_default_graph()
         sess_temp.close()
+ax[0,0].set_ylabel('$x_2$')
+ax[1,0].set_ylabel('$x_2$')
+for i in range(len(ax[0])):
+    ax[1, i].set_xlabel('$x_1$')
 # plt.xlim([-0.5,4])
 # plt.ylim([-0.5,2.5])
 X_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,0])), np.ceil(np.max(dict_phase_data['Theo'][:,0]))]
@@ -1139,11 +1119,12 @@ for axes_plot in ax.reshape(-1):
     axes_plot.set_xlim(X_LIM)
     axes_plot.set_yticks(Y_TICKS)
     axes_plot.set_ylim(Y_LIM)
-ax[1,0].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-ax[0,1].set_title('Neural network \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0],3)))
-ax[1,0].set_title(' ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],3)))
-ax[1,1].set_title('Embedded ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep_E1'].reshape(-1))[0],3)))
+    axes_plot.plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+    axes_plot.plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
+
+
+
+
 # ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
 plt.show()
 
