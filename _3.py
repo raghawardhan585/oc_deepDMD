@@ -965,14 +965,15 @@ def get_sys_params():
 # x0_1_vals = np.arange(-0.5,3.6,0.5) # assumed scaled
 # x0_2_vals = np.arange(-1,2.1,0.5) # assumed scaled
 SUBPLOTS = True
-SUBPLOT_LINEWIDTH = 0.7
-x0_1_vals = np.arange(-0.6,3.3,1) # assumed scaled
-x0_2_vals = np.arange(-1.2,2.1,1) # assumed scaled
+SUBPLOT_LINEWIDTH = 0.1
+ARROW_PARAMS = {'head width':0.15,'head length': 0.15, 'alpha': 1, 'arrow length': 0.35}
+x0_1_vals = np.arange(-0.6,3.3,0.5) # assumed scaled
+x0_2_vals = np.arange(-1.2,2.1,0.5) # assumed scaled
 X_LIM = [-1.5,2.5]
 Y_LIM = [-1.5,2.5]
 X_TICKS =np.arange(-2,5,1)
 Y_TICKS =np.arange(-2,5,1)
-N_STEPS = 200
+N_STEPS = 300
 if SUBPLOTS:
     f,ax = plt.subplots(2,2,sharey=True,sharex=True,figsize=(9,9))
 else:
@@ -996,6 +997,11 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
             dict_phase_data[items] = np.concatenate([dict_phase_data[items] , x_scaled],axis=0)
             if SUBPLOTS:
                 ax[0,0].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[8], linewidth=SUBPLOT_LINEWIDTH)
+                dx = (x_scaled[1, 0] - x_scaled[0, 0]) * ARROW_PARAMS['arrow length']
+                dy = (x_scaled[1, 1] - x_scaled[0, 1]) * ARROW_PARAMS['arrow length']
+                ax[0, 0].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                               head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                               color=colors[8])  # 'tab:green')
                 # ax[0,0].set_xticks(X_TICKS)
                 # ax[0,0].set_xlim(X_LIM )
                 # ax[0,0].set_yticks(Y_TICKS)
@@ -1020,6 +1026,11 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], x_scaled], axis=0)
             if SUBPLOTS:
                 ax[0,1].plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[2], linewidth=SUBPLOT_LINEWIDTH)
+                dx = (x_scaled[1, 0] - x_scaled[0, 0]) * ARROW_PARAMS['arrow length']
+                dy = (x_scaled[1, 1] - x_scaled[0, 1]) * ARROW_PARAMS['arrow length']
+                ax[0, 1].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                               head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                               color=colors[2])  # 'tab:green')
                 # ax[0,1].set_xticks(X_TICKS)
                 # ax[0,1].set_xlim(X_LIM )
                 # ax[0,1].set_yticks(Y_TICKS)
@@ -1035,12 +1046,12 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
     elif items == 'Deep_E1':
         sess_temp = tf.InteractiveSession()
         sys_params_arc2s, _, _ = get_sys_params()
-        # dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
-        # EMBEDDING_NUMBER = 4
+        dict_params[items] = dp.get_all_run_info(62, 9, sess_temp)
+        EMBEDDING_NUMBER = 4
         # dict_params[items] = dp.get_all_run_info(63, 15, sess_temp)
         # EMBEDDING_NUMBER = 5
-        dict_params[items] = dp.get_all_run_info(64, 5, sess_temp)
-        EMBEDDING_NUMBER = 6
+        # dict_params[items] = dp.get_all_run_info(64, 5, sess_temp)
+        # EMBEDDING_NUMBER = 6
         N_EMBED_STEPS = np.int(np.ceil(N_STEPS/EMBEDDING_NUMBER))
         Ts = 0.5
         t_end = EMBEDDING_NUMBER * Ts
@@ -1054,7 +1065,12 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
                 psi_x = np.concatenate([psi_x, np.matmul(psi_x[-1:], dict_params[items]['KxT_num'])])
             x  = psi_x[:,0:2*EMBEDDING_NUMBER].reshape((-1,2))[0:N_STEPS+1,:]
             dict_phase_data[items] = np.concatenate([dict_phase_data[items], x], axis=0)
-            ax[1, 1].plot(x[:, 0], x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+            ax[1, 1].plot(x[:, 0], x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+            dx = (x[1, 0] - x[0, 0]) * ARROW_PARAMS['arrow length']
+            dy = (x[1, 1] - x[0, 1]) * ARROW_PARAMS['arrow length']
+            ax[1, 1].arrow(x[0, 0], x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                           head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                           color=colors[7])  # 'tab:green')
             # ax[1, 1].set_xticks(X_TICKS)
             # ax[1, 1].set_xlim(X_LIM )
             # ax[1, 1].set_yticks(Y_TICKS)
@@ -1078,6 +1094,11 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
             if SUBPLOTS:
                 if items == 'Deep':
                     ax[1,0].plot(psi_x[:, 0], psi_x[:, 1], color=colors[5], linewidth=SUBPLOT_LINEWIDTH)
+                    dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
+                    dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
+                    ax[1, 0].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                                   head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                                   color=colors[5])  # 'tab:green')
                     # ax[1,0].set_xticks(X_TICKS)
                     # ax[1,0].set_xlim(X_LIM )
                     # ax[1,0].set_yticks(Y_TICKS)
@@ -1086,6 +1107,11 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1']:
                     ax[1,0].set_xlabel('$x_1$')
                 elif items == 'Seq':
                     ax[1,1].plot(psi_x[:, 0], psi_x[:, 1], color=colors[7], linewidth=SUBPLOT_LINEWIDTH)
+                    dx = (psi_x[1, 0] - psi_x[0, 0]) * ARROW_PARAMS['arrow length']
+                    dy = (psi_x[1, 1] - psi_x[0, 1]) * ARROW_PARAMS['arrow length']
+                    ax[1, 1].arrow(psi_x[0, 0], psi_x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
+                                   head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
+                                   color=colors[7])  # 'tab:green')
                     # ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
                     # ax[1,1].set_xticks(X_TICKS)
                     # ax[1,1].set_xlim(X_LIM )
