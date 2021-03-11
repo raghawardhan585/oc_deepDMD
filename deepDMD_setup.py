@@ -27,7 +27,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 64
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 65
 NO_OF_ITERATIONS_PER_GPU = 1
 NO_OF_ITERATIONS_IN_CPU = 1
 
@@ -141,14 +141,14 @@ dp.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,18)) # BEST RUN: 9
 # SYSTEM_NO = 63 #EMBEDDING = 5
 # ls_process_runs = list(range(0,18))# BEST RUN: 15
-# SYSTEM_NO = 64 #EMBEDDING = 6
-# ls_process_runs = list(range(0,9))# BEST RUN: 15
+SYSTEM_NO = 64 #EMBEDDING = 6
+ls_process_runs = list(range(0,18))# BEST RUN: 4
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,87))
-SYSTEM_NO = 91
-ls_process_runs = list(range(0,40))
+# SYSTEM_NO = 91
+# ls_process_runs = list(range(0,40))
 dp.generate_predictions_pickle_file(SYSTEM_NO,ls_process_runs)
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 with open(sys_folder_name + '/dict_predictions_deepDMD.pickle','rb') as handle:

@@ -173,8 +173,10 @@ oc.plot_training_valid_test_states(SYSTEM_NO)
 # EMBEDDING = 4
 # SYSTEM_NO = 63
 # EMBEDDING = 5
-SYSTEM_NO = 64
-EMBEDDING = 6
+# SYSTEM_NO = 64
+# EMBEDDING = 6
+SYSTEM_NO = 65
+EMBEDDING = 7
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     shutil.rmtree(storage_folder)

@@ -981,7 +981,7 @@ else:
 
 dict_params={}
 dict_phase_data ={}
-for items in ['Theo','nn','Seq','Deep','Deep_E1']:
+for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
     dict_phase_data[items] = np.empty(shape=(0,2))
     if items is 'Theo':
         sys_params_arc2s, _, _ = get_sys_params()
@@ -1150,6 +1150,11 @@ plt.show()
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0])
 print(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep_E1'].reshape(-1))[0])
+
+
+
+
+
 ##
 
 from sklearn.metrics import r2_score
