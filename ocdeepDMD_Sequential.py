@@ -33,7 +33,7 @@ TRAIN_PERCENT = 80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
-regularization_lambda = 5.5
+regularization_lambda = 0
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
@@ -94,11 +94,11 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 3000, 'batch_size': 2030}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 3000, 'batch_size': 2030}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 3000, 'batch_size': 2030}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
@@ -538,8 +538,8 @@ if len(sys.argv)>11:
     n_xy_nn_layers = np.int(sys.argv[11])
 if len(sys.argv)>12:
     n_xy_nn_nodes = np.int(sys.argv[12])
-if len(sys.argv)>13:
-    regularization_lambda = np.int(sys.argv[13])
+# if len(sys.argv)>13:
+#     regularization_lambda = np.int(sys.argv[13])
 
 # Sanity Check
 if (RUN_OPTIMIZATION ==1) and (RUN_1_SAVED):
