@@ -26,6 +26,7 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
 plt.rcParams["font.family"] = "Times"
+plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
 SYS_NO = 91
@@ -1060,9 +1061,9 @@ for items in ['Theo','Seq','Deep','nn']:
 # plt.ylim([-0.5,2.5])
 ax[1,0].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=3)
 ax[1,1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=3)
-ax[0,1].set_title('Neural network \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))[0],3)))
-ax[1,0].set_title('Direct ocdeepDMD \n $\\rho =$ ' + str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1))[0],3)))
-ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
+ax[0,1].set_title('Neural network \n $r^2 =$ ' + str(round(r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1)),3)))
+ax[1,0].set_title('Direct ocdeepDMD \n $r^2 =$ ' + str(round(r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Deep'].reshape(-1)),3)))
+ax[1,1].set_title('Sequential ocdeepDMD \n $r^2 =$ ' +str(round(r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1)),3)))
 plt.savefig('MEMS_phase_portrait.png')
 plt.show()
 
@@ -1487,13 +1488,14 @@ DOWNSAMPLE =1
 TRUTH_MARKER_SIZE = 15
 TICK_FONT_SIZE = 12
 HEADER_SIZE = 21
-FONT_SIZE = 14
+FONT_SIZE = 16
 pl_max = 0
 pl_min = 0
-plt.figure()
+plt.figure(figsize=(7.2,4.8))
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
-    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    # l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1))
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
     plt.plot(d_NN[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle=':', color=colors[i],linewidth = 2)
     # plt.plot(d_DDMD_X[CURVE_NO]['X_est_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i],linewidth = 2)
@@ -1506,7 +1508,8 @@ for i in range(n_states):
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
 for i in range(n_outputs):
     y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
-    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    # plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    plt.plot([], color=colors[n_states + i],label=('$y_{}$').format(i + 1))
     plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
     # plt.plot(d_DDMD_SUBOPT[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
     plt.plot(d_NN[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle=':', color=colors[n_states + i],linewidth = 2)
@@ -1516,7 +1519,7 @@ for i in range(n_outputs):
     # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
-l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =1)
+l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =3,bbox_to_anchor=(0.97,0.97))
 # l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE)
 plt.gca().add_artist(l1)
 # l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
@@ -1530,18 +1533,18 @@ a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Model 2',color = 'g
 a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Model 3',color = 'grey')
 
 
-l2 = plt.legend((a0,a2,a3,a4),('Truth','Model 1','Model 2','Model 3'),loc = "lower right",fontsize = FONT_SIZE,ncol=2)
-plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
-plt.ylabel('n -step prediction of states and outputs',fontsize = FONT_SIZE)
+l2 = plt.legend((a0,a2,a3,a4),('Truth','Nonlinear state-space','Direct OC-deepDMD','Sequential OC-deepDMD'),loc = "lower center",fontsize = FONT_SIZE,ncol=2,bbox_to_anchor=(0.5,1.005))
+plt.xlabel('Time (sec)',fontsize = FONT_SIZE)
+plt.ylabel('States and Outputs',fontsize = FONT_SIZE)
 # plt.text(-6,0,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
 # plt.title('(b)',fontsize = FONT_SIZE)
-plt.ylim([pl_min-0.4,pl_max+0.8])
-plt.xticks([0,4,8,12,16,20],fontsize = TICK_FONT_SIZE)
-plt.yticks([-2,-1,0,1,2],fontsize = TICK_FONT_SIZE)
+plt.ylim([-1.5,1.8])
+plt.xticks([0,4,8,12,16,20],[np.int(items) for items in (np.array([0,4,8,12,16,20]) * 0.5)],fontsize = TICK_FONT_SIZE)
+plt.yticks([-1,0,1],fontsize = TICK_FONT_SIZE)
 plt.xlim([-0.1,19.1])
 
 # plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
-plt.savefig('Plots/MEMS_fit.png')
+plt.savefig('Plots/MEMS_fit.png',  bbox_inches='tight')
 # plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
 plt.show()
 # plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)

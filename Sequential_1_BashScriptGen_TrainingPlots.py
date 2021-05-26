@@ -27,15 +27,15 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 91
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 200
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [4,4,5,5,6,6]
+dict_hp['x']['ls_dict_size'] = [1,1,2,2,3]
 dict_hp['x']['ls_nn_layers'] = [3,4]
-dict_hp['x']['ls_nn_nodes'] = [8,10,12,15]
+dict_hp['x']['ls_nn_nodes'] = [2,4]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [8,9]
@@ -44,13 +44,15 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
 dict_hp['xy']['ls_nn_nodes'] = [6,8]
-process_variable = 'xy'
+process_variable = 'x'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
+# ls_regularization_parameter = [1,2,3,4,5]
 a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
+# a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
@@ -303,15 +305,15 @@ print(dict_hp)
 # ls_process_runs = list(range(316,348))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(60,78))
-# SYSTEM_NO = 61
-# ls_process_runs = list(range(32,64))
+SYSTEM_NO = 61
+ls_process_runs = list(range(32,64))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(110,170))
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,0))
-SYSTEM_NO = 91
+# SYSTEM_NO = 91
 # ls_process_runs  = list(range(145,181))
-ls_process_runs  = list(range(193,205))
+# ls_process_runs  = list(range(193,205))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)
 seq.generate_df_error_x_and_y(SYSTEM_NO,ls_process_runs)

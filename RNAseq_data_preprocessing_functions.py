@@ -105,7 +105,7 @@ def get_dataframe_with_differenced_data(df_IN):
     df_OUT = pd.DataFrame(np_diff.reshape(len(df_columns),len(df_indices)).T,columns = df_columns,index = df_indices)
     return df_OUT
 
-def organize_RNAseq_OD_to_RAWDATA(diff_Y = True):
+def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True):
     # Processing the OD data - Inupts are IGNORED
     # TODO - Include the inputs of Casein and Glucose if need be for later
     df_OD_RAW = process_microplate_reader_txtfile(OD_FILE)
@@ -162,10 +162,12 @@ def organize_RNAseq_OD_to_RAWDATA(diff_Y = True):
             # Sort the dataframes
             dict_DATA[cond][curve_no]['df_X_TPM'] = dict_DATA[cond][curve_no]['df_X_TPM'].reindex(sorted( dict_DATA[cond][curve_no]['df_X_TPM'].columns),axis=1)
             # Assign the output
-            dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].loc[:,np.int(np.min(dict_DATA[cond][curve_no]['df_X_TPM'].columns))-1].to_numpy()[-1]
-            if diff_Y:
-                df_intermediate = get_dataframe_with_differenced_data(dict_OD[cond][curve_no])
-                dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(df_intermediate.loc[:,dict_DATA[cond][curve_no]['df_X_TPM'].columns])
+            dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].iloc[0,0]
+            # dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].loc[:,np.int(np.min(dict_DATA[cond][curve_no]['df_X_TPM'].columns))-1].to_numpy()[-1]
+            if get_fitness_output:
+                dict_DATA[cond][curve_no]['Y'] = np.log2(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns]/dict_DATA[cond][curve_no]['Y0'])
+                # df_intermediate = get_dataframe_with_differenced_data(dict_OD[cond][curve_no])
+                # dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(df_intermediate.loc[:,dict_DATA[cond][curve_no]['df_X_TPM'].columns])
             else:
                 dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns])
     # Saving the data
@@ -184,25 +186,41 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
     temp_cond = list(dict_GrowthCurve.keys())[0]
     temp_curve = list(dict_GrowthCurve[temp_cond].keys())[0]
     ls_GENE_NAME = list(dict_GrowthCurve[temp_cond][temp_curve]['df_X_TPM'].index)
+    ls_num_time_points = []
+    for COND in ALL_CONDITIONS:
+        ls_num_time_points.append(len(dict_GrowthCurve[COND][temp_curve]['df_X_TPM'].T))
     print('---------------------------------------------------')
     print('FILTER - COEFFICIENT OF VARIATION [INVERSE OF SNR]')
     # Get the coefficient of variation
-    temp_np = np.empty(shape=(len(ls_GENE_NAME), 0))
-    for COND in ALL_CONDITIONS:
+    temp_np = np.empty(shape=(0, MAX_REPLICATES*MAX_LANES*MAX_READS))
+    for COND_NO in range(len(ALL_CONDITIONS)):
+        COND = ALL_CONDITIONS[COND_NO]
+        temp_curve_data = np.empty(shape=(len(ls_GENE_NAME)*ls_num_time_points[COND_NO], 0))
         for CURVE in dict_GrowthCurve[COND]:
-            temp_np = np.concatenate([temp_np,np.array(dict_GrowthCurve[COND][CURVE]['df_X_TPM'])],axis=1)
-    temp_CV = temp_np.std(axis=1)/temp_np.mean(axis=1)
-    ls_GENE_ALLOW = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV[i]<CV_THRESHOLD]
-    ls_GENE_REMOVE = list(set(ls_GENE_NAME) - set(ls_GENE_ALLOW))
+            temp_curve_data = np.concatenate([temp_curve_data, np.array(dict_GrowthCurve[COND][CURVE]['df_X_TPM']).T.reshape((-1,1))], axis=1)
+        temp_np = np.concatenate([temp_np,temp_curve_data],axis=0)
+    temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(0))
+    temp_CV_check_to_reject_genes = np.sum(temp_CV  > CV_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
+    ls_GENE_REMOVE = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV_check_to_reject_genes[i] == True]
+    ls_GENE_ALLOW = list(set(ls_GENE_NAME) - set(ls_GENE_REMOVE))
+    # temp_np = np.empty(shape=(len(ls_GENE_NAME), 0))
+    # for COND in ALL_CONDITIONS:
+    #     for CURVE in dict_GrowthCurve[COND]:
+    #         temp_np = np.concatenate([temp_np,np.array(dict_GrowthCurve[COND][CURVE]['df_X_TPM'])],axis=1)
+    # temp_CV = temp_np.std(axis=1)/temp_np.mean(axis=1)
+    # ls_GENE_ALLOW = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV[i]<CV_THRESHOLD]
+    # ls_GENE_REMOVE = list(set(ls_GENE_NAME) - set(ls_GENE_ALLOW))
     print('The number of removed genes:',len(ls_GENE_REMOVE))
     print('Remaining Genes:',len(ls_GENE_ALLOW))
     print('---------------------------------------------------')
     print('FILTER - MEAN ')
-    temp_mean = temp_np.mean(axis=1)
-    ls_GENE_ALLOW2 = [ls_GENE_ALLOW[i] for i in range(len(ls_GENE_ALLOW)) if temp_mean[i] > MEAN_TPM_THRESHOLD]
-    ls_GENE_REMOVE2 = list(set(ls_GENE_ALLOW) - set(ls_GENE_ALLOW2))
-    for items in ls_GENE_REMOVE2:
-        print(items)
+    temp_mean = np.array(pd.DataFrame(temp_np.mean(axis=1).reshape((-1,len(ls_GENE_NAME))).T).fillna(0))
+    temp_mean_check = np.sum(temp_mean < MEAN_TPM_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
+    ls_GENE_REMOVE2 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_ALLOW)) if temp_mean_check[i] == True]
+    ls_GENE_REMOVE2 = list(set(ls_GENE_REMOVE2) - set(ls_GENE_REMOVE))
+    ls_GENE_ALLOW2 = list(set(ls_GENE_ALLOW) - set(ls_GENE_REMOVE2))
+    # for items in ls_GENE_REMOVE2:
+    #     print(items)
     print('The number of removed genes:', len(ls_GENE_REMOVE2))
     print('Remaining Genes:', len(ls_GENE_ALLOW2))
     print('---------------------------------------------------')

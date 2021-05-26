@@ -18,6 +18,7 @@ from sklearn.metrics import r2_score
 
 
 plt.rcParams["font.family"] = "Times"
+plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
@@ -975,12 +976,12 @@ X_TICKS =np.arange(-2,5,1)
 Y_TICKS =np.arange(-2,5,1)
 N_STEPS = 300
 if SUBPLOTS:
-    f,ax = plt.subplots(2,4,sharey=True,sharex=True,figsize=(18,9))
+    f,ax = plt.subplots(2,4,sharey=True,sharex=True,figsize=(28,16))
 else:
     plt.figure()
 
-dict_params={}
-dict_phase_data ={}
+dict_params = {}
+dict_phase_data = {}
 for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
     dict_phase_data[items] = np.empty(shape=(0,2))
     if items is 'Theo':
@@ -1002,7 +1003,7 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
                 ax[0, 0].arrow(x_scaled[0, 0], x_scaled[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
                                head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
                                color=colors[8])  # 'tab:green')
-                ax[0,0].set_title('Simulated \n System')
+                ax[0,0].set_title('Simulated System')
             else:
                 plt.plot(x_scaled[:, 0], x_scaled[:, 1],color = colors[0])
         if SUBPLOTS:
@@ -1024,8 +1025,10 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
                            head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
                            color=colors[2])  # 'tab:green')
             ax[0, 1].plot(X0[:, 0], X0[:, 1], 'o', color='salmon', fillstyle='none', markersize=5)
-        ax[0, 1].set_title('Neural network \n $\\rho =$ ' + str(
-                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['nn'].reshape(-1))[0], 3)))
+        # ax[0, 1].set_title('Neural network \n $\\rho =$ ' + str(
+        #         round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['nn'].reshape(-1))[0], 3)))
+        ax[0, 1].set_title('Nonlinear state-space  \n $r^2 =$ ' + str(
+            round(r2_score(dict_phase_data['Theo'].reshape(-1), dict_phase_data['nn'].reshape(-1)), 3)))
         tf.reset_default_graph()
         sess_temp.close()
     elif items in ['Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
@@ -1044,8 +1047,8 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
             EMBEDDING_NUMBER = 6
             plt_col_id = 2
         elif items == 'Deep_E4':
-            dict_params[items] = dp.get_all_run_info(64, 4, sess_temp)
-            EMBEDDING_NUMBER = 6
+            dict_params[items] = dp.get_all_run_info(65, 12, sess_temp)
+            EMBEDDING_NUMBER = 7
             plt_col_id = 3
         N_EMBED_STEPS = np.int(np.ceil(N_STEPS/EMBEDDING_NUMBER))
         Ts = 0.5
@@ -1065,8 +1068,10 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
             dy = (x[1, 1] - x[0, 1]) * ARROW_PARAMS['arrow length']
             ax[1, plt_col_id].arrow(x[0, 0], x[0, 1], dx, dy, head_width=ARROW_PARAMS['head width'],
                            head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'], color=colors[7])  # 'tab:green')
-        ax[1, plt_col_id].set_title(' Direct ocdeepDMD \n $n_d =$' +str(EMBEDDING_NUMBER) + '  ' + '\\rho =$ ' + str(
-                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data[items].reshape(-1))[0], 3)))
+        # ax[1, plt_col_id].set_title(' Direct ocdeepDMD \n $n_d =$' + str(EMBEDDING_NUMBER) + '  ' + '$\\rho =$ ' + str(
+        #         round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data[items].reshape(-1))[0], 3)))
+        ax[1, plt_col_id].set_title(' Direct OC-deepDMD \n $n_d =$' + str(EMBEDDING_NUMBER) + ',  ' + '$r^2 =$ ' + str(
+            round(r2_score(dict_phase_data['Theo'].reshape(-1), dict_phase_data[items].reshape(-1)), 3)))
         tf.reset_default_graph()
         sess_temp.close()
     elif items in ['Deep','Seq']:
@@ -1096,11 +1101,15 @@ for items in ['Theo','nn','Seq','Deep','Deep_E1','Deep_E2','Deep_E3','Deep_E4']:
                                head_length=ARROW_PARAMS['head length'], alpha=ARROW_PARAMS['alpha'],
                                color=colors[5])  # 'tab:green')
         if items == 'Deep':
-            ax[0, 2].set_title(' Direct ocdeepDMD \n $\\rho =$ ' + str(
-                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Deep'].reshape(-1))[0], 3)))
+            # ax[0, 2].set_title(' Direct ocdeepDMD \n $\\rho =$ ' + str(
+            #     round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Deep'].reshape(-1))[0], 3)))
+            ax[0, 2].set_title(' Direct OC-deepDMD \n $r^2 =$ ' + str(
+                round(r2_score(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Deep'].reshape(-1)), 3)))
         elif items == 'Seq':
-            ax[0, 3].set_title('Sequential ocdeepDMD \n $\\rho =$ ' + str(
-                round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Seq'].reshape(-1))[0], 3)))
+            # ax[0, 3].set_title('Sequential ocdeepDMD \n $\\rho =$ ' + str(
+            #     round(corr(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Seq'].reshape(-1))[0], 3)))
+            ax[0, 3].set_title('Sequential OC-deepDMD \n $r^2 =$ ' + str(
+                round(r2_score(dict_phase_data['Theo'].reshape(-1), dict_phase_data['Seq'].reshape(-1)), 3)))
         print('=========================')
         tf.reset_default_graph()
         sess_temp.close()
@@ -1110,10 +1119,14 @@ for i in range(len(ax[0])):
     ax[1, i].set_xlabel('$x_1$')
 # plt.xlim([-0.5,4])
 # plt.ylim([-0.5,2.5])
-X_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,0])), np.ceil(np.max(dict_phase_data['Theo'][:,0]))]
-Y_LIM = [np.floor(np.min(dict_phase_data['Theo'][:,1])), np.ceil(np.max(dict_phase_data['Theo'][:,1]))]
-X_TICKS = np.arange(X_LIM[0]+1,X_LIM[1],1)
-Y_TICKS = np.arange(Y_LIM[0]+1,Y_LIM[1],1)
+# X_LIM = [np.min(dict_phase_data['Theo'][:,0]) -0.2, np.max(dict_phase_data['Theo'][:,0]) +0.2]
+# Y_LIM = [np.min(dict_phase_data['Theo'][:,1]) -0.2, np.max(dict_phase_data['Theo'][:,1])+0.2]
+x0_1_vals = np.arange(-0.6,3.3,0.5) # assumed scaled
+x0_2_vals = np.arange(-1.2,2.1,0.5) # assumed scaled
+X_LIM = [np.min(x0_1_vals)-0.2,np.max(x0_1_vals)+0.2]
+Y_LIM = [np.min(x0_2_vals)-0.2,np.max(x0_2_vals)+0.2]
+# X_TICKS = np.arange(np.floor(X_LIM[0])+1,np.ceil(X_LIM[1]),1)
+# Y_TICKS = np.arange(np.floor(Y_LIM[0])+1,np.ceil(Y_LIM[1]),1)
 for axes_plot in ax.reshape(-1):
     axes_plot.set_xticks(X_TICKS)
     axes_plot.set_xlim(X_LIM)
@@ -1124,6 +1137,7 @@ for axes_plot in ax.reshape(-1):
 
 
 
+plt.savefig('Plots/eg3_Activator_Repressor_Phase_Plot.png')
 
 # ax[1,1].set_title('Sequential ocdeepDMD \n $\\rho =$ ' +str(round(corr(dict_phase_data['Theo'].reshape(-1),dict_phase_data['Seq'].reshape(-1))[0],3)))
 plt.show()
@@ -1142,7 +1156,6 @@ from sklearn.metrics import r2_score
 
 r2_score(dict_phase_data['Theo'].reshape(-1),dict_phase_data['nn'].reshape(-1))
 
-##
 ##
 # Wh_SEQ = np.matmul(dict_params['Seq']['WhT_num'].T,koop_modes_SEQ)
 # Wh_DEEP = np.matmul(dict_params['Deep']['WhT_num'].T,koop_modes_DEEPDMD)
@@ -1286,3 +1299,79 @@ print('Neural Network:',round(r2_score(y_sim_test,y_nn_test)*100,2))
 print('Direct ocdeepDMD:',round(r2_score(y_sim_test,y_dir_test)*100,2))
 print('Sequential ocdeepDMD:',round(r2_score(y_sim_test,y_seq_test)*100,2))
 print('---------------------------------------')
+
+
+##
+CURVE_NO = 294
+n_states = d_SEQ[CURVE_NO]['X'].shape[1]
+n_outputs = d_SEQ[CURVE_NO]['Y'].shape[1]
+DOWNSAMPLE =2
+TRUTH_MARKER_SIZE = 15
+TICK_FONT_SIZE = 12
+HEADER_SIZE = 21
+FONT_SIZE = 16
+pl_max = 0
+pl_min = 0
+plt.figure(figsize=(7.2,4.8)) # (6.4,4.8)
+# fig = plt.figure()
+for i in range(n_states):
+    x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
+    if i==1:
+        x_scale = 10
+    l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['X']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['X'][0::DOWNSAMPLE,i]/x_scale,'.',color = colors[i],markersize = TRUTH_MARKER_SIZE)
+    plt.plot(d_NN[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle=':', color=colors[i],linewidth = 2)
+    # plt.plot(d_DDMD_X[CURVE_NO]['X_est_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i],linewidth = 2)
+    # plt.plot(d_DDMD_SUBOPT[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    plt.plot(d_DDMD[CURVE_NO]['X_n_step'][:, i] / x_scale, linestyle='dashed', color=colors[i])
+    plt.plot(d_SEQ[CURVE_NO]['X_est_n_step'][:, i] / x_scale, linestyle='solid', color=colors[i])
+    # plt.plot(d_NN[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    # plt.plot(d_HAM[CURVE_NO]['X_one_step'][:, i] / x_scale, linestyle='dashdot', color=colors[i])
+    pl_max = np.max([pl_max,np.max(d_SEQ[CURVE_NO]['X'][:,i]/x_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['X'][:, i] / x_scale)])
+for i in range(n_outputs):
+    y_scale = 10 ** np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['Y'][:, i]))))
+    y_scale = 10
+    plt.plot([], color=colors[n_states+i], label=('$y_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(y_scale))))
+    plt.plot(np.arange(0,len(d_SEQ[CURVE_NO]['Y']))[0::DOWNSAMPLE],d_SEQ[CURVE_NO]['Y'][0::DOWNSAMPLE,i]/y_scale, '.',color = colors[n_states+i],markersize = TRUTH_MARKER_SIZE)
+    # plt.plot(d_DDMD_SUBOPT[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
+    plt.plot(d_NN[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle=':', color=colors[n_states + i],linewidth = 2)
+    plt.plot(d_DDMD[CURVE_NO]['Y_n_step'][:, i] / y_scale, linestyle='dashed', color=colors[n_states+i])
+    plt.plot(d_SEQ[CURVE_NO]['Y_est_n_step'][:, i] / y_scale, linestyle='solid', color=colors[n_states + i])
+    # plt.plot(d_NN[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states+i])
+    # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
+    pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+    pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
+l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =3)
+# l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE)
+plt.gca().add_artist(l1)
+# print(fig.get_size_inches()*fig.dpi)
+# l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
+# plt.xlabel('Time Index(k)',fontsize = FONT_SIZE)
+# plt.ylabel('x,y [1 -step]',fontsize = FONT_SIZE)
+# plt.text(20,-1,'[1-step]',fontsize = FONT_SIZE)
+
+a0, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
+a2, = plt.plot([], linestyle =':',linewidth = 2,label='Model 1',color = 'grey')
+a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Model 2',color = 'grey')
+a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Model 3',color = 'grey')
+
+plt.xlabel('Time (sec)',fontsize = FONT_SIZE)
+plt.ylabel('States and Outputs',fontsize = FONT_SIZE)
+# plt.text(-6,0,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
+# plt.title('(b)',fontsize = FONT_SIZE)
+
+plt.ylim([-0.1,7])
+# plt.ylim([-0.1,4])
+plt.xticks([0,20,40,60,80,100],[np.int(items) for items in (np.array([0,20,40,60,80,100]) * 0.5)],fontsize = TICK_FONT_SIZE)
+plt.yticks([0,2,4,6],fontsize = TICK_FONT_SIZE)
+plt.xlim([-0.1,100.1])
+
+l2 = plt.legend((a0,a2,a3,a4),('Truth','Nonlinear state-space','Direct OC-deepDMD','Sequential OC-deepDMD'),loc = "lower center",fontsize = FONT_SIZE,bbox_to_anchor=(0.5,1.005),ncol=2)
+
+# plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
+plt.savefig('Plots/Act_Rep_fit.png',  bbox_inches='tight')
+# plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
+plt.show()
+##
+

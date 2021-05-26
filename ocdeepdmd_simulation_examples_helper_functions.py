@@ -323,7 +323,8 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
     except:
         print('[WARNING]: State did not identify scaling matrices')
     try:
-        Y_all = np.append(dict_DATA_IN['Yp'],dict_DATA_IN['Yf'],axis=0)
+        # Y_all = np.append(dict_DATA_IN['Yp'],dict_DATA_IN['Yf'],axis=0) # If we want to include all the variables
+        Y_all = copy.deepcopy(dict_DATA_IN['Yp'])
         Y_n_vars = Y_all.shape[1]
         Y_PT = np.zeros(shape=(Y_n_vars, Y_n_vars))
         Y_bT = np.zeros(shape=(1, Y_n_vars))

@@ -26,6 +26,7 @@ colors = [[0.68627453, 0.12156863, 0.16470589],
           '#B724AE','#2C9572','#0055FF','#A6A948','#AC8A00'];
 colors = np.asarray(colors);  # defines a color palette
 plt.rcParams["font.family"] = "Times"
+plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 SYS_NO = 11
 # RUN_NO = 78
@@ -106,13 +107,15 @@ def get_transform_matrices(dict_data):
     by = transform_matrices['Y_bT'].T
     return Px,bx,Py,by
 
-def get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True):
+def get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True,with_Wh = False):
     a11, a21, a22, gamma = get_sys_params()
     if WITH_OUTPUT:
         K_11 = np.array([[a11, 0], [a21, a22]])
         K_12 = np.array([[0, 0, 0], [gamma, 0, 0]])
         K_21 = np.array([[0, 0], [0, 0] , [0,0]])
         K_22 = np.array([[a11 ** 2, 0, 0], [a11 * a21, a11 * a22, a11 * gamma],[0, 0, a11 ** 3]])
+        W_11 = np.array([[0,0]])
+        W_12 = np.array([[0,1,0]])
     else:
         K_11 = np.array([[a11, 0], [a21, a22]])
         K_12 = np.array([[0], [gamma]])
@@ -133,11 +136,20 @@ def get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True):
         K_3_t = np.zeros(shape=(1,len(K_1_t[0])))
         K_3_t[-1,-1] = 1
         K = np.concatenate([np.concatenate([K_1_t,K_2_t],axis=0),K_3_t],axis=0)
+        if with_Wh:
+            # Transforming output matrix
+            W_1_t = np.matmul(Py, np.matmul(W_11, np.linalg.inv(Px)))
+            W_2_t = np.matmul(Py,W_12)
+            W_3_t = np.matmul(np.matmul(Py, np.matmul(W_11, np.linalg.inv(Px))),bx) + by
+            Wh = np.concatenate([np.concatenate([W_1_t, W_2_t], axis=1), W_3_t], axis=1)
+        else:
+            Wh=0
     else:
         K_1 = np.concatenate([K_11, K_12], axis=1)
         K_2 = np.concatenate([K_21, K_22], axis=1)
         K = np.concatenate([K_1, K_2], axis=0)
-    return K
+        Wh=0
+    return K,Wh
 
 def get_sys_params():
     a11 = 0.9
@@ -165,9 +177,10 @@ def phase_portrait_data(TRANSFORMED= True):
         i = i+1
     # Theoretical results
     if TRANSFORMED:
-        K_t = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True)
+        K_t,Wh_t = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = True, with_Wh= True)
+        print(Wh_t)
     else:
-        K_t = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = False)
+        K_t,_ = get_K(dict_data,WITH_OUTPUT = True,TRANSFORMED = False)
     eval_t, W_t = np.linalg.eig(K_t)
     idx = eval_t.argsort()
     eval_t = eval_t[idx]
@@ -183,6 +196,7 @@ def phase_portrait_data(TRANSFORMED= True):
     if TRANSFORMED:
         PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 6))
         PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 6))
+        H_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 1))
     else:
         PHI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
         PSI_theo = np.zeros(shape=(X1.shape[0], X1.shape[1], 5))
@@ -196,11 +210,13 @@ def phase_portrait_data(TRANSFORMED= True):
             psiXT_i = np.array(([[x1_i, x2_i, x1_i ** 2, x1_i * x2_i, x1_i ** 3]]))
         PHI_theo[i, j, :] = np.matmul(Wi_t, psiXT_i.T).reshape((1, 1, -1))
         PSI_theo[i, j, :] = psiXT_i.reshape((1, 1, -1))
+        H_theo[i, j, 0] = np.matmul(Wh_t, psiXT_i.T)
+
 
     if TRANSFORMED:
-        K_t3 = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=True)
+        K_t3,_ = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=True)
     else:
-        K_t3 = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=False)
+        K_t3,_ = get_K(dict_data, WITH_OUTPUT=False, TRANSFORMED=False)
     # K_t3 = np.array([[a11, 0, 0], [a21, a22, gamma], [0, 0, a11 ** 2]])
     eval_t3, W_t3 = np.linalg.eig(K_t3)
     idx = eval_t3.argsort()
@@ -229,7 +245,7 @@ def phase_portrait_data(TRANSFORMED= True):
             psiXT_i3 = np.array(([[x1_i3, x2_i3, x1_i3 ** 2]]))
         PHI_theo3[i, j, :] = np.matmul(Wi_t3, psiXT_i3.T).reshape((1, 1, -1))
         PSI_theo3[i, j, :] = psiXT_i3.reshape((1, 1, -1))
-    return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, W_t, comp_modes, comp_modes_conj, PHI_theo3, PSI_theo3, X1_3, X2_3, E3, W_t3, comp_modes3, comp_modes_conj3
+    return dict_phase_data, PHI_theo, PSI_theo, X1, X2, E, W_t, comp_modes, comp_modes_conj, PHI_theo3, PSI_theo3, X1_3, X2_3, E3, W_t3, comp_modes3, comp_modes_conj3, H_theo
 
 def get_dict_param(run_folder_name_curr,SYS_NO,sess,nn=False):
     dict_p = {}
@@ -334,6 +350,10 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
     psiX = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: dict_oc_data['Xp']}).T
     # Phi0 = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: dict_data_curr['X'][0:1]})
     Phi0 = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: dict_data_curr['X']})
+    print('I am here')
+    print(psiX.shape)
+    Hval = np.matmul( psiX.T,dict_params_curr['WhT_num'])
+    print(Hval.shape)
     # For Eigenfunctions and Observables
     n_observables = len(psiX)
     # sampling_resolution = 0.1
@@ -391,6 +411,7 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
                 psiXT_i = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: np.array([[x1_i, x2_i]])})
                 PHI[i, j, :] = np.matmul(np.matmul(Winv, Ur.T), psiXT_i.T).reshape((1, 1, -1))
                 PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
+
         else:
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
@@ -409,16 +430,18 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
             koop_modes = W
             PHI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_observables))
             PSI = np.zeros(shape=(X1.shape[0], X1.shape[1], n_observables))
+            H = np.zeros(shape=(X1.shape[0], X1.shape[1], 1))
             for i, j in itertools.product(range(X1.shape[0]), range(X1.shape[1])):
                 x1_i = X1[i, j]
                 x2_i = X2[i, j]
                 psiXT_i = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: np.array([[x1_i, x2_i]])})
                 PHI[i, j, :] = np.matmul(Winv, psiXT_i.T).reshape((1, 1, -1))
                 PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
+                H[i, j, 0] = np.matmul( psiXT_i,dict_params_curr['WhT_num'])
         else:
             #TODO - Do what happens when left eigenvectors are inserted here
             print('Meh')
-    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, eval
+    return PHI,PSI,Phi_t, koop_modes, comp_modes, comp_modes_conj, X1, X2, eval,H
 # def r2_n_step_prediction_accuracy_ham(ls_steps,ls_curves,dict_data):
 #     sess3 = tf.InteractiveSession()
 #     saver = tf.compat.v1.train.import_meta_graph(run_folder_name_HAM_X + '/System_' + str(SYS_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -540,17 +563,17 @@ def r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params_curr
 SPARSE_K = False
 SPARSE_THRESHOLD = 1e-2
 TRANSFORMATION_STATUS = True
-dict_phase_data, PHI_theo, PSI_theo, X1_theo, X2_theo, E_theo, W_theo, comp_modes_theo, comp_modes_conj_theo, PHI_theo3, PSI_theo3, X1_theo3, X2_theo3, E_theo3, W_theo3, comp_modes_theo3, comp_modes_conj_theo3 = phase_portrait_data(TRANSFORMATION_STATUS )
+dict_phase_data, PHI_theo, PSI_theo, X1_theo, X2_theo, E_theo, W_theo, comp_modes_theo, comp_modes_conj_theo, PHI_theo3, PSI_theo3, X1_theo3, X2_theo3, E_theo3, W_theo3, comp_modes_theo3, comp_modes_conj_theo3, H_theo = phase_portrait_data(TRANSFORMATION_STATUS )
 # ##
 #
 dict_params = {}
-sess1 = tf.InteractiveSession()
-dict_params['DeepX'] = get_dict_param(run_folder_name_DEEPDMD ,SYS_NO,sess1)
-# df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['DeepX'],with_output=False)
-# _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-PHI_DEEP_X,PSI_DEEP_X, Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X,X2_DEEP_X, E_DEEP_X = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['DeepX'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-tf.reset_default_graph()
-sess1.close()
+# sess1 = tf.InteractiveSession()
+# dict_params['DeepX'] = get_dict_param(run_folder_name_DEEPDMD ,SYS_NO,sess1)
+# # df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['DeepX'],with_output=False)
+# # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
+# PHI_DEEP_X,PSI_DEEP_X, Phi_t_DEEP_X,koop_modes_DEEP_X, comp_modes_DEEP_X, comp_modes_conj_DEEP_X,X1_DEEP_X,X2_DEEP_X, E_DEEP_X,H = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['DeepX'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# tf.reset_default_graph()
+# sess1.close()
 
 # dict_params = {}
 sess2 = tf.InteractiveSession()
@@ -563,7 +586,7 @@ if SPARSE_K:
 print(dict_params['Seq']['KxT_num'])
 df_r2_SEQ = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Seq'])
 # _, CURVE_NO = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Seq'])
-PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+PHI_SEQ,PSI_SEQ, Phi_t_SEQ,koop_modes_SEQ, comp_modes_SEQ, comp_modes_conj_SEQ,X1_SEQ,X2_SEQ, E_SEQ,H_SEQ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Seq'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.9,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess2.close()
 
@@ -577,17 +600,17 @@ if SPARSE_K:
 print(dict_params['Deep']['KxT_num'])
 df_r2_DEEPDMD = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep'])
 # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+PHI_DEEPDMD,PSI_DEEPDMD,Phi_t_DEEPDMD,koop_modes_DEEPDMD, comp_modes_DEEPDMD, comp_modes_conj_DEEPDMD,X1_DEEPDMD, X2_DEEPDMD, E_DEEPDMD,H_DEEPDMD = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
 tf.reset_default_graph()
 sess3.close()
 
 sess5 = tf.InteractiveSession()
-dict_params['Deep_SUBOPT'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD_SUBOPT ,SYS_NO,sess5)
-df_r2_DEEPDMD_SUBOPT = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_SUBOPT'])
-# df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
-PHI_DEEPDMD_SUBOPT,PSI_DEEPDMD_SUBOPT,Phi_t_DEEPDMD_SUBOPT,koop_modes_DEEPDMD_SUBOPT, comp_modes_DEEPDMD_SUBOPT, comp_modes_conj_DEEPDMD_SUBOPT,X1_DEEPDMD_SUBOPT, X2_DEEPDMD_SUBOPT, E_DEEPDMD_SUBOPT = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_SUBOPT'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
-tf.reset_default_graph()
-sess5.close()
+# dict_params['Deep_SUBOPT'] = get_dict_param(run_folder_name_DIR_ocDEEPDMD_SUBOPT ,SYS_NO,sess5)
+# df_r2_DEEPDMD_SUBOPT = r2_n_step_prediction_accuracy2(ls_steps,ls_curves,dict_data,dict_params['Deep_SUBOPT'])
+# # df_r2_DEEPDMD, _ = r2_n_step_prediction_accuracy(ls_steps,ls_curves,dict_data,dict_params['Deep'])
+# PHI_DEEPDMD_SUBOPT,PSI_DEEPDMD_SUBOPT,Phi_t_DEEPDMD_SUBOPT,koop_modes_DEEPDMD_SUBOPT, comp_modes_DEEPDMD_SUBOPT, comp_modes_conj_DEEPDMD_SUBOPT,X1_DEEPDMD_SUBOPT, X2_DEEPDMD_SUBOPT, E_DEEPDMD_SUBOPT,_ = modal_analysis(dict_oc_data,dict_data[CURVE_NO],dict_params['Deep_SUBOPT'],REDUCED_MODES = False,Senergy_THRESHOLD = 99.99,RIGHT_EIGEN_VECTORS=True,SHOW_PCA_X = False)
+# tf.reset_default_graph()
+# sess5.close()
 #
 # sess4 = tf.InteractiveSession()
 # dict_params['nn'] = get_dict_param(run_folder_name_NN ,SYS_NO,sess4,nn= True)
@@ -1070,10 +1093,10 @@ DOWNSAMPLE =1
 TRUTH_MARKER_SIZE = 15
 TICK_FONT_SIZE = 12
 HEADER_SIZE = 21
-FONT_SIZE = 14
+FONT_SIZE = 16
 pl_max = 0
 pl_min = 0
-plt.figure()
+plt.figure(figsize=(7.2,4.8))
 for i in range(n_states):
     x_scale = 10**np.round(np.log10(np.max(np.abs(d_SEQ[CURVE_NO]['X'][:,i]))))
     l1_i, = plt.plot([], color=colors[i],label=('$x_{}$').format(i + 1) + (r'$[\times 10^{{{}}}]$').format(np.int(np.log10(x_scale))))
@@ -1097,7 +1120,7 @@ for i in range(n_outputs):
     # plt.plot(d_HAM[CURVE_NO]['Y_one_step'][:, i] / y_scale, linestyle='dashdot', color=colors[n_states + i])
     pl_max = np.max([pl_max, np.max(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
     pl_min = np.min([pl_min, np.min(d_SEQ[CURVE_NO]['Y'][:, i] / y_scale)])
-l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =1)
+l1 = plt.legend(loc='lower right',fancybox=True, shadow=True,fontsize = FONT_SIZE,ncol =3)
 # l1 = plt.legend(loc='upper right',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE)
 plt.gca().add_artist(l1)
 # l1 = plt.legend(loc='upper center',fancybox=True, shadow=True,fontsize = TICK_FONT_SIZE,ncol =3)
@@ -1106,24 +1129,26 @@ plt.gca().add_artist(l1)
 # plt.text(20,-1,'[1-step]',fontsize = FONT_SIZE)
 
 a0, = plt.plot([],'.',markersize = TRUTH_MARKER_SIZE,label='Truth',color = 'grey')
-a1, = plt.plot([], linestyle ='dashdot',linewidth = 2,label='Model 1',color = 'grey')
-a2, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Model 2',color = 'grey')
-a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Model 3',color = 'grey')
-a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Model 4',color = 'grey')
+a1, = plt.plot([], linestyle ='dashdot',linewidth = 2,label='Deep DMD',color = 'grey')
+a_, = plt.plot([],[],color ='w')
+a2, = plt.plot([], linestyle ='dashdot',linewidth = 1,label='Suboptimal direct OC-deepDMD',color = 'grey')
+a3, = plt.plot([], linestyle = 'dashed',linewidth = 1,label='Optimal direct OC-deepDMD',color = 'grey')
+a4, = plt.plot([], linestyle ='solid',linewidth = 1,label='Sequential OC-deepDMD',color = 'grey')
 
 
-l2 = plt.legend((a0,a1,a2,a3,a4),('Truth','Model 1','Model 2','Model 3','Model 4'),loc = "lower right",fontsize = FONT_SIZE,ncol=2)
-plt.xlabel('$k$ (time index)',fontsize = FONT_SIZE)
-plt.ylabel('n -step prediction of states and outputs',fontsize = FONT_SIZE)
+l2 = plt.legend((a0,a1,a_,a2,a3,a4),('Truth','deepDMD ($n_L$ = 3)','','Direct OC-deepDMD ($n_L$ = 3)','Direct OC-deepDMD ($n_L$ = 5)','Sequential OC-deepDMD ($n_L$ = 5)'),loc = "lower center",fontsize = FONT_SIZE,bbox_to_anchor=(0.5,1.005),ncol=2)
+# l2 = plt.legend((a0,a1,a2,a3,a4),('Truth','Deep DMD','Suboptimal direct OC-deepDMD','Optimal direct OC-deepDMD','Sequential OC-deepDMD'),loc = "lower center",fontsize = FONT_SIZE,bbox_to_anchor=(0.5,1.005),ncol=3)
+plt.xlabel('Discrete time index ($k$) ',fontsize = FONT_SIZE)
+plt.ylabel('States and Outputs',fontsize = FONT_SIZE)
 # plt.text(-6,0,'States and Outputs',rotation = 90,fontsize = FONT_SIZE)
 # plt.title('(b)',fontsize = FONT_SIZE)
-plt.ylim([pl_min-0.4,pl_max+0.8])
+plt.ylim([-2.9,pl_max+0.8])
 plt.xticks([0,4,8,12,16,20],fontsize = TICK_FONT_SIZE)
 plt.yticks([-2,-1,0,1,2],fontsize = TICK_FONT_SIZE)
 plt.xlim([-0.1,19.1])
 
-plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
-plt.savefig('Plots/eg1_TheoreticalExample_fit_pycharm.png')
+# plt.savefig('Plots/eg1_TheoreticalExample_fit.svg')
+plt.savefig('Plots/eg1_TheoreticalExample_fit.png',  bbox_inches='tight')
 # plt.title('(b)',fontsize = HEADER_SIZE,loc='left')
 plt.show()
 # plt.subplot2grid((10,16), (8,0), colspan=4, rowspan=2)
@@ -1168,7 +1193,7 @@ for row_i in range(3):
         X1 = X1_DEEPDMD
         X2 = X2_DEEPDMD
         E = E_DEEPDMD
-        y0_title = 'Model 3 \n $x_2$'
+        y0_title = 'Direct \n OC-deepDMD \n $x_2$'
     elif row_i ==2:
         # Seq ocdDMD modes
         comp_modes_conj = comp_modes_conj_SEQ
@@ -1177,7 +1202,7 @@ for row_i in range(3):
         X1 = X1_SEQ
         X2 = X2_SEQ
         E = E_SEQ
-        y0_title = 'Model 4 \n '
+        y0_title = 'Sequential \n OC-deepDMD \n '
     p = 0
     for i in range(PHI.shape[-1]):
         c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
@@ -1207,7 +1232,126 @@ cbar.ax.set_yticklabels([-1.,-0.5,0,0.5,1.], fontsize=FONT_SIZE)
 ax[2,2].text(4.5,-14,'$x_1$' , fontsize=FONT_SIZE)
 # f.colorbar(c, ax=ax[row_i, p-1])
 # plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.svg')
-plt.savefig('Plots/eg1_TheoreticalExample_eigfunc_pycharm.png')
+plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.png')
+plt.show()
+
+## MODES FIGURE =============================want this figure for the paper
+
+# import matplotlib
+# matplotlib.rc('xtick', labelsize=FONT_SIZE)
+# matplotlib.rc('ytick', labelsize=FONT_SIZE)
+
+
+NORMALIZE = True
+title = ''
+FONT_SIZE = 20
+max_eigs = 6
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X)])
+# max_eigs = np.max([PHI_DEEP_X.shape[-1] - len(comp_modes_DEEP_X),PHI_SEQ.shape[-1] - len(comp_modes_SEQ),PHI_DEEPDMD.shape[-1] - len(comp_modes_conj_DEEPDMD)])
+# max_eigs = np.max([PHI_DEEP_X.shape[-1],PHI_SEQ.shape[-1],PHI_DEEPDMD.shape[-1]])
+# plt.figure(figsize=(30,5))
+# ls_eig_order = np.diag(E_theo3)
+# ls_eig_order = np.array(list(set(ls_eig_order).union(set(E_theo))))
+# ls_eig_order = np.concatenate([ls_eig_order,np.array([1])],axis=0)
+epsilon = 0.001
+f,ax = plt.subplots(3,max_eigs+1,sharex=True,sharey=True,figsize=(4*(max_eigs+1),9))
+for row_i in range(3):
+    if row_i == 0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_theo
+        comp_modes = comp_modes_theo
+        PHI = PHI_theo
+        H = H_theo
+        # PHI = PSI_theo
+        X1 = X1_theo
+        X2 = X2_theo
+        E = np.diag(E_theo)
+        y0_title = 'Theoretical \n '
+    elif row_i ==1:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        H = H_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+        y0_title = 'Direct \n OC-deepDMD \n $x_2$'
+    elif row_i ==2:
+        # Seq ocdDMD modes
+        comp_modes_conj = comp_modes_conj_SEQ
+        comp_modes = comp_modes_SEQ
+        H = H_SEQ
+        PHI = PHI_SEQ
+        X1 = X1_SEQ
+        X2 = X2_SEQ
+        E = E_SEQ
+        y0_title = 'Sequential \n OC-deepDMD \n '
+
+
+
+
+    # Sort the eigenvalues
+    epsil = 0.02
+    LAMBDA_SORT = np.array([-0.8,0.81,0.9,1,-0.72,0.73])
+    i_VAL = [0,1,2,3,4,5]
+    for i in range(PHI.shape[-1]):
+        for j in range(len(LAMBDA_SORT)):
+            if (E[i]<LAMBDA_SORT[j]+epsil) and (E[i]>LAMBDA_SORT[j]-epsil):
+                i_VAL[i] = j
+                break
+
+    for i in range(PHI.shape[-1]):
+        plot_col_pos = i_VAL[i]
+        # # set face color
+        # ax[row_i, plot_col_pos].set_frame_on(True)
+        # ax[row_i, plot_col_pos].axis([-1, 1, -1, 1])
+        # if plot_col_pos < 3:
+        #     # ax[row_i, plot_col_pos].patch.set_alpha(0.6)  # .set_facecolor('xkcd:salmon')
+        #     ax[row_i, plot_col_pos].set_facecolor('xkcd:salmon')
+        # elif plot_col_pos > 3:
+        #     # ax[row_i, plot_col_pos].patch.set_alpha(1.0)  # .set_facecolor('black')
+        #     ax[row_i, plot_col_pos].set_facecolor('xkcd:salmon')
+        c = ax[row_i, plot_col_pos].pcolor(X1, X2, PHI[:, :, i]/ np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+
+        if row_i ==0:
+            ax[row_i,plot_col_pos].set_title(title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+        else:
+            correlation = corr(PHI[:, :, i].reshape(-1), PHI_theo[:, :, i].reshape(-1))[0]
+            if plot_col_pos ==3:
+                correlation = 1.
+            ax[row_i, plot_col_pos].set_title(title + '$\lambda=$' + str(round(np.real(E[i]), 2)) + ', $\\rho = $' + str(round(correlation, 2)),fontsize=FONT_SIZE)
+        # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+        if row_i ==2:
+            ax[row_i, plot_col_pos].set_xlabel(' ', fontsize=FONT_SIZE)
+            ax[row_i, plot_col_pos].set_xticks([-3, 0, 3])
+            ax[row_i, plot_col_pos].set_xticklabels([-3,0,3], fontsize=FONT_SIZE)
+        if plot_col_pos==0:
+            ax[row_i,plot_col_pos].set_ylabel(y0_title, fontsize=FONT_SIZE)
+            ax[row_i, plot_col_pos].set_yticks([-8, -4, 0])
+            ax[row_i, plot_col_pos].set_yticklabels([-8, -4, 0], fontsize=FONT_SIZE)
+
+    # PLot output in the last one
+    c = ax[row_i, 6].pcolor(X1, X2, H[:, :, 0] / np.max(np.abs(H[:, :, 0])), cmap='rainbow', vmin=-1,
+                                       vmax=1)
+    if row_i == 0:
+        ax[row_i, 6].set_title(
+            title + '$h(x)$' + '\n' ,
+            fontsize=FONT_SIZE)
+    else:
+        correlation = corr(H[:, :, 0].reshape(-1), H_theo[:, :, 0].reshape(-1))[0]
+        ax[row_i, 6].set_title(
+            title  + '$\\rho = $' + str(round(correlation, 2)),
+            fontsize=FONT_SIZE)
+
+
+cbar = f.colorbar(c, ax=ax.ravel().tolist(), shrink=0.95,  ticks = [-1.,-0.5,0,0.5,1.])
+cbar.ax.set_yticklabels([-1.,-0.5,0,0.5,1.], fontsize=FONT_SIZE)
+# ax[2,3].text(4.5,-14,'$x_1$' , fontsize=FONT_SIZE)
+ax[2,3].set_xlabel('$x_1$' , fontsize=FONT_SIZE)
+# f.colorbar(c, ax=ax[row_i, p-1])
+# plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.svg')
+plt.savefig('Plots/eg1_TheoreticalExample_eigfunc.png')
 plt.show()
 
 ##
@@ -1244,7 +1388,8 @@ y_seq_test = np.empty(shape=(0,1))
 for i in range(200,300):
     x_sim_test = np.concatenate([x_sim_test,d_DDMD[i]['X']],axis=0)
     x_dmd_test = np.concatenate([x_dmd_test,d_DDMD_X[i]['X_est_n_step']],axis=0)
-    x_dir_subopt_test = np.concatenate([x_dir_subopt_test, d_DDMD_SUBOPT[i]['X_n_step']], axis=0)
+    x_dir_subopt_test = np.concatenate([x_dir_subopt_test, d_DDMD_SUBOPT[i]['X_one_step']], axis=0)
+    # x_dir_subopt_test = np.concatenate([x_dir_subopt_test, d_DDMD_SUBOPT[i]['X_n_step']], axis=0)
     x_dir_test = np.concatenate([x_dir_test, d_DDMD[i]['X_n_step']], axis=0)
     x_seq_test = np.concatenate([x_seq_test, d_SEQ[i]['X_est_n_step']], axis=0)
     y_sim_test = np.concatenate([y_sim_test, d_DDMD[i]['Y']], axis=0)
@@ -1252,7 +1397,9 @@ for i in range(200,300):
     y_dir_test = np.concatenate([y_dir_test, d_DDMD[i]['Y_one_step']], axis=0)
     y_seq_test = np.concatenate([y_seq_test, d_SEQ[i]['Y_est_one_step']], axis=0)
 
-print('STATE STATS')
+
+
+print('STATE STATS ')
 print('deepDMD:',round(r2_score(x_sim_test,x_dmd_test)*100,2))
 print('Neural Network: - ')
 print('Suboptimal Direct ocdeepDMD:',round(r2_score(x_sim_test,x_dir_subopt_test)*100,2))

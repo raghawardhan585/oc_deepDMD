@@ -127,8 +127,8 @@ dp.transfer_current_ocDeepDMD_run_files()
 ## RUN 1 PROCESSING - Generate predictions and error
 # SYSTEM_NO = 10
 # ls_process_runs = list(range(0,74))
-# SYSTEM_NO = 11
-# ls_process_runs = list(range(0,18))
+SYSTEM_NO = 11
+ls_process_runs = list(range(0,18))
 # ls_process_runs = list(range(0,54))
 # SYSTEM_NO = 53
 # ls_process_runs = list(range(0,30))
@@ -141,8 +141,10 @@ dp.transfer_current_ocDeepDMD_run_files()
 # ls_process_runs = list(range(0,18)) # BEST RUN: 9
 # SYSTEM_NO = 63 #EMBEDDING = 5
 # ls_process_runs = list(range(0,18))# BEST RUN: 15
-SYSTEM_NO = 64 #EMBEDDING = 6
-ls_process_runs = list(range(0,18))# BEST RUN: 4
+# SYSTEM_NO = 64 #EMBEDDING = 6
+# ls_process_runs = list(range(0,18))# BEST RUN: 4
+# SYSTEM_NO = 65 #EMBEDDING = 7
+# ls_process_runs = list(range(0,18))# BEST RUN: 11
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(0,30))
 # SYSTEM_NO = 80
@@ -171,6 +173,20 @@ df_err_opt = pd.DataFrame(df_error_deepDMD.train + df_error_deepDMD.valid)
 opt_run = df_err_opt[df_err_opt == df_err_opt.min()].first_valid_index()
 print('Optimal Run:', opt_run)
 dict_pred_opt_run = dp.get_run_performance_stats(SYSTEM_NO,opt_run)
+
+##
+# SSE_x = 0
+# SST_x = 0
+# SSE_y = 0
+# SST_y = 0
+# DOWNSAMPLE = 6
+# for i in range(200,300):
+#     SSE_x = SSE_x + np.sum((d[opt_run][i]['X_n_step_scaled'] - d[opt_run][i]['X_scaled'])**2)
+#     SST_x = SST_x + np.sum((d[opt_run][i]['X_scaled']) ** 2)
+#     SSE_y = SSE_y + np.sum((d[opt_run][i]['Y_one_step_scaled'][DOWNSAMPLE-1:97:DOWNSAMPLE] - d[opt_run][i]['Y_scaled'][DOWNSAMPLE-1:97:DOWNSAMPLE]) ** 2)
+#     SST_y = SST_y + np.sum((d[opt_run][i]['Y_scaled'][DOWNSAMPLE-1:97:DOWNSAMPLE]) ** 2)
+# print('x :', (1 -(SSE_x/SST_x))*100)
+# print('y :', (1 -(SSE_y/SST_y))*100)
 ##
 def plot_fit_XY(dict_run,plot_params,ls_runs,scaled=False,one_step = False):
     n_rows = 5
