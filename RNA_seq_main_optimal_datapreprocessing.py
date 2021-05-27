@@ -34,8 +34,8 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
-ls_MEAN_TPM_THRESHOLD = [2,3,4]
-ls_CV_THRESHOLD = [0.102,0.103,0.104]
+ls_MEAN_TPM_THRESHOLD = [1000,1100,1200,1300]
+ls_CV_THRESHOLD = [0.103,0.104,0.4,0.7]
 # ls_MEAN_TPM_THRESHOLD = [0,5]
 # ls_CV_THRESHOLD = [0.1,1]
 NO_OF_FOLDS = 16
