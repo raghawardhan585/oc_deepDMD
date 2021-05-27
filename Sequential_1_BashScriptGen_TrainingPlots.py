@@ -27,13 +27,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 200
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 201
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [1,1,2,2,3]
+dict_hp['x']['ls_dict_size'] = [1,1,2,2,0]
 dict_hp['x']['ls_nn_layers'] = [3,4]
 dict_hp['x']['ls_nn_nodes'] = [2,4]
 dict_hp['y']={}
@@ -52,6 +52,9 @@ ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
 # ls_regularization_parameter = [1,2,3,4,5]
 a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
+for i in range(len(a)):
+    if a[i][0] ==0:
+        a[i] = (0,1,0)
 # a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}

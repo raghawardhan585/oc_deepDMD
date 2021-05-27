@@ -30,7 +30,7 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # SYSTEM 200
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
 # SYSTEM 201
-dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1000, CV_THRESHOLD = 0.104,ALL_CONDITIONS=['MX'])['MX']
+# dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1000, CV_THRESHOLD = 0.104,ALL_CONDITIONS=['MX'])['MX']
 dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1300, CV_THRESHOLD = 0.7,ALL_CONDITIONS=['MX'])['MX']
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']

@@ -29,7 +29,7 @@ SYSTEM_NO = 200
 
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], tanh[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
-DISPLAY_SAMPLE_RATE_EPOCH = 200
+DISPLAY_SAMPLE_RATE_EPOCH = 201
 TRAIN_PERCENT = 80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
@@ -38,9 +38,9 @@ regularization_lambda = 0.0
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 5
-n_x_nn_layers = 3  # x_max_layers 3 works well
-n_x_nn_nodes = 5  # max width_limit -4 works well
+x_deep_dict_size = 0
+n_x_nn_layers = 1  # x_max_layers 3 works well
+n_x_nn_nodes = 0  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
