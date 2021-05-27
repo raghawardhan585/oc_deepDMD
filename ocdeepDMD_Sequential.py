@@ -14,6 +14,7 @@ import os
 import shutil
 import pandas as pd
 import sys # For command line inputs and for sys.exit() function
+pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
@@ -28,18 +29,18 @@ SYSTEM_NO = 200
 
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], tanh[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
-DISPLAY_SAMPLE_RATE_EPOCH = 1000
+DISPLAY_SAMPLE_RATE_EPOCH = 200
 TRAIN_PERCENT = 80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
-regularization_lambda = 0
+regularization_lambda = 0.0
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 0
-n_x_nn_layers = 1  # x_max_layers 3 works well
-n_x_nn_nodes = 0  # max width_limit -4 works well
+x_deep_dict_size = 5
+n_x_nn_layers = 3  # x_max_layers 3 works well
+n_x_nn_nodes = 5  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
@@ -94,12 +95,12 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 100}
+dict_training_params = {'step_size_val': 00.4, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 100}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 1000, 'batch_size': 100}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
@@ -309,6 +310,7 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
     dict_hp['no of epochs'] = n_epochs_run
     dict_hp['batch size'] = dict_run_params['batch_size']
     dict_hp['step size'] = dict_run_params['step_size_val']
+    dict_hp['regularization factor'] = regularization_lambda
     dict_hp['training error'] = training_error
     dict_hp['validation error'] = validation_error
     dict_hp['r^2 training accuracy'] = training_accuracy
@@ -341,7 +343,7 @@ def objective_func_state(dict_feed,dict_psi,dict_K):
     dict_model_perf_metrics ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
-    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) + regularization_lambda * tf.math.reduce_mean(tf.math.square(dict_K['KxT']))
+    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
     # Mean Squared Error
     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
@@ -538,8 +540,8 @@ if len(sys.argv)>11:
     n_xy_nn_layers = np.int(sys.argv[11])
 if len(sys.argv)>12:
     n_xy_nn_nodes = np.int(sys.argv[12])
-# if len(sys.argv)>13:
-#     regularization_lambda = np.int(sys.argv[13])
+if len(sys.argv)>13:
+    regularization_lambda = np.int(sys.argv[13])
 
 # Sanity Check
 if (RUN_OPTIMIZATION ==1) and (RUN_1_SAVED):
@@ -1074,15 +1076,15 @@ for items in dict_K.keys():
 saver_path_curr = saver.save(sess, FOLDER_NAME + '/' + data_suffix + '.ckpt')
 with open(FOLDER_NAME + '/all_tf_var_names.pickle', 'wb') as handle:
     pickle.dump(all_tf_var_names,handle)
-print('------ ------ -----')
-print('----- Run Info ----')
-print('------ ------ -----')
-for items in dict_run_info.keys():
-    print(pd.DataFrame(dict_run_info[items]).T)
-    print('-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----')
+print('------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----')
+print('-----     -----     -----     -----     ----  Run Info  ---    -----     -----     -----     -----')
+print('------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----')
+# for items in dict_run_info.keys():
+print(pd.DataFrame(dict_run_info))
+print('-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----')
 
 # Saving the hyperparameters
-dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes}
+dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes, 'regularization factor': regularization_lambda}
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 

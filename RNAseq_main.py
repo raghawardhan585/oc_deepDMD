@@ -26,7 +26,12 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
-dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
+
+# SYSTEM 200
+# dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
+# SYSTEM 201
+dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 4, CV_THRESHOLD = 0.104,ALL_CONDITIONS=['MX'])['MX']
+
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
 # dict_MAX = dict_DATA
@@ -93,8 +98,8 @@ for i in ls_test_indices:
 SYSTEM_NO = 200
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
-    # get_input = input('Do you wanna delete the existing system[y/n]? ')
-    get_input = 'y'
+    get_input = input('Do you wanna delete the existing system[y/n]? ')
+    # get_input = 'y'
     if get_input == 'y':
         shutil.rmtree(storage_folder)
         os.mkdir(storage_folder)
