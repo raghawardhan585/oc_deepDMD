@@ -343,26 +343,31 @@ def objective_func_output(dict_feed,dict_psi,dict_K):
     return dict_model_perf_metrics
 
 
-# objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1,objective_weight_variance)
+# objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1,objective_weight_variance= True)
 def objective_func_state(dict_feed,dict_psi,dict_K,objective_weight_variance =1):
     dict_model_perf_metrics ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
-    try:
-        dict_model_perf_metrics['MSE'] = tf.math.reduce_sum(tf.matmul(
-            tf.transpose(tf.expand_dims(tf.math.reduce_mean(tf.math.square(psiXf_prediction_error), axis=0), axis=1)),
-            tf.constant(objective_weight_variance, dtype=tf.float32)))
-        dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] +  tf.constant(regularization_lambda,dtype=tf.float32) * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
-        SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
-        SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-        dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), tf.constant(objective_weight_variance,dtype=tf.float32))) * 100)
-    except:
-        print('No objective weight variance')
-        dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
-        dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
-        SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
-        SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-        dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_mean(tf.math.divide_no_nan(SSE, SST))) * 100
+
+    if objective_weight_variance:
+        weight_by_variance = tf.math.reduce_variance(dict_psi['xfT'],axis=0)
+        weight_by_variance = tf.math.divide_no_nan(tf.math.cumsum(weight_by_variance), tf.math.reduce_sum(weight_by_variance))
+
+    # try:
+    dict_model_perf_metrics['MSE'] = tf.math.reduce_sum(tf.matmul(
+        tf.transpose(tf.expand_dims(tf.math.reduce_mean(tf.math.square(psiXf_prediction_error), axis=0), axis=1)),
+        tf.constant(objective_weight_variance, dtype=tf.float32)))
+    dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] +  tf.constant(regularization_lambda,dtype=tf.float32) * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+    SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+    SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), tf.constant(objective_weight_variance,dtype=tf.float32))) * 100)
+    # except:
+    #     print('No objective weight variance')
+    #     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    #     dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+    #     SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+    #     SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    #     dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_mean(tf.math.divide_no_nan(SSE, SST))) * 100
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
     # Accuracy computation
     # SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'],axis=0)), axis=0)
