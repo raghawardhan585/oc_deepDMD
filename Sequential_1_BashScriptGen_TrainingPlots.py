@@ -50,7 +50,7 @@ SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-ls_regularization_parameter = [21e-6, 22e-6, 23e-6, 24e-6, 25e-6, 26e-6, 27e-6, 28e-6, 29e-6, 30e-6]
+ls_regularization_parameter = [35e-6, 40e-6, 45e-6, 50e-6, 55e-6, 60e-6, 65e-6, 70e-6, 75e-6, 80e-6]
 # a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
 a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
 for i in range(len(a)):
