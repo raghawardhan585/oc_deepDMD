@@ -33,9 +33,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [5,10,15,20,25]
+dict_hp['x']['ls_dict_size'] = [5]
 dict_hp['x']['ls_nn_layers'] = [3,4]
-dict_hp['x']['ls_nn_nodes'] = [15,25]
+dict_hp['x']['ls_nn_nodes'] = [10]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [8,9]
@@ -50,12 +50,14 @@ SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-# ls_regularization_parameter = [1,2,3,4,5]
-a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
+ls_regularization_parameter = [0, 1e-3, 5e-4, 1e-4, 5e-5, 1e-5, 5e16, 1e-6, 5e-7, 1e-7]
+# a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
+a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
 for i in range(len(a)):
     if a[i][0] ==0:
-        a[i] = (0,1,0)
-# a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
+        # a[i] = (0,1,0)
+        a[i] = (0, 1, 0, a[i][-1])
+
 print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
@@ -65,6 +67,7 @@ for i in range(len(a)):
             dict_all_run_conditions[i][items] = {'dict_size': 1, 'nn_layers': 1,'nn_nodes': 1}
         else:
             dict_all_run_conditions[i][process_variable] = {'dict_size': a[i][0], 'nn_layers': a[i][1],'nn_nodes': a[i][2]}
+    dict_all_run_conditions[i]['regularization lambda'] = a[i][-1]
 print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
@@ -77,14 +80,15 @@ for items in ls_files:
     items.write('mkdir _current_run_saved_files \n')
     items.write('rm -rf Run_info \n')
     items.write('mkdir Run_info \n')
-    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [write_to_file] \n')
+    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
 
 ls_run_no =[0,0,0]
 for i in dict_all_run_conditions.keys():
     run_params = ''
-    for items in dict_all_run_conditions[i].keys():
+    for items in ['x','y','xy']:
         for sub_items in dict_all_run_conditions[i][items].keys():
             run_params = run_params + ' ' + str(dict_all_run_conditions[i][items][sub_items])
+    run_params = run_params + ' ' + str(dict_all_run_conditions[i]['regularization lambda'])
     if np.mod(i,10) ==0 or np.mod(i,10) ==1: # Microtensor CPU 0
         general_run = 'python3 ocdeepDMD_Sequential.py \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[0]) + ' '
         write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[0]) + '.txt &\n'
