@@ -582,7 +582,7 @@ if len(sys.argv)>11:
 if len(sys.argv)>12:
     n_xy_nn_nodes = np.int(sys.argv[12])
 if len(sys.argv)>13:
-    regularization_lambda = np.int(sys.argv[13])
+    regularization_lambda = np.float(sys.argv[13])
 
 # Sanity Check
 if (RUN_OPTIMIZATION ==1) and (RUN_1_SAVED):
