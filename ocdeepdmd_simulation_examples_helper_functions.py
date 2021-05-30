@@ -5,6 +5,7 @@ from scipy.integrate import odeint
 from sklearn.preprocessing import Normalizer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
+from sklearn.base import TransformerMixin
 import pickle
 import random
 import os
@@ -13,6 +14,9 @@ import tensorflow as tf
 import copy
 import itertools
 from scipy.integrate import odeint
+
+
+
 
 colors = [[0.68627453, 0.12156863, 0.16470589],
           [0.96862745, 0.84705883, 0.40000001],
@@ -286,14 +290,29 @@ def plot_training_runs(SYSTEM_NO,ls_run_no,plot_params):
 # ----------------------------------------------------------------------------------------------------------------
 # SCALING FUNCTIONS
 # ----------------------------------------------------------------------------------------------------------------
+
+# A function that does not do any scaling
+# Source: https://stackoverflow.com/questions/62922604/python-scikit-learn-pipelines-no-transformation-on-features
+class NoTransform(TransformerMixin):
+    def __init__(self, **kwargs):
+        print(kwargs)
+        self.hyperparam = kwargs
+    def fit(self, X):
+        return self
+    def transform(self, X):
+        return X
+    def inverse_transform(self, X):
+        return X
+
+
 def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True):
     dict_DATA_OUT = {}
     dict_Scaler = {}
     dict_transform_matrices = {}
-    if method not in ['standard','min max','normalizer']:
-        print('Error in the method name specified')
-        print('Taking the standard method as the default')
-        method = 'standard'
+    # if method not in ['standard','min max','normalizer']:
+    #     print('Error in the method name specified')
+    #     print('Taking the standard method as the default')
+    #     method = 'standard'
     X_all = np.append(dict_DATA_IN['Xp'],dict_DATA_IN['Xf'],axis=0)
     X_n_vars = X_all.shape[1]
     X_PT = np.zeros(shape = (X_n_vars,X_n_vars))
@@ -306,14 +325,18 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
             X_PT[i, i] = 1 / (X_std[i])
             X_bT[0, i] = -X_mean[i] / (X_std[i])
     elif method == 'min max':
-        X_Scale = MinMaxScaler(feature_range=(0,1)).fit(X_all)
         X_max = X_all.max(axis=0)
         X_min = X_all.min(axis=0)
+        X_Scale = MinMaxScaler(feature_range=(0,1)).fit(X_all)
         for i in range(X_n_vars):
             X_PT[i,i] = 1/(X_max[i]-X_min[i])
             X_bT[0, i] = -X_min[i] / (X_max[i] - X_min[i])
     elif method == 'normalizer':
         X_Scale  = Normalizer().fit(np.append(dict_DATA_IN['Xp'],dict_DATA_IN['Xf'],axis=0))
+    else:
+        X_Scale = NoTransform().fit(X_all)
+        print('Error in the method name specified')
+        print('No transformation done')
     dict_Scaler['X Scale'] = X_Scale
     dict_DATA_OUT['Xp'] = X_Scale.transform(dict_DATA_IN['Xp'])
     dict_DATA_OUT['Xf'] = X_Scale.transform(dict_DATA_IN['Xf'])
@@ -344,6 +367,10 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
                 Y_bT[0, i] = -Y_min[i] / (Y_max[i] - Y_min[i])
         elif method == 'normalizer':
             Y_Scale = Normalizer().fit(Y_all)
+        else:
+            Y_Scale = NoTransform().fit(Y_all)
+            print('Error in the method name specified')
+            print('No transformation done')
         dict_Scaler['Y Scale'] = Y_Scale
         dict_DATA_OUT['Yp'] = Y_Scale.transform(Y_all)
         dict_DATA_OUT['Yf'] = Y_Scale.transform(Y_all)

@@ -201,8 +201,8 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
         temp_np = np.concatenate([temp_np,temp_curve_data],axis=0)
     temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(0))
     temp_CV_check_to_reject_genes = np.sum(temp_CV  > CV_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
-    ls_GENE_REMOVE = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV_check_to_reject_genes[i] == True]
-    ls_GENE_ALLOW = list(set(ls_GENE_NAME) - set(ls_GENE_REMOVE))
+    ls_GENE_REMOVE1 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV_check_to_reject_genes[i] == True]
+    ls_GENE_ALLOW1 = list(set(ls_GENE_NAME) - set(ls_GENE_REMOVE1))
     # temp_np = np.empty(shape=(len(ls_GENE_NAME), 0))
     # for COND in ALL_CONDITIONS:
     #     for CURVE in dict_GrowthCurve[COND]:
@@ -210,15 +210,15 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
     # temp_CV = temp_np.std(axis=1)/temp_np.mean(axis=1)
     # ls_GENE_ALLOW = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV[i]<CV_THRESHOLD]
     # ls_GENE_REMOVE = list(set(ls_GENE_NAME) - set(ls_GENE_ALLOW))
-    print('The number of removed genes:',len(ls_GENE_REMOVE))
-    print('Remaining Genes:',len(ls_GENE_ALLOW))
+    print('The number of removed genes:',len(ls_GENE_REMOVE1))
+    print('Remaining Genes:',len(ls_GENE_ALLOW1))
     print('---------------------------------------------------')
     print('FILTER - MEAN ')
     temp_mean = np.array(pd.DataFrame(temp_np.mean(axis=1).reshape((-1,len(ls_GENE_NAME))).T).fillna(0))
     temp_mean_check = np.sum(temp_mean < MEAN_TPM_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
-    ls_GENE_REMOVE2 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_ALLOW)) if temp_mean_check[i] == True]
-    ls_GENE_REMOVE2 = list(set(ls_GENE_REMOVE2) - set(ls_GENE_REMOVE))
-    ls_GENE_ALLOW2 = list(set(ls_GENE_ALLOW) - set(ls_GENE_REMOVE2))
+    ls_GENE_REMOVE2 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_mean_check[i] == True]
+    ls_GENE_REMOVE2 = list(set(ls_GENE_REMOVE2) - set(ls_GENE_REMOVE1))
+    ls_GENE_ALLOW2 = list(set(ls_GENE_ALLOW1) - set(ls_GENE_REMOVE2))
     # for items in ls_GENE_REMOVE2:
     #     print(items)
     print('The number of removed genes:', len(ls_GENE_REMOVE2))
@@ -226,7 +226,7 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
     print('---------------------------------------------------')
     for COND in ALL_CONDITIONS:
         for CURVE in dict_GrowthCurve[COND]:
-            dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE,axis=0)
+            dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE1,axis=0)
             dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE2,axis=0)
     return dict_GrowthCurve
 

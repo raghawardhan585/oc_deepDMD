@@ -30,8 +30,27 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # SYSTEM 200
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
 # SYSTEM 201
+# ALL_CONDITIONS = ['MX']
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1000, CV_THRESHOLD = 0.104,ALL_CONDITIONS=['MX'])['MX']
-dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1300, CV_THRESHOLD = 0.7,ALL_CONDITIONS=['MX'])['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1300, CV_THRESHOLD = 0.7,ALL_CONDITIONS=['MX'])
+
+# # SYSTEM 300
+# ALL_CONDITIONS = ['MX','NC','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1150, CV_THRESHOLD = 0.9,ALL_CONDITIONS=ALL_CONDITIONS)
+# SYSTEM 301
+# ALL_CONDITIONS = ['MX','NC','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1, CV_THRESHOLD = 0.9,ALL_CONDITIONS=ALL_CONDITIONS)
+# # SYSTEM 302
+# ALL_CONDITIONS = ['MX','NC','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 500, CV_THRESHOLD = 0.6,ALL_CONDITIONS=ALL_CONDITIONS)
+# SYSTEM 303
+# ALL_CONDITIONS = ['MX','NC','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 250, CV_THRESHOLD = 0.6,ALL_CONDITIONS=ALL_CONDITIONS)
+# SYSTEM 304
+ALL_CONDITIONS = ['MX','NC','MN']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+
+
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
 # dict_MAX = dict_DATA
@@ -39,14 +58,20 @@ dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, 
 #
 
 ## Plotting the states as a function of time
+ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
 curve = 0
 f,ax = plt.subplots(7,1,sharex=True,figsize=(30,14))
-for time_pt in range(1,8):
+for time_pt,COND_NO in itertools.product(range(1,8),range(len(ALL_CONDITIONS))):
+    COND = ALL_CONDITIONS[COND_NO]
     # for curve in range(16):
     # ax[time_pt-1].plot(np.array(dict_DATA_ORIGINAL['MX'][curve]['df_X_TPM'].loc[:, time_pt]))
     # ax[time_pt - 1].plot(np.array(dict_DATA_max_denoised['MX'][curve]['df_X_TPM'].loc[:,time_pt]))
-    ax[time_pt - 1].plot(np.array(dict_MAX[curve]['df_X_TPM'].loc[:, time_pt]))
+    try:
+        ax[time_pt - 1].plot(np.array(dict_data[COND][curve]['df_X_TPM'].loc[:, time_pt]),color = ls_colors[COND_NO])
+    except:
+        print("Skipping condition ", COND, ' time point ', time_pt)
     # ax[time_pt - 1].set_xlim([120])
+for time_pt in range(1, 8):
     ax[time_pt - 1].set_ylim([0, 10000])
     ax[time_pt-1].set_title('Time Point : ' + str(time_pt),fontsize=24)
 ax[-1].set_xlabel('Gene Locus Tag')
@@ -64,20 +89,21 @@ plt.ylabel('Optical Density')
 plt.show()
 ## Sorting the MAX dataset to deepDMD format and doing the train-validation-test split
 
-ls_all_indices = list(dict_MAX.keys())
+ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
 random.shuffle(ls_all_indices)
 ls_train_indices = ls_all_indices[0:14]
 # ls_valid_indices = ls_all_indices[12:14]
 ls_test_indices = ls_all_indices[14:16]
-n_states = dict_MAX[ls_train_indices[0]]['df_X_TPM'].shape[0]
-n_outputs = dict_MAX[ls_train_indices[0]]['Y'].shape[0]
+n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
+n_outputs = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['Y'].shape[0]
 
 dict_DMD_train = {'Xp' : np.empty(shape=(0,n_states)), 'Xf': np.empty(shape=(0,n_states)),'Yp' : np.empty(shape=(0,n_outputs)), 'Yf' : np.empty(shape=(0,n_outputs))}
-for i in ls_train_indices:
-    dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
-    dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
-    dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_MAX[i]['Y'].iloc[:, 0:-1]).T], axis=0)
-    dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
+# for COND,i in itertools.product(ALL_CONDITIONS,ls_train_indices):
+for i, COND in itertools.product(ls_train_indices,ALL_CONDITIONS):
+    dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
+    dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+    dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
+    dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
 
 # dict_DMD_valid = {'Xp' : np.empty(shape=(0,n_states)), 'Xf': np.empty(shape=(0,n_states)),'Yp' : np.empty(shape=(0,n_outputs)), 'Yf' : np.empty(shape=(0,n_outputs))}
 # for i in ls_valid_indices:
@@ -87,15 +113,15 @@ for i in ls_train_indices:
 #     dict_DMD_valid['Yf'] = np.concatenate([dict_DMD_valid['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
 
 dict_DMD_test = {'Xp' : np.empty(shape=(0,n_states)), 'Xf': np.empty(shape=(0,n_states)),'Yp' : np.empty(shape=(0,n_outputs)), 'Yf' : np.empty(shape=(0,n_outputs))}
-for i in ls_test_indices:
-    dict_DMD_test['Xp'] = np.concatenate([dict_DMD_test['Xp'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
-    dict_DMD_test['Xf'] = np.concatenate([dict_DMD_test['Xf'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
-    dict_DMD_test['Yp'] = np.concatenate([dict_DMD_test['Yp'], np.array(dict_MAX[i]['Y'].iloc[:, 0:-1]).T], axis=0)
-    dict_DMD_test['Yf'] = np.concatenate([dict_DMD_test['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
+for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
+    dict_DMD_test['Xp'] = np.concatenate([dict_DMD_test['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
+    dict_DMD_test['Xf'] = np.concatenate([dict_DMD_test['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+    dict_DMD_test['Yp'] = np.concatenate([dict_DMD_test['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
+    dict_DMD_test['Yf'] = np.concatenate([dict_DMD_test['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
 
 
 
-SYSTEM_NO = 201
+SYSTEM_NO = 304
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
@@ -108,14 +134,16 @@ if os.path.exists(storage_folder):
 else:
     os.mkdir(storage_folder)
 
-_, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+# _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+_, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'min max',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+# _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'none',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
     pickle.dump(dict_Scaler, handle)
 dict_DATA_OUT = oc.scale_data_using_existing_scaler_folder(dict_DMD_train, SYSTEM_NO)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
     pickle.dump(dict_DATA_OUT, handle)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_Data.pickle', 'wb') as handle:
-    pickle.dump(dict_MAX, handle)
+    pickle.dump(dict_data, handle)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle', 'wb') as handle:
     pickle.dump(ls_all_indices, handle)  # Only training and validation indices are stored
 # Store the data in Koopman

@@ -14,12 +14,15 @@ import os
 import shutil
 import pandas as pd
 import sys # For command line inputs and for sys.exit() function
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+
 
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 200
+SYSTEM_NO = 304
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -29,12 +32,12 @@ SYSTEM_NO = 200
 
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], tanh[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
-DISPLAY_SAMPLE_RATE_EPOCH = 201
-TRAIN_PERCENT = 80
+DISPLAY_SAMPLE_RATE_EPOCH = 500
+TRAIN_PERCENT = 87.5#80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
-regularization_lambda = 0.0
+regularization_lambda = 0.0000
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
@@ -95,10 +98,10 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 100}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 3000, 'batch_size': 86}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.4, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 100}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 1500, 'batch_size': 78}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 1000, 'batch_size': 100}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
@@ -333,24 +336,38 @@ def objective_func_output(dict_feed,dict_psi,dict_K):
     # Mean Squared Error
     dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
     # Accuracy computation
-    SST = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']), axis=0)
+    SST = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']- tf.math.reduce_mean(dict_psi['yfT'],axis=0)), axis=0)
     SSE = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
     dict_model_perf_metrics ['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
-def objective_func_state(dict_feed,dict_psi,dict_K):
+
+# objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1,objective_weight_variance)
+def objective_func_state(dict_feed,dict_psi,dict_K,objective_weight_variance =1):
     dict_model_perf_metrics ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
-    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error)) + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+    try:
+        dict_model_perf_metrics['MSE'] = tf.math.reduce_sum(tf.matmul(
+            tf.transpose(tf.expand_dims(tf.math.reduce_mean(tf.math.square(psiXf_prediction_error), axis=0), axis=1)),
+            tf.constant(objective_weight_variance, dtype=tf.float32)))
+        dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] +  tf.constant(regularization_lambda,dtype=tf.float32) * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+        SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+        SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+        dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), tf.constant(objective_weight_variance,dtype=tf.float32))) * 100)
+    except:
+        print('No objective weight variance')
+        dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+        dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+        SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+        SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+        dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_mean(tf.math.divide_no_nan(SSE, SST))) * 100
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
-    # Mean Squared Error
-    dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
     # Accuracy computation
-    SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT']), axis=0)
-    SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-    dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
+    # SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'],axis=0)), axis=0)
+    # SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    # dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
@@ -408,11 +425,13 @@ def get_fed_dict_train_only(dict_train,dict_feed,train_indices):
             feed_dict_train[dict_feed['psix2fT']] = dict_train['psiX2f'][train_indices]
     return feed_dict_train
 
-def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
-    Xp_train = Xp_train.T
-    Xf_train = Xf_train.T
-    Xp_valid = Xp_valid.T
-    Xf_valid = Xf_valid.T
+def get_best_K_DMD(XpT_train,XfT_train,XpT_valid,XfT_valid):
+    Xp_train = XpT_train.T
+    Xf_train = XfT_train.T
+    Xp_valid = XpT_valid.T
+    Xf_valid = XfT_valid.T
+
+    # Model 1
     U,S,Vh = np.linalg.svd(Xp_train)
     V = Vh.T.conj()
     Uh = U.T.conj()
@@ -432,12 +451,34 @@ def get_best_K_DMD(Xp_train,Xf_train,Xp_valid,Xf_valid):
     A_hat_opt = np.zeros(shape = U.shape)
     for i in range(nPC_opt):
         A_hat_opt = A_hat_opt + (1/S[i])*np.matmul(np.matmul(Xf_train,V[:,i:i+1]),Uh[i:i+1,:])
+    # # Prediction of model 1
+    # Xf_train_hat1 = np.multiply(A_hat_opt,Xp_train)
+    # Xf_valid_hat1 = np.multiply(A_hat_opt, Xp_valid)
+    # MSE1 = np.mean((Xf_train - Xf_train_hat1)**2) + np.mean((Xf_valid - Xf_valid_hat1)**2)
+
+    # lin_model = LinearRegression().fit(XpT_train,XfT_train)
+    # XfT_train_hat2 = lin_model.predict(XpT_train)
+    # XfT_valid_hat2 = lin_model.predict(XpT_valid)
+    # MSE2 = np.mean((XfT_train - XfT_train_hat2) ** 2) + np.mean((XfT_valid - XfT_valid_hat2) ** 2)
+    # # Compare the two models
+    # if MSE1 >= MSE2:
+    #     AT_opt = A_hat_opt.T
+    # else:
+    #     A =
     return  A_hat_opt.T
+
+
+def get_best_K_DMD2(XpT_train, XfT_train):
+    lin_model = LinearRegression().fit(XpT_train, XfT_train)
+    AT_opt = lin_model.coef_.T
+    bT_opt = lin_model.intercept_#.reshape(1,-1)
+    return AT_opt,bT_opt
 
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics_curr, all_histories, dict_run_info,x_params_list={}):
     feed_dict_train, feed_dict_valid = get_fed_dict(dict_train,dict_valid,dict_feed)
-    print(dict_model_metrics_curr['MSE'].eval(feed_dict = feed_dict_train))
+    print('Starting Training Error: ',dict_model_metrics_curr['MSE'].eval(feed_dict = feed_dict_train))
+    print('Starting Validation Error: ', dict_model_metrics_curr['MSE'].eval(feed_dict=feed_dict_valid))
     # --------
     try :
         run_info_index = list(dict_run_info.keys())[-1]
@@ -582,6 +623,8 @@ dict_valid['Xf'] = Xf[valid_indices]
 dict_train['Yf'] = Yf[train_indices]
 dict_valid['Yf'] = Yf[valid_indices]
 
+objective_weight_variance = (dict_train['Xp'].var(axis=0)/np.sum(dict_train['Xp'].var(axis=0)) ).reshape(-1,1)
+objective_weight_variance = np.concatenate([objective_weight_variance,np.array([[1]])],axis=0)
 
 num_x_observables_total = x_deep_dict_size + num_bas_obs
 
@@ -637,9 +680,17 @@ with tf.device(DEVICE_NAME):
             Wx1_list, bx1_list = initialize_Wblist(num_bas_obs, x1_hidden_vars_list)
             # K Variables  -    Kx definition w/ bias
             KxT_11 = weight_variable([num_x_observables_total + 1, num_x_observables_total])
-            A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'],dict_valid['Xp'], dict_valid['Xf'])
+            # Type 1 initialization - using linear dmd method
+            # A_hat_opt = get_best_K_DMD(dict_train['Xp'], dict_train['Xf'],dict_valid['Xp'], dict_valid['Xf'])
+            # sess.run(tf.global_variables_initializer())
+            # KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
+            # Type 2 initialization - using direct least squares
+            A_hat_opt,b_hat_opt = get_best_K_DMD2(dict_train['Xp'], dict_train['Xf'])
             sess.run(tf.global_variables_initializer())
             KxT_11 = tf.Variable(sess.run(KxT_11[0:num_bas_obs, 0:num_bas_obs].assign(A_hat_opt)))
+            sess.run(tf.global_variables_initializer())
+            KxT_11 = tf.Variable(sess.run(KxT_11[-1, 0:num_bas_obs].assign(b_hat_opt)))
+            # Other K variables
             last_col = tf.constant(np.zeros(shape=(num_x_observables_total, 1)), dtype=tf.dtypes.float32)
             last_col = tf.concat([last_col, [[1.]]], axis=0)
             KxT_11 = tf.concat([KxT_11, last_col], axis=1)
@@ -656,6 +707,7 @@ with tf.device(DEVICE_NAME):
         # First optimization
         print('---------    TRAINING BEGINS   ---------')
         # print(psix1p.eval(feed_dict={xp_feed: Xp[1:5,:]}))
+        # dict_model1_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1,objective_weight_variance)
         dict_model1_metrics = objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1)
         all_histories1 = {'train error': [], 'validation error': [], 'train MSE': [], 'valid MSE': []}
         dict_run_info1 = {}
