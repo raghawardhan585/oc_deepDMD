@@ -41,9 +41,9 @@ regularization_lambda = 0.0000
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 0
-n_x_nn_layers = 1  # x_max_layers 3 works well
-n_x_nn_nodes = 0  # max width_limit -4 works well
+x_deep_dict_size = 5
+n_x_nn_layers = 3  # x_max_layers 3 works well
+n_x_nn_nodes = 10  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
@@ -98,12 +98,12 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 15000, 'batch_size': 86}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 86}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 15000, 'batch_size': 78}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 15000, 'batch_size': 78}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 15000, 'batch_size': 78}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 15000, 'batch_size': 78}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
@@ -293,11 +293,21 @@ def display_train_params(dict_run_params):
     print('--------------------------------------')
     return
 
-def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metrics, n_epochs_run, dict_run_params,x_hidden_vars_list):
+def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metrics, n_epochs_run, dict_run_params,x_hidden_vars_list,variance_weighted = True):
+    if variance_weighted:
+        weight_by_variance = dict_model_metrics['variance_weight'].eval(feed_dict=feed_dict_train)
+    else:
+        weight_by_variance = np.ones(shape = (num_x_observables_total+1,))
     training_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_train)
     validation_error = dict_model_metrics['loss_fn'].eval(feed_dict=feed_dict_valid)
-    training_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_train)
-    validation_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_valid)
+    SSE_train = dict_model_metrics['SSE'].eval(feed_dict=feed_dict_train)
+    SST_train = dict_model_metrics['SST'].eval(feed_dict=feed_dict_train)
+    SSE_valid = dict_model_metrics['SSE'].eval(feed_dict=feed_dict_valid)
+    SST_valid= dict_model_metrics['SST'].eval(feed_dict=feed_dict_valid)
+    training_accuracy = (1 - np.sum(np.nan_to_num(SSE_train/SST_train*weight_by_variance)))*100
+    validation_accuracy = (1 - np.sum(np.nan_to_num(SSE_valid/SST_valid*weight_by_variance)))*100
+    # training_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_train)
+    # validation_accuracy = dict_model_metrics['accuracy'].eval(feed_dict=feed_dict_valid)
     training_MSE = dict_model_metrics['MSE'].eval(feed_dict=feed_dict_train)
     validation_MSE = dict_model_metrics['MSE'].eval(feed_dict=feed_dict_valid)
     dict_hp = {}
@@ -344,35 +354,38 @@ def objective_func_output(dict_feed,dict_psi,dict_K):
 
 
 # objective_func_state({'step_size': step_size_feed}, dict_psi1, dict_K1,objective_weight_variance= True)
-def objective_func_state(dict_feed,dict_psi,dict_K,objective_weight_variance =1):
+def objective_func_state(dict_feed,dict_psi,dict_K):
     dict_model_perf_metrics ={}
     psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
     psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
 
-    if objective_weight_variance:
-        weight_by_variance = tf.math.reduce_variance(dict_psi['xfT'],axis=0)
-        weight_by_variance = tf.math.divide_no_nan(tf.math.cumsum(weight_by_variance), tf.math.reduce_sum(weight_by_variance))
-
-    # try:
-    dict_model_perf_metrics['MSE'] = tf.math.reduce_sum(tf.matmul(
-        tf.transpose(tf.expand_dims(tf.math.reduce_mean(tf.math.square(psiXf_prediction_error), axis=0), axis=1)),
-        tf.constant(objective_weight_variance, dtype=tf.float32)))
-    dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] +  tf.constant(regularization_lambda,dtype=tf.float32) * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
-    SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
-    SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-    dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), tf.constant(objective_weight_variance,dtype=tf.float32))) * 100)
+    # TODO Delete this if this turns out to be moot which is mostly going to be the case
+    # if objective_weight_variance:
+    #     weight_by_variance = tf.math.reduce_variance(dict_psi['xfT'],axis=0)
+    #     weight_by_variance = tf.reshape(tf.math.divide_no_nan(tf.math.cumsum(weight_by_variance), tf.math.reduce_sum(weight_by_variance)),shape =(-1,1))
+    # else:
+    #     weight_by_variance = tf.constant(np.ones(shape = (len(dict_K['KxT'].eval()),1)),dtype = tf.float32)
+    #     # try:
+    # # dict_model_perf_metrics['MSE'] = tf.math.reduce_sum(tf.matmul(tf.transpose(tf.expand_dims(tf.math.reduce_mean(tf.math.square(psiXf_prediction_error), axis=0), axis=1)),weight_by_variance))
+    # dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    # dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] +  tf.constant(regularization_lambda,dtype=tf.float32) * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+    # SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+    # SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    # dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), weight_by_variance)) * 100)
     # except:
     #     print('No objective weight variance')
-    #     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
-    #     dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
-    #     SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
-    #     SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-    #     dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_mean(tf.math.divide_no_nan(SSE, SST))) * 100
+
+    dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
+    dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
+    dict_model_perf_metrics['SST'] = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)
+    dict_model_perf_metrics['SSE'] = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
+    dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_mean(tf.math.divide_no_nan(dict_model_perf_metrics['SSE'], dict_model_perf_metrics['SST']))) * 100
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics['loss_fn'])
-    # Accuracy computation
-    # SST = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'],axis=0)), axis=0)
-    # SSE = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error), axis=0)
-    # dict_model_perf_metrics['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
+    # Weight Variance
+    dict_model_perf_metrics['variance_weight'] = tf.math.reduce_variance(dict_psi['xfT'], axis=0)
+    dict_model_perf_metrics['variance_weight'] = tf.math.divide_no_nan(dict_model_perf_metrics['variance_weight'],
+        tf.math.reduce_sum(dict_model_perf_metrics['variance_weight']))
+    # Initialize global variables
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
@@ -1145,5 +1158,8 @@ dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 
-
-
+##
+from sklearn.metrics import r2_score
+lin_model1_X = LinearRegression(fit_intercept=True).fit(dict_train['Xp'],dict_train['Xf'])
+print(r2_score(dict_train['Xf'],lin_model1_X.predict(dict_train['Xp']),multioutput='variance_weighted'))
+print(r2_score(dict_valid['Xf'],lin_model1_X.predict(dict_valid['Xp']),multioutput='variance_weighted'))
