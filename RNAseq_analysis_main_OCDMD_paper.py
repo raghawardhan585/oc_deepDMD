@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import copy
 import itertools
 import seaborn as sb
+import tensorflow as tf
 
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 from sklearn.preprocessing import StandardScaler
@@ -329,5 +330,63 @@ plt.show()
 
 
 
-##
+## OC deepDMD runs
 
+
+# Preprocessing files
+root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+with open(indices_path,'rb') as handle:
+    ls_data_indices = pickle.load(handle)
+ALL_CONDITIONS = list(dict_data_original.keys())
+ls_train_indices = ls_data_indices[0:12]
+ls_valid_indices = ls_data_indices[12:14]
+ls_test_indices = ls_data_indices[14:16]
+
+# Form the scaled data
+dict_scaled_data ={}
+for COND in ALL_CONDITIONS:
+    dict_scaled_data[COND] = {}
+for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
+    dict_scaled_data[COND][i] = oc.scale_data_using_existing_scaler_folder(
+        {'Xp': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:,0:-1]).T, 'Xf': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
+         'Yp': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T, 'Yf': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}, SYSTEM_NO)
+
+
+# TODO - generate predictions for each curve and write down the error statistics for each run
+dict_predict_STATS = {}
+ls_runs1 = list(range(64,68))
+ls_all_run_indices = []
+for folder in os.listdir(root_run_file + '/Sequential'):
+    if folder[0:4] == 'RUN_':  # It is a RUN folder
+        ls_all_run_indices.append(int(folder[4:]))
+ls_runs1 = set(ls_runs1).intersection(set(ls_all_run_indices))
+for run in ls_runs1:
+    print('RUN: ', run)
+    sess = tf.InteractiveSession()
+    run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+    dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+    dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+    dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+    dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+    # TODO - Generate prediction
+
+    # TODO - Compute the stats
+
+    # TODO - Save the stats to a dictionary
+
+    tf.reset_default_graph()
+    sess.close()
+
+
+# TODO - Save the dictionary file
+
+
+
+# TODO - predict the optimal run and save the best run
+
+
+# TODO - Finish the run for the output fits today before sleep + start the runs for extended observables by tonight
