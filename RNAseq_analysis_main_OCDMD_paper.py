@@ -472,7 +472,10 @@ for run in dict_predict_STATS.keys():
 
 
 # TODO - predict the optimal run and save the best run
-
+dict_1step_results= {}
+dict_nstep_results= {}
+for run,COND in itertools.product(dict_predict_STATS.keys(),ALL_CONDITIONS):
+dict_1step_results[run] =
 
 
 
