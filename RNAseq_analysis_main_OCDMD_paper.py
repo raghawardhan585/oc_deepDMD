@@ -76,7 +76,8 @@ def resolve_complex_right_eigenvalues(E, W):
     return E_out, W_out, comp_modes, comp_modes_conj
 
 # ## Importing all necessary information
-# SYSTEM_NO = 304
+# SYSTEM_NO = 305
+# ALL_CONDITIONS = ['MX','MN']
 # ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 # original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 # indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -93,7 +94,7 @@ def resolve_complex_right_eigenvalues(E, W):
 # # Import the ordered indices - Last two indices are used as testing data
 # with open(indices_path,'rb') as handle:
 #     ls_data_indices = pickle.load(handle)
-# ALL_CONDITIONS = list(dict_data_original.keys())
+# # ALL_CONDITIONS = list(dict_data_original.keys())
 # # Setup the prediction dictionary for all datasets
 # dict_DMD_results = {}
 # for COND in ALL_CONDITIONS:
@@ -327,7 +328,7 @@ def resolve_complex_right_eigenvalues(E, W):
 # plt.show()
 #
 #
-
+#
 
 
 ## OC deepDMD runs
@@ -335,6 +336,8 @@ def resolve_complex_right_eigenvalues(E, W):
 
 # Preprocessing files
 SYSTEM_NO = 305
+# ALL_CONDITIONS = ['MX']
+ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -351,7 +354,7 @@ ls_test_indices = ls_data_indices[14:16]
 with open(original_data_path,'rb') as handle:
     dict_data_original = pickle.load(handle)
 
-ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
+
 n_genes = len(dict_data_original[ALL_CONDITIONS[0]][ls_data_indices[0]]['df_X_TPM'])
 
 dict_empty_all_conditions ={}
@@ -474,7 +477,7 @@ for run in ls_runs1:
 for run in dict_predict_STATS.keys():
     print('=====================================================================')
     print('RUN: ', run)
-    print(dict_predict_STATS[run].loc[:,['train_Xf_1step', 'train_Xf_nstep']])#, 'train_Yf_1step', 'train_Yf_nstep']])
+    print(dict_predict_STATS[run].loc[:,['train_Xf_1step', 'train_Xf_nstep', 'valid_Xf_1step', 'valid_Xf_nstep', 'test_Xf_1step', 'test_Xf_nstep',]])#, 'train_Yf_1step', 'train_Yf_nstep']])
     print('=====================================================================')
 
 # # TODO - Save the dictionary file
@@ -491,3 +494,15 @@ for run in dict_predict_STATS.keys():
 
 
 # TODO - Finish the run for the output fits today before sleep + start the runs for extended observables by tonight
+
+##
+
+# m = dict_DMD_train_unbiased['Xp'].mean(axis=0)
+# v = dict_DMD_train_unbiased['Xp'].var(axis=0)
+# vfilt = []
+# for i in range(0,len(m)):
+#     if m[i]<0.1:
+#         vfilt.append(v[i])
+#
+# plt.hist(vfilt,bins=10)
+# plt.show()
