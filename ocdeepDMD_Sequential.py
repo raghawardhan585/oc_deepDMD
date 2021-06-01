@@ -37,13 +37,13 @@ TRAIN_PERCENT = 85.71429#87.5#80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
-regularization_lambda = 0.0000
+regularization_lambda = 100
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 5
-n_x_nn_layers = 3  # x_max_layers 3 works well
-n_x_nn_nodes = 10  # max width_limit -4 works well
+x_deep_dict_size = 0
+n_x_nn_layers = 1  # x_max_layers 3 works well
+n_x_nn_nodes = 0  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
