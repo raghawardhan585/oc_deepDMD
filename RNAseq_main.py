@@ -56,8 +56,12 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 307
-ALL_CONDITIONS = ['MX','NC']
+# ALL_CONDITIONS = ['MX','NC']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+# SYSTEM 308
+ALL_CONDITIONS = ['MX','MN']
 dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -100,7 +104,7 @@ plt.show()
 
 ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
 random.shuffle(ls_all_indices)
-ls_train_indices = ls_all_indices[0:14]
+ls_train_indices = ls_all_indices[0:24]
 # ls_valid_indices = ls_all_indices[12:14]
 ls_test_indices = ls_all_indices[14:16]
 n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
@@ -130,7 +134,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 307
+SYSTEM_NO = 308
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')

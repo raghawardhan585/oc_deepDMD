@@ -335,9 +335,11 @@ def resolve_complex_right_eigenvalues(E, W):
 
 
 # Preprocessing files
-SYSTEM_NO = 305
+SYSTEM_NO = 307
 # ALL_CONDITIONS = ['MX']
 ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
+# ls_runs1 = list(range(64,90)) # SYSTEM 304
+ls_runs1 = list(range(0,24)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -379,8 +381,7 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
 
 # TODO - generate predictions for each curve and write down the error statistics for each run
 
-# ls_runs1 = list(range(64,90)) # SYSTEM 304
-ls_runs1 = list(range(0,16)) # SYSTEM 304
+
 ls_all_run_indices = []
 for folder in os.listdir(root_run_file + '/Sequential'):
     if folder[0:4] == 'RUN_':  # It is a RUN folder
