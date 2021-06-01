@@ -14,5 +14,5 @@ for folder in os.listdir(file_path):
 print('=====================================================================')
 print('Error Stats')
 print('=====================================================================')
-print(pd.DataFrame(dict_run).T.loc[:,['run_no', 'lambda', 'r2_train', 'r2_valid', 'difference']])
+print(pd.DataFrame(dict_run).T.loc[:,['run_no', 'lambda', 'r2_train', 'r2_valid', 'difference']].sort_values(by=['run_no']))
 print('=====================================================================')
