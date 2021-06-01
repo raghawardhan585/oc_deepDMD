@@ -98,7 +98,7 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 48} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 200, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
 # ls_dict_training_params.append(dict_training_params)
@@ -1160,6 +1160,8 @@ print('-----     -----     -----     -----     -----     -----     -----     ---
 
 # Saving the hyperparameters
 dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes, 'regularization factor': regularization_lambda}
+dict_hp['r2 train'] = dict_run_info1[list(dict_run_info1.keys())[-1]]['r^2 training accuracy']
+dict_hp['r2 valid'] = dict_run_info1[list(dict_run_info1.keys())[-1]]['r^2 validation accuracy']
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 
