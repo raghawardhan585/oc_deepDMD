@@ -76,14 +76,35 @@ def resolve_complex_right_eigenvalues(E, W):
     return E_out, W_out, comp_modes, comp_modes_conj
 
 # ## Importing all necessary information
-# SYSTEM_NO = 305
-# ALL_CONDITIONS = ['MX','MN']
-# ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+SYSTEM_NO = 400
+ALL_CONDITIONS = ['MX','MN']
+ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 # original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 # indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
 # # Import the training data
-# with open(ocdeepDMD_data_path,'rb') as handle:
-#     dict_DMD_train_unbiased = pickle.load(handle) # already scaled, it is in transposed format though not stated
+with open(ocdeepDMD_data_path,'rb') as handle:
+    dict_DMD_train_unbiased = pickle.load(handle) # already scaled, it is in transposed format though not stated
+
+# Xp_train, Xp_valid, Xf_train, Xf_valid =  train_test_split(dict_DMD_train_unbiased['Xp'],dict_DMD_train_unbiased['Xf'],train_size=0.875, shuffle=False)
+TRAIN_PERCENT = 87.5
+
+Xp = dict_DMD_train_unbiased['Xp']
+Xf = dict_DMD_train_unbiased['Xf']
+num_all_samples = len(Xp)
+num_trains = np.int(num_all_samples * TRAIN_PERCENT / 100)
+train_indices = np.arange(0, num_trains, 1)
+valid_indices = np.arange(num_trains,num_all_samples,1)
+dict_train = {}
+dict_valid = {}
+Xp_train = Xp[train_indices]
+Xp_valid = Xp[valid_indices]
+# dict_train['Yp'] = Yp[train_indices]
+# dict_valid['Yp'] = Yp[valid_indices]
+Xf_train = Xf[train_indices]
+Xf_valid = Xf[valid_indices]
+# dict_train['Yf'] = Yf[train_indices]
+# dict_valid['Yf'] = Yf[valid_indices]
+
 # # Since the data is scaled, we use the affine transformation theorem to impose a bias constraint on the model
 # dict_DMD_train = copy.deepcopy(dict_DMD_train_unbiased)
 # dict_DMD_train['Xp'] = ADD_BIAS_COLUMN(dict_DMD_train['Xp'],True)
@@ -335,9 +356,9 @@ def resolve_complex_right_eigenvalues(E, W):
 
 
 # Preprocessing files
-SYSTEM_NO = 306
-ALL_CONDITIONS = ['MX']
-# ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
+SYSTEM_NO = 400
+# ALL_CONDITIONS = ['MX']
+ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 # ls_runs1 = list(range(64,90)) # SYSTEM 304
 ls_runs1 = list(range(0,24)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
@@ -356,6 +377,16 @@ ls_test_indices = ls_data_indices[14:16]
 with open(original_data_path,'rb') as handle:
     dict_data_original = pickle.load(handle)
 
+Xp=[]
+Xf=[]
+for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices[0:14]):
+    try:
+        Xp = np.concatenate([Xp,np.array(dict_data_original[COND][i]['df_X_TPM'])[:,0:-1].T],axis=0)
+        Xf = np.concatenate([Xf, np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T], axis=0)
+    except:
+        Xp = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 0:-1].T
+        Xf = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T
+    print('cond ',COND,' i: ', i, ' shape:', len(Xp))
 
 n_genes = len(dict_data_original[ALL_CONDITIONS[0]][ls_data_indices[0]]['df_X_TPM'])
 
@@ -413,6 +444,11 @@ for run in ls_runs1:
         with_output = True
     except:
         with_output = False
+    print('Run :', run, '  r2_train :', r2_score(dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']: Xf_train}), np.matmul(dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: Xp_train}),dict_params['KxT_num']), multioutput='variance_weighted'))
+    print('         r2_valid :',
+          r2_score(dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: Xf_valid}),
+                   np.matmul(dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: Xp_valid}),
+                             dict_params['KxT_num']), multioutput='variance_weighted'))
     dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
     for items in dict_instant_run_result.keys():
         dict_instant_run_result[items] = {'train_Xf_1step': [], 'train_Xf_nstep': [], 'train_Yf_1step': [],
@@ -427,6 +463,7 @@ for run in ls_runs1:
             key2_start = 'valid_'
         else:
             key2_start = 'test_'
+
         # --- *** Generate prediction *** ---
         # Xf - 1 step
         psiXpT = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})

@@ -16,13 +16,13 @@ import pandas as pd
 import sys # For command line inputs and for sys.exit() function
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 pd.set_option("display.max_rows", None, "display.max_columns", None)
-
+from sklearn.metrics import r2_score
 
 
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 305
+SYSTEM_NO = 400
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -33,7 +33,7 @@ SYSTEM_NO = 305
 activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], tanh[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 500
-TRAIN_PERCENT = 87.5#80
+TRAIN_PERCENT = 85.71429#87.5#80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
@@ -98,20 +98,20 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 61} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 2000, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 61}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.2, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 61}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 61}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 61}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
 # ls_dict_training_params.append(dict_training_params)
 
@@ -328,6 +328,10 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
     dict_hp['validation error'] = validation_error
     dict_hp['r^2 training accuracy'] = training_accuracy
     dict_hp['r^2 validation accuracy'] = validation_accuracy
+    # dict_hp['r2 train'] = r2_score(dict_model_metrics['xf_true'].eval(feed_dict=feed_dict_train),dict_model_metrics['xf_pred'].eval(feed_dict=feed_dict_train),multioutput='variance_weighted')
+    # dict_hp['r2 valid'] = r2_score(dict_model_metrics['xf_true'].eval(feed_dict=feed_dict_valid),
+    #                                dict_model_metrics['xf_pred'].eval(feed_dict=feed_dict_valid),
+    #                                multioutput='variance_weighted')
     dict_hp['MSE training'] = training_MSE
     dict_hp['MSE validation'] = validation_MSE
     return dict_hp
@@ -374,7 +378,8 @@ def objective_func_state(dict_feed,dict_psi,dict_K):
     # dict_model_perf_metrics['accuracy'] = tf.reduce_sum((1 - tf.matmul(tf.reshape(tf.math.divide_no_nan(SSE, SST),shape=(1,-1)), weight_by_variance)) * 100)
     # except:
     #     print('No objective weight variance')
-
+    # dict_model_perf_metrics['xf_pred'] = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
+    # dict_model_perf_metrics['xf_true'] = dict_psi['xfT']
     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(psiXf_prediction_error))
     dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['KxT']))
     dict_model_perf_metrics['SST'] = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)), axis=0)

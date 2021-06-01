@@ -115,7 +115,7 @@ plt.show()
 
 ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
 random.shuffle(ls_all_indices)
-ls_train_indices = ls_all_indices[0:24]
+ls_train_indices = ls_all_indices[0:14]
 # ls_valid_indices = ls_all_indices[12:14]
 ls_test_indices = ls_all_indices[14:16]
 n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
