@@ -377,16 +377,16 @@ ls_test_indices = ls_data_indices[14:16]
 with open(original_data_path,'rb') as handle:
     dict_data_original = pickle.load(handle)
 
-Xp=[]
-Xf=[]
+Xp1=[]
+Xf1=[]
 for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices[0:14]):
     try:
-        Xp = np.concatenate([Xp,np.array(dict_data_original[COND][i]['df_X_TPM'])[:,0:-1].T],axis=0)
-        Xf = np.concatenate([Xf, np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T], axis=0)
+        Xp1 = np.concatenate([Xp1, np.array(dict_data_original[COND][i]['df_X_TPM'])[:,0:-1].T],axis=0)
+        Xf1 = np.concatenate([Xf1, np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T], axis=0)
     except:
-        Xp = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 0:-1].T
-        Xf = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T
-    print('cond ',COND,' i: ', i, ' shape:', len(Xp))
+        Xp1 = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 0:-1].T
+        Xf1 = np.array(dict_data_original[COND][i]['df_X_TPM'])[:, 1:].T
+    print('cond ',COND,' i: ', i, ' shape:', len(Xp1))
 
 n_genes = len(dict_data_original[ALL_CONDITIONS[0]][ls_data_indices[0]]['df_X_TPM'])
 
