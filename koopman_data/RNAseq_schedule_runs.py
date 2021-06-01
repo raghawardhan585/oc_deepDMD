@@ -33,9 +33,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [5]
+dict_hp['x']['ls_dict_size'] = [0,0,2,2,4,4,6,6,8,8,10,10]
 dict_hp['x']['ls_nn_layers'] = [3]
-dict_hp['x']['ls_nn_nodes'] = [22]
+dict_hp['x']['ls_nn_nodes'] = [15]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [8,9]
@@ -50,7 +50,7 @@ SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-ls_regularization_parameter = np.arange(0, 1e-3, 2.5e-5) #[3.75e-4] #np.arange(5e-5,1e-3,2.5e-5)
+ls_regularization_parameter = [1.25e-4]#np.arange(0, 1e-3, 2.5e-5) #[3.75e-4] #np.arange(5e-5,1e-3,2.5e-5)
 # a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
 a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
 for i in range(len(a)):
