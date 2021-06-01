@@ -1,0 +1,78 @@
+[INFO] Number of total samples: 112
+[INFO] Observable dimension of a sample: 1960
+[INFO] Xp.shape (E-DMD): (112, 1960)
+[INFO] Yf.shape (E-DMD): (112, 1960)
+Number of training snapshots: 96
+Number of validation snapshots: 16
+0.038974188147697854
+0.31622776601683794
+0.34641016151377546
+0.027590362714029378
+---------    TRAINING BEGINS   ---------
+Starting Training Error:  0.0048370585
+Starting Validation Error:  0.005868093
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-20
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  2000
+Batch Size   :  48
+--------------------------------------
+Epoch No:  500  |   Training error:  1.6267486e-05
+                  Validation error:  0.00096080935
+---------------------------------------------------------------------------------------------------
+Epoch No:  1000  |   Training error:  8.876152e-06
+                   Validation error:  0.00095211173
+---------------------------------------------------------------------------------------------------
+Epoch No:  1500  |   Training error:  5.834133e-06
+                   Validation error:  0.000947993
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  4.2837573e-06
+                   Validation error:  0.0009457528
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 4.2837573e-06
+Current Validation Error      : 0.0009457528
+4.2837573e-06
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.0000000e+00 1.0503137e+00 1.0503137e+00 ... 7.7968281e-09 3.3803289e-09
+ 3.3803289e-09]
+[COMP] The identified Koopman operator is UNSTABLE with  2 eigenvalues greater than 1
+                                    0
+MSE training              4.28376e-06
+MSE validation            0.000945753
+activation flag                     2
+activation function               elu
+batch size                         48
+no of epochs                     2000
+r^2 training accuracy         99.9946
+r^2 validation accuracy        98.765
+regularization factor               0
+step size                         0.5
+training error            4.28376e-06
+validation error          0.000945753
+x_hidden_variable_list   [15, 15, 10]
+[INFO] Run 2 was not done - No output was trained
+[INFO] Run 3 was not done - No state-output Koopman closure was trained
+------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----
+-----     -----     -----     -----     ----  Run Info  ---    -----     -----     -----     -----
+------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----
+                                    0
+MSE training              4.28376e-06
+MSE validation            0.000945753
+activation flag                     2
+activation function               elu
+batch size                         48
+no of epochs                     2000
+r^2 training accuracy         99.9946
+r^2 validation accuracy        98.765
+regularization factor               0
+step size                         0.5
+training error            4.28376e-06
+validation error          0.000945753
+x_hidden_variable_list   [15, 15, 10]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+1.0
+0.9881861533545316
