@@ -335,9 +335,9 @@ def resolve_complex_right_eigenvalues(E, W):
 
 
 # Preprocessing files
-SYSTEM_NO = 305
-# ALL_CONDITIONS = ['MX']
-ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
+SYSTEM_NO = 306
+ALL_CONDITIONS = ['MX']
+# ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 # ls_runs1 = list(range(64,90)) # SYSTEM 304
 ls_runs1 = list(range(0,24)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
@@ -513,11 +513,14 @@ dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
 dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
 
 
-psiXpT_train = np.empty(shape=(0,len(psiXpT[0])))
+# psiXpT_train = np.empty(shape=(0,len(psiXpT[0])))
 Yps_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
 Yp_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
 for COND,data_index in itertools.product(ALL_CONDITIONS,ls_train_indices):
-    psiXpT_train = np.concatenate([psiXpT_train,dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})],axis=0)
+    try:
+        psiXpT_train = np.concatenate([psiXpT_train,dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})],axis=0)
+    except:
+        psiXpT_train = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
     Yps_train = np.concatenate([Yps_train, dict_scaled_data[COND][data_index]['YpT']], axis=0)
     Yp_train = np.concatenate([Yp_train, dict_unscaled_data[COND][data_index]['YpT']], axis=0)
 
