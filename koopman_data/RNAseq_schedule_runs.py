@@ -33,9 +33,9 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [0,0,2,2,4,4,8,8,10,10,15,15]
-dict_hp['x']['ls_nn_layers'] = [3]
-dict_hp['x']['ls_nn_nodes'] = [15]
+dict_hp['x']['ls_dict_size'] = [4,4,8,8,10,10]
+dict_hp['x']['ls_nn_layers'] = [3,4,5,6]
+dict_hp['x']['ls_nn_nodes'] = [10]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [1,1]
 dict_hp['y']['ls_nn_layers'] = [8,9]
