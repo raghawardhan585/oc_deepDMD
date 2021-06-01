@@ -334,7 +334,7 @@ def resolve_complex_right_eigenvalues(E, W):
 
 
 # Preprocessing files
-SYSTEM_NO = 304
+SYSTEM_NO = 305
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -351,7 +351,7 @@ ls_test_indices = ls_data_indices[14:16]
 with open(original_data_path,'rb') as handle:
     dict_data_original = pickle.load(handle)
 
-ALL_CONDITIONS = list(dict_data_original.keys())
+ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 n_genes = len(dict_data_original[ALL_CONDITIONS[0]][ls_data_indices[0]]['df_X_TPM'])
 
 dict_empty_all_conditions ={}
@@ -376,7 +376,8 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
 
 # TODO - generate predictions for each curve and write down the error statistics for each run
 
-ls_runs1 = list(range(64,90))
+# ls_runs1 = list(range(64,90)) # SYSTEM 304
+ls_runs1 = list(range(0,8)) # SYSTEM 304
 ls_all_run_indices = []
 for folder in os.listdir(root_run_file + '/Sequential'):
     if folder[0:4] == 'RUN_':  # It is a RUN folder
@@ -427,8 +428,13 @@ for run in ls_runs1:
         psiXpT = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
         psiXfT_hat = np.matmul(psiXpT,dict_params['KxT_num'])
         XfT_hat = oc.inverse_transform_X(psiXfT_hat[:,0:n_genes],SYSTEM_NO)
+        # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
+        #     r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat, multioutput='variance_weighted'))
+        # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
+        #     r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfT_hat[:,0:n_genes], multioutput='variance_weighted'))
         dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
-            r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat, multioutput='variance_weighted'))
+            r2_score(dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfT_hat,
+                     multioutput='variance_weighted'))
         # Xf - n step
         psiXfTn_hat = psiXpT[0:1,:] # get the initial condition
         for i in range(len(dict_scaled_data[COND][data_index]['XfT'])): # predict n - steps
@@ -436,8 +442,13 @@ for run in ls_runs1:
         psiXfTn_hat = psiXfTn_hat[1:,:]
         # Remove the initial condition and the lifted states; then unscale the variables
         XfTn_hat = oc.inverse_transform_X(psiXfTn_hat[:, 0:n_genes], SYSTEM_NO)
+        # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
+        #     r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat, multioutput='variance_weighted'))
+        # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
+        #     r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfTn_hat[:, 0:n_genes],multioutput='variance_weighted'))
         dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
-            r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat, multioutput='variance_weighted'))
+            r2_score(dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}),
+                                       psiXfTn_hat, multioutput='variance_weighted'))
         # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
         if with_output:
             # Yf - 1 step
@@ -472,10 +483,10 @@ for run in dict_predict_STATS.keys():
 
 
 # TODO - predict the optimal run and save the best run
-dict_1step_results= {}
-dict_nstep_results= {}
-for run,COND in itertools.product(dict_predict_STATS.keys(),ALL_CONDITIONS):
-dict_1step_results[run] =
+# dict_1step_results= {}
+# dict_nstep_results= {}
+# for run,COND in itertools.product(dict_predict_STATS.keys(),ALL_CONDITIONS):
+# dict_1step_results[run] =
 
 
 
