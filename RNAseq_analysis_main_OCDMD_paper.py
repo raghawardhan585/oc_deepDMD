@@ -335,7 +335,7 @@ def resolve_complex_right_eigenvalues(E, W):
 
 
 # Preprocessing files
-SYSTEM_NO = 307
+SYSTEM_NO = 305
 # ALL_CONDITIONS = ['MX']
 ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 # ls_runs1 = list(range(64,90)) # SYSTEM 304

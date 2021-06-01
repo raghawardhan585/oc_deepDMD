@@ -27,13 +27,13 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 308
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 400
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [0,0,2,2,4,4,6,6,8,8,10,10]
+dict_hp['x']['ls_dict_size'] = [0,0,2,2,4,4,6,6]
 dict_hp['x']['ls_nn_layers'] = [3]
 dict_hp['x']['ls_nn_nodes'] = [15]
 dict_hp['y']={}

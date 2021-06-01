@@ -27,6 +27,12 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
 
+# Remove time points 1,2 in the MAX dataset
+for items in dict_DATA_max_denoised['MX'].keys():
+    dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
+    dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
+
+
 # SYSTEM 200
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
 # SYSTEM 201
@@ -59,6 +65,11 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # ALL_CONDITIONS = ['MX','NC']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 308
+# ALL_CONDITIONS = ['MX','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+
+
+# SYSTEM 400
 ALL_CONDITIONS = ['MX','MN']
 dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 
@@ -134,7 +145,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 308
+SYSTEM_NO = 400
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
@@ -148,8 +159,8 @@ else:
     os.mkdir(storage_folder)
 
 # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
-# _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'min max',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
-_, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'none',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+_, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'min max',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+# _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'none',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
 with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
     pickle.dump(dict_Scaler, handle)
 dict_DATA_OUT = oc.scale_data_using_existing_scaler_folder(dict_DMD_train, SYSTEM_NO)
