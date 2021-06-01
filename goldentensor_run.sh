@@ -19,6 +19,11 @@ python3 ocdeepDMD_Sequential.py '/gpu:1' 400 9  10 3 15 1 1 1 1 1 1 5.9999999999
 python3 ocdeepDMD_Sequential.py '/gpu:2' 400 10  10 3 15 1 1 1 1 1 1 6.5e-05 > Run_info/SYS_400_RUN_10.txt &
 python3 ocdeepDMD_Sequential.py '/gpu:3' 400 11  10 3 15 1 1 1 1 1 1 7e-05 > Run_info/SYS_400_RUN_11.txt &
 wait 
+python3 ocdeepDMD_Sequential.py '/gpu:0' 400 12  10 3 15 1 1 1 1 1 1 7.5e-05 > Run_info/SYS_400_RUN_12.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 400 13  10 3 15 1 1 1 1 1 1 7.999999999999999e-05 > Run_info/SYS_400_RUN_13.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 400 14  10 3 15 1 1 1 1 1 1 8.499999999999999e-05 > Run_info/SYS_400_RUN_14.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 400 15  10 3 15 1 1 1 1 1 1 8.999999999999999e-05 > Run_info/SYS_400_RUN_15.txt &
+wait 
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 
