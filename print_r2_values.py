@@ -2,6 +2,7 @@ import pickle
 import pandas as pd
 import os
 import numpy as np
+pd.reset_option('display.float_format')
 
 file_path = '_current_run_saved_files'
 dict_run = {}
