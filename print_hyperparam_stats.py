@@ -3,8 +3,8 @@ import pandas as pd
 import os
 pd.reset_option('display.float_format')
 
-file_path = '_current_run_saved_files'
-# file_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_400/Sequential'
+# file_path = '_current_run_saved_files'
+file_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_400/Sequential'
 dict_run = {}
 for folder in os.listdir(file_path):
     try:
@@ -30,6 +30,7 @@ print('Error Stats')
 print('=====================================================================')
 # df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'x_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['x_obs'])
 df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'y_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['y_obs'])
+# df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'y_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['run_no'])
 df_result.loc[:,'lambda'] = df_result.loc[:,'lambda'] * 1e6
 df_result = df_result.rename(columns={'lambda':'lambda[x1e-6]'})
 print(df_result)

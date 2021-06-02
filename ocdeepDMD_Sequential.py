@@ -98,20 +98,20 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 48}
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 48}
+ls_dict_training_params.append(dict_training_params)
 # # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # # ls_dict_training_params.append(dict_training_params)
 # # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
 # # ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
 # ls_dict_training_params.append(dict_training_params)
 
@@ -898,6 +898,8 @@ with tf.device(DEVICE_NAME):
                           'res_net': res_net}
         psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
         psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
+
+
     elif RUN_2_SAVED:
         # psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
         # psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})

@@ -360,7 +360,9 @@ SYSTEM_NO = 400
 # ALL_CONDITIONS = ['MX']
 ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 # ls_runs1 = list(range(64,90)) # SYSTEM 304
-ls_runs1 = list(range(0,60)) # SYSTEM 304
+# ls_runs1 = list(range(0,60)) # SYSTEM 304
+
+ls_runs1 = list(range(4,60)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -517,7 +519,10 @@ for run in ls_runs1:
 for run in dict_predict_STATS.keys():
     print('=====================================================================')
     print('RUN: ', run)
-    print(dict_predict_STATS[run].loc[:,['train_Xf_1step', 'train_Xf_nstep', 'valid_Xf_1step', 'valid_Xf_nstep', 'test_Xf_1step', 'test_Xf_nstep',]])#, 'train_Yf_1step', 'train_Yf_nstep']])
+    # print(dict_predict_STATS[run].loc[:,['train_Xf_1step', 'train_Xf_nstep', 'valid_Xf_1step', 'valid_Xf_nstep', 'test_Xf_1step', 'test_Xf_nstep',]])#, 'train_Yf_1step', 'train_Yf_nstep']])
+    print(dict_predict_STATS[run].loc[:,
+          ['train_Xf_1step', 'train_Xf_nstep', 'valid_Xf_1step', 'valid_Xf_nstep', 'test_Xf_1step',
+           'test_Xf_nstep', 'train_Yf_1step', 'train_Yf_nstep']])
     print('=====================================================================')
 
 # # TODO - Save the dictionary file
@@ -549,7 +554,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
 
 # TODO - Finish the run for the output fits today before sleep + start the runs for extended observables by tonight
 
-## TODO Do outputs lie in the span of the observables ?
+## Do outputs lie in the span of the observables ?
 
 run = 0
 print('RUN: ', run)
@@ -594,5 +599,10 @@ for items in dict_indices.keys():
 
 tf.reset_default_graph()
 sess.close()
+
+
+## Checking Results of Run 2
+
+
 
 
