@@ -128,51 +128,6 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
     dict_DMD_results[COND][i]['Yf'] = np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:])
 # The scalers can be called directly using functions
 
-# ## --------------------------------------------------------------------------------
-# # DMD Train with Lasso Regression and k-fold cross validation
-#
-# # Notes - This does not require a validation data. We use each one of the k-folds as the validation to draw a statistic
-# # on which is the most robust hyperparameter (\lambda - the lasso regularization parameter)
-#
-# NO_OF_FOLDS = 14
-#
-# kf = KFold(n_splits=NO_OF_FOLDS, shuffle=False, random_state=None)
-# my_scorer = make_scorer(r2_score,multioutput='uniform_average')
-# # print(cross_val_score(LinearRegression(fit_intercept=False), dict_DMD_train['Xp'], dict_DMD_train['Xf'], cv=kf.split(dict_DMD_train['Xp']),scoring=my_scorer))
-# # print(cross_val_score(Lasso(alpha= 0.02, fit_intercept=False, max_iter=50000), dict_DMD_train['Xp'], dict_DMD_train['Xf'],cv=kf.split(dict_DMD_train['Xp']), scoring=my_scorer))
-#
-# dict_stats = {}
-# for alpha in np.arange(0.0,0.5,0.5):
-#     dict_stats[alpha] = {}
-#     if alpha ==0:
-#         a =cross_val_score(LinearRegression(fit_intercept=False), dict_DMD_train['Xp'], dict_DMD_train['Xf'], cv=kf.split(dict_DMD_train['Xp']),scoring=my_scorer)
-#     else:
-#         a = cross_val_score(Lasso(alpha= alpha, fit_intercept=False, max_iter=50000), dict_DMD_train['Xp'], dict_DMD_train['Xf'],cv=kf.split(dict_DMD_train['Xp']), scoring=my_scorer)
-#     for i in range(NO_OF_FOLDS):
-#         dict_stats[alpha][i] = a[i]
-#     print('[STATUS COMPLETE] alpha = ',alpha)
-#     print(a)
-#
-# df_stats = pd.DataFrame(dict_stats)
-# print(df_stats)
-
-
-# ## Saving results of lasso regression
-#
-# try:
-#     # Scheme 2 : append the results to an existing pickle file [only use if you have the same number of folds (kfold cross validation)]
-#     # Opening the old lasso regression results
-#     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_LasssoRegression_Results.pickle','rb') as handle:
-#         df_stats1 = pickle.load(handle)
-#     # Concatenating to the new ones
-#     df_stats_new = pd.concat([df_stats1,df_stats],axis=1).sort_index(axis=1)
-#     # Saving the concatenated lasso regression results
-#     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_LasssoRegression_Results.pickle','wb') as handle:
-#         pickle.dump(df_stats_new, handle)
-# except:
-#     # Scheme 1 : save the results to a new pickle
-#     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_LasssoRegression_Results.pickle', 'wb') as handle:
-#         pickle.dump(df_stats, handle)
 
 ## How does the linear model fit on all the data
 
@@ -285,9 +240,7 @@ for COND in ALL_CONDITIONS:
 # plt.xlim([-0.005,0.4])
 # plt.ylim([-0.005,1])
 # plt.show()
-# ## Fit lasso regression models and
-#
-# model_lin_reg = LinearRegression(fit_intercept=False).fit()
+
 
 
 
