@@ -469,9 +469,9 @@ for run in ls_runs1:
         psiXpT = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
         psiXfT_hat = np.matmul(psiXpT,dict_params['KxT_num'])
         XfT_hat = oc.inverse_transform_X(psiXfT_hat[:,0:n_genes],SYSTEM_NO)
-        # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
-        #     r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat, multioutput='variance_weighted'))
-        dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(np.mean(np.square(XfT_hat)))
+        dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
+            r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat, multioutput='variance_weighted'))
+        # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(np.mean(np.square(XfT_hat)))
         # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
         #     r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfT_hat[:,0:n_genes], multioutput='variance_weighted'))
         # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(
@@ -484,9 +484,9 @@ for run in ls_runs1:
         psiXfTn_hat = psiXfTn_hat[1:,:]
         # Remove the initial condition and the lifted states; then unscale the variables
         XfTn_hat = oc.inverse_transform_X(psiXfTn_hat[:, 0:n_genes], SYSTEM_NO)
-        # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
-        #     r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat, multioutput='variance_weighted'))
-        dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(np.mean(np.square(XfTn_hat)))
+        dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
+            r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat, multioutput='variance_weighted'))
+        # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(np.mean(np.square(XfTn_hat)))
         # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
         #     r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfTn_hat[:, 0:n_genes],multioutput='variance_weighted'))
         # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(
@@ -532,6 +532,20 @@ for run in dict_predict_STATS.keys():
 # dict_1step_results[run] =
 
 
+## OPTIMIZATION PROBLEM 1 - Save the best result 1
+SYSTEM_NO = 400
+RUN_NO = 3
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
+print(d.keys())
+with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
+    pickle.dump(d,handle)
 
 # TODO - Finish the run for the output fits today before sleep + start the runs for extended observables by tonight
 

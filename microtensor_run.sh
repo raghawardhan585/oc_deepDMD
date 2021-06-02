@@ -4,6 +4,10 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] 
+python3 ocdeepDMD_Sequential.py '/cpu:0' 305 0  1 1 1 0 1 0 1 1 1 0.000375 > Run_info/SYS_305_RUN_0.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/cpu:0' 305 1  1 1 1 0 1 0 1 1 1 0.000375 > Run_info/SYS_305_RUN_1.txt &
+wait 
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 

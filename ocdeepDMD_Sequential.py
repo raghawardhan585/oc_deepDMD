@@ -46,9 +46,9 @@ n_x_nn_layers = 1  # x_max_layers 3 works well
 n_x_nn_nodes = 0  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
-y_deep_dict_size = 2
-n_y_nn_layers = 4
-n_y_nn_nodes = 5
+y_deep_dict_size = 0
+n_y_nn_layers = 1
+n_y_nn_nodes = 0
 
 xy_deep_dict_size = 3
 n_xy_nn_layers = 2
@@ -63,8 +63,8 @@ best_test_error = np.inf
 # 2 - Fitting the output
 # 3 - Making both dynamics and output linear
 
-RUN_OPTIMIZATION = 1
-RUN_1_SAVED = False
+RUN_OPTIMIZATION = 2
+RUN_1_SAVED = True
 RUN_2_SAVED = False
 RUN_3_SAVED = False
 
@@ -98,20 +98,20 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': 48} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 48}
-ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
 # ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 5000, 'batch_size': 48}
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
-ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
+# # ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': 2000}
+# # ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': 48}
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': 500}
 # ls_dict_training_params.append(dict_training_params)
 
@@ -345,14 +345,17 @@ def objective_func_output(dict_feed,dict_psi,dict_K):
     except:
         Y_prediction_error = Yf_prediction_error
 
-    dict_model_perf_metrics['loss_fn'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
+    dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
+    dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['WhT']))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
-    # Mean Squared Error
-    dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
     # Accuracy computation
-    SST = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']- tf.math.reduce_mean(dict_psi['yfT'],axis=0)), axis=0)
-    SSE = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
-    dict_model_perf_metrics ['accuracy'] = (1 - tf.math.reduce_max(tf.divide(SSE, SST))) * 100
+    # dict_model_perf_metrics['SST'] = tf.math.reduce_sum(tf.math.square(dict_feed['yfT']- tf.math.reduce_mean(dict_feed['yfT'])), axis=0)
+    # dict_model_perf_metrics['SSE'] = tf.math.reduce_sum(tf.math.square(Yf_prediction_error), axis=0)
+    # Specific for RNAseq
+    dict_model_perf_metrics['SST'] = tf.math.reduce_sum(tf.math.square(dict_feed['yfT'] - tf.math.reduce_mean(dict_feed['yfT'])))
+    dict_model_perf_metrics['SSE'] = tf.math.reduce_sum(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics ['accuracy'] = (1 - tf.divide(dict_model_perf_metrics['SSE'], dict_model_perf_metrics['SST'])) * 100
+    dict_model_perf_metrics['variance_weight'] = tf.constant(1,dtype=tf.float32)
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
@@ -491,11 +494,18 @@ def get_best_K_DMD(XpT_train,XfT_train,XpT_valid,XfT_valid):
     return  A_hat_opt.T
 
 
-def get_best_K_DMD2(XpT_train, XfT_train):
-    lin_model = LinearRegression().fit(XpT_train, XfT_train)
-    AT_opt = lin_model.coef_.T
-    bT_opt = lin_model.intercept_#.reshape(1,-1)
-    return AT_opt,bT_opt
+def get_best_K_DMD2(X, Y, fit_intercept = True):
+    if fit_intercept:
+        # used for initializing K
+        lin_model = LinearRegression().fit(X, Y)
+        AT_opt = lin_model.coef_.T
+        bT_opt = lin_model.intercept_#.reshape(1,-1)
+        return AT_opt,bT_opt
+    else:
+        # used for initializing Wh
+        lin_model = LinearRegression(fit_intercept= False).fit(X, Y)
+        AT_opt = lin_model.coef_.T
+        return AT_opt
 
 
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics_curr, all_histories, dict_run_info,x_params_list={}):
@@ -835,6 +845,8 @@ with tf.device(DEVICE_NAME):
                           'res_net': res_net}
         psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
         psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
+
+
     elif (RUN_OPTIMIZATION == 2):
         psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
         psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
@@ -852,7 +864,8 @@ with tf.device(DEVICE_NAME):
         Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
         sess.run(tf.global_variables_initializer())
         # K Variables
-        Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
+        Wh1T = tf.Variable(get_best_K_DMD2(dict_train2['psiX1f'], dict_train2['Yf'],fit_intercept=False))
+        # Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
         x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
                           'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
                           'res_net': res_net}
@@ -1160,8 +1173,8 @@ print('-----     -----     -----     -----     -----     -----     -----     ---
 
 # Saving the hyperparameters
 dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes,'y_obs': y_deep_dict_size, 'y_layers': n_y_nn_layers, 'y_nodes': n_y_nn_nodes,'xy_obs': xy_deep_dict_size, 'xy_layers': n_xy_nn_layers, 'xy_nodes': n_xy_nn_nodes, 'regularization factor': regularization_lambda}
-dict_hp['r2 train'] = dict_run_info1[list(dict_run_info1.keys())[-1]]['r^2 training accuracy']
-dict_hp['r2 valid'] = dict_run_info1[list(dict_run_info1.keys())[-1]]['r^2 validation accuracy']
+dict_hp['r2 train'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 training accuracy']
+dict_hp['r2 valid'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 validation accuracy']
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
 
