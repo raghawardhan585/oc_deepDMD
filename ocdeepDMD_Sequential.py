@@ -46,9 +46,9 @@ n_x_nn_layers = 1  # x_max_layers 3 works well
 n_x_nn_nodes = 0  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
-y_deep_dict_size = 0
-n_y_nn_layers = 1
-n_y_nn_nodes = 0
+y_deep_dict_size = 2
+n_y_nn_layers = 3
+n_y_nn_nodes = 4
 
 xy_deep_dict_size = 3
 n_xy_nn_layers = 2
@@ -98,7 +98,7 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 500, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
 # ls_dict_training_params.append(dict_training_params)
@@ -786,68 +786,67 @@ with tf.device(DEVICE_NAME):
     # RUN 2
     # ==============
 
-    if (RUN_OPTIMIZATION == 2) and RUN_2_SAVED:
-        # Getting data of existing Run 2
-        with open('System_' + str(SYSTEM_NO) + '_BestRun_2.pickle', 'rb') as handle:
-            var_i = pickle.load(handle)
-        y_deep_dict_size = var_i['y_obs']
-        n_y_nn_layers = var_i['y_layers']
-        n_y_nn_nodes = var_i['y_nodes']
-        Wx2_list_num = var_i['Wy_list_num']
-        bx2_list_num = var_i['by_list_num']
-        Wh1T_num = var_i['Wh_num']
-        x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
-        x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
-        # Data Required
-        psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
-        psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
-        dict_train2 = {'Xp': Xp[train_indices], 'psiX1p': psix1p_num[train_indices], 'Yp': Yp[train_indices],
-                       'Xf': Xf[train_indices], 'psiX1f': psix1f_num[train_indices], 'Yf': Yf[train_indices]}
-        dict_valid2 = {'Xp': Xp[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'Yp': Yp[valid_indices],
-                       'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
-        # Creating placeholder variables for Run 2
-        yp_feed = tf.placeholder(tf.float32, shape=[None, Yp.shape[1]])
-        yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
-        psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
-        psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
-        # Initializing the parameters
-        Wx2_list = [tf.Variable(items) for items in Wx2_list_num]
-        bx2_list = [tf.Variable(items) for items in bx2_list_num]
-        Wh1T = tf.Variable(Wh1T_num)
-        sess.run(tf.global_variables_initializer())
-        x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
-                          'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
-        # Psi variables
-        psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
-        psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
-        psix12p_concat = tf.concat([psix1p_feed, psix2p], axis=1)
-        psix12f_concat = tf.concat([psix1f_feed, psix2f], axis=1)
-        # Objective Function Variables
-        dict_feed2 = {'psix1pT': psix1p_feed, 'xpT': xp_feed, 'ypT': yp_feed, 'psix1fT': psix1f_feed,
-                      'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
-        dict_psi2 = {'xpT': psix12p_concat, 'xfT': psix12f_concat}
-        dict_K2 = {'WhT': Wh1T}
-        # Second optimization
-        dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
-        all_histories2 = {'train error': [], 'validation error': [], 'train MSE': [], 'valid MSE': []}
-        dict_run_info2 = {}
-        all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2,
-                                                          ls_dict_training_params2, dict_model2_metrics,
-                                                          all_histories2, dict_run_info2, x_params_list=x2_params_list)
-        print('---   OUTPUT TRAINING COMPLETE   ---')
-        print(pd.DataFrame(dict_run_info2))
-        # Post Run 2 Saves
-        Wh1T_num = sess.run(Wh1T)
-        Wx2_list_num = sess.run(Wx2_list)
-        bx2_list_num = sess.run(bx2_list)
-        x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list_num,
-                          'b_list': bx2_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                          'res_net': res_net}
-        psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
-        psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
+    # if (RUN_OPTIMIZATION == 2) and RUN_2_SAVED:
+    #     # Getting data of existing Run 2
+    #     with open('System_' + str(SYSTEM_NO) + '_BestRun_2.pickle', 'rb') as handle:
+    #         var_i = pickle.load(handle)
+    #     y_deep_dict_size = var_i['y_obs']
+    #     n_y_nn_layers = var_i['y_layers']
+    #     n_y_nn_nodes = var_i['y_nodes']
+    #     Wx2_list_num = var_i['Wy_list_num']
+    #     bx2_list_num = var_i['by_list_num']
+    #     Wh1T_num = var_i['Wh_num']
+    #     x2_hidden_vars_list = np.asarray([n_y_nn_nodes] * n_y_nn_layers)
+    #     x2_hidden_vars_list[-1] = y_deep_dict_size  # The last hidden layer being declared as the output
+    #     # Data Required
+    #     psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
+    #     psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
+    #     dict_train2 = {'Xp': Xp[train_indices], 'psiX1p': psix1p_num[train_indices], 'Yp': Yp[train_indices],
+    #                    'Xf': Xf[train_indices], 'psiX1f': psix1f_num[train_indices], 'Yf': Yf[train_indices]}
+    #     dict_valid2 = {'Xp': Xp[valid_indices], 'psiX1p': psix1p_num[valid_indices], 'Yp': Yp[valid_indices],
+    #                    'Xf': Xf[valid_indices], 'psiX1f': psix1f_num[valid_indices], 'Yf': Yf[valid_indices]}
+    #     # Creating placeholder variables for Run 2
+    #     yp_feed = tf.placeholder(tf.float32, shape=[None, Yp.shape[1]])
+    #     yf_feed = tf.placeholder(tf.float32, shape=[None, Yf.shape[1]])
+    #     psix1p_feed = tf.placeholder(tf.float32, shape=[None, psix1p_num.shape[1]])
+    #     psix1f_feed = tf.placeholder(tf.float32, shape=[None, psix1f_num.shape[1]])
+    #     # Initializing the parameters
+    #     Wx2_list = [tf.Variable(items) for items in Wx2_list_num]
+    #     bx2_list = [tf.Variable(items) for items in bx2_list_num]
+    #     Wh1T = tf.Variable(Wh1T_num)
+    #     sess.run(tf.global_variables_initializer())
+    #     x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
+    #                       'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,'res_net': res_net}
+    #     # Psi variables
+    #     psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
+    #     psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
+    #     psix12p_concat = tf.concat([psix1p_feed, psix2p], axis=1)
+    #     psix12f_concat = tf.concat([psix1f_feed, psix2f], axis=1)
+    #     # Objective Function Variables
+    #     dict_feed2 = {'psix1pT': psix1p_feed, 'xpT': xp_feed, 'ypT': yp_feed, 'psix1fT': psix1f_feed,
+    #                   'xfT': xf_feed, 'yfT': yf_feed, 'step_size': step_size_feed}
+    #     dict_psi2 = {'xpT': psix12p_concat, 'xfT': psix12f_concat}
+    #     dict_K2 = {'WhT': Wh1T}
+    #     # Second optimization
+    #     dict_model2_metrics = objective_func_output(dict_feed2, dict_psi2, dict_K2)
+    #     all_histories2 = {'train error': [], 'validation error': [], 'train MSE': [], 'valid MSE': []}
+    #     dict_run_info2 = {}
+    #     all_histories2, dict_run_info2 = static_train_net(dict_train2, dict_valid2, dict_feed2,
+    #                                                       ls_dict_training_params2, dict_model2_metrics,
+    #                                                       all_histories2, dict_run_info2, x_params_list=x2_params_list)
+    #     print('---   OUTPUT TRAINING COMPLETE   ---')
+    #     print(pd.DataFrame(dict_run_info2))
+    #     # Post Run 2 Saves
+    #     Wh1T_num = sess.run(Wh1T)
+    #     Wx2_list_num = sess.run(Wx2_list)
+    #     bx2_list_num = sess.run(bx2_list)
+    #     x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list_num,
+    #                       'b_list': bx2_list_num, 'keep_prob': keep_prob, 'activation flag': activation_flag,
+    #                       'res_net': res_net}
+    #     psix2pz_list_const, psix2p_const = initialize_constant_tensorflow_graph(x2_params_list, xp_feed)
+    #     psix2fz_list_const, psix2f_const = initialize_constant_tensorflow_graph(x2_params_list, xf_feed)
 
-
-    elif (RUN_OPTIMIZATION == 2):
+    if RUN_OPTIMIZATION == 2:
         psix1p_num = psix1p_const.eval(feed_dict={xp_feed: Xp})
         psix1f_num = psix1f_const.eval(feed_dict={xf_feed: Xf})
         yp_feed = tf.placeholder(tf.float32, shape=[None, Yp.shape[1]])
@@ -864,11 +863,13 @@ with tf.device(DEVICE_NAME):
         Wx2_list, bx2_list = initialize_Wblist(num_bas_obs, x2_hidden_vars_list)
         sess.run(tf.global_variables_initializer())
         # K Variables
-        Wh1T = tf.Variable(get_best_K_DMD2(dict_train2['psiX1f'], dict_train2['Yf'],fit_intercept=False))
-        # Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])  # Wh definition
+        Wh1T = weight_variable([x_deep_dict_size + num_bas_obs + 1 + y_deep_dict_size, num_outputs])
+        C_hat_opt = get_best_K_DMD2(dict_train2['psiX1f'], dict_train2['Yf'],fit_intercept=False)
+        sess.run(tf.global_variables_initializer())
+        Wh1T = tf.Variable(sess.run(Wh1T[0:x_deep_dict_size + num_bas_obs + 1, :].assign(C_hat_opt)))
+
         x2_params_list = {'n_base_states': num_bas_obs, 'hidden_var_list': x2_hidden_vars_list, 'W_list': Wx2_list,
-                          'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag,
-                          'res_net': res_net}
+                          'b_list': bx2_list, 'keep_prob': keep_prob, 'activation flag': activation_flag, 'res_net': res_net}
         # Psi variables
         psix2pz_list, psix2p = initialize_tensorflow_graph(x2_params_list, xp_feed)
         psix2fz_list, psix2f = initialize_tensorflow_graph(x2_params_list, xf_feed)
