@@ -1,21 +1,19 @@
-import RNAseq_data_preprocessing_functions as rnaf
-import ocdeepdmd_simulation_examples_helper_functions as oc
 import pickle
-import random
+# import random
 import numpy as np
 import pandas as pd
 import os
-import shutil
-import random
+# import shutil
+# import random
 import matplotlib.pyplot as plt
 import copy
 import itertools
-import seaborn as sb
-import tensorflow as tf
+# import seaborn as sb
+# import tensorflow as tf
 
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
 import numpy as np
 from sklearn.metrics import make_scorer,r2_score
