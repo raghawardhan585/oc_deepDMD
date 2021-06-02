@@ -37,7 +37,7 @@ TRAIN_PERCENT = 85.71429#87.5#80
 keep_prob = 1.0;  # keep_prob = 1-dropout probability
 res_net = 0;  # Boolean condition on whether to use a resnet connection.
 
-regularization_lambda = 100
+regularization_lambda = 1e-10
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
@@ -98,7 +98,7 @@ if RUN_OPTIMIZATION ==3:
 
 # Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 200, 'batch_size': 48} #20000
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': 48}
 # ls_dict_training_params.append(dict_training_params)
