@@ -37,20 +37,20 @@ dict_hp['x']['ls_dict_size'] = [0]
 dict_hp['x']['ls_nn_layers'] = [3]
 dict_hp['x']['ls_nn_nodes'] = [15]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [1,1]
-dict_hp['y']['ls_nn_layers'] = [8,9]
-dict_hp['y']['ls_nn_nodes'] = [4,6,8]
+dict_hp['y']['ls_dict_size'] = [0,0,2,2]
+dict_hp['y']['ls_nn_layers'] = [3]
+dict_hp['y']['ls_nn_nodes'] = [5]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
 dict_hp['xy']['ls_nn_nodes'] = [6,8]
-process_variable = 'x'
+process_variable = 'y'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp[process_variable]['ls_dict_size']
 ls_nn_layers = dict_hp[process_variable]['ls_nn_layers']
 ls_nn_nodes = dict_hp[process_variable]['ls_nn_nodes']
-ls_regularization_parameter = [0,0,4.14e-6,4.14e-6] #np.arange(4e-6, 4.2e-6, 0.1e-7)#np.concatenate([np.array([0]),np.arange(2e-5, 9.5e-5, 0.5e-5)],axis=0)#np.arange(0, 1e-3, 2.5e-5) #[3.75e-4] #np.arange(5e-5,1e-3,2.5e-5)
+ls_regularization_parameter = [0] #np.arange(4e-6, 4.2e-6, 0.1e-7)#np.concatenate([np.array([0]),np.arange(2e-5, 9.5e-5, 0.5e-5)],axis=0)#np.arange(0, 1e-3, 2.5e-5) #[3.75e-4] #np.arange(5e-5,1e-3,2.5e-5)
 
 # a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes))
 a = list(itertools.product(ls_dict_size,ls_nn_layers,ls_nn_nodes,ls_regularization_parameter))
