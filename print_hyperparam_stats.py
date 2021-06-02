@@ -28,7 +28,8 @@ for folder in os.listdir(file_path):
 print('=====================================================================')
 print('Error Stats')
 print('=====================================================================')
-df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'x_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['x_obs'])
+# df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'x_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['x_obs'])
+df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'y_obs', 'r2_train', 'r2_valid', 'lambda', 'n_l & n_n']].sort_values(by=['y_obs'])
 df_result.loc[:,'lambda'] = df_result.loc[:,'lambda'] * 1e6
 df_result = df_result.rename(columns={'lambda':'lambda[x1e-6]'})
 print(df_result)
