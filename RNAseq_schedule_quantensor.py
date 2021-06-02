@@ -52,6 +52,9 @@ qt.write('#!/bin/bash \n')
 
 # Scheduling Lasso Regression
 qt.write('python3 RNAseq_LassoModel_X.py > System_401/Lasso_Regression/LassoRun.txt &\n')
+qt.write('wait \n')
+qt.write('echo "All sessions are complete" \n')
+qt.write('echo "=======================================================" \n')
 qt.close()
 # Scheduling oc deepDMD runs
 # qt.write('rm -rf _current_run_saved_files \n')
