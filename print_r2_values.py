@@ -27,7 +27,7 @@ print('Error Stats')
 print('=====================================================================')
 df_result = pd.DataFrame(dict_run).T.loc[:,['run_no', 'lambda', 'r2_train', 'r2_valid', 'difference']].sort_values(by=['run_no'])
 # df_result.loc[:,'lambda'] ="{:e}".format(df_result.loc[:,'lambda'])
-df_result.loc[:,'lambda'] = df_result.loc[:,'lambda'] * 1e7
-df_result = df_result.rename(columns={'lambda':'lambda[x1e-7]'})
+df_result.loc[:,'lambda'] = df_result.loc[:,'lambda'] * 1e6
+df_result = df_result.rename(columns={'lambda':'lambda[x1e-6]'})
 print(df_result)
 print('=====================================================================')
