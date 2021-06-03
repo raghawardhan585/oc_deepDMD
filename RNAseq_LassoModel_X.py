@@ -95,12 +95,12 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_test_indices):
 
 
 # Hyperparameters of choice
-Lasso_reg_lambda = np.arange(1e-3,11e-3,1e-3)
+# Lasso_reg_lambda = np.arange(1e-3,11e-3,1e-3)
 # Lasso_reg_lambda = [0.2,0.6]
 # Lasso_reg_lambda = [0,1]
-# Lasso_reg_lambda = np.arange(0,1.1,0.1)
-# Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0.02,0.1,0.005)])
-# Lasso_reg_lambda = np.sort(Lasso_reg_lambda)
+Lasso_reg_lambda = np.arange(0,1.1,0.1)
+Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0.02,0.1,0.005)])
+Lasso_reg_lambda = np.sort(Lasso_reg_lambda)
 
 NO_OF_FOLDS = 7
 kf = KFold(n_splits=NO_OF_FOLDS, shuffle=False, random_state=None)
