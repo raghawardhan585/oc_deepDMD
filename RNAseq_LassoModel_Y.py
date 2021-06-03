@@ -89,11 +89,12 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_test_indices):
         YTs_test = dict_scaled_data[COND][i]['YT']
 
 # Hyperparameters of choice
-Lasso_reg_lambda = [0,1]
-# Lasso_reg_lambda = np.arange(1e-3,11e-3,1e-3)
-# Lasso_reg_lambda = np.arange(0,1.1,0.1)
-# Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0.02,0.1,0.005)])
-# Lasso_reg_lambda = np.sort(Lasso_reg_lambda)
+# Lasso_reg_lambda = [0,1]
+# Lasso_reg_lambda = [0.2,0.5]
+Lasso_reg_lambda = np.arange(1e-3,11e-3,1e-3)
+Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0,1.1,0.1)])
+Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0.02,0.1,0.005)])
+Lasso_reg_lambda = np.sort(Lasso_reg_lambda)
 
 NO_OF_FOLDS = 7
 kf = KFold(n_splits=NO_OF_FOLDS, shuffle=False, random_state=None)
@@ -133,7 +134,7 @@ try:
     # Opening the old lasso regression results
     with open(file_save_path + '/Lasso_stats.pickle','rb') as handle:
         df_stats1 = pickle.load(handle)
-    if df_stats1.columns == df_stats.columns:
+    if (df_stats1.columns == df_stats.columns).all():
         # Concatenating to the new ones
         df_stats_new = pd.concat([df_stats1,df_stats],axis=0).T.sort_index(axis=1).T
         # Saving the concatenated lasso regression results
