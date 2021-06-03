@@ -129,7 +129,7 @@ print(df_stats)
 
 
 ## Saving results of lasso regression
-file_save_path = root_file + '/Lasso_Regression'
+file_save_path = root_file + '/Lasso_Regression_X'
 # Make tha save path if a  path does not exist
 if not os.path.isdir(file_save_path):
     os.mkdir(file_save_path)

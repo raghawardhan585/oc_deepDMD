@@ -131,25 +131,25 @@ if not os.path.isdir(file_save_path):
 try:
     # Scheme 2 : append the results to an existing pickle file [only use if you have the same number of folds (kfold cross validation)]
     # Opening the old lasso regression results
-    with open(file_save_path + '/LassoY_stats.pickle','rb') as handle:
+    with open(file_save_path + '/Lasso_stats.pickle','rb') as handle:
         df_stats1 = pickle.load(handle)
     if df_stats1.columns == df_stats.columns:
         # Concatenating to the new ones
         df_stats_new = pd.concat([df_stats1,df_stats],axis=0).T.sort_index(axis=1).T
         # Saving the concatenated lasso regression results
-        with open(file_save_path + '/LassoY_stats.pickle','wb') as handle:
+        with open(file_save_path + '/Lasso_stats.pickle','wb') as handle:
             pickle.dump(df_stats_new, handle)
         print(df_stats_new)
     else:
         print('The column indices do not match between the two dataframes !!!')
         print('Saving the results as a proxy')
         print('PLEASE RESOLVE IT !!!')
-        with open(file_save_path + '/LassoY_stats_proxy.pickle', 'wb') as handle:
+        with open(file_save_path + '/Lasso_stats_proxy.pickle', 'wb') as handle:
             pickle.dump(df_stats, handle)
         df_stats_new = df_stats
 except:
     # Scheme 1 : save the results to a new pickle
-    with open(file_save_path + '/LassoY_stats.pickle', 'wb') as handle:
+    with open(file_save_path + '/Lasso_stats.pickle', 'wb') as handle:
         pickle.dump(df_stats, handle)
     df_stats_new = df_stats
 
