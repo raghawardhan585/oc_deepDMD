@@ -37,9 +37,9 @@ dict_hp['x']['ls_dict_size'] = [1,2]
 dict_hp['x']['ls_nn_layers'] = [3,4]
 dict_hp['x']['ls_nn_nodes'] = [50]
 dict_hp['y']={}
-dict_hp['y']['ls_dict_size'] = [1,2]
-dict_hp['y']['ls_nn_layers'] = [3,4,5,6]
-dict_hp['y']['ls_nn_nodes'] = [5,10]
+dict_hp['y']['ls_dict_size'] = [1,2,3,4]
+dict_hp['y']['ls_nn_layers'] = [3,4]
+dict_hp['y']['ls_nn_nodes'] = [20,25]
 dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
@@ -71,18 +71,13 @@ for i in range(len(a)):
     dict_all_run_conditions[i]['regularization lambda'] = a[i][-1]
 print(dict_all_run_conditions)
 # Scheduling
-mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
-gt = open('/Users/shara/Desktop/oc_deepDMD/goldentensor_run.sh','w')
 ot = open('/Users/shara/Desktop/oc_deepDMD/optictensor_run.sh','w')
-ls_files  = [mt,gt,ot]
-# ls_files  = [gt]
-for items in ls_files:
-    items.write('#!/bin/bash \n')
-    items.write('rm -rf _current_run_saved_files \n')
-    items.write('mkdir _current_run_saved_files \n')
-    items.write('rm -rf Run_info \n')
-    items.write('mkdir Run_info \n')
-    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
+ot.write('#!/bin/bash \n')
+ot.write('rm -rf _current_run_saved_files \n')
+ot.write('mkdir _current_run_saved_files \n')
+ot.write('rm -rf Run_info \n')
+ot.write('mkdir Run_info \n')
+ot.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
 
 ls_run_no =[0,0]
 for i in dict_all_run_conditions.keys():
@@ -139,17 +134,17 @@ for i in dict_all_run_conditions.keys():
     #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
     #     ls_files[2].write(general_run + run_params + write_to_file)
     #     ls_run_no[2] = ls_run_no[2] + 1
-for items in ls_files:
-    items.write('wait \n')
-    items.write('echo "All sessions are complete" \n')
-    items.write('echo "=======================================================" \n')
-    items.write('cd .. \n')
-    items.write('rm -R _current_run_saved_files \n')
-    items.write('rm -R Run_info \n')
-    items.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
-    items.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
-    items.write('cd oc_deepDMD/ \n')
-    items.close()
+
+ot.write('wait \n')
+ot.write('echo "All sessions are complete" \n')
+ot.write('echo "=======================================================" \n')
+ot.write('cd .. \n')
+ot.write('rm -R _current_run_saved_files \n')
+ot.write('rm -R Run_info \n')
+ot.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
+ot.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
+ot.write('cd oc_deepDMD/ \n')
+ot.close()
 
 ## Transfer the oc deepDMD files
 
