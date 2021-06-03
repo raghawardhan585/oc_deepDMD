@@ -51,7 +51,7 @@ qt = open('/Users/shara/Desktop/oc_deepDMD/quantensor_run.sh','w')
 qt.write('#!/bin/bash \n')
 
 # Scheduling Lasso Regression
-qt.write('python3 RNAseq_LassoModel_X.py > System_401/Lasso_Regression/LassoRun.txt &\n')
+qt.write('python3 RNAseq_LassoModel_X.py > System_401/Lasso_Regression_X/LassoRun.txt &\n')
 qt.write('wait \n')
 qt.write('echo "All sessions are complete" \n')
 qt.write('echo "=======================================================" \n')
