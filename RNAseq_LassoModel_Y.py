@@ -53,58 +53,52 @@ for COND in ALL_CONDITIONS:
 dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
 dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
 for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
-    dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
-                                   'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
-                                   'YpT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
-                                   'YfT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}
-    dict_scaled_data[COND][i] = {'XpT': X_scaler.transform(dict_unscaled_data[COND][i]['XpT']),
-                                   'XfT': X_scaler.transform(dict_unscaled_data[COND][i]['XfT']),
-                                   'YpT': Y_scaler.transform(dict_unscaled_data[COND][i]['YpT']),
-                                   'YfT': Y_scaler.transform(dict_unscaled_data[COND][i]['YfT'])}
+    dict_unscaled_data[COND][i] = {'XT': np.array(dict_data_original[COND][i]['df_X_TPM']).T,
+                                   'YT': np.array(dict_data_original[COND][i]['Y']).T}
+    dict_scaled_data[COND][i] = {'XT': X_scaler.transform(dict_unscaled_data[COND][i]['XT']),
+                                   'YT': Y_scaler.transform(dict_unscaled_data[COND][i]['YT'])}
 
 ## --------------------------------------------------------------------------------
 # DMD Train with Lasso Regression and k-fold cross validation
 
 # Notes - This does not require a validation data. We use each one of the k-folds as the validation to draw a statistic
 # on which is the most robust hyperparameter (\lambda - the lasso regularization parameter)
-XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = []
+XTs_train = XTs_valid = XTs_test = YTs_train = YTs_valid = YTs_test = []
 for COND,i in itertools.product(ALL_CONDITIONS,ls_train_indices):
     try:
-        XpTs_train = np.concatenate([XpTs_train, dict_scaled_data[COND][i]['XpT']],axis=0)
-        XfTs_train = np.concatenate([XfTs_train, dict_scaled_data[COND][i]['XfT']],axis=0)
+        XTs_train = np.concatenate([XTs_train, dict_scaled_data[COND][i]['XT']],axis=0)
+        YTs_train = np.concatenate([YTs_train, dict_scaled_data[COND][i]['YT']], axis=0)
     except:
-        XpTs_train = dict_scaled_data[COND][i]['XpT']
-        XfTs_train = dict_scaled_data[COND][i]['XfT']
+        XTs_train = dict_scaled_data[COND][i]['XT']
+        YTs_train = dict_scaled_data[COND][i]['YT']
 for COND,i in itertools.product(ALL_CONDITIONS,ls_valid_indices):
     try:
-        XpTs_valid = np.concatenate([XpTs_valid, dict_scaled_data[COND][i]['XpT']],axis=0)
-        XfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['XfT']],axis=0)
+        XTs_valid = np.concatenate([XTs_valid, dict_scaled_data[COND][i]['XT']],axis=0)
+        YTs_valid = np.concatenate([YTs_valid, dict_scaled_data[COND][i]['YT']], axis=0)
     except:
-        XpTs_valid = dict_scaled_data[COND][i]['XpT']
-        XfTs_valid = dict_scaled_data[COND][i]['XfT']
-XpTs_train_valid = np.concatenate([XpTs_train, XpTs_valid],axis=0)
-XfTs_train_valid = np.concatenate([XfTs_train, XfTs_valid],axis=0)
+        XTs_valid = dict_scaled_data[COND][i]['XT']
+        YTs_valid = dict_scaled_data[COND][i]['YT']
+XTs_train_valid = np.concatenate([XTs_train, XTs_valid],axis=0)
+YTs_train_valid = np.concatenate([YTs_train, YTs_valid],axis=0)
 for COND,i in itertools.product(ALL_CONDITIONS,ls_test_indices):
     try:
-        XpTs_test = np.concatenate([XpTs_test, dict_scaled_data[COND][i]['XpT']],axis=0)
-        XfTs_test = np.concatenate([XfTs_test, dict_scaled_data[COND][i]['XfT']],axis=0)
+        XTs_test = np.concatenate([XTs_test, dict_scaled_data[COND][i]['XT']],axis=0)
+        YTs_test = np.concatenate([YTs_test, dict_scaled_data[COND][i]['YT']], axis=0)
     except:
-        XpTs_test =dict_scaled_data[COND][i]['XpT']
-        XfTs_test = dict_scaled_data[COND][i]['XfT']
-
-
+        XTs_test = dict_scaled_data[COND][i]['XT']
+        YTs_test = dict_scaled_data[COND][i]['YT']
 
 # Hyperparameters of choice
+Lasso_reg_lambda = [0,1]
 # Lasso_reg_lambda = np.arange(1e-3,11e-3,1e-3)
-Lasso_reg_lambda = [0,2]
 # Lasso_reg_lambda = np.arange(0,1.1,0.1)
 # Lasso_reg_lambda = np.concatenate([Lasso_reg_lambda, np.arange(0.02,0.1,0.005)])
 # Lasso_reg_lambda = np.sort(Lasso_reg_lambda)
 
 NO_OF_FOLDS = 7
 kf = KFold(n_splits=NO_OF_FOLDS, shuffle=False, random_state=None)
-# my_scorer = make_scorer(r2_score,multioutput='uniform_average')
-my_scorer = make_scorer(r2_score,multioutput='variance_weighted')
+my_scorer = make_scorer(r2_score,multioutput='uniform_average')
+# my_scorer = make_scorer(r2_score,multioutput='variance_weighted')
 
 # [Note]: kf.split takes the indices of the input array and then then the kfold split of the indices
 # [Note- fit_intercept=True]: Our theorem states that since we do an affine transformation while scaling, we should always have a bias term and hence we fit the intercept
@@ -113,12 +107,12 @@ dict_stats = {}
 for alpha in Lasso_reg_lambda:
     dict_stats[alpha] = {}
     if alpha ==0:
-        a =cross_val_score(LinearRegression(fit_intercept=True), XpTs_train_valid, XfTs_train_valid, cv=kf.split(XpTs_train_valid),scoring=my_scorer)
+        a =cross_val_score(LinearRegression(fit_intercept=True), XTs_train_valid, YTs_train_valid, cv=kf.split(XTs_train_valid),scoring=my_scorer)
     else:
         if alpha<0.1:
-            a = cross_val_score(Lasso(alpha= alpha, fit_intercept=True, max_iter=50000), XpTs_train_valid, XfTs_train_valid, cv=kf.split(XpTs_train_valid), scoring=my_scorer)
+            a = cross_val_score(Lasso(alpha= alpha, fit_intercept=True, max_iter=50000), XTs_train_valid, YTs_train_valid, cv=kf.split(XTs_train_valid), scoring=my_scorer)
         else:
-            a = cross_val_score(Lasso(alpha=alpha, fit_intercept=True, max_iter=5000), XpTs_train_valid, XfTs_train_valid, cv=kf.split(XpTs_train_valid), scoring=my_scorer)
+            a = cross_val_score(Lasso(alpha=alpha, fit_intercept=True, max_iter=5000), XTs_train_valid, YTs_train_valid, cv=kf.split(XTs_train_valid), scoring=my_scorer)
     for i in range(NO_OF_FOLDS):
         dict_stats[alpha][i] = a[i]
     print('[STATUS COMPLETE] Lambda = ',alpha)
@@ -129,7 +123,7 @@ print(df_stats)
 
 
 ## Saving results of lasso regression
-file_save_path = root_file + '/Lasso_Regression'
+file_save_path = root_file + '/Lasso_Regression_Y'
 # Make tha save path if a  path does not exist
 if not os.path.isdir(file_save_path):
     os.mkdir(file_save_path)
@@ -137,25 +131,25 @@ if not os.path.isdir(file_save_path):
 try:
     # Scheme 2 : append the results to an existing pickle file [only use if you have the same number of folds (kfold cross validation)]
     # Opening the old lasso regression results
-    with open(file_save_path + '/Lasso_stats.pickle','rb') as handle:
+    with open(file_save_path + '/LassoY_stats.pickle','rb') as handle:
         df_stats1 = pickle.load(handle)
     if df_stats1.columns == df_stats.columns:
         # Concatenating to the new ones
         df_stats_new = pd.concat([df_stats1,df_stats],axis=0).T.sort_index(axis=1).T
         # Saving the concatenated lasso regression results
-        with open(file_save_path + '/Lasso_stats.pickle','wb') as handle:
+        with open(file_save_path + '/LassoY_stats.pickle','wb') as handle:
             pickle.dump(df_stats_new, handle)
         print(df_stats_new)
     else:
         print('The column indices do not match between the two dataframes !!!')
         print('Saving the results as a proxy')
         print('PLEASE RESOLVE IT !!!')
-        with open(file_save_path + '/Lasso_stats_proxy.pickle', 'wb') as handle:
+        with open(file_save_path + '/LassoY_stats_proxy.pickle', 'wb') as handle:
             pickle.dump(df_stats, handle)
         df_stats_new = df_stats
 except:
     # Scheme 1 : save the results to a new pickle
-    with open(file_save_path + '/Lasso_stats.pickle', 'wb') as handle:
+    with open(file_save_path + '/LassoY_stats.pickle', 'wb') as handle:
         pickle.dump(df_stats, handle)
     df_stats_new = df_stats
 
@@ -177,44 +171,33 @@ if dict_optimalLasso['lambda'] ==0:
 else:
     opt_model = Lasso(alpha = dict_optimalLasso['lambda'], fit_intercept=True, max_iter=50000)
 
-opt_model.fit(XpTs_train,XfTs_train)
+opt_model.fit(XTs_train,YTs_train)
 dict_optimalLasso['model'] = opt_model
 
 # Predict on all the datasets
 dict_results = copy.deepcopy(dict_empty_all_conditions)
 for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
-    # Predict the Xf - 1 step
-    XfTs_hat = opt_model.predict(dict_scaled_data[COND][i]['XpT'])
-    # Predict the Xf - n step
-    XfTsn_hat = dict_scaled_data[COND][i]['XpT'][0:1,:]
-    for j in range(len(XfTs_hat)):
-        XfTsn_hat = np.concatenate([XfTsn_hat,opt_model.predict(XfTsn_hat[-1:,:])],axis=0)
-    XfTsn_hat = XfTsn_hat[1:]
-    # Reverse the Xfs
-    XfT_hat = X_scaler.inverse_transform(XfTs_hat)
-    XfTn_hat = X_scaler.inverse_transform(XfTsn_hat)
+    # Predict the Y - 1 step
+    YTs_hat = opt_model.predict(dict_scaled_data[COND][i]['XT'])
+    # Reverse the Ys
+    YT_hat = Y_scaler.inverse_transform(YTs_hat)
     # Compute and the r2 score
     dict_results[COND][i] = {}
-    dict_results[COND][i]['r2_Xfs_1step'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTs_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xfs_nstep'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTsn_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat,multioutput ='variance_weighted')
-
+    dict_results[COND][i]['r2_Ys'] = r2_score(dict_scaled_data[COND][i]['YT'].reshape(-1), YTs_hat.reshape(-1))
+    dict_results[COND][i]['r2_Y'] = r2_score(dict_unscaled_data[COND][i]['YT'].reshape(-1), YT_hat.reshape(-1))
 
 dict_df_results = {}
 for COND in ALL_CONDITIONS:
-    dict_df_results[COND] = pd.DataFrame(dict_results[COND]).T.loc[:,['r2_Xfs_1step','r2_Xfs_nstep','r2_Xf_1step','r2_Xf_nstep']]
+    dict_df_results[COND] = pd.DataFrame(dict_results[COND]).T.loc[:,['r2_Ys','r2_Y']]
     print(dict_df_results[COND])
 dict_mean_results = copy.deepcopy(dict_empty_all_conditions)
 for COND in ALL_CONDITIONS:
-    dict_mean_results[COND]['train_X_1step'] = dict_df_results[COND].loc[ls_train_indices,'r2_Xf_1step'].mean()
-    dict_mean_results[COND]['valid_X_1step'] = dict_df_results[COND].loc[ls_valid_indices, 'r2_Xf_1step'].mean()
-    dict_mean_results[COND]['test_X_1step'] = dict_df_results[COND].loc[ls_test_indices, 'r2_Xf_1step'].mean()
-    dict_mean_results[COND]['train_X_nstep'] = dict_df_results[COND].loc[ls_train_indices, 'r2_Xf_nstep'].mean()
-    dict_mean_results[COND]['valid_X_nstep'] = dict_df_results[COND].loc[ls_valid_indices, 'r2_Xf_nstep'].mean()
-    dict_mean_results[COND]['test_X_nstep'] = dict_df_results[COND].loc[ls_test_indices, 'r2_Xf_nstep'].mean()
+    dict_mean_results[COND]['train_Y'] = dict_df_results[COND].loc[ls_train_indices,'r2_Y'].mean()
+    dict_mean_results[COND]['valid_Y'] = dict_df_results[COND].loc[ls_valid_indices, 'r2_Y'].mean()
+    dict_mean_results[COND]['test_Y'] = dict_df_results[COND].loc[ls_test_indices, 'r2_Y'].mean()
+
 print('-------------------------')
-df_mean_results = pd.DataFrame(dict_mean_results).T.loc[:,['train_X_1step','valid_X_1step','test_X_1step','train_X_nstep','valid_X_nstep','test_X_nstep']]
+df_mean_results = pd.DataFrame(dict_mean_results).T.loc[:,['train_Y','valid_Y','test_Y']]
 print(df_mean_results)
 dict_optimalLasso['stats'] = df_mean_results
 
