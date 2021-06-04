@@ -24,6 +24,47 @@ OD_FILE = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/raw_od_fi
 # df - pandas dataframe object
 # pseudo - intermediate variable
 
+def get_PputidaKT2440_growth_genes():
+    # Pseudomonas putida Biocyc genes specific
+    cell_division_filename = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/cell_division_genes.txt'
+    cell_cycle_filename = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/cell_cycle_genes.txt'
+    dict_biocyc_growth_genes = {}
+    for filename in [cell_cycle_filename,cell_division_filename]:
+        f = open(filename, "r")
+        reader = f.readlines()
+        ls_genes =[]
+        for line in reader[0:-1]:
+            last_word = re.split(r'\s',line)[-2].replace('(','').replace(')', '').replace(',', '')
+            if not(last_word[0:3] == 'PP_'):
+                last_word = last_word[0].lower() + last_word[1:]
+            ls_genes.append(last_word)
+        last_word = re.split(r'\s',reader[-1])[-1].replace('(', '').replace(')', '').replace(',', '')
+        ls_genes.append(last_word)
+        f.close()
+        # mapping the gene names to the locus tags
+        df_RAW = pd.read_csv(RNA_FILE_LOCATION + '/' + os.listdir(RNA_FILE_LOCATION)[0])
+        dict_locus_tags = {}
+        for i in range(df_RAW.shape[0]):
+            if not(df_RAW.loc[i,'gene'] =='NaN'):
+                dict_locus_tags[df_RAW.loc[i,'gene']] = df_RAW.loc[i,'locus_tag']
+        # getting all the gene locus tags
+        ls_locus_tags = []
+        for i in range(len(ls_genes)):
+            if ls_genes[i][0:3] == 'PP_':
+                ls_locus_tags.append(ls_genes[i])
+            elif ls_genes[i] in dict_locus_tags.keys():
+                ls_locus_tags.append(dict_locus_tags[ls_genes[i]])
+            else:
+                print('[ERROR]: The gene ', i , ' labeled ', ls_genes[i],' could not be located and is not added')
+        if  filename ==cell_cycle_filename:
+            dict_biocyc_growth_genes['cell_cycle'] = ls_locus_tags
+        elif filename == cell_division_filename:
+            dict_biocyc_growth_genes['cell_division'] = ls_locus_tags
+    return dict_biocyc_growth_genes
+
+
+
+
 def get_curve_dict_number(replicate_number,lane_number,read_no):
     return (replicate_number-1)*MAX_LANES*MAX_READS + (lane_number-1)*MAX_READS + read_no - 1
 
@@ -54,6 +95,9 @@ def Pputida_R2A_RNAseq_metadata():
     dict_well = {'MX': {1: MAX1_WELL, 2: MAX2_WELL}, 'MN': {1: MIN1_WELL, 2: MIN2_WELL},
                  'NC': {1: NC1_WELL, 2: NC2_WELL}}
     return dict_input,dict_well
+
+
+
 
 def process_microplate_reader_txtfile(filename):
     RawData = []
