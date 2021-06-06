@@ -303,9 +303,11 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             YfTs_test = dict_scaled_data[COND][i]['YfT']
 
     dict_return = {'unscaled':dict_unscaled_data, 'scaled':dict_scaled_data, 'train':{}, 'valid':{}, 'test':{}}
-    dict_return['train'] = {'XpTs': XpTs_train, 'XfTs': XfTs_train, 'YpTs': YpTs_train, 'YfTs': YfTs_train }
-    dict_return['valid'] = {'XpTs': XpTs_valid, 'XfTs': XfTs_valid, 'YpTs': YpTs_valid, 'YfTs': YfTs_valid}
-    dict_return['test'] = {'XpTs': XpTs_test, 'XfTs': XfTs_test, 'YpTs': YpTs_test, 'YfTs': YfTs_test}
+    dict_return['train'] = {'XpTs': XpTs_train, 'XfTs': XfTs_train, 'YpTs': YpTs_train, 'YfTs': YfTs_train, 'indices': ls_train_indices}
+    dict_return['valid'] = {'XpTs': XpTs_valid, 'XfTs': XfTs_valid, 'YpTs': YpTs_valid, 'YfTs': YfTs_valid, 'indices': ls_valid_indices}
+    dict_return['test'] = {'XpTs': XpTs_test, 'XfTs': XfTs_test, 'YpTs': YpTs_test, 'YfTs': YfTs_test, 'indices': ls_test_indices}
+    dict_return['X_scaler'] = X_scaler
+    dict_return['Y_scaler'] = Y_scaler
     return dict_return
 
 # ====================================================================================================================

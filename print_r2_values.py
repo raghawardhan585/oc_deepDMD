@@ -4,6 +4,7 @@ import os
 import numpy as np
 pd.reset_option('display.float_format')
 
+train_variable = 'y'
 file_path = '_current_run_saved_files'
 dict_run = {}
 for folder in os.listdir(file_path):
@@ -11,14 +12,35 @@ for folder in os.listdir(file_path):
         with open(file_path + '/' + folder + '/' + 'dict_hyperparameters.pickle','rb') as handle:
             dict_hp = pickle.load(handle)
         try:
-            dict_run[folder[-2:]] = {'run_no': int(folder[-2:]), 'x_obs': dict_hp['x_obs'],
-                            'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
+            run_no = int(folder[-2:])
+        except:
+            run_no = int(folder[-1:])
+        #     dict_run[folder[-2:]] = {'run_no': int(folder[-2:]), 'x_obs': dict_hp['x_obs'],
+        #                     'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
+        #                              'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
+        #                              'lambda': np.float(dict_hp['regularization factor'])}
+        # except:
+        #     dict_run[folder[-1]] = {'run_no': int(folder[-1]), 'x_obs': dict_hp['x_obs'],
+        #                     'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_train': dict_hp['r2 train'],
+        #                              'r2_valid': dict_hp['r2 valid'],
+        #                              'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
+        #                              'lambda': np.float(dict_hp['regularization factor'])}
+        if train_variable == 'x':
+            dict_run[run_no] = {'run_no': run_no, 'x_obs': dict_hp['x_obs'],
+                                     'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],
+                                     'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
                                      'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
                                      'lambda': np.float(dict_hp['regularization factor'])}
-        except:
-            dict_run[folder[-1]] = {'run_no': int(folder[-1]), 'x_obs': dict_hp['x_obs'],
-                            'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_train': dict_hp['r2 train'],
-                                     'r2_valid': dict_hp['r2 valid'],
+        elif train_variable == 'y':
+            dict_run[run_no] = {'run_no': run_no, 'y_obs': dict_hp['y_obs'],
+                                     'n_l & n_n': [dict_hp['y_layers'], dict_hp['y_nodes']],
+                                     'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
+                                     'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
+                                     'lambda': np.float(dict_hp['regularization factor'])}
+        elif train_variable == 'xy':
+            dict_run[run_no] = {'run_no': run_no, 'xy_obs': dict_hp['xy_obs'],
+                                     'n_l & n_n': [dict_hp['xy_layers'], dict_hp['xy_nodes']],
+                                     'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
                                      'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
                                      'lambda': np.float(dict_hp['regularization factor'])}
     except:

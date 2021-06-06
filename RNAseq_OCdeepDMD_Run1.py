@@ -169,7 +169,7 @@ print('=========================================================================
 # SYSTEM_NO = 401
 # RUN_NO = 4
 SYSTEM_NO = 402
-RUN_NO = 2
+RUN_NO = 9
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
@@ -179,11 +179,11 @@ with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
 for items in d1.keys():
     d[items] = d1[items]
 # print(d.keys())
-# with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
-#     pickle.dump(d,handle)
+with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
+    pickle.dump(d,handle)
 
 ## TESTING OUT OUTPUT
-run = 2
+run = 9
 sess = tf.InteractiveSession()
 run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
 saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
@@ -195,6 +195,16 @@ dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
 dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
 dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
 
-rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX'])
+dict_ALLDATA = rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX'])
 
-psiXfT_train = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
+
+for phase in ['train','valid','test']:
+    psiXfTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA[phase]['XfTs']})
+    YfTs = dict_ALLDATA[phase]['YfTs']
+    if phase == 'train':
+        model_Y = LinearRegression(fit_intercept=True)
+        model_Y.fit(psiXfTs, YfTs)
+    print(phase, 'score [scaled]: ', r2_score(YfTs.reshape(-1),model_Y.predict(psiXfTs).reshape(-1)))
+    print(phase, 'score [unscaled]: ', r2_score(dict_ALLDATA['Y_scaler'].inverse_transform(dict_ALLDATA[phase]['YfTs']).reshape(-1),dict_ALLDATA['Y_scaler'].inverse_transform(model_Y.predict(psiXfTs)).reshape(-1)))
+tf.reset_default_graph()
+sess.close()
