@@ -4,7 +4,9 @@ import os
 import numpy as np
 pd.reset_option('display.float_format')
 
-train_variable = 'y'
+train_variable = 'x'
+# train_variable = 'y'
+# train_variable = 'xy'
 file_path = '_current_run_saved_files'
 dict_run = {}
 for folder in os.listdir(file_path):

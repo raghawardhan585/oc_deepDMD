@@ -33,7 +33,7 @@ NO_OF_ITERATIONS_IN_CPU = 2
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [5,5,5,5]
+dict_hp['x']['ls_dict_size'] = [0]
 dict_hp['x']['ls_nn_layers'] = [4]
 dict_hp['x']['ls_nn_nodes'] = [15]
 dict_hp['y']={}
@@ -44,8 +44,8 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
 dict_hp['xy']['ls_nn_nodes'] = [6,8]
-# process_variable = 'x'
-process_variable = 'y'
+process_variable = 'x'
+# process_variable = 'y'
 # process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 

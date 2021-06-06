@@ -63,13 +63,11 @@ best_test_error = np.inf
 # 2 - Fitting the output
 # 3 - Making both dynamics and output linear
 
-# RUN_OPTIMIZATION = 1
-# RUN_1_SAVED = RUN_2_SAVED = RUN_3_SAVED = False
-
-RUN_OPTIMIZATION = 2
-RUN_1_SAVED = True
-RUN_2_SAVED = RUN_3_SAVED = False
-
+RUN_OPTIMIZATION = 1
+RUN_1_SAVED = RUN_2_SAVED = RUN_3_SAVED = False
+# RUN_OPTIMIZATION = 2
+# RUN_1_SAVED = True
+# RUN_2_SAVED = RUN_3_SAVED = False
 # RUN_OPTIMIZATION = 3
 # RUN_1_SAVED = RUN_2_SAVED = True
 # RUN_3_SAVED = False
