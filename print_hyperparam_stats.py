@@ -3,8 +3,8 @@ import pandas as pd
 import os
 pd.reset_option('display.float_format')
 
-file_path = '_current_run_saved_files'
-# file_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_401/Sequential'
+# file_path = '_current_run_saved_files'
+file_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_402/Sequential'
 dict_run = {}
 for folder in os.listdir(file_path):
     try:

@@ -29,7 +29,7 @@ plt.rcParams["font.size"] = 22
 ## OC deepDMD runs
 
 # Preprocessing files
-SYSTEM_NO = 401
+SYSTEM_NO = 402
 ALL_CONDITIONS = ['MX']
 # ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
 ls_runs1 = list(range(0,60)) # SYSTEM 401
@@ -140,9 +140,9 @@ for run in ls_runs1:
     dict_resultable1[run]['train_Xf_1step'] = dict_predict_STATS[run].loc[:,'train_Xf_1step'].mean()
     dict_resultable1[run]['valid_Xf_1step'] = dict_predict_STATS[run].loc[:,'valid_Xf_1step'].mean()
     dict_resultable1[run]['test_Xf_1step'] = dict_predict_STATS[run].loc[:,'test_Xf_1step'].mean()
-    dict_resultable1[run]['train_Xf_nstep'] = dict_predict_STATS[run].loc[:,'train_Xf_1step'].mean()
-    dict_resultable1[run]['valid_Xf_nstep'] = dict_predict_STATS[run].loc[:,'valid_Xf_1step'].mean()
-    dict_resultable1[run]['test_Xf_nstep'] = dict_predict_STATS[run].loc[:,'test_Xf_1step'].mean()
+    dict_resultable1[run]['train_Xf_nstep'] = dict_predict_STATS[run].loc[:,'train_Xf_nstep'].mean()
+    dict_resultable1[run]['valid_Xf_nstep'] = dict_predict_STATS[run].loc[:,'valid_Xf_nstep'].mean()
+    dict_resultable1[run]['test_Xf_nstep'] = dict_predict_STATS[run].loc[:,'test_Xf_nstep'].mean()
     tf.reset_default_graph()
     sess.close()
 
@@ -156,7 +156,7 @@ for run in dict_predict_STATS.keys():
     with open(root_run_file + '/Sequential/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
         dict_hp = pickle.load(handle)
     dict_resultable_2[run] = {'run_no': run, 'lambda': dict_hp['regularization factor'], 'x_obs': dict_hp['x_obs'],
-                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], ' r2_X_n_step_valid':
+                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],  ' r2_X_n_step_valid':
                              dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), ' r2_X_n_step_test':
                              dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean()}
 df_resultable2 = pd.DataFrame(dict_resultable_2).T.sort_values(by ='x_obs')
@@ -166,16 +166,16 @@ print(df_resultable2)
 print('============================================================================')
 
 ## OPTIMIZATION PROBLEM 1 - Save the best result 1
-SYSTEM_NO = 401
-RUN_NO = 4
-sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
-with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
-    d = pickle.load(handle)
-with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-    d1 = pickle.load(handle)
-for items in d1.keys():
-    d[items] = d1[items]
-print(d.keys())
-with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
-    pickle.dump(d,handle)
+# SYSTEM_NO = 401
+# RUN_NO = 4
+# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+# run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+# with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+#     d = pickle.load(handle)
+# with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+#     d1 = pickle.load(handle)
+# for items in d1.keys():
+#     d[items] = d1[items]
+# print(d.keys())
+# with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
+#     pickle.dump(d,handle)
