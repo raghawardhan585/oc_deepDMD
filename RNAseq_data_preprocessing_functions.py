@@ -255,17 +255,14 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
     dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
     dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
     for COND, i in itertools.product(ALL_CONDITIONS, ls_data_indices):
-        dict_intermediate = oc.scale_data_using_existing_scaler_folder(
-            {'Xp': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
-             'Xf': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
-             'Yp': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
-             'Yf': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}, SYSTEM_NO)
-        dict_scaled_data[COND][i] = {'XpT': dict_intermediate['Xp'], 'XfT': dict_intermediate['Xf'],
-                                     'YpT': dict_intermediate['Yp'], 'YfT': dict_intermediate['Yf']}
         dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
                                        'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
                                        'YpT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
                                        'YfT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}
+        dict_scaled_data[COND][i] = {'XpT': X_scaler.transform(dict_unscaled_data[COND][i]['XpT']),
+                                     'XfT': X_scaler.transform(dict_unscaled_data[COND][i]['XfT']),
+                                     'YpT': Y_scaler.transform(dict_unscaled_data[COND][i]['YpT']),
+                                     'YfT': Y_scaler.transform(dict_unscaled_data[COND][i]['YfT'])}
 
     XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = []
     YpTs_train = YfTs_train = YpTs_valid = YfTs_valid = YpTs_test = YfTs_test = []
@@ -292,6 +289,24 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             XfTs_valid = dict_scaled_data[COND][i]['XfT']
             YpTs_valid = dict_scaled_data[COND][i]['YpT']
             YfTs_valid = dict_scaled_data[COND][i]['YfT']
+
+    for COND, i in itertools.product(ALL_CONDITIONS, ls_test_indices):
+        try:
+            XpTs_test = np.concatenate([XpTs_test, dict_scaled_data[COND][i]['XpT']], axis=0)
+            XfTs_test = np.concatenate([XfTs_test, dict_scaled_data[COND][i]['XfT']], axis=0)
+            YpTs_test = np.concatenate([YpTs_test, dict_scaled_data[COND][i]['YpT']], axis=0)
+            YfTs_test = np.concatenate([YfTs_test, dict_scaled_data[COND][i]['YfT']], axis=0)
+        except:
+            XpTs_test = dict_scaled_data[COND][i]['XpT']
+            XfTs_test = dict_scaled_data[COND][i]['XfT']
+            YpTs_test = dict_scaled_data[COND][i]['YpT']
+            YfTs_test = dict_scaled_data[COND][i]['YfT']
+
+    dict_return = {'unscaled':dict_unscaled_data, 'scaled':dict_scaled_data, 'train':{}, 'valid':{}, 'test':{}}
+    dict_return['train'] = {'XpTs': XpTs_train, 'XfTs': XfTs_train, 'YpTs': YpTs_train, 'YfTs': YfTs_train }
+    dict_return['valid'] = {'XpTs': XpTs_valid, 'XfTs': XfTs_valid, 'YpTs': YpTs_valid, 'YfTs': YfTs_valid}
+    dict_return['test'] = {'XpTs': XpTs_test, 'XfTs': XfTs_test, 'YpTs': YpTs_test, 'YfTs': YfTs_test}
+    return dict_return
 
 # ====================================================================================================================
 # Gene Filtering Functions

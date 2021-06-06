@@ -195,4 +195,6 @@ dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
 dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
 dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
 
+rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX'])
+
 psiXfT_train = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
