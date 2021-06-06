@@ -220,7 +220,78 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True):
     return
 
 
+# ====================================================================================================================
+# Functions to get scaled and unscaled training,test and validation data
+# ====================================================================================================================
+def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
+    # The split is kept at 14 curves for training, 2 curves for validation and  2 curves for testing
+    original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
+    indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
+    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO)
 
+    # Scaler import
+    with open(root_run_file + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'rb') as handle:
+        All_Scalers = pickle.load(handle)
+    X_scaler = All_Scalers['X Scale']
+    Y_scaler = All_Scalers['Y Scale']
+
+    # Indices [train, validation and test]
+    with open(indices_path, 'rb') as handle:
+        ls_data_indices = pickle.load(handle)
+    ls_train_indices = ls_data_indices[0:12]
+    ls_valid_indices = ls_data_indices[12:14]
+    ls_test_indices = ls_data_indices[14:16]
+    # Datasets [sorted as scaled and unscaled] and Conditions
+    with open(original_data_path, 'rb') as handle:
+        dict_data_original = pickle.load(handle)
+
+    dict_empty_all_conditions = {}
+    for COND in ALL_CONDITIONS:
+        dict_empty_all_conditions[COND] = {}
+
+    dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
+    dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
+    for COND, i in itertools.product(ALL_CONDITIONS, ls_data_indices):
+        dict_intermediate = oc.scale_data_using_existing_scaler_folder(
+            {'Xp': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
+             'Xf': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
+             'Yp': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
+             'Yf': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}, SYSTEM_NO)
+        dict_scaled_data[COND][i] = {'XpT': dict_intermediate['Xp'], 'XfT': dict_intermediate['Xf'],
+                                     'YpT': dict_intermediate['Yp'], 'YfT': dict_intermediate['Yf']}
+        dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
+                                       'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
+                                       'YpT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
+                                       'YfT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 1:]).T}
+
+    XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = []
+    YpTs_train = YfTs_train = YpTs_valid = YfTs_valid = YpTs_test = YfTs_test = []
+    for COND, i in itertools.product(ALL_CONDITIONS, ls_train_indices):
+        try:
+            XpTs_train = np.concatenate([XpTs_train, dict_scaled_data[COND][i]['XpT']], axis=0)
+            XfTs_train = np.concatenate([XfTs_train, dict_scaled_data[COND][i]['XfT']], axis=0)
+            YpTs_train = np.concatenate([YpTs_train, dict_scaled_data[COND][i]['YpT']], axis=0)
+            YfTs_train = np.concatenate([YfTs_train, dict_scaled_data[COND][i]['YfT']], axis=0)
+        except:
+            XpTs_train = dict_scaled_data[COND][i]['XpT']
+            XfTs_train = dict_scaled_data[COND][i]['XfT']
+            YpTs_train = dict_scaled_data[COND][i]['YpT']
+            YfTs_train = dict_scaled_data[COND][i]['YfT']
+
+    for COND, i in itertools.product(ALL_CONDITIONS, ls_valid_indices):
+        try:
+            XpTs_valid = np.concatenate([XpTs_valid, dict_scaled_data[COND][i]['XpT']], axis=0)
+            XfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['XfT']], axis=0)
+            YpTs_valid = np.concatenate([XpTs_valid, dict_scaled_data[COND][i]['YpT']], axis=0)
+            YfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['YfT']], axis=0)
+        except:
+            XpTs_valid = dict_scaled_data[COND][i]['XpT']
+            XfTs_valid = dict_scaled_data[COND][i]['XfT']
+            YpTs_valid = dict_scaled_data[COND][i]['YpT']
+            YfTs_valid = dict_scaled_data[COND][i]['YfT']
 
 # ====================================================================================================================
 # Gene Filtering Functions

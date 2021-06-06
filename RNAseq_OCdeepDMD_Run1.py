@@ -168,14 +168,31 @@ print('=========================================================================
 ## OPTIMIZATION PROBLEM 1 - Save the best result 1
 # SYSTEM_NO = 401
 # RUN_NO = 4
-# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
-# with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
-#     d = pickle.load(handle)
-# with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-#     d1 = pickle.load(handle)
-# for items in d1.keys():
-#     d[items] = d1[items]
+SYSTEM_NO = 402
+RUN_NO = 2
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
 # print(d.keys())
 # with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
 #     pickle.dump(d,handle)
+
+## TESTING OUT OUTPUT
+run = 2
+sess = tf.InteractiveSession()
+run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+dict_params = {}
+dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+
+psiXfT_train = dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
