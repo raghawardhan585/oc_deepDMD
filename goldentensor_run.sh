@@ -4,35 +4,10 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 0  1 4 10 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_0.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 1  1 4 10 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_1.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 2  1 4 10 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_2.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 3  1 4 10 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_3.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 4  1 4 15 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_4.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 5  1 4 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_5.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 6  1 4 15 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_6.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 7  1 4 15 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_7.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 8  1 5 10 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_8.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 9  1 5 10 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_9.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 10  1 5 10 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_10.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 11  1 5 10 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_11.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 12  1 5 15 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_12.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 13  1 5 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_13.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 14  1 5 15 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_14.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 15  1 5 15 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_15.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 16  1 6 10 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_16.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 17  1 6 10 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_17.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 18  1 6 10 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_18.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 19  1 6 10 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_19.txt &
-wait 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 402 20  1 6 15 1 1 1 1 1 1 0.001 > Run_info/SYS_402_RUN_20.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 402 21  1 6 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_21.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 402 22  1 6 15 1 1 1 1 1 1 0.01 > Run_info/SYS_402_RUN_22.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 402 23  1 6 15 1 1 1 1 1 1 0.05 > Run_info/SYS_402_RUN_23.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 402 0  1 6 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_0.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 402 1  1 6 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_1.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 402 2  1 6 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 402 3  1 6 15 1 1 1 1 1 1 0.005 > Run_info/SYS_402_RUN_3.txt &
 wait 
 wait 
 echo "All sessions are complete" 
