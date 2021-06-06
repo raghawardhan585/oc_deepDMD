@@ -38,7 +38,7 @@ for folder in os.listdir(file_path):
                                      'r2_train': dict_hp['r2 train'], 'r2_valid': dict_hp['r2 valid'],
                                      'difference': dict_hp['r2 train'] - dict_hp['r2 valid'],
                                      'lambda': np.float(dict_hp['regularization factor'])}
-            nique_col1 = 'y_obs'
+            unique_col1 = 'y_obs'
         elif train_variable == 'xy':
             dict_run[run_no] = {'run_no': run_no, 'xy_obs': dict_hp['xy_obs'],
                                      'n_l & n_n': [dict_hp['xy_layers'], dict_hp['xy_nodes']],
