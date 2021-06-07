@@ -32,7 +32,8 @@ plt.rcParams["font.size"] = 22
 SYSTEM_NO = 402
 ALL_CONDITIONS = ['MX']
 # ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
-ls_runs1 = list(range(0,60)) # SYSTEM 401
+# ls_runs1 = list(range(0,60)) # SYSTEM 401
+ls_runs1 = list(range(0,27)) # SYSTEM 402
 # ls_runs1 = list(range(64,90)) # SYSTEM 304
 # ls_runs1 = list(range(0,60)) # SYSTEM 304
 
@@ -230,9 +231,15 @@ cbar = a.collections[0].colorbar
 plt.show()
 
 ## Eigenvalue plot
-fig = plt.figure(figsize=(3,3))
+fig = plt.figure(figsize=(7,7))
 ax = fig.add_subplot(1, 1, 1)
 circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
 ax.add_patch(circ)
 ax.plot(np.real(E_complex),np.imag(E_complex),'x',linewidth=3,color='g')
+ax.set_xlabel('$Re(\lambda)$')
+ax.set_ylabel('$Im(\lambda)$')
+ax.set_xticks([-1.0,-0.5,0,0.5,1.0])
+ax.set_yticks([-1.0,-0.5,0,0.5,1.0])
+ax.set_xlim([-1.1,1.1])
+ax.set_ylim([-1.1,1.1])
 plt.show()
