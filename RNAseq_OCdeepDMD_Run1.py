@@ -243,3 +243,66 @@ ax.set_yticks([-1.0,-0.5,0,0.5,1.0])
 ax.set_xlim([-1.1,1.1])
 ax.set_ylim([-1.1,1.1])
 plt.show()
+
+## Plotting the eigenfunctions
+
+run = 9
+sess = tf.InteractiveSession()
+run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+dict_params = {}
+dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+Kx = dict_params['KxT_num'].T
+e_in,W_in = np.linalg.eig(Kx)
+E_in = np.diag(e_in)
+E, W, comp_modes, comp_modes_conj = rnaf.resolve_complex_right_eigenvalues(E_in, W_in)
+Winv = np.linalg.inv(W)
+
+index = 0
+n_funcs = 10
+XT = np.concatenate([dict_ALLDATA['unscaled']['MX'][0]['XpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][0]['XfT']],axis=0)
+XTs = dict_ALLDATA['X_scaler'].transform(XT)
+psiXTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['unscaled']['MX'][0]['XpT'][0:1,:]})
+for i in range(len()):
+    psiXTs = np.concatenate([psiXTs,np.matmul(psiXTs[-1:],dict_params['KxT_num'])])
+Phis = np.matmul(Winv, psiXTs.T)
+YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][0]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][0]['YfT']],axis=0)
+YTs = dict_ALLDATA['Y_scaler'].transform(YT)
+
+x_ticks = np.array([1,2,3,4,5,6,7])
+f,ax = plt.subplots(n_funcs,1,sharex=True,figsize=(7,n_funcs*1.5))
+eig_func_index = 0
+for i in range(10):
+    if eig_func_index in comp_modes:
+        ax[i].plot(x_ticks, Phi[i, :])
+    else:
+        ax[i].plot(x_ticks, Phi[i, :])
+
+
+
+dict_x_index ={'MX': np.array([2,3,4,5,6,7]),'MN': np.array([4,5,6,7]),'NC': np.array([4,5,6,7])}
+for COND_NO in range(len(ALL_CONDITIONS)):
+    COND = ALL_CONDITIONS[COND_NO]
+    Xs = dict_ALLDATA['X_scaler'].transform(X)
+    Phis = np.matmul(Winv, Xps)
+    Phis = Phis[0:-1,:]
+    Phi = oc.inverse_transform_X(Phis.T,SYSTEM_NO).T
+    for i in range(n_funcs):
+        if i==0:
+            ax[i].plot(dict_x_index[COND], Phi[i, :],label = COND)
+        else:
+            ax[i].plot(dict_x_index[COND], Phi[i,:])
+        ax[i].set_title('$\lambda = $'+ str(E[i][i]))
+
+ax[0].legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
+ax[-1].set_xlabel('Time [hrs]')
+f.show()
+
+
+tf.reset_default_graph()
+sess.close()

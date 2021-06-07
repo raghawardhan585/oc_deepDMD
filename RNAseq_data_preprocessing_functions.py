@@ -310,6 +310,32 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
     dict_return['Y_scaler'] = Y_scaler
     return dict_return
 
+def resolve_complex_right_eigenvalues(E, W):
+    eval = copy.deepcopy(np.diag(E))
+    comp_modes = []
+    comp_modes_conj = []
+    for i1 in range(E.shape[0]):
+        if np.imag(E[i1, i1]) != 0:
+            print(i1)
+            # Find the complex conjugate
+            for i2 in range(i1 + 1, E.shape[0]):
+                if eval[i2] == eval[i1].conj():
+                    break
+            # i1 and i2 are the indices of the complex conjugate eigenvalues
+            comp_modes.append(i1)
+            comp_modes_conj.append(i2)
+            E[i1, i1] = np.real(eval[i1])
+            E[i2, i2] = np.real(eval[i1])
+            E[i1, i2] = np.imag(eval[i1])
+            E[i2, i1] = - np.imag(eval[i1])
+            u1 = copy.deepcopy(np.real(W[:, i1:i1 + 1]))
+            w1 = copy.deepcopy(np.imag(W[:, i1:i1 + 1]))
+            W[:, i1:i1 + 1] = u1
+            W[:, i2:i2 + 1] = w1
+    E_out = np.real(E)
+    W_out = np.real(W)
+    return E_out, W_out, comp_modes, comp_modes_conj
+
 # ====================================================================================================================
 # Gene Filtering Functions
 # ====================================================================================================================
