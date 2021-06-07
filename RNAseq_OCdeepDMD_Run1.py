@@ -169,7 +169,7 @@ print('=========================================================================
 # SYSTEM_NO = 401
 # RUN_NO = 4
 SYSTEM_NO = 402
-RUN_NO = 9
+RUN_NO = 25
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
 with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
