@@ -22,7 +22,7 @@ from sklearn.metrics import r2_score
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 402
+SYSTEM_NO = 403
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -104,7 +104,7 @@ if RUN_OPTIMIZATION ==3:
 ls_dict_training_params = []
 # dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 200, 'batch_size': 36} #20000
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 80000, 'batch_size': 36} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 36} #20000
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 36}
 ls_dict_training_params.append(dict_training_params)
