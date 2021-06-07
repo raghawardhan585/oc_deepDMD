@@ -177,8 +177,8 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
     dict_results[COND][i] = {}
     dict_results[COND][i]['r2_Xfs_1step'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTs_hat)#,multioutput ='variance_weighted')
     dict_results[COND][i]['r2_Xfs_nstep'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTsn_hat)#,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat)#,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat)#,multioutput ='variance_weighted')
 
 df_results1 = pd.DataFrame(dict_results['MX'])
 print(df_results1)
