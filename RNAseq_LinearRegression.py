@@ -52,7 +52,7 @@ def resolve_complex_right_eigenvalues(E, W):
     return E_out, W_out, comp_modes, comp_modes_conj
 
 # ## Importing all necessary information
-SYSTEM_NO = 402
+SYSTEM_NO = 403
 ALL_CONDITIONS = ['MX']
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
@@ -175,14 +175,28 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
     XfTn_hat = X_scaler.inverse_transform(XfTsn_hat)
     # Compute and the r2 score
     dict_results[COND][i] = {}
-    dict_results[COND][i]['r2_Xfs_1step'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTs_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xfs_nstep'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTsn_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat,multioutput ='variance_weighted')
-    dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xfs_1step'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTs_hat)#,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xfs_nstep'] = r2_score(dict_scaled_data[COND][i]['XfT'], XfTsn_hat)#,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat)#,multioutput ='variance_weighted')
+    dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat)#,multioutput ='variance_weighted')
 
-print(pd.DataFrame(dict_results['MX']))
+df_results1 = pd.DataFrame(dict_results['MX'])
+print(df_results1)
 
-## Find the optimal Lasso regression model
+dict_results2 ={}
+for cond in ALL_CONDITIONS:
+    dict_results2[cond] ={}
+    dict_results2[cond]['train_Xf_1step'] = df_results1.loc['r2_Xf_1step',ls_train_indices].mean()
+    dict_results2[cond]['train_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_train_indices].mean()
+    dict_results2[cond]['valid_Xf_1step'] = df_results1.loc['r2_Xf_1step', ls_valid_indices].mean()
+    dict_results2[cond]['valid_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_valid_indices].mean()
+    dict_results2[cond]['test_Xf_1step'] = df_results1.loc['r2_Xf_1step', ls_test_indices].mean()
+    dict_results2[cond]['test_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_test_indices].mean()
+
+df_results2 = pd.DataFrame(dict_results2).T
+print(df_results2)
+
+## Find the optimal linear output regression model
 
 model_Y = LinearRegression(fit_intercept=True)
 model_Y.fit(XfTs_train,YfTs_train)

@@ -27,6 +27,7 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
 dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
+ls_genes = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
 # # Remove time points 1,2 in the MAX dataset
 # for items in dict_DATA_max_denoised['MX'].keys():
 #     dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
@@ -81,9 +82,17 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 402
-ALL_CONDITIONS = ['MX']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
+# ALL_CONDITIONS = ['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
 
+# SYSTEM 403
+ALL_CONDITIONS = ['MX']
+dict_data = {}
+for condition in ALL_CONDITIONS:
+    dict_data[condition] = {}
+    for items in dict_DATA_max_denoised[condition].keys():
+        dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 1,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -91,6 +100,11 @@ dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised,
 # dict_MAX = dict_DATA
 # MEAN THRES = 100
 #
+
+if set(dict_growth_genes['cell_division']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
+    print('Cell division genes are present')
+if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
+    print('Cell cycle genes are present')
 
 ## Plotting the states as a function of time
 ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
@@ -102,12 +116,14 @@ for time_pt,COND_NO in itertools.product(range(1,8),range(len(ALL_CONDITIONS))):
     # ax[time_pt-1].plot(np.array(dict_DATA_ORIGINAL['MX'][curve]['df_X_TPM'].loc[:, time_pt]))
     # ax[time_pt - 1].plot(np.array(dict_DATA_max_denoised['MX'][curve]['df_X_TPM'].loc[:,time_pt]))
     try:
-        ax[time_pt - 1].plot(np.array(dict_data[COND][curve]['df_X_TPM'].loc[:, time_pt]),color = ls_colors[COND_NO])
+        # ax[time_pt - 1].plot(np.log10(np.array(dict_data[COND][curve]['df_X_TPM'].loc[:, time_pt])),color = ls_colors[COND_NO])
+        ax[time_pt - 1].plot(np.array(dict_data[COND][curve]['df_X_TPM'].loc[:, time_pt]), color=ls_colors[COND_NO])
     except:
         print("Skipping condition ", COND, ' time point ', time_pt)
     # ax[time_pt - 1].set_xlim([120])
 for time_pt in range(1, 8):
     ax[time_pt - 1].set_ylim([0, 10000])
+    # ax[time_pt - 1].set_ylim([0, 10000])
     ax[time_pt-1].set_title('Time Point : ' + str(time_pt),fontsize=24)
 ax[-1].set_xlabel('Gene Locus Tag')
 f.show()
@@ -156,7 +172,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 402
+SYSTEM_NO = 403
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
