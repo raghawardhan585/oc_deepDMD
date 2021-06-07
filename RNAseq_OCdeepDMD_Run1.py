@@ -209,3 +209,30 @@ for phase in ['train','valid','test']:
     print(phase, 'score [unscaled]: ', r2_score(dict_ALLDATA['Y_scaler'].inverse_transform(dict_ALLDATA[phase]['YfTs']).reshape(-1),dict_ALLDATA['Y_scaler'].inverse_transform(model_Y.predict(psiXfTs)).reshape(-1)))
 tf.reset_default_graph()
 sess.close()
+
+
+## Plot for the K
+Kx = dict_params['KxT_num'].T
+E_complex = np.linalg.eigvals(Kx)
+
+# K matrix heatmap
+plt.figure(figsize=(20,20))
+a = sb.heatmap(Kx, cmap="RdYlGn",center=0,vmax=np.abs(Kx).max(),vmin=-np.abs(Kx).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+a.axes.set_ylim(b, t)
+cbar = a.collections[0].colorbar
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+## Eigenvalue plot
+fig = plt.figure(figsize=(3,3))
+ax = fig.add_subplot(1, 1, 1)
+circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
+ax.add_patch(circ)
+ax.plot(np.real(E_complex),np.imag(E_complex),'x',linewidth=3,color='g')
+plt.show()
