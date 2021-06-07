@@ -357,7 +357,7 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
         for CURVE in dict_GrowthCurve[COND]:
             temp_curve_data = np.concatenate([temp_curve_data, np.array(dict_GrowthCurve[COND][CURVE]['df_X_TPM']).T.reshape((-1,1))], axis=1)
         temp_np = np.concatenate([temp_np,temp_curve_data],axis=0)
-    temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(0))
+    temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(np.inf))
     temp_CV_check_to_reject_genes = np.sum(temp_CV  > CV_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
     ls_GENE_REMOVE1 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV_check_to_reject_genes[i] == True]
     ls_GENE_ALLOW1 = list(set(ls_GENE_NAME) - set(ls_GENE_REMOVE1))

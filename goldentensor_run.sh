@@ -4,10 +4,15 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/gpu:0' 403 0  0 1 0 1 1 1 1 1 1 0.001 > Run_info/SYS_403_RUN_0.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:1' 403 1  0 1 0 1 1 1 1 1 1 0.001 > Run_info/SYS_403_RUN_1.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:2' 403 2  0 1 0 1 1 1 1 1 1 0.001 > Run_info/SYS_403_RUN_2.txt &
-python3 ocdeepDMD_Sequential.py '/gpu:3' 403 3  0 1 0 1 1 1 1 1 1 0.001 > Run_info/SYS_403_RUN_3.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:0' 404 0  0 1 0 1 1 1 1 1 1 0 > Run_info/SYS_404_RUN_0.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 404 1  0 1 0 1 1 1 1 1 1 0.0005 > Run_info/SYS_404_RUN_1.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 404 2  0 1 0 1 1 1 1 1 1 0.001 > Run_info/SYS_404_RUN_2.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 404 3  0 1 0 1 1 1 1 1 1 0.005 > Run_info/SYS_404_RUN_3.txt &
+wait 
+python3 ocdeepDMD_Sequential.py '/gpu:0' 404 4  0 1 0 1 1 1 1 1 1 0.01 > Run_info/SYS_404_RUN_4.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:1' 404 5  0 1 0 1 1 1 1 1 1 0.05 > Run_info/SYS_404_RUN_5.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:2' 404 6  0 1 0 1 1 1 1 1 1 0.1 > Run_info/SYS_404_RUN_6.txt &
+python3 ocdeepDMD_Sequential.py '/gpu:3' 404 7  0 1 0 1 1 1 1 1 1 0.5 > Run_info/SYS_404_RUN_7.txt &
 wait 
 wait 
 echo "All sessions are complete" 

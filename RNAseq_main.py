@@ -82,8 +82,11 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 402
-ALL_CONDITIONS = ['MX']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
+# ALL_CONDITIONS = ['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
+
+
+# All the above systems are erroneous because
 
 # # SYSTEM 403
 # ALL_CONDITIONS = ['MX']
@@ -92,6 +95,12 @@ dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised,
 #     dict_data[condition] = {}
 #     for items in dict_DATA_max_denoised[condition].keys():
 #         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+
+
+# SYSTEM 404
+ALL_CONDITIONS = ['MX']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -121,7 +130,7 @@ for time_pt,COND_NO in itertools.product(range(1,8),range(len(ALL_CONDITIONS))):
         print("Skipping condition ", COND, ' time point ', time_pt)
     # ax[time_pt - 1].set_xlim([120])
 for time_pt in range(1, 8):
-    ax[time_pt - 1].set_ylim([0, 10000])
+    ax[time_pt - 1].set_ylim([0, 40000])
     # ax[time_pt - 1].set_ylim([0, 10000])
     ax[time_pt-1].set_title('Time Point : ' + str(time_pt),fontsize=24)
 ax[-1].set_xlabel('Gene Locus Tag')
@@ -171,7 +180,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 403
+SYSTEM_NO = 404
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
