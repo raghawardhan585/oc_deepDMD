@@ -211,7 +211,86 @@ for phase in ['train','valid','test']:
 tf.reset_default_graph()
 sess.close()
 
+## Output predictions
 
+SYSTEM_NO = 402
+ALL_CONDITIONS = ['MX']
+ls_runs1 = list(range(28,36)) # SYSTEM 402
+
+# Generate predictions for each curve and write down the error statistics for each run
+ls_all_run_indices = []
+for folder in os.listdir(root_run_file + '/Sequential'):
+    if folder[0:4] == 'RUN_':  # It is a RUN folder
+        ls_all_run_indices.append(int(folder[4:]))
+ls_runs1 = set(ls_runs1).intersection(set(ls_all_run_indices))
+dict_predict_STATS_Y = {}
+
+dict_resultable1_Y ={}
+# Generate the predictions for each run
+for run in ls_runs1:
+    dict_resultable1_Y[run] = {}
+    print('RUN: ', run)
+    sess = tf.InteractiveSession()
+    run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+    dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+    dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
+    dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
+    for items in dict_instant_run_result.keys():
+        dict_instant_run_result[items] = {'train_Yf': [], 'valid_Yf': [], 'test_Yf': []}
+    for COND,data_index in itertools.product(ALL_CONDITIONS, ls_data_indices):
+        # Figure out if the index belongs to train, test or validation
+        if data_index in ls_train_indices:
+            key2_start = 'train_'
+        elif data_index in ls_valid_indices:
+            key2_start = 'valid_'
+        else:
+            key2_start = 'test_'
+        # --- *** Generate prediction *** ---
+        # Xf - 1 step
+        psiXpT = dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']: dict_ALLDATA['scaled'][COND][data_index]['XfT']})
+        YfTs_hat = np.matmul(psiXpT,dict_params['WhT_num'])
+        YfT_hat = oc.inverse_transform_Y(YfTs_hat,SYSTEM_NO)
+        dict_instant_run_result[COND][key2_start + 'Yf'].append(r2_score(dict_ALLDATA['unscaled'][COND][data_index]['YfT'].reshape(-1), YfT_hat.reshape(-1)))
+        # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
+    # Save the stats to the dictionary - for MX,MN and NC, we save (train, test, valid) * (Xf1step, Xfnstep, Yf1step, Yfnstep)
+    for COND in dict_instant_run_result.keys():
+        for items in dict_instant_run_result[COND].keys():
+            dict_instant_run_result[COND][items] =  np.mean(dict_instant_run_result[COND][items])
+    dict_predict_STATS_Y[run] = pd.DataFrame(dict_instant_run_result).T
+    dict_resultable1_Y[run]['train_Yf'] = dict_predict_STATS_Y[run].loc[:,'train_Yf'].mean()
+    dict_resultable1_Y[run]['valid_Yf'] = dict_predict_STATS_Y[run].loc[:,'valid_Yf'].mean()
+    dict_resultable1_Y[run]['test_Yf'] = dict_predict_STATS_Y[run].loc[:,'test_Yf'].mean()
+    tf.reset_default_graph()
+    sess.close()
+
+print('============================================================================')
+print('RESULT TABLE 1')
+df_resultable1_Y = pd.DataFrame(dict_resultable1_Y).T
+print(df_resultable1_Y)
+print('============================================================================')
+dict_resultable_2_Y = {}
+for run in dict_predict_STATS_Y.keys():
+    with open(root_run_file + '/Sequential/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
+        dict_hp = pickle.load(handle)
+    dict_resultable_2_Y[run] = {'y_obs': dict_hp['y_obs'],
+                              'n_l & n_n': [dict_hp['y_layers'], dict_hp['y_nodes']],  ' r2_Yf_train':
+                             dict_predict_STATS_Y[run].loc[:, 'train_Yf'].mean(),' r2_Yf_valid':
+                             dict_predict_STATS_Y[run].loc[:, 'valid_Yf'].mean(), ' r2_Yf_test':
+                             dict_predict_STATS_Y[run].loc[:, 'test_Yf'].mean(),'lambda': dict_hp['regularization factor']}
+df_resultable2_Y = pd.DataFrame(dict_resultable_2_Y).T.sort_values(by='y_obs')
+print('============================================================================')
+print('RESULT TABLE 2')
+print(df_resultable2_Y)
+print('============================================================================')
+
+
+
+
+## RESULTS PLOT =========================================================================================================
 ## Plot for the K
 Kx = dict_params['KxT_num'].T
 E_complex = np.linalg.eigvals(Kx)
@@ -265,43 +344,148 @@ Winv = np.linalg.inv(W)
 
 index = 0
 n_funcs = 10
-XT = np.concatenate([dict_ALLDATA['unscaled']['MX'][0]['XpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][0]['XfT']],axis=0)
+XT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['XpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['XfT']],axis=0)
 XTs = dict_ALLDATA['X_scaler'].transform(XT)
-psiXTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['unscaled']['MX'][0]['XpT'][0:1,:]})
-for i in range(len()):
+psiXTs_true = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: XTs})
+psiXTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['scaled']['MX'][index]['XpT'][0:1,:]})
+for i in range(len(dict_ALLDATA['unscaled']['MX'][index]['XfT'])):
     psiXTs = np.concatenate([psiXTs,np.matmul(psiXTs[-1:],dict_params['KxT_num'])])
 Phis = np.matmul(Winv, psiXTs.T)
-YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][0]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][0]['YfT']],axis=0)
+# Phis = np.matmul(Winv, psiXTs_true.T)
+YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
 YTs = dict_ALLDATA['Y_scaler'].transform(YT)
 
 x_ticks = np.array([1,2,3,4,5,6,7])
-f,ax = plt.subplots(n_funcs,1,sharex=True,figsize=(7,n_funcs*1.5))
+f,ax = plt.subplots(5,2,sharex=True,figsize=(10,n_funcs*1.5))
+ax = ax.reshape(-1)
 eig_func_index = 0
-for i in range(10):
+for i in range(n_funcs):
     if eig_func_index in comp_modes:
-        ax[i].plot(x_ticks, Phi[i, :])
+        ax[i].plot(x_ticks, Phis[i, :],label = 'Real')
+        ax[i].plot(x_ticks, Phis[i+1, :],label = 'Imaginary')
+        # ax[i].legend()
+        real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
+        imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
+        ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
+        eig_func_index = eig_func_index + 2
     else:
-        ax[i].plot(x_ticks, Phi[i, :])
-
-
-
-dict_x_index ={'MX': np.array([2,3,4,5,6,7]),'MN': np.array([4,5,6,7]),'NC': np.array([4,5,6,7])}
-for COND_NO in range(len(ALL_CONDITIONS)):
-    COND = ALL_CONDITIONS[COND_NO]
-    Xs = dict_ALLDATA['X_scaler'].transform(X)
-    Phis = np.matmul(Winv, Xps)
-    Phis = Phis[0:-1,:]
-    Phi = oc.inverse_transform_X(Phis.T,SYSTEM_NO).T
-    for i in range(n_funcs):
-        if i==0:
-            ax[i].plot(dict_x_index[COND], Phi[i, :],label = COND)
-        else:
-            ax[i].plot(dict_x_index[COND], Phi[i,:])
-        ax[i].set_title('$\lambda = $'+ str(E[i][i]))
-
-ax[0].legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
-ax[-1].set_xlabel('Time [hrs]')
+        ax[i].plot(x_ticks, Phis[i, :])
+        real_part = round(np.abs(E[eig_func_index, eig_func_index]), 3)
+        # print(real_part)
+        # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
+        ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
+        eig_func_index = eig_func_index + 1
 f.show()
+
+ls_gene_max_var_index = sorted(range(len(XT.var(axis=0))), key=lambda i: XT.var(axis=0)[i])
+ls_gene_max_var_index.reverse()
+plt.figure(figsize=(10,6))
+for i in range(9):
+    plt.plot(x_ticks,XTs[:,ls_gene_max_var_index[i]],label = 'gene_' + str(i))
+plt.legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
+plt.show()
+
+
+print(r2_score(psiXTs_true,psiXTs,multioutput='raw_values'))
+
+# dict_x_index ={'MX': np.array([2,3,4,5,6,7]),'MN': np.array([4,5,6,7]),'NC': np.array([4,5,6,7])}
+# for COND_NO in range(len(ALL_CONDITIONS)):
+#     COND = ALL_CONDITIONS[COND_NO]
+#     Xs = dict_ALLDATA['X_scaler'].transform(X)
+#     Phis = np.matmul(Winv, Xps)
+#     Phis = Phis[0:-1,:]
+#     Phi = oc.inverse_transform_X(Phis.T,SYSTEM_NO).T
+#     for i in range(n_funcs):
+#         if i==0:
+#             ax[i].plot(dict_x_index[COND], Phi[i, :],label = COND)
+#         else:
+#             ax[i].plot(dict_x_index[COND], Phi[i,:])
+#         ax[i].set_title('$\lambda = $'+ str(E[i][i]))
+#
+# ax[0].legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
+# ax[-1].set_xlabel('Time [hrs]')
+# f.show()
+
+
+tf.reset_default_graph()
+sess.close()
+
+##
+run = 31
+
+sess = tf.InteractiveSession()
+run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+saver = tf.compat.v1.train.import_meta_graph(
+    run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+dict_params = {}
+dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
+
+
+# Wh matrix heatmap
+Wh = dict_params['WhT_num'].T
+plt.figure(figsize=(20,20))
+a = sb.heatmap(Wh, cmap="RdYlGn",center=0,vmax=np.abs(Wh).max(),vmin=-np.abs(Wh).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+a.axes.set_ylim(b, t)
+cbar = a.collections[0].colorbar
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+
+B = np.matmul(Wh,W)
+plt.figure(figsize=(20,20))
+a = sb.heatmap(B, cmap="RdYlGn",center=0,vmax=np.abs(B).max(),vmin=-np.abs(B).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+a.axes.set_ylim(b, t)
+cbar = a.collections[0].colorbar
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+Bmean = B.mean(axis=0)
+ls_modes_ordered_by_output = sorted(range(len(np.abs(Bmean))), key=lambda i: np.abs(Bmean)[i])
+ls_modes_ordered_by_output.reverse()
+
+x_ticks = np.array([1,2,3,4,5,6,7])
+f,ax = plt.subplots(5,2,sharex=True,figsize=(10,n_funcs*1.5))
+ax = ax.reshape(-1)
+eig_func_index = 0
+for i in range(n_funcs):
+    # if eig_func_index in comp_modes:
+    #     ax[i].plot(x_ticks, Phis[i, :],label = 'Real')
+    #     ax[i].plot(x_ticks, Phis[i+1, :],label = 'Imaginary')
+    #     # ax[i].legend()
+    #     real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
+    #     imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
+    #     ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
+    #     eig_func_index = eig_func_index + 2
+    # else:
+    ax[i].plot(x_ticks, Phis[ls_modes_ordered_by_output[i], :])
+    real_part = round(np.abs(E[ls_modes_ordered_by_output[i], ls_modes_ordered_by_output[i]]), 3)
+    # print(real_part)
+    # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
+    ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
+    eig_func_index = eig_func_index + 1
+f.show()
+
+YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
+YTs = dict_ALLDATA['Y_scaler'].transform(YT)
+plt.figure()
+plt.plot(x_ticks,YTs)
+plt.show()
+
 
 
 tf.reset_default_graph()
