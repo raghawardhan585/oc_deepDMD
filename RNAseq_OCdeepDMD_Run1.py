@@ -155,10 +155,11 @@ dict_resultable_2 = {}
 for run in dict_predict_STATS.keys():
     with open(root_run_file + '/Sequential/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
         dict_hp = pickle.load(handle)
-    dict_resultable_2[run] = {'run_no': run, 'lambda': dict_hp['regularization factor'], 'x_obs': dict_hp['x_obs'],
-                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],  ' r2_X_n_step_valid':
+    dict_resultable_2[run] = { 'x_obs': dict_hp['x_obs'],
+                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],  ' r2_X_n_train_valid':
+                             dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(),' r2_X_n_step_valid':
                              dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), ' r2_X_n_step_test':
-                             dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean()}
+                             dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean(),'lambda': dict_hp['regularization factor']}
 df_resultable2 = pd.DataFrame(dict_resultable_2).T.sort_values(by ='x_obs')
 print('============================================================================')
 print('RESULT TABLE 2')
@@ -183,7 +184,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
     pickle.dump(d,handle)
 
 ## TESTING OUT OUTPUT
-run = 21
+run = 9
 sess = tf.InteractiveSession()
 run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
 saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)

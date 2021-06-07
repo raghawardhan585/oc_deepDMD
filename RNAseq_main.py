@@ -82,17 +82,16 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 150, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 402
-# ALL_CONDITIONS = ['MX']
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
-
-# SYSTEM 403
 ALL_CONDITIONS = ['MX']
-dict_data = {}
-for condition in ALL_CONDITIONS:
-    dict_data[condition] = {}
-    for items in dict_DATA_max_denoised[condition].keys():
-        dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 1,ALL_CONDITIONS=ALL_CONDITIONS)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 10, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
+
+# # SYSTEM 403
+# ALL_CONDITIONS = ['MX']
+# dict_data = {}
+# for condition in ALL_CONDITIONS:
+#     dict_data[condition] = {}
+#     for items in dict_DATA_max_denoised[condition].keys():
+#         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
