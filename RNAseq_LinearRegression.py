@@ -52,8 +52,8 @@ def resolve_complex_right_eigenvalues(E, W):
     return E_out, W_out, comp_modes, comp_modes_conj
 
 # ## Importing all necessary information
-SYSTEM_NO = 402
-ALL_CONDITIONS = ['MX']
+SYSTEM_NO = 405
+ALL_CONDITIONS = ['MX','MN']
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
 root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
