@@ -183,7 +183,7 @@ with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.p
     pickle.dump(d,handle)
 
 ## TESTING OUT OUTPUT
-run = 15
+run = 21
 sess = tf.InteractiveSession()
 run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
 saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
