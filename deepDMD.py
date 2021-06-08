@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 66
+SYSTEM_NO = 406
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -35,20 +35,23 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 ## Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 2
-n_x_nn_layers = 3  # x_max_layers 3 works well
-n_x_nn_nodes = 10  # max width_limit -4 works well
+x_deep_dict_size = 0
+n_x_nn_layers = 1  # x_max_layers 3 works well
+n_x_nn_nodes = 0  # max width_limit -4 works well
 
 best_test_error = np.inf
 
+# TODO - YET TO INCORPORATE REGULARIZATION
+regularization_lambda =0
+
 ## Learning Parameters
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': 1015}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': 1015}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 40000, 'batch_size': 1015}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 40000, 'batch_size': 1015 }
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-6),'valid_error_threshold': float(1e-6), 'max_epochs': 40000, 'batch_size': 1015}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 40000, 'batch_size': 1015 }
+# ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': 1000 }
 # ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': 1000 }
@@ -201,7 +204,7 @@ def objective_func(dict_feed,dict_psi,dict_K):
     # Mean Squared Error
     dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(prediction_error))
     # Accuracy computation
-    SST = tf.math.reduce_sum(tf.math.square(all_value), axis=0)
+    SST = tf.math.reduce_sum(tf.math.square(all_value- tf.math.reduce_mean(all_value, axis=0)), axis=0)
     SSE = tf.math.reduce_sum(tf.math.square(prediction_error), axis=0)
     dict_model_perf_metrics ['accuracy'] = tf.math.reduce_max((1 - tf.divide(SSE, SST)),0) * 100
     sess.run(tf.global_variables_initializer())
@@ -456,3 +459,11 @@ print('----- Run Info ----')
 print('------ ------ -----')
 print(pd.DataFrame(dict_run_info))
 print('------ ------ -----')
+
+
+# Saving the hyperparameters
+dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes, 'regularization factor': regularization_lambda}
+dict_hp['r2 train'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 training accuracy']
+dict_hp['r2 valid'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 validation accuracy']
+with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
+    pickle.dump(dict_hp,handle)
