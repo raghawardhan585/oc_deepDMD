@@ -31,14 +31,16 @@ plt.rcParams["font.size"] = 22
 # Preprocessing files
 # SYSTEM_NO = 402
 # ALL_CONDITIONS = ['MX']
-SYSTEM_NO = 404
-ALL_CONDITIONS = ['MX']
-ls_runs1 = list(range(0,27)) # SYSTEM 404
-# ALL_CONDITIONS = ['MX','MN']#list(dict_data_original.keys())
-# ls_runs1 = list(range(0,60)) # SYSTEM 401
 # ls_runs1 = list(range(0,27)) # SYSTEM 402
-# ls_runs1 = list(range(64,90)) # SYSTEM 304
-# ls_runs1 = list(range(0,60)) # SYSTEM 304
+# SYSTEM_NO = 404
+# ALL_CONDITIONS = ['MX']
+# ls_runs1 = list(range(0,27)) # SYSTEM 404
+SYSTEM_NO = 406
+ALL_CONDITIONS = ['MX']
+ls_runs1 = list(range(0,27)) # SYSTEM 406
+
+
+
 
 # ls_runs1 = list(range(4,60)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
@@ -175,20 +177,22 @@ print('=========================================================================
 # # RUN_NO = 4
 # SYSTEM_NO = 402
 # RUN_NO = 9 #25
-# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
-# with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
-#     d = pickle.load(handle)
-# with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-#     d1 = pickle.load(handle)
-# for items in d1.keys():
-#     d[items] = d1[items]
-# # print(d.keys())
-# with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
-#     pickle.dump(d,handle)
+SYSTEM_NO = 406
+RUN_NO = 2
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/Sequential/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
+# print(d.keys())
+with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
+    pickle.dump(d,handle)
 
 ## TESTING OUT OUTPUT
-run = 17
+run = 2
 sess = tf.InteractiveSession()
 run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
 saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
