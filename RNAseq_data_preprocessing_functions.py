@@ -357,8 +357,23 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
         for CURVE in dict_GrowthCurve[COND]:
             temp_curve_data = np.concatenate([temp_curve_data, np.array(dict_GrowthCurve[COND][CURVE]['df_X_TPM']).T.reshape((-1,1))], axis=1)
         temp_np = np.concatenate([temp_np,temp_curve_data],axis=0)
-    temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(np.inf))
+    # temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1,len(ls_GENE_NAME))).T)).fillna(np.inf))
+    temp_CV = np.array(pd.DataFrame(((temp_np.std(axis=1) / temp_np.mean(axis=1)).reshape((-1, len(ls_GENE_NAME))).T)))
     temp_CV_check_to_reject_genes = np.sum(temp_CV  > CV_THRESHOLD,axis=1) == np.sum(ls_num_time_points)
+    # CV_THRESHOLD = 0.0125
+    # print('Old filter rejects: ',np.sum(np.sum(temp_CV1 > CV_THRESHOLD,axis=1) == np.sum(ls_num_time_points)),' genes')
+    temp_CV_check_to_reject_genes = []
+    for i in range(len(temp_CV)):
+        non_nan_vals = temp_CV[i][~np.isnan(temp_CV[i])]
+        # print(non_nan_vals)
+        if len(non_nan_vals) ==0:
+            print('zero genes detected')
+            temp_CV_check_to_reject_genes.append(True)
+        elif (np.all(non_nan_vals > CV_THRESHOLD)):
+            temp_CV_check_to_reject_genes.append(True)
+        else:
+            temp_CV_check_to_reject_genes.append(False)
+    # print('New filter rejects: ',np.sum(temp_CV_check_to_reject_genes), ' genes')
     ls_GENE_REMOVE1 = [ls_GENE_NAME[i] for i in range(len(ls_GENE_NAME)) if temp_CV_check_to_reject_genes[i] == True]
     ls_GENE_ALLOW1 = list(set(ls_GENE_NAME) - set(ls_GENE_REMOVE1))
     # temp_np = np.empty(shape=(len(ls_GENE_NAME), 0))

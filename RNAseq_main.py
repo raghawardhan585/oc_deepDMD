@@ -30,9 +30,9 @@ dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
 ls_genes = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
 
 # Remove time points 1,2 in the MAX dataset
-for items in dict_DATA_max_denoised['MX'].keys():
-    dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
-    dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
+# for items in dict_DATA_max_denoised['MX'].keys():
+#     dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
+#     dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
 
 
 if set(dict_growth_genes['cell_division']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
@@ -107,8 +107,12 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 
 
 # SYSTEM 501
+# ALL_CONDITIONS = ['MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+
+# SYSTEM 502
 ALL_CONDITIONS = ['MN']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -188,7 +192,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 501
+SYSTEM_NO = 502
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
