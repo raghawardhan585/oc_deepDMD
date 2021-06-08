@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 406
+SYSTEM_NO = 501
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -45,20 +45,20 @@ best_test_error = np.inf
 regularization_lambda =0
 
 ## Learning Parameters
-batch_size = 36
+batch_size = 24#36
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 80000, 'batch_size': batch_size}
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': batch_size} #80000
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-10),'valid_error_threshold': float(1e-6), 'max_epochs': 40000, 'batch_size': batch_size}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-10),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': batch_size}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-7), 'max_epochs': 40000, 'batch_size': batch_size}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-7), 'max_epochs': 20000, 'batch_size': batch_size}
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
+# # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
+# # ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
-ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
+# ls_dict_training_params.append(dict_training_params)
 
 sess = tf.InteractiveSession()
 
@@ -191,6 +191,10 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
     dict_hp['validation error'] = validation_error
     dict_hp['r^2 training accuracy'] = training_accuracy
     dict_hp['r^2 validation accuracy'] = validation_accuracy
+    dict_hp['r^2 X train accuracy'] = dict_model_metrics['accuracy_X'].eval(feed_dict=feed_dict_train)
+    dict_hp['r^2 Y train accuracy'] = dict_model_metrics['accuracy_Y'].eval(feed_dict=feed_dict_train)
+    dict_hp['r^2 X valid accuracy'] = dict_model_metrics['accuracy_X'].eval(feed_dict=feed_dict_valid)
+    dict_hp['r^2 Y valid accuracy'] = dict_model_metrics['accuracy_Y'].eval(feed_dict=feed_dict_valid)
     return dict_hp
 
 def objective_func(dict_feed,dict_psi,dict_K):
@@ -205,9 +209,15 @@ def objective_func(dict_feed,dict_psi,dict_K):
     # Mean Squared Error
     dict_model_perf_metrics ['MSE'] = tf.math.reduce_mean(tf.math.square(prediction_error))
     # Accuracy computation
-    SST = tf.math.reduce_sum(tf.math.square(all_value- tf.math.reduce_mean(all_value, axis=0)), axis=0)
-    SSE = tf.math.reduce_sum(tf.math.square(prediction_error), axis=0)
-    dict_model_perf_metrics ['accuracy'] = tf.math.reduce_max((1 - tf.divide(SSE, SST)),0) * 100
+    SST = tf.math.reduce_sum(tf.math.square(all_value- tf.math.reduce_mean(all_value, axis=0)))
+    SSE = tf.math.reduce_sum(tf.math.square(prediction_error))
+    SST_X = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)))
+    SSE_X = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error))
+    SST_Y = tf.math.reduce_sum(tf.math.square(dict_feed['yfT'] - tf.math.reduce_mean(dict_feed['yfT'])))
+    SSE_Y = tf.math.reduce_sum(tf.math.square(Yf_prediction_error))
+    dict_model_perf_metrics['accuracy'] = (1 - tf.divide(SSE, SST)) * 100
+    dict_model_perf_metrics['accuracy_X'] = (1 - tf.divide(SSE_X, SST_X)) * 100
+    dict_model_perf_metrics['accuracy_Y'] = (1 - tf.divide(SSE_Y, SST_Y)) * 100
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
@@ -464,7 +474,7 @@ print('------ ------ -----')
 
 # Saving the hyperparameters
 dict_hp = {'x_obs': x_deep_dict_size, 'x_layers': n_x_nn_layers, 'x_nodes': n_x_nn_nodes, 'regularization factor': regularization_lambda}
-dict_hp['r2 train'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 training accuracy']
-dict_hp['r2 valid'] = dict_run_info[list(dict_run_info.keys())[-1]]['r^2 validation accuracy']
+dict_hp['r2 train'] = np.array([dict_run_info[list(dict_run_info.keys())[-1]]['r^2 X train accuracy'],dict_run_info[list(dict_run_info.keys())[-1]]['r^2 Y train accuracy']])
+dict_hp['r2 valid'] = np.array([dict_run_info[list(dict_run_info.keys())[-1]]['r^2 X valid accuracy'],dict_run_info[list(dict_run_info.keys())[-1]]['r^2 Y valid accuracy']])
 with open(FOLDER_NAME + '/dict_hyperparameters.pickle','wb') as handle:
     pickle.dump(dict_hp,handle)
