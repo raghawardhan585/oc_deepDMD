@@ -55,7 +55,7 @@ def resolve_complex_right_eigenvalues(E, W):
 # SYSTEM_NO = 406
 # ALL_CONDITIONS = ['MX']
 SYSTEM_NO = 501
-ALL_CONDITIONS = ['MX','MN']
+ALL_CONDITIONS = ['MN']
 original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
 indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
 root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -182,18 +182,20 @@ for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
     dict_results[COND][i]['r2_Xf_1step'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfT_hat)#,multioutput ='variance_weighted')
     dict_results[COND][i]['r2_Xf_nstep'] = r2_score(dict_unscaled_data[COND][i]['XfT'], XfTn_hat)#,multioutput ='variance_weighted')
 
-df_results1 = pd.DataFrame(dict_results['MX'])
-print(df_results1)
+dict_df_results1 ={}
+for cond in ALL_CONDITIONS:
+    dict_df_results1[cond] = pd.DataFrame(dict_results[cond])
+    print(dict_df_results1[cond])
 
 dict_results2 ={}
 for cond in ALL_CONDITIONS:
     dict_results2[cond] ={}
-    dict_results2[cond]['train_Xf_1step'] = df_results1.loc['r2_Xf_1step',ls_train_indices].mean()
-    dict_results2[cond]['train_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_train_indices].mean()
-    dict_results2[cond]['valid_Xf_1step'] = df_results1.loc['r2_Xf_1step', ls_valid_indices].mean()
-    dict_results2[cond]['valid_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_valid_indices].mean()
-    dict_results2[cond]['test_Xf_1step'] = df_results1.loc['r2_Xf_1step', ls_test_indices].mean()
-    dict_results2[cond]['test_Xf_nstep'] = df_results1.loc['r2_Xf_nstep', ls_test_indices].mean()
+    dict_results2[cond]['train_Xf_1step'] = dict_df_results1[cond].loc['r2_Xf_1step',ls_train_indices].mean()
+    dict_results2[cond]['train_Xf_nstep'] = dict_df_results1[cond].loc['r2_Xf_nstep', ls_train_indices].mean()
+    dict_results2[cond]['valid_Xf_1step'] = dict_df_results1[cond].loc['r2_Xf_1step', ls_valid_indices].mean()
+    dict_results2[cond]['valid_Xf_nstep'] = dict_df_results1[cond].loc['r2_Xf_nstep', ls_valid_indices].mean()
+    dict_results2[cond]['test_Xf_1step'] = dict_df_results1[cond].loc['r2_Xf_1step', ls_test_indices].mean()
+    dict_results2[cond]['test_Xf_nstep'] = dict_df_results1[cond].loc['r2_Xf_nstep', ls_test_indices].mean()
 
 df_results2 = pd.DataFrame(dict_results2).T
 print(df_results2)
