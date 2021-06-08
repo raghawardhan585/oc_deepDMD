@@ -28,10 +28,11 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 
 dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
 ls_genes = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
-# # Remove time points 1,2 in the MAX dataset
-# for items in dict_DATA_max_denoised['MX'].keys():
-#     dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
-#     dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
+
+# Remove time points 1,2 in the MAX dataset
+for items in dict_DATA_max_denoised['MX'].keys():
+    dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
+    dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
 
 
 if set(dict_growth_genes['cell_division']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
@@ -96,18 +97,18 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 #     for items in dict_DATA_max_denoised[condition].keys():
 #         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
-
-
 # SYSTEM 404
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
-# SYSTEM 405
-# ALL_CONDITIONS = ['MX','MN']
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.02,ALL_CONDITIONS=ALL_CONDITIONS)
 
 # SYSTEM 406
-ALL_CONDITIONS = ['MX']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+# ALL_CONDITIONS = ['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+
+
+# SYSTEM 501
+ALL_CONDITIONS = ['MX','MN']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.02,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -144,15 +145,15 @@ ax[-1].set_xlabel('Gene Locus Tag')
 f.show()
 
 ## Plotting the outputs as a function of time
-plt.figure()
-n = np.prod(dict_DATA_ORIGINAL['MX'][curve]['Y'].shape)
-t = np.arange(1,1+n*3/60,3/60)
-for curves in range(16):
-    plt.plot(t,np.array(dict_DATA_ORIGINAL['MX'][curve]['Y']).T.reshape(-1),color='blue')
-    plt.plot(t,np.array(dict_DATA_max_denoised['MX'][curve]['Y']).T.reshape(-1), color='green')
-plt.xlabel('Time [Hr]]')
-plt.ylabel('Optical Density')
-plt.show()
+# plt.figure()
+# n = np.prod(dict_DATA_ORIGINAL['MX'][curve]['Y'].shape)
+# t = np.arange(1,1+n*3/60,3/60)
+# for curves in range(16):
+#     plt.plot(t,np.array(dict_DATA_ORIGINAL['MX'][curve]['Y']).T.reshape(-1),color='blue')
+#     plt.plot(t,np.array(dict_DATA_max_denoised['MX'][curve]['Y']).T.reshape(-1), color='green')
+# plt.xlabel('Time [Hr]]')
+# plt.ylabel('Optical Density')
+# plt.show()
 ## Sorting the MAX dataset to deepDMD format and doing the train-validation-test split
 
 ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
@@ -187,7 +188,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 406
+SYSTEM_NO = 501
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
