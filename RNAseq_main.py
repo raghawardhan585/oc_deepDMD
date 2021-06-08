@@ -102,8 +102,12 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 1, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
 # SYSTEM 405
-ALL_CONDITIONS = ['MX','MN']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.02,ALL_CONDITIONS=ALL_CONDITIONS)
+# ALL_CONDITIONS = ['MX','MN']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.02,ALL_CONDITIONS=ALL_CONDITIONS)
+
+# SYSTEM 406
+ALL_CONDITIONS = ['MX']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -183,7 +187,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 405
+SYSTEM_NO = 406
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
