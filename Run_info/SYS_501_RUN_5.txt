@@ -1,0 +1,136 @@
+[INFO] Number of total samples: 112
+[INFO] Observable dimension of a sample: 47
+[INFO] Xp.shape (E-DMD): (112, 47)
+[INFO] Yf.shape (E-DMD): (112, 47)
+Number of training snapshots: 96
+Number of validation snapshots: 16
+0.25264557631995566
+0.17770466332772772
+[WARNING]: There is no neural network initialized
+[WARNING]: There is no neural network initialized
+---------    TRAINING BEGINS   ---------
+Starting Training Error:  0.00044192607
+Starting Validation Error:  0.0014302088
+======================================
+CURRENT TRAINING PARAMETERS
+======================================
+Step Size Value            :  0.5
+Train Error Threshold      :  1e-20
+Validation Error Threshold :  1e-06
+Maximum number of Epochs   :  10000
+Batch Size   :  36
+--------------------------------------
+Epoch No:  500  |   Training error:  0.0097845225
+                  Validation error:  0.009890565
+---------------------------------------------------------------------------------------------------
+Epoch No:  1000  |   Training error:  0.007982144
+                   Validation error:  0.008061909
+---------------------------------------------------------------------------------------------------
+Epoch No:  1500  |   Training error:  0.007995297
+                   Validation error:  0.0080492655
+---------------------------------------------------------------------------------------------------
+Epoch No:  2000  |   Training error:  0.008035928
+                   Validation error:  0.008097321
+---------------------------------------------------------------------------------------------------
+Epoch No:  2500  |   Training error:  0.008001
+                   Validation error:  0.008049191
+---------------------------------------------------------------------------------------------------
+Epoch No:  3000  |   Training error:  0.007993582
+                   Validation error:  0.008016719
+---------------------------------------------------------------------------------------------------
+Epoch No:  3500  |   Training error:  0.007963428
+                   Validation error:  0.008036489
+---------------------------------------------------------------------------------------------------
+Epoch No:  4000  |   Training error:  0.007984335
+                   Validation error:  0.00805887
+---------------------------------------------------------------------------------------------------
+Epoch No:  4500  |   Training error:  0.007975046
+                   Validation error:  0.008049204
+---------------------------------------------------------------------------------------------------
+Epoch No:  5000  |   Training error:  0.007974897
+                   Validation error:  0.008079601
+---------------------------------------------------------------------------------------------------
+Epoch No:  5500  |   Training error:  0.007988084
+                   Validation error:  0.008062063
+---------------------------------------------------------------------------------------------------
+Epoch No:  6000  |   Training error:  0.007983087
+                   Validation error:  0.008035549
+---------------------------------------------------------------------------------------------------
+Epoch No:  6500  |   Training error:  0.007968252
+                   Validation error:  0.008023642
+---------------------------------------------------------------------------------------------------
+Epoch No:  7000  |   Training error:  0.007995881
+                   Validation error:  0.0080894325
+---------------------------------------------------------------------------------------------------
+Epoch No:  7500  |   Training error:  0.007983079
+                   Validation error:  0.008096832
+---------------------------------------------------------------------------------------------------
+Epoch No:  8000  |   Training error:  0.007995633
+                   Validation error:  0.008048462
+---------------------------------------------------------------------------------------------------
+Epoch No:  8500  |   Training error:  0.008044422
+                   Validation error:  0.008096784
+---------------------------------------------------------------------------------------------------
+Epoch No:  9000  |   Training error:  0.007979154
+                   Validation error:  0.00800252
+---------------------------------------------------------------------------------------------------
+Epoch No:  9500  |   Training error:  0.007977294
+                   Validation error:  0.008072869
+---------------------------------------------------------------------------------------------------
+Epoch No:  10000  |   Training error:  0.007987412
+                    Validation error:  0.008032888
+---------------------------------------------------------------------------------------------------
+Current Training Error  : 0.007987412
+Current Validation Error      : 0.008032888
+0.0031791653
+---   STATE TRAINING COMPLETE   ---
+Eigen values: 
+[1.0000000e+00 1.0133711e+00 7.8139842e-01 4.9153367e-01 4.9153367e-01
+ 4.5318571e-01 4.2399019e-01 4.2399019e-01 2.4523774e-01 2.4523774e-01
+ 2.4761230e-01 1.8803783e-01 9.3513712e-02 9.3513712e-02 7.9859115e-02
+ 7.9859115e-02 3.3645313e-02 1.9318093e-02 1.9318093e-02 1.6723933e-02
+ 1.6723933e-02 1.6579203e-02 1.6579203e-02 1.3369631e-02 1.3369631e-02
+ 8.9298328e-03 8.9298328e-03 7.3512858e-03 7.3512858e-03 7.0118262e-03
+ 6.5083033e-03 5.8155209e-03 5.6274482e-03 5.6274482e-03 4.5518633e-03
+ 4.5518633e-03 3.0963451e-03 3.0439571e-03 3.0439571e-03 1.9007754e-03
+ 1.9007754e-03 1.2008518e-03 1.2008518e-03 9.1749907e-04 9.1749907e-04
+ 1.1286174e-03 3.7004080e-04 1.4353338e-04]
+[COMP] The identified Koopman operator is UNSTABLE with  1 eigenvalues greater than 1
+                                  0
+MSE training             0.00317917
+MSE validation           0.00322464
+activation flag                   2
+activation function             elu
+batch size                       36
+no of epochs                  10000
+r^2 training accuracy        96.956
+r^2 validation accuracy     96.8359
+regularization factor        0.0005
+step size                       0.5
+training error           0.00798741
+validation error         0.00803289
+x_hidden_variable_list          [0]
+[WARNING]: There is no neural network initialized
+[WARNING]: There is no neural network initialized
+[INFO] Run 2 was not done - No output was trained
+[INFO] Run 3 was not done - No state-output Koopman closure was trained
+------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----
+-----     -----     -----     -----     ----  Run Info  ---    -----     -----     -----     -----
+------ ------ -----    -----     -----     -----     -----     -----     -----     -----     -----
+                                  0
+MSE training             0.00317917
+MSE validation           0.00322464
+activation flag                   2
+activation function             elu
+batch size                       36
+no of epochs                  10000
+r^2 training accuracy        96.956
+r^2 validation accuracy     96.8359
+regularization factor        0.0005
+step size                       0.5
+training error           0.00798741
+validation error         0.00803289
+x_hidden_variable_list          [0]
+-----     -----     -----     -----     -----     -----     -----     -----     -----     -----     -----
+0.9957686396569742
+0.9861579843210101
