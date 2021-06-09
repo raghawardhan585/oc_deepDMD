@@ -325,7 +325,7 @@ print('=========================================================================
 
 # Plotting the eigenfunctions
 
-run = 10
+run = 29
 sess = tf.InteractiveSession()
 run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
 saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
