@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 501
+SYSTEM_NO = 500
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -45,7 +45,7 @@ best_test_error = np.inf
 regularization_lambda =0
 
 ## Learning Parameters
-batch_size = 24#36
+batch_size = 40#24#36
 ls_dict_training_params = []
 dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': batch_size} #80000
 ls_dict_training_params.append(dict_training_params)

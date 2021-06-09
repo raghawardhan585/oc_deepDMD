@@ -74,6 +74,9 @@ def get_curve_info_from_dict_number(dict_no):
     lane_no = np.mod(lane_no,MAX_LANES) + 1
     rep_no = np.floor(dict_no/MAX_READS/MAX_LANES)
     rep_no = np.mod(rep_no,MAX_REPLICATES) + 1
+    print('Replicate No:', np.int(rep_no))
+    print('Lane No:', np.int(lane_no))
+    print('Read No:', np.int(read_no))
     return np.int(rep_no),np.int(lane_no),np.int(read_no)
 
 def Pputida_R2A_RNAseq_metadata():

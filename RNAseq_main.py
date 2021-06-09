@@ -26,6 +26,29 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
+
+
+## Filtering the genes based on the differential expression levels
+dict_growthcurve = copy.deepcopy(dict_DATA_ORIGINAL)
+ls_allconditions = ['MX']
+n_conditions = len(ls_allconditions)
+ls_allgenes = list(dict_growthcurve[ls_allconditions[0]][0]['df_X_TPM'].index)
+ls_required_genes = []
+for cond_no in range(n_conditions):
+    cond = ls_allconditions[cond_no]
+    for replicate in dict_growthcurve[cond].keys():
+        # Check the differential expression across time points
+        df_temp1 = dict_growthcurve[cond][replicate]['df_X_TPM']
+        for i in df_temp1.columns:
+            ls_genes_curr = list(df_temp1.iloc[list((np.log2(df_temp1.divide(df_temp1.loc[:, 1], axis=0)) > 1).sum(axis=1).nonzero()[0]),:].index)
+        # Check the differential expression across conditions
+
+
+
+
+
+
+##
 dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
 ls_genes = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
 
@@ -109,7 +132,7 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 ALL_CONDITIONS = ['MX','MN']
 # ALL_CONDITIONS = ['MX']
 dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
-print(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'])
+# print(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'])
 
 # SYSTEM 501
 # ALL_CONDITIONS = ['MN']
@@ -199,7 +222,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 407
+SYSTEM_NO = 500
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
