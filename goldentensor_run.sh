@@ -4,15 +4,10 @@ mkdir _current_run_saved_files
 rm -rf Run_info 
 mkdir Run_info 
 # Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
-python3 deepDMD.py '/gpu:0' 502 0 0 3 10 > Run_info/SYS_502_RUN_0.txt &
-python3 deepDMD.py '/gpu:1' 502 1 0 4 10 > Run_info/SYS_502_RUN_1.txt &
-python3 deepDMD.py '/gpu:2' 502 2 1 3 10 > Run_info/SYS_502_RUN_2.txt &
-python3 deepDMD.py '/gpu:3' 502 3 1 4 10 > Run_info/SYS_502_RUN_3.txt &
-wait 
-python3 deepDMD.py '/gpu:0' 502 4 2 3 10 > Run_info/SYS_502_RUN_4.txt &
-python3 deepDMD.py '/gpu:1' 502 5 2 4 10 > Run_info/SYS_502_RUN_5.txt &
-python3 deepDMD.py '/gpu:2' 502 6 3 3 10 > Run_info/SYS_502_RUN_6.txt &
-python3 deepDMD.py '/gpu:3' 502 7 3 4 10 > Run_info/SYS_502_RUN_7.txt &
+python3 deepDMD.py '/gpu:0' 502 0 8 3 20 > Run_info/SYS_502_RUN_0.txt &
+python3 deepDMD.py '/gpu:1' 502 1 8 4 20 > Run_info/SYS_502_RUN_1.txt &
+python3 deepDMD.py '/gpu:2' 502 2 9 3 20 > Run_info/SYS_502_RUN_2.txt &
+python3 deepDMD.py '/gpu:3' 502 3 9 4 20 > Run_info/SYS_502_RUN_3.txt &
 wait 
 wait 
 echo "All sessions are complete" 
