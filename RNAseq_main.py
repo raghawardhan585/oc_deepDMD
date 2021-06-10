@@ -26,45 +26,84 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
-
-
-## Filtering the genes based on variance (a metric to quantify the dynamics)
-dict_growthcurve = copy.deepcopy(dict_DATA_ORIGINAL)
-ls_allconditions = ['MX']
-n_conditions = len(ls_allconditions)
-ls_allgenes = list(dict_growthcurve[ls_allconditions[0]][0]['df_X_TPM'].index)
-ls_required_genes = []
-for cond_no in range(n_conditions):
-    cond = ls_allconditions[cond_no]
-    df_gene_variance = pd.DataFrame([])
-    for replicate in dict_growthcurve[cond].keys():
-        df_temp1 = dict_growthcurve[cond][replicate]['df_X_TPM']
-        # Check the differential expression across time points
-        try:
-            df_gene_variance.loc[:,replicate] = df_temp1.var(axis=1)
-        except:
-            df_gene_variance = pd.DataFrame(df_temp1.var(axis=1), columns=[replicate])
-
-
-
-
-
+# ALL_CONDITIONS = ['MX','MN']
+# # ALL_CONDITIONS = ['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+# ls_genes = list(dict_data['MX'][0]['df_X_TPM'].index)
+# q = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags=ls_genes,search_columns='genes(OLN), genes(PREFERRED), go(biological process)')
+# print(q)
+#
+#
+# ## Filtering the genes based on variance (a metric to quantify the dynamics)
+# dict_growthcurve = copy.deepcopy(dict_DATA_ORIGINAL)
+# ls_allconditions = ['MX','MN','NC']
+# n_conditions = len(ls_allconditions)
+# ls_allgenes = list(dict_growthcurve[ls_allconditions[0]][0]['df_X_TPM'].index)
+# ls_required_genes = []
+# dict_df_var = {}
+# for cond_no in range(n_conditions):
+#     cond = ls_allconditions[cond_no]
+#     df_gene_variance = pd.DataFrame([])
+#     for replicate in dict_growthcurve[cond].keys():
+#         df_temp1 = dict_growthcurve[cond][replicate]['df_X_TPM']
+#         # Check the differential expression across time points
+#         try:
+#             df_gene_variance.loc[:,replicate] = df_temp1.var(axis=1)
+#         except:
+#             df_gene_variance = pd.DataFrame(df_temp1.var(axis=1), columns=[replicate])
+#     dict_df_var[cond] = copy.deepcopy(df_gene_variance)
+#
+# df_gene_mean_ofvariance = pd.DataFrame([])
+# for cond in ls_allconditions:
+#     try:
+#         df_gene_mean_ofvariance.loc[:, cond] = dict_df_var[cond].mean(axis=1)
+#     except:
+#         df_gene_mean_ofvariance = pd.DataFrame(dict_df_var[cond].mean(axis=1),columns = cond)
+#
+#
+# df_differential_expression = np.log2(copy.deepcopy(df_gene_mean_ofvariance).divide(df_gene_mean_ofvariance.loc[:,'MN'],axis=0))
+#
+# df_differential_expression[df_differential_expression.loc[:,'MX']>5]
+# # ##
+# # plt.figure()
+# # ls_sorted_genes_MAX = list(dict_df_var_mean['MX'].sort_values(ascending = False).index)[100:200]
+# # for cond in ls_allconditions:
+# #     plt.plot(np.log10(np.array(dict_df_var_mean[cond][ls_sorted_genes_MAX])),label=cond)
+# # plt.legend()
+# # plt.show()
+#
+#
+# ls_filtered_genes = list(df_differential_expression[df_differential_expression.loc[:,'MX']>5].index)
+#
+# # print('# Intersecting genes: ', len(list(set(ls_filtered_genes).intersection(ls_genes_biocyc))))
+#
+#
+# ## Filtering genes based on the significance of the dynamics
+# df_temp1 = dict_growthcurve['MX'][0]['df_X_TPM'] + 1e-2
+#
+# p = np.abs(np.log2(df_temp1.divide(df_temp1.iloc[:,-1],axis=0))).iloc[:,0].sort_values(ascending = False)
+# # plt.plot(np.array())
 
 
 ##
+
 dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
 ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
+_,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 
+
+# ls_filtered_genes = list(p.index[0:10])
+# print('# Intersecting genes: ', len(list(set(ls_filtered_genes).intersection(ls_genes_biocyc))))
 # Remove time points 1,2 in the MAX dataset
 # for items in dict_DATA_max_denoised['MX'].keys():
 #     dict_DATA_max_denoised['MX'][items]['df_X_TPM'] = dict_DATA_max_denoised['MX'][items]['df_X_TPM'].iloc[:,2:]
 #     dict_DATA_max_denoised['MX'][items]['Y'] = dict_DATA_max_denoised['MX'][items]['Y'].iloc[:, 2:]
 
 
-if set(dict_growth_genes['cell_division']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
-    print('Cell division genes are present')
-if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
-    print('Cell cycle genes are present')
+# if set(dict_growth_genes['cell_division']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
+#     print('Cell division genes are present')
+# if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX'][0]['df_X_TPM'].index))):
+#     print('Cell cycle genes are present')
 
 # SYSTEM 200
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 100, CV_THRESHOLD = 0.05,ALL_CONDITIONS=['MX'])['MX']
@@ -132,10 +171,10 @@ if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_DATA_ORIGINAL['MX
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
 
 # SYSTEM 500
-ALL_CONDITIONS = ['MX','MN']
-# ALL_CONDITIONS = ['MX']
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
-# print(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'])
+# ALL_CONDITIONS = ['MX','MN']
+# # ALL_CONDITIONS = ['MX']
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
+# # print(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'])
 
 # SYSTEM 501
 # ALL_CONDITIONS = ['MN']
@@ -146,19 +185,30 @@ dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised,
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.015,ALL_CONDITIONS=ALL_CONDITIONS)
 
 
+# SYSTEM 600
+ALL_CONDITIONS = ['MX']
+ls_genes = list(set(ls_genes_uniprot).union(set(ls_genes_biocyc)))
+dict_data = {}
+for condition in ALL_CONDITIONS:
+    dict_data[condition] = {}
+    for items in dict_DATA_max_denoised[condition].keys():
+        dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+
+
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
 # dict_MAX = dict_DATA
 # MEAN THRES = 100
 #
 
-if set(dict_growth_genes['cell_division']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
-    print('Cell division genes are present')
-if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
-    print('Cell cycle genes are present')
-ls_filtered_genes = list(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'].index)
-print('Number of growth genes present :', len(set(ls_filtered_genes).intersection(ls_genes)))
-print(list(set(ls_filtered_genes).intersection(ls_genes)))
+# if set(dict_growth_genes['cell_division']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
+#     print('Cell division genes are present')
+# if set(dict_growth_genes['cell_cycle']).issubset(set(list(dict_data['MX'][0]['df_X_TPM'].index))):
+#     print('Cell cycle genes are present')
+# ls_filtered_genes = list(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'].index)
+# print('Number of growth genes present :', len(set(ls_filtered_genes).intersection(ls_genes)))
+# print(list(set(ls_filtered_genes).intersection(ls_genes)))
 ## Plotting the states as a function of time
 ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
 curve = 0
@@ -225,7 +275,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 500
+SYSTEM_NO = 600
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')

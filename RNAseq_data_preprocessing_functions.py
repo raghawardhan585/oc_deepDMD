@@ -537,6 +537,28 @@ def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', sear
     df_up.columns = str_up_ALL[0].split('\t')
     return df_up
 
+def get_Uniprot_cell_division_genes_and_cell_cycle_genes(species_id='KT2440', search_columns='genes(OLN), genes(PREFERRED), go(biological process)'):
+    query_search = {'cell cycle':'cell goa:(cycle) ' + species_id, 'cell division':'cell goa:(division) ' + species_id}
+    up = UniProt()
+    dict_out ={}
+    for items in query_search.keys():
+        search_result_i = up.search(query_search[items], frmt='tab', columns=search_columns)
+        str_up_ALL = search_result_i.split('\n')
+        ls_up = []
+        for each_line in str_up_ALL[1:]:
+            ls_up.append(each_line.split('\t'))
+        df_up = pd.DataFrame(ls_up[0:-1])
+        df_up.columns = str_up_ALL[0].split('\t')
+        dict_out[items] = copy.deepcopy(df_up)
+    set_genes1 = set(dict_out['cell cycle'].iloc[:, 0].unique())
+    set_genes2 = set(dict_out['cell division'].iloc[:, 0].unique())
+    ls_out = set_genes1.union(set_genes2) - {''}
+    return dict_out,ls_out
+
+
+
+
+
 # SUB OPTIMAL CODE
 # def get_gene_Uniprot_DATA(species_id='KT2440', ls_all_locus_tags='PP_0123', search_columns='entry name,length,id, genes,comment(FUNCTION)'):
 #     for locus_tag in ls_all_locus_tags:#ls_all_locus_tags[0:-1]:
