@@ -202,7 +202,7 @@ for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
     for items in dict_DATA_max_denoised[condition].keys():
         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_data, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
