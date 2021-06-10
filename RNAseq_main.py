@@ -172,7 +172,6 @@ _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 
 # SYSTEM 500
 # ALL_CONDITIONS = ['MX','MN']
-# # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
 # # print(dict_data[ALL_CONDITIONS[0]][0]['df_X_TPM'])
 

@@ -40,14 +40,18 @@ plt.rcParams["font.size"] = 22
 # # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Sequential
 # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Direct deepDMD
 
+SYSTEM_NO = 500
+ALL_CONDITIONS = ['MX','MN']
+ls_runs1 = list(range(0,32)) # SYSTEM 406
+
 # SYSTEM_NO = 501
 # ALL_CONDITIONS = ['MX','MN']
 # ls_runs1 = list(range(0,30)) # SYSTEM 406
 
-SYSTEM_NO = 601
-ALL_CONDITIONS = ['MX','MN']
-# ls_runs1 = list(range(0,72)) # SYSTEM 406 - Sequential
-ls_runs1 = list(range(0,72)) # SYSTEM 406 - Direct deepDMD
+# SYSTEM_NO = 601
+# ALL_CONDITIONS = ['MX','MN']
+# # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Sequential
+# ls_runs1 = list(range(0,72)) # SYSTEM 406 - Direct deepDMD
 
 
 # METHOD = 'Sequential'
@@ -592,13 +596,13 @@ for i in ls_obs:
     dict_result3[i]['r2_X_nstep_valid_std'] = df_temp.loc[:, 'r2_X_nstep_valid'].std()
     dict_result3[i]['r2_X_nstep_test_mean'] = df_temp.loc[:, 'r2_X_nstep_test'].mean()
     dict_result3[i]['r2_X_nstep_test_std'] = df_temp.loc[:, 'r2_X_nstep_test'].std()
-    # df_temp = copy.deepcopy(df_resultable2_Y[df_resultable2_Y['x_obs'] == i])
-    # dict_result3[i]['r2_Y_train_mean'] = df_temp.loc[:, 'r2_Yf_train'].mean()
-    # dict_result3[i]['r2_Y_train_std'] = df_temp.loc[:, 'r2_Yf_train'].std()
-    # dict_result3[i]['r2_Y_valid_mean'] = df_temp.loc[:, 'r2_Yf_valid'].mean()
-    # dict_result3[i]['r2_Y_valid_std'] = df_temp.loc[:, 'r2_Yf_valid'].std()
-    # dict_result3[i]['r2_Y_test_mean'] = df_temp.loc[:, 'r2_Yf_test'].mean()
-    # dict_result3[i]['r2_Y_test_std'] = df_temp.loc[:, 'r2_Yf_test'].std()
+    df_temp = copy.deepcopy(df_resultable2_Y[df_resultable2_Y['x_obs'] == i])
+    dict_result3[i]['r2_Y_train_mean'] = df_temp.loc[:, 'r2_Yf_train'].mean()
+    dict_result3[i]['r2_Y_train_std'] = df_temp.loc[:, 'r2_Yf_train'].std()
+    dict_result3[i]['r2_Y_valid_mean'] = df_temp.loc[:, 'r2_Yf_valid'].mean()
+    dict_result3[i]['r2_Y_valid_std'] = df_temp.loc[:, 'r2_Yf_valid'].std()
+    dict_result3[i]['r2_Y_test_mean'] = df_temp.loc[:, 'r2_Yf_test'].mean()
+    dict_result3[i]['r2_Y_test_std'] = df_temp.loc[:, 'r2_Yf_test'].std()
 
 # df_results3_deepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 df_results3_OCdeepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
@@ -610,9 +614,9 @@ ls_obs_select =[0,1,2,3,4,5,6,7]
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'OCdeepDMD xf train', capsize=9,color=ls_colors[0])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'OCdeepDMD xf valid', capsize=5,color=ls_colors[1])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'OCdeepDMD xf test', capsize=2,color=ls_colors[2])
-plt.errorbar(ls_obs,df_results3.loc[:,'r2_Y_train_mean'],yerr=df_results3.loc[:,'r2_Y_train_std'],label = 'yf train', capsize=9)
-plt.errorbar(ls_obs,df_results3.loc[:,'r2_Y_valid_mean'],yerr=df_results3.loc[:,'r2_Y_valid_std'],label = 'yf valid', capsize=5)
-plt.errorbar(ls_obs,df_results3.loc[:,'r2_Y_test_mean'],yerr=df_results3.loc[:,'r2_Y_test_std'],label = 'yf test', capsize=1)
+plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[:,'r2_Y_train_mean'],yerr=df_results3_OCdeepDMD.loc[:,'r2_Y_train_std'],label = 'yf train', capsize=9,color=ls_colors[3])
+plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[:,'r2_Y_valid_mean'],yerr=df_results3_OCdeepDMD.loc[:,'r2_Y_valid_std'],label = 'yf valid', capsize=5,color=ls_colors[4])
+plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[:,'r2_Y_test_mean'],yerr=df_results3_OCdeepDMD.loc[:,'r2_Y_test_std'],label = 'yf test', capsize=1,color=ls_colors[5])
 plt.legend(ncol =2, fontsize=10)
 plt.xlabel('$n_{observables}$')
 plt.ylabel('$r^2$')
