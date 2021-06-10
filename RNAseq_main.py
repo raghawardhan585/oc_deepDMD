@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 import copy
 import itertools
 import seaborn as sb
-
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 ##
 # To get the RNAseq and OD data to RAW format of X and Y data
 rnaf.organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True)
@@ -26,6 +28,73 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
+
+## Filtering based on the linear dynamics
+ALL_CONDITIONS =['MX']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+ls_data_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
+
+# Form the training dataset
+Xp = Xf = np.array([])
+for cond, i in itertools.product(ALL_CONDITIONS,ls_data_indices):
+    try:
+        Xp = pd.concat([Xp,dict_data[cond][i]['df_X_TPM'].iloc[:,0:-1]],axis=1)
+        Xf = pd.concat([Xf, dict_data[cond][i]['df_X_TPM'].iloc[:, 1:]], axis=1)
+    except:
+        Xp = dict_data[cond][i]['df_X_TPM'].iloc[:,0:-1]
+        Xf = dict_data[cond][i]['df_X_TPM'].iloc[:, 1:]
+
+ls_genes = list(Xp.index)
+XpT = np.array(Xp).T
+XfT = np.array(Xf).T
+
+X_scale = MinMaxScaler()
+X_scale.fit(XpT)
+XpTs = X_scale.transform(XpT)
+XfTs = X_scale.transform(XfT)
+
+dict_empty_all_conditions ={}
+for COND in ALL_CONDITIONS:
+    dict_empty_all_conditions[COND] = {}
+
+dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
+dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
+for cond,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
+    dict_unscaled_data[cond][i] = {'XpT': np.array(dict_data[cond][i]['df_X_TPM'].iloc[:, 0:-1]).T,
+                                   'XfT': np.array(dict_data[cond][i]['df_X_TPM'].iloc[:, 1:]).T}
+    dict_scaled_data[cond][i] = {'XpT': X_scale.transform(dict_unscaled_data[cond][i]['XpT']),
+                                 'XfT': X_scale.transform(dict_unscaled_data[cond][i]['XfT'])}
+
+A = LinearRegression(fit_intercept= True)
+A.fit(XpTs,XfTs)
+
+dict_score = {}
+for j in range(len(ls_genes)):
+    if np.mod(j,100) ==0:
+        print('Gene:',j+1,'/',len(ls_genes))
+    # dict_score[ls_genes[j]] = {}
+    Ac = copy.deepcopy(A)
+    Ac.coef_[:,j] = 0
+    Ac.coef_[j,:] = 0
+    Ac.intercept_[j] = 0
+    # for cond, i in itertools.product(ALL_CONDITIONS,ls_data_indices):
+    #     # n_step predictions
+    #     XfTs_hat = dict_scaled_data[cond][i]['XpT'][0:1]
+    #     for step in range(len(dict_scaled_data[cond][i]['XfT'])):
+    #         XfTs_hat = np.concatenate([XfTs_hat, Ac.predict(XfTs_hat[-1:])],axis=0)
+    #     XfTs_hat = XfTs_hat[1:]
+    #     dict_score[ls_genes[j]][cond+'_'+str(i)] = r2_score(np.delete(dict_scaled_data[cond][i]['XfT'],j,1),np.delete(X_scale.inverse_transform(XfTs_hat),j,1))
+    # Based on 1-step predictions
+    XfTs_hat = Ac.predict(XpTs)
+    dict_score[ls_genes[j]] = r2_score(np.delete(XfT,j,1),np.delete(X_scale.inverse_transform(XfTs_hat),j,1))
+# df_score = pd.DataFrame(dict_score).T
+
+
+
+
+
+
+##
 # ALL_CONDITIONS = ['MX','MN']
 # # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
@@ -87,9 +156,9 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 
 ##
 
-dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
-ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
-_,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
+# dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
+# ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
+# _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 
 
 # ls_filtered_genes = list(p.index[0:10])
@@ -170,6 +239,11 @@ _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 # ALL_CONDITIONS = ['MX']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
 
+# SYSTEM 407
+ALL_CONDITIONS = ['MX']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+
+
 # SYSTEM 500
 # ALL_CONDITIONS = ['MX','MN']
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=ALL_CONDITIONS)
@@ -194,14 +268,14 @@ _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 #         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 # SYSTEM 601
-ALL_CONDITIONS = ['MX','MN']
-ls_genes = list(set(ls_genes_uniprot).union(set(ls_genes_biocyc)))
-dict_data = {}
-for condition in ALL_CONDITIONS:
-    dict_data[condition] = {}
-    for items in dict_DATA_max_denoised[condition].keys():
-        dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_data, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+# ALL_CONDITIONS = ['MX','MN']
+# ls_genes = list(set(ls_genes_uniprot).union(set(ls_genes_biocyc)))
+# dict_data = {}
+# for condition in ALL_CONDITIONS:
+#     dict_data[condition] = {}
+#     for items in dict_DATA_max_denoised[condition].keys():
+#         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_data, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
 # dict_MAX = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, MEAN_TPM_THRESHOLD = 400,ALL_CONDITIONS=['MX'])['MX']
@@ -282,7 +356,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 601
+SYSTEM_NO = 407
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
