@@ -186,14 +186,22 @@ _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 
 
 # SYSTEM 600
-ALL_CONDITIONS = ['MX']
+# ALL_CONDITIONS = ['MX']
+# ls_genes = list(set(ls_genes_uniprot).union(set(ls_genes_biocyc)))
+# dict_data = {}
+# for condition in ALL_CONDITIONS:
+#     dict_data[condition] = {}
+#     for items in dict_DATA_max_denoised[condition].keys():
+#         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+# SYSTEM 601
+ALL_CONDITIONS = ['MX','MN']
 ls_genes = list(set(ls_genes_uniprot).union(set(ls_genes_biocyc)))
 dict_data = {}
 for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
     for items in dict_DATA_max_denoised[condition].keys():
         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-
 
 
 # dict_DATA_filt2 = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_filt1, CV_THRESHOLD = 0.25, ALL_CONDITIONS= ['MX'])
@@ -275,7 +283,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 600
+SYSTEM_NO = 601
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
