@@ -47,7 +47,7 @@ regularization_lambda =0
 ## Learning Parameters
 batch_size = 40#40#24#36
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 0.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': batch_size} #80000
+dict_training_params = {'step_size_val': 0.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 15000, 'batch_size': batch_size} #80000
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-10),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': batch_size}
 # ls_dict_training_params.append(dict_training_params)
