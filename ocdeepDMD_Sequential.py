@@ -101,9 +101,9 @@ if RUN_OPTIMIZATION ==3:
 #     RUN_2_SAVED = True
 
 # Learning Parameters
-BATCH_SIZE = 36
+BATCH_SIZE = 40
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': BATCH_SIZE} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': BATCH_SIZE} #20000
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 80000, 'batch_size': BATCH_SIZE} #20000
 # ls_dict_training_params.append(dict_training_params)
