@@ -28,7 +28,7 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 
 
 
-## Filtering the genes based on the differential expression levels
+## Filtering the genes based on variance (a metric to quantify the dynamics)
 dict_growthcurve = copy.deepcopy(dict_DATA_ORIGINAL)
 ls_allconditions = ['MX']
 n_conditions = len(ls_allconditions)
@@ -36,12 +36,15 @@ ls_allgenes = list(dict_growthcurve[ls_allconditions[0]][0]['df_X_TPM'].index)
 ls_required_genes = []
 for cond_no in range(n_conditions):
     cond = ls_allconditions[cond_no]
+    df_gene_variance = pd.DataFrame([])
     for replicate in dict_growthcurve[cond].keys():
-        # Check the differential expression across time points
         df_temp1 = dict_growthcurve[cond][replicate]['df_X_TPM']
-        for i in df_temp1.columns:
-            ls_genes_curr = list(df_temp1.iloc[list((np.log2(df_temp1.divide(df_temp1.loc[:, 1], axis=0)) > 1).sum(axis=1).nonzero()[0]),:].index)
-        # Check the differential expression across conditions
+        # Check the differential expression across time points
+        try:
+            df_gene_variance.loc[:,replicate] = df_temp1.var(axis=1)
+        except:
+            df_gene_variance = pd.DataFrame(df_temp1.var(axis=1), columns=[replicate])
+
 
 
 
@@ -50,7 +53,7 @@ for cond_no in range(n_conditions):
 
 ##
 dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
-ls_genes = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
+ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
 
 # Remove time points 1,2 in the MAX dataset
 # for items in dict_DATA_max_denoised['MX'].keys():
