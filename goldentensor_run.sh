@@ -9,7 +9,6 @@ python3 deepDMD.py '/gpu:1' 409 1 7 4 10 > Run_info/SYS_409_RUN_1.txt &
 python3 deepDMD.py '/gpu:2' 409 2 7 4 10 > Run_info/SYS_409_RUN_2.txt &
 python3 deepDMD.py '/gpu:3' 409 3 7 4 10 > Run_info/SYS_409_RUN_3.txt &
 wait 
-python3 deepDMD.py '/gpu:0' 409 4 7 4 10 > Run_info/SYS_409_RUN_4.txt &
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 
