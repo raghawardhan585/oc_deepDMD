@@ -302,7 +302,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 408
+SYSTEM_NO = 409
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
