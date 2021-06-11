@@ -95,7 +95,15 @@ for i in range(16):
 
 
 # SYSTEM NO 415
-ls_genes = list(df_temp[df_temp>9].index)
+# ls_genes = list(df_temp[df_temp>9].index)
+# dict_data = {}
+# for condition in ALL_CONDITIONS:
+#     dict_data[condition] = {}
+#     for items in dict_DATA_max_denoised[condition].keys():
+#         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+# SYSTEM NO 416
+ls_genes = list(df_temp[df_temp>8.5].index)
 dict_data = {}
 for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
@@ -382,7 +390,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 415
+SYSTEM_NO = 416
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
