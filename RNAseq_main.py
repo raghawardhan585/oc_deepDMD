@@ -106,15 +106,33 @@ plt.plot(df_temp.mean(axis=1),df_temp.std(axis=1),'.')
 plt.plot(df_temp.mean(axis=1).mean(), df_temp.std(axis=1).mean(),'.',markersize =10)
 # plt.plot([MEAN_THRES, MEAN_THRES],[STD_THRES,21000])
 # plt.plot([MEAN_THRES, 16000],[STD_THRES ,16000])
-# plt.xlim([0,16000])
-# plt.ylim([0,21000])
-plt.xlim([0,500])
-plt.ylim([0,500])
+plt.xlim([0,16000])
+plt.ylim([0,21000])
+# plt.xlim([0,500])
+# plt.ylim([0,500])
+plt.xlabel('mean $(\mu)$')
+plt.ylabel('standard deviation $(\sigma)$')
 plt.show()
 
-
-
-
+x1 = df_temp.mean(axis=1)
+y1 = df_temp.std(axis=1)
+xc = x1.mean()
+yc = y1.mean()
+dist = np.sqrt((x1-xc)**2 + (y1 - yc)**2).sort_values(ascending = False)
+plt.figure()
+plt.plot(list(dist))
+# plt.plot(np.log(list(dist)))
+plt.xlabel('Genes sorted by distance from centroid')
+# plt.ylabel('log(Distance from centroid)')
+plt.ylabel('Distance from centroid')
+plt.xlim([0,10])
+plt.show()
+ls_genes2 = list(dist[0:10].index)
+dict_data = {}
+for condition in ALL_CONDITIONS:
+    dict_data[condition] = {}
+    for items in dict_DATA_max_denoised[condition].keys():
+        dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes2,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 ##
 
