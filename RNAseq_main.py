@@ -95,6 +95,22 @@ for condition in ALL_CONDITIONS:
 
 print('Genes remaining:',len(ls_genes))
 
+## Mean vs standard deviation
+dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+df_temp = dict_DATA_max_denoised['MX'][1]['df_X_TPM']
+
+MEAN_THRES = 5000
+STD_THRES = 5000
+plt.figure()
+plt.plot(df_temp.mean(axis=1),df_temp.std(axis=1),'.')
+plt.plot(df_temp.mean(axis=1).mean(), df_temp.std(axis=1).mean(),'.',markersize =10)
+# plt.plot([MEAN_THRES, MEAN_THRES],[STD_THRES,21000])
+# plt.plot([MEAN_THRES, 16000],[STD_THRES ,16000])
+# plt.xlim([0,16000])
+# plt.ylim([0,21000])
+plt.xlim([0,500])
+plt.ylim([0,500])
+plt.show()
 
 
 

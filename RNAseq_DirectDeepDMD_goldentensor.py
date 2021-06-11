@@ -93,6 +93,7 @@ gt.write('cd oc_deepDMD/ \n')
 gt.close()
 
 ##
+import deepDMD_helper_functions as dp
 dp.transfer_current_ocDeepDMD_run_files()
 
 
