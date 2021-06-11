@@ -39,9 +39,12 @@ plt.rcParams["font.size"] = 22
 # ALL_CONDITIONS = ['MX']
 # # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Sequential
 # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Direct deepDMD
-SYSTEM_NO =408
+# SYSTEM_NO =408
+# ALL_CONDITIONS = ['MX']
+# ls_runs1 = list(range(0,32)) # SYSTEM 408
+SYSTEM_NO =409
 ALL_CONDITIONS = ['MX']
-ls_runs1 = list(range(0,32)) # SYSTEM 408
+ls_runs1 = list(range(0,50)) # SYSTEM 408
 
 # SYSTEM_NO = 500
 # ALL_CONDITIONS = ['MX','MN']
