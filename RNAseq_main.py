@@ -156,7 +156,7 @@ plt.show()
 
 
 # SYSTEM 413
-ls_genes2 = list(dist[0:25].index)
+ls_genes2 = list(dist[0:30].index)
 dict_data = {}
 for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
