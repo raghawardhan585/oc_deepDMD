@@ -44,7 +44,7 @@ plt.rcParams["font.size"] = 22
 # ls_runs1 = list(range(0,32)) # SYSTEM 408
 SYSTEM_NO =409
 ALL_CONDITIONS = ['MX']
-ls_runs1 = list(range(0,50)) # SYSTEM 408
+ls_runs1 = list(range(40,50)) # SYSTEM 408
 
 # SYSTEM_NO = 500
 # ALL_CONDITIONS = ['MX','MN']

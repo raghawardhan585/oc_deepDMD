@@ -98,7 +98,7 @@ print('Genes remaining:',len(ls_genes))
 ## Mean vs standard deviation
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 df_temp = dict_DATA_max_denoised['MX'][1]['df_X_TPM']
-
+ALL_CONDITIONS = ['MX']
 MEAN_THRES = 5000
 STD_THRES = 5000
 plt.figure()
@@ -125,8 +125,10 @@ plt.plot(list(dist))
 plt.xlabel('Genes sorted by distance from centroid')
 # plt.ylabel('log(Distance from centroid)')
 plt.ylabel('Distance from centroid')
-plt.xlim([0,10])
+# plt.xlim([0,10])
 plt.show()
+
+# SYSTEM 410
 ls_genes2 = list(dist[0:10].index)
 dict_data = {}
 for condition in ALL_CONDITIONS:
@@ -336,7 +338,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 409
+SYSTEM_NO = 410
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
