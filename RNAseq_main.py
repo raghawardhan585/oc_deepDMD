@@ -77,15 +77,23 @@ for i in range(16):
 #             print(list(set(dict_genes[j])-set(dict_genes[i])))
 
 # SYSTEM NO 408
-ls_genes = list(df_temp[df_temp>6].index)
+# ls_genes = list(df_temp[df_temp>6].index)
+# dict_data = {}
+# for condition in ALL_CONDITIONS:
+#     dict_data[condition] = {}
+#     for items in dict_DATA_max_denoised[condition].keys():
+#         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+
+# SYSTEM NO 409
+ls_genes = list(df_temp[df_temp>8].index)
 dict_data = {}
 for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
     for items in dict_DATA_max_denoised[condition].keys():
         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
-
-
+print('Genes remaining:',len(ls_genes))
 
 
 
