@@ -32,9 +32,103 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 # dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
+ALL_CONDITIONS = ['MX','NC','MN']
+
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD=1,
+                                                         ALL_CONDITIONS=ALL_CONDITIONS)
+
+
+## Combining all the three filtering strategies
+dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+ALL_CONDITIONS = ['MX','NC','MN']
+# 1 - Get the genes from gene ontology
+dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
+ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
+_,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
+
+ls_genes_uniprot_biocyc = list(set(ls_genes_biocyc).union(set(ls_genes_uniprot)))
+dict_data1 = {}
+for condition in ALL_CONDITIONS:
+    dict_data1[condition] = {}
+    for items in dict_DATA_max_denoised[condition].keys():
+        dict_data1[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes_uniprot_biocyc,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+
+## Plot all 48 curves
+
+
+ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+n_genes_uniprot_biocyc = len(ls_genes_uniprot_biocyc)
+n_rows = 5#np.int(np.ceil(np.sqrt(n_genes_uniprot_biocyc)))
+n_cols = np.int(np.ceil(n_genes_uniprot_biocyc/ n_rows))
+f,ax = plt.subplots(n_rows, n_cols, figsize =(60,30))
+ax_l = ax.reshape(-1)
+for i in range(n_genes_uniprot_biocyc):
+    df_gene_replicates_MAX = pd.DataFrame([])
+    df_gene_replicates_MIN = pd.DataFrame([])
+    df_gene_replicates_NC = pd.DataFrame([])
+    for j in range(16):
+        try:
+            df_gene_replicates_MAX = pd.concat([df_gene_replicates_MAX,dict_data1['MX'][j]['df_X_TPM'].iloc[i:i+1,:]],axis=0)
+            df_gene_replicates_MIN = pd.concat([df_gene_replicates_MIN, dict_data1['MN'][j]['df_X_TPM'].iloc[i:i + 1, :]], axis=0)
+            df_gene_replicates_NC = pd.concat([df_gene_replicates_NC, dict_data1['NC'][j]['df_X_TPM'].iloc[i:i + 1, :]], axis=0)
+        except:
+            df_gene_replicates_MAX = dict_data1['MX'][j]['df_X_TPM'].iloc[i:i + 1, :]
+            df_gene_replicates_MIN = dict_data1['MN'][j]['df_X_TPM'].iloc[i:i + 1, :]
+            df_gene_replicates_NC = dict_data1['NC'][j]['df_X_TPM'].iloc[i:i + 1, :]
+    ax_l[i].errorbar(np.array([1,2,3,4,5,6,7]), df_gene_replicates_MAX.mean(axis=0),yerr =df_gene_replicates_MAX.std(axis=0),color = ls_colors[0],capsize =8)
+    # ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_MIN.mean(axis=0), yerr=df_gene_replicates_MIN.std(axis=0),color = ls_colors[1],capsize =8)
+    # ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_NC.mean(axis=0),yerr=df_gene_replicates_NC.std(axis=0), color=ls_colors[2],capsize =8)
+    ax_l[i].set_title(ls_genes_uniprot_biocyc[i])
+
+f.show()
+## Differential expression score
+# 2 -
+ALL_CONDITIONS = ['MX']
+TIME_POINT = 7
+T_START = 1
+df_genes_diff_dynamics_MX_MX = pd.DataFrame([])
+for i in range(16):
+    df_temp = np.abs(np.log2(dict_data['MX'][i]['df_X_TPM'].loc[:,TIME_POINT].divide(dict_data['MX'][i]['df_X_TPM'].loc[:,T_START]))).sort_values(ascending=False)
+    try:
+        df_genes_diff_dynamics_MX_MX = pd.concat([df_genes_diff_dynamics_MX_MX,pd.DataFrame(df_temp,columns=[i])],axis=1)
+    except:
+        df_genes_diff_dynamics_MX_MX = pd.DataFrame(df_temp,columns=[i])
+# print(pd.concat([df_genes_diff_dynamics_MX_MX.mean(axis=1)-df_genes_diff_dynamics_MX_MX.std(axis=1),df_genes_diff_dynamics_MX_MX.mean(axis=1)+df_genes_diff_dynamics_MX_MX.std(axis=1)],axis=1))
+print(pd.concat([df_genes_diff_dynamics_MX_MX.min(axis=1),df_genes_diff_dynamics_MX_MX.max(axis=1)],axis=1))
+
+ls_genes2 = []
+for i in range(df_genes_diff_dynamics_MX_MX.shape[0]):
+    if df_genes_diff_dynamics_MX_MX.iloc[i,:].max() >4:
+        ls_genes2.append(df_genes_diff_dynamics_MX_MX.index[i])
 
 
 
+ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+n_genes2 = len(ls_genes2)
+n_rows = 2#np.int(np.ceil(np.sqrt(n_genes_uniprot_biocyc)))
+n_cols = np.int(np.ceil(n_genes2/ n_rows))
+f,ax = plt.subplots(n_rows, n_cols, figsize =(50,10))
+ax_l = ax.reshape(-1)
+for i in range(n_genes2):
+    df_gene_replicates_MAX = pd.DataFrame([])
+    df_gene_replicates_MIN = pd.DataFrame([])
+    df_gene_replicates_NC = pd.DataFrame([])
+    gene_name = ls_genes2[i]
+    for j in range(16):
+        try:
+            df_gene_replicates_MAX = pd.concat([df_gene_replicates_MAX,pd.DataFrame(dict_data['MX'][j]['df_X_TPM'].loc[gene_name,:]).T],axis=0)
+            df_gene_replicates_MIN = pd.concat([df_gene_replicates_MIN, pd.DataFrame(dict_data['MN'][j]['df_X_TPM'].loc[gene_name, :]).T], axis=0)
+            df_gene_replicates_NC = pd.concat([df_gene_replicates_NC, pd.DataFrame(dict_data['NC'][j]['df_X_TPM'].loc[gene_name, :]).T], axis=0)
+        except:
+            df_gene_replicates_MAX = pd.DataFrame(dict_data['MX'][j]['df_X_TPM'].loc[gene_name, :]).T
+            df_gene_replicates_MIN = pd.DataFrame(dict_data['MN'][j]['df_X_TPM'].loc[gene_name, :]).T
+            df_gene_replicates_NC = pd.DataFrame(dict_data['NC'][j]['df_X_TPM'].loc[gene_name, :]).T
+    ax_l[i].errorbar(np.array([1,2,3,4,5,6,7]), df_gene_replicates_MAX.mean(axis=0),yerr =df_gene_replicates_MAX.std(axis=0),color = ls_colors[0],capsize =8)
+    ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_MIN.mean(axis=0), yerr=df_gene_replicates_MIN.std(axis=0),color = ls_colors[1],capsize =8)
+    ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_NC.mean(axis=0),yerr=df_gene_replicates_NC.std(axis=0), color=ls_colors[2],capsize =8)
+    ax_l[i].set_title(ls_genes2[i])
+
+f.show()
 
 
 
@@ -56,7 +150,7 @@ TIME_POINT = 7
 T_START = 1
 dict_genes ={}
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.1,ALL_CONDITIONS=ALL_CONDITIONS)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.12,ALL_CONDITIONS=ALL_CONDITIONS)
 for i in range(16):
     df_temp = np.abs(np.log2(dict_DATA_max_denoised['MX'][0]['df_X_TPM'].loc[:,TIME_POINT].divide(dict_DATA_max_denoised['MX'][0]['df_X_TPM'].loc[:,T_START]))).sort_values(ascending=False)
     dict_genes[i] = list(df_temp[df_temp>5].index)
@@ -103,7 +197,7 @@ for i in range(16):
 #         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 # SYSTEM NO 416
-ls_genes = list(df_temp[df_temp>8.5].index)
+ls_genes = list(df_temp[df_temp>6].index) # 8.5
 dict_data = {}
 for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
@@ -111,6 +205,7 @@ for condition in ALL_CONDITIONS:
         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 print('Genes remaining:',len(ls_genes))
+print('INtersecting Genes remaining:',len(set(ls_genes).intersection(set(ls_genes_uniprot_biocyc))))
 
 ## Mean vs standard deviation
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
@@ -190,10 +285,26 @@ plt.show()
 
 ##
 
-# dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
-# ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
-# _,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
+dict_growth_genes = rnaf.get_PputidaKT2440_growth_genes()
+ls_genes_biocyc = set(dict_growth_genes['cell_cycle']).union(set(dict_growth_genes['cell_division']))
+_,ls_genes_uniprot = rnaf.get_Uniprot_cell_division_genes_and_cell_cycle_genes()
 
+ls_genes_uniprot_biocyc = list(set(ls_genes_biocyc).union(set(ls_genes_uniprot)))
+
+##
+dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX'])
+ls_genes = list(dict_data['MX'][0]['df_X_TPM'].index)
+
+print('# Intersecting genes :', len(set(ls_genes).intersection(set(ls_genes_uniprot_biocyc))))
+print('Intersecting genes :', list(set(ls_genes).intersection(set(ls_genes_uniprot_biocyc))))
+
+## Comparing differential expression genes and CV based thershold genes
+dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD = 0.0125,ALL_CONDITIONS=['MX'])
+ls_genes_CV_thres =list(dict_data['MX'][0]['df_X_TPM'].index)
+
+##
 
 # ls_filtered_genes = list(p.index[0:10])
 # print('# Intersecting genes: ', len(list(set(ls_filtered_genes).intersection(ls_genes_biocyc))))
@@ -390,7 +501,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 416
+SYSTEM_NO = 800
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
