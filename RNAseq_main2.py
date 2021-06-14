@@ -30,7 +30,6 @@ with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYDa
     dict_DATA_ORIGINAL = pickle.load(handle)
 # dict_DATA = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA, MEAN_TPM_THRESHOLD = 1, ALL_CONDITIONS= ['MX'])
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
-# dict_DATA_max_denoised['MX'] = rnaf.denoise_using_PCA(dict_DATA_max_denoised['MX'], PCA_THRESHOLD = 99, NORMALIZE=True, PLOT_SCREE=False)
 
 ALL_CONDITIONS = ['MX','NC','MN']
 
@@ -128,6 +127,42 @@ for i in range(n_genes2):
 
 f.show()
 
+## Differential expression as a function of time - MAX vs NC
+# 2 -
+epsilon = 1e-5
+COND1 = 'MX'
+COND2 = 'NC'
+dict_data2 = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data1), CV_THRESHOLD = 0.1,ALL_CONDITIONS=['MX','MN','NC'])
+ls_genes2 = list(dict_data2[ALL_CONDITIONS[0]][0]['df_X_TPM'].index)
+time_pts = [3,4,5,6,7]
+np_MX_NC = np.empty(shape=(len(ls_genes2),len(time_pts),0))
+for i in range(16):
+    df_temp = np.abs(np.log2((dict_data2[COND1][i]['df_X_TPM'].loc[:,time_pts] + epsilon).divide(dict_data2[COND2][i]['df_X_TPM'].loc[:,time_pts] + epsilon)))
+    np_MX_NC = np.concatenate([np_MX_NC,np.expand_dims(np.array(df_temp),axis=2)],axis=2)
+df_genes_diff_dynamics_MX_NC_mean = pd.DataFrame(np.mean(np_MX_NC,axis=2),columns=time_pts,index=ls_genes2)
+df_genes_diff_dynamics_MX_NC_std = pd.DataFrame(np.std(np_MX_NC,axis=2),columns=time_pts,index=ls_genes2)
+# print(pd.concat([df_genes_diff_dynamics_MX_MX.mean(axis=1)-df_genes_diff_dynamics_MX_MX.std(axis=1),df_genes_diff_dynamics_MX_MX.mean(axis=1)+df_genes_diff_dynamics_MX_MX.std(axis=1)],axis=1))
+# print(pd.concat([df_genes_diff_dynamics_MX_MX.min(axis=1),df_genes_diff_dynamics_MX_MX.max(axis=1)],axis=1))
+
+# ls_genes2 = []
+# for i in range(df_genes_diff_dynamics_MX_MX.shape[0]):
+#     if df_genes_diff_dynamics_MX_MX.iloc[i,:].max() >4:
+#         ls_genes2.append(df_genes_diff_dynamics_MX_MX.index[i])
+
+ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+n_rows = 5#np.int(np.ceil(np.sqrt(n_genes_uniprot_biocyc)))
+n_cols = np.int(np.ceil(n_genes2/ n_rows))
+f,ax = plt.subplots(n_rows, n_cols, figsize =(60,30))
+ax_l = ax.reshape(-1)
+ls_choose_timepts = [3,4,5,6,7]
+for i in range(len(ls_genes2)):
+    gene_name = ls_genes2[i]
+    ax_l[i].errorbar(np.array(ls_choose_timepts), df_genes_diff_dynamics_MX_NC_mean.loc[gene_name,ls_choose_timepts],yerr = df_genes_diff_dynamics_MX_NC_std.loc[gene_name,ls_choose_timepts],color = ls_colors[0],capsize =8)
+    ax_l[i].set_title(gene_name)
+
+f.show()
+
+
 ## Collect the data using
 
 # ALL_CONDITIONS = ['MX','MN','NC']
@@ -194,7 +229,7 @@ for i, COND in itertools.product(ls_test_indices,ALL_CONDITIONS):
 
 
 
-SYSTEM_NO = 601
+SYSTEM_NO = 602
 storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
 if os.path.exists(storage_folder):
     get_input = input('Do you wanna delete the existing system[y/n]? ')
