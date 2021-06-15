@@ -79,8 +79,6 @@ for i in range(16):
 
 ls_genes_temp1 = list(set(ls_genes_temp2).intersection(set(ls_genes_temp1)))
 print('Number of genes :',len(ls_genes_temp1))
-# rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags=ls_genes_temp,search_columns='genes(OLN), genes(PREFERRED), go(biological process)')
-
 
 ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
 curve = 0
@@ -99,8 +97,8 @@ for condition in ALL_CONDITIONS:
     dict_data[condition] = {}
     for items in dict_DATA_max_denoised[condition].keys():
         dict_data[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes_temp1,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-
-
+ALL_CONDITIONS =['MX']
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data), CV_THRESHOLD = 0.1 ,ALL_CONDITIONS=['MX'])
 ##
 #
 # dict_data2 = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_ORIGINAL), CV_THRESHOLD = 0.0125,ALL_CONDITIONS=['MX'])
@@ -340,3 +338,9 @@ with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle
 # Store the data in Koopman
 with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
     pickle.dump(dict_DATA_OUT, handle)
+# Saving the gene list info
+ls_genes_curr = list(dict_data['MX'][0]['df_X_TPM'].index)
+p = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags=ls_genes_curr ,search_columns='genes(OLN), genes(PREFERRED), go(biological process)')
+with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_GeneInfo.pickle', 'wb') as handle:
+    pickle.dump(p, handle)  # Only training and validation indices are stored
+p.to_csv(path_or_buf=storage_folder + '/System_' + str(SYSTEM_NO)+ '_GeneInfo.csv')
