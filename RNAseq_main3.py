@@ -93,12 +93,20 @@ for condition,items in itertools.product(ls_conditions,range(16)):
 
 plot_gene_expression(dict_data_GO_filtered)
 ##
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.1,ALL_CONDITIONS=['MX'])
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_max_denoised), CV_THRESHOLD = 0.0125,ALL_CONDITIONS=['MX'])
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.02,ALL_CONDITIONS=['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_max_denoised), CV_THRESHOLD = 0.0125,ALL_CONDITIONS=['MX'])
 rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 700, ALL_CONDITIONS= ['MX'])
 
+##
+
+ls_genes_temp2 = list(dict_data['MX'][0]['df_X_TPM'].index)
+dict_data_temp = {'MX':{},'MN':{},'NC':{}}
+
+for condition,items in itertools.product(ls_conditions,range(16)):
+    dict_data_temp[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes_temp2 ,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
 
 
 
 
+plot_gene_expression(dict_data_temp )
