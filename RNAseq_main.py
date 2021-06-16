@@ -34,8 +34,7 @@ dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 
 ALL_CONDITIONS = ['MX','NC','MN']
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD=1,
-                                                         ALL_CONDITIONS=ALL_CONDITIONS)
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(dict_DATA_max_denoised, CV_THRESHOLD=1, ALL_CONDITIONS=ALL_CONDITIONS)
 
 
 ## Combining all the three filtering strategies

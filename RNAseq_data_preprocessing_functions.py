@@ -3,12 +3,14 @@ import numpy as np
 import re # For splitting the strings
 from glob import glob as GetAllCsvFiles # To access
 import os
+import shutil
 import itertools
 # from bioservices import UniProt
 import copy
 import pickle
 import matplotlib.pyplot as plt
-
+import random
+import ocdeepdmd_simulation_examples_helper_functions as oc
 
 # Constants
 MAX_REPLICATES = 2
@@ -99,8 +101,67 @@ def Pputida_R2A_RNAseq_metadata():
                  'NC': {1: NC1_WELL, 2: NC2_WELL}}
     return dict_input,dict_well
 
+def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0):
+    ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
+    random.shuffle(ls_all_indices)
+    ls_train_indices = ls_all_indices[0:14]
+    # ls_valid_indices = ls_all_indices[12:14]
+    ls_test_indices = ls_all_indices[14:16]
+    n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
+    n_outputs = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['Y'].shape[0]
 
+    dict_DMD_train = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
+                      'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
+    # for COND,i in itertools.product(ALL_CONDITIONS,ls_train_indices):
+    for i, COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
+        dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
+        dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+        dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
+        dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
+    # dict_DMD_valid = {'Xp' : np.empty(shape=(0,n_states)), 'Xf': np.empty(shape=(0,n_states)),'Yp' : np.empty(shape=(0,n_outputs)), 'Yf' : np.empty(shape=(0,n_outputs))}
+    # for i in ls_valid_indices:
+    #     dict_DMD_valid['Xp'] = np.concatenate([dict_DMD_valid['Xp'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
+    #     dict_DMD_valid['Xf'] = np.concatenate([dict_DMD_valid['Xf'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+    #     dict_DMD_valid['Yp'] = np.concatenate([dict_DMD_valid['Yp'], np.array(dict_MAX[i]['Y'].iloc[:, 0:-1]).T], axis=0)
+    #     dict_DMD_valid['Yf'] = np.concatenate([dict_DMD_valid['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
 
+    dict_DMD_test = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
+                     'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
+    for i, COND in itertools.product(ls_test_indices, ALL_CONDITIONS):
+        dict_DMD_test['Xp'] = np.concatenate([dict_DMD_test['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
+        dict_DMD_test['Xf'] = np.concatenate([dict_DMD_test['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+        dict_DMD_test['Yp'] = np.concatenate([dict_DMD_test['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T],axis=0)
+        dict_DMD_test['Yf'] = np.concatenate([dict_DMD_test['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T],axis=0)
+
+    storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
+    if os.path.exists(storage_folder):
+        get_input = input('Do you wanna delete the existing system[y/n]? ')
+        # get_input = 'y'
+        if get_input == 'y':
+            shutil.rmtree(storage_folder)
+            os.mkdir(storage_folder)
+        else:
+            quit(0)
+    else:
+        os.mkdir(storage_folder)
+
+    # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+    _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'min max', WITH_MEAN_FOR_STANDARD_SCALER_X=True, WITH_MEAN_FOR_STANDARD_SCALER_Y=True)
+    # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'none',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
+    with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
+        pickle.dump(dict_Scaler, handle)
+    dict_DATA_OUT = oc.scale_data_using_existing_scaler_folder(dict_DMD_train, SYSTEM_NO)
+    with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle', 'wb') as handle:
+        pickle.dump(dict_DATA_OUT, handle)
+    with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_Data.pickle', 'wb') as handle:
+        pickle.dump(dict_data, handle)
+    with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle', 'wb') as handle:
+        pickle.dump(ls_all_indices, handle)  # Only training and validation indices are stored
+    # Store the data in Koopman
+    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle',
+              'wb') as handle:
+        pickle.dump(dict_DATA_OUT, handle)
+    return
 
 def process_microplate_reader_txtfile(filename):
     RawData = []
@@ -555,7 +616,41 @@ def get_Uniprot_cell_division_genes_and_cell_cycle_genes(species_id='KT2440', se
     ls_out = set_genes1.union(set_genes2) - {''}
     return dict_out,ls_out
 
-
+# def get_Uniprot_cell_division_genes_and_cell_cycle_genes(species_id='KT2440', search_columns='genes(OLN), genes(PREFERRED), go(biological process)'):
+#     dict_gene_ontology_biological_processes = {}
+#     dict_gene_ontology_biological_processes['GO:0009083'] = 'branched-chain amino acid catabolic process'
+#     dict_gene_ontology_biological_processes['GO:0042219'] = 'cellular modified amino acid catabolic process'
+#     dict_gene_ontology_biological_processes['GO:0006575'] = 'cellular modified amino acid metabolic process'
+#     dict_gene_ontology_biological_processes['GO:0008652'] = 'cellular amino acid biosynthetic process'
+#     dict_gene_ontology_biological_processes['GO:0009063'] = 'cellular amino acid catabolic process'
+#     dict_gene_ontology_biological_processes['GO:0006520'] = 'cellular amino acid metabolic process'
+#     dict_gene_ontology_biological_processes['GO:0006865'] = 'amino acid transport'
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#     dict_gene_ontology_biological_processes[''] = ''
+#
+#
+#     query_search = {'cell cycle':'cell goa:(cycle) ' + species_id, 'cell division':'cell goa:(division) ' + species_id}
+#     up = UniProt()
+#     dict_out ={}
+#     for items in query_search.keys():
+#         search_result_i = up.search(query_search[items], frmt='tab', columns=search_columns)
+#         str_up_ALL = search_result_i.split('\n')
+#         ls_up = []
+#         for each_line in str_up_ALL[1:]:
+#             ls_up.append(each_line.split('\t'))
+#         df_up = pd.DataFrame(ls_up[0:-1])
+#         df_up.columns = str_up_ALL[0].split('\t')
+#         dict_out[items] = copy.deepcopy(df_up)
+#     set_genes1 = set(dict_out['cell cycle'].iloc[:, 0].unique())
+#     set_genes2 = set(dict_out['cell division'].iloc[:, 0].unique())
+#     ls_out = set_genes1.union(set_genes2) - {''}
+#     return dict_out,ls_out
 
 
 
