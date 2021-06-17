@@ -24,6 +24,11 @@ python3 deepDMD.py '/gpu:1' 701 13 6 4 10 > Run_info/SYS_701_RUN_13.txt &
 python3 deepDMD.py '/gpu:2' 701 14 7 4 10 > Run_info/SYS_701_RUN_14.txt &
 python3 deepDMD.py '/gpu:3' 701 15 7 4 10 > Run_info/SYS_701_RUN_15.txt &
 wait 
+python3 deepDMD.py '/gpu:0' 701 16 8 4 10 > Run_info/SYS_701_RUN_16.txt &
+python3 deepDMD.py '/gpu:1' 701 17 8 4 10 > Run_info/SYS_701_RUN_17.txt &
+python3 deepDMD.py '/gpu:2' 701 18 9 4 10 > Run_info/SYS_701_RUN_18.txt &
+python3 deepDMD.py '/gpu:3' 701 19 9 4 10 > Run_info/SYS_701_RUN_19.txt &
+wait 
 wait 
 echo "All sessions are complete" 
 echo "=======================================================" 
