@@ -34,7 +34,7 @@ NO_OF_ITERATIONS_IN_CPU = 1
 dict_hp={}
 dict_hp['ls_dict_size'] = [0,1,2,3,4]
 dict_hp['ls_nn_layers'] = [3,4]
-dict_hp['ls_nn_nodes'] = [4,10]
+dict_hp['ls_nn_nodes'] = [10,10]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp['ls_dict_size']
