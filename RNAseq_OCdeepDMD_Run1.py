@@ -48,7 +48,7 @@ plt.rcParams["font.size"] = 22
 # SYSTEM_NO =410
 # ALL_CONDITIONS = ['MX']
 # ls_runs1 = list(range(0,50)) # SYSTEM 408
-SYSTEM_NO = 700 #410,411,412
+SYSTEM_NO = 701 #410,411,412
 ALL_CONDITIONS = ['MX']
 ls_runs1 = list(range(0,50)) # SYSTEM 408
 
@@ -342,258 +342,258 @@ print('=========================================================================
 
 
 
-# ## RESULTS PLOT =========================================================================================================
+## RESULTS PLOT =========================================================================================================
+
+# Plotting the eigenfunctions
+
+run = 17
+sess = tf.InteractiveSession()
+run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
+saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+dict_params = {}
+dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+Kx = dict_params['KxT_num'].T
+e_in,W_in = np.linalg.eig(Kx)
+E_in = np.diag(e_in)
+E, W, comp_modes, comp_modes_conj = rnaf.resolve_complex_right_eigenvalues(copy.deepcopy(E_in), copy.deepcopy(W_in))
+Winv = np.linalg.inv(W)
+
+# Plot for the K
+Kx = dict_params['KxT_num'].T
+E_complex = np.linalg.eigvals(Kx)
+# K matrix heatmap
+plt.figure(figsize=(12,10))
+a = sb.heatmap(Kx, cmap="RdYlGn",center=0,vmax=np.abs(Kx).max(),vmin=-np.abs(Kx).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+cbar = a.collections[0].colorbar
+ls_gene_tags = list(dict_data_original['MX'][0]['df_X_TPM'].index)
+p = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags = ls_gene_tags,search_columns='genes(OLN),genes(PREFERRED)')
+ls_genes = []
+for i in range(len(ls_gene_tags)):
+    if p[p['Gene names  (ordered locus )']==ls_gene_tags[i]].iloc[0,1] == '':
+        ls_genes.append(p[p['Gene names  (ordered locus )']==ls_gene_tags[i]].iloc[0, 0])
+    else:
+        ls_genes.append(p[p['Gene names  (ordered locus )'] == ls_gene_tags[i]].iloc[0, 1])
+for i in range(len(Kx) - len(ls_genes)-1):
+    ls_genes.append('$\\varphi_{{{}}}(x)$'.format(i+1))
+ls_genes.append('$\\varphi_{0}(x)$')
+a.set_xticks(np.arange(0.5,len(ls_genes),1))
+a.set_yticks(np.arange(0.5,len(ls_genes),1))
+a.set_xticklabels(ls_genes,rotation =90,fontsize =19)
+a.set_yticklabels(ls_genes,rotation =0,fontsize =19)
+a.axes.set_ylim(b, t)
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+
+dict_growth_genes_biocyc = rnaf.get_PputidaKT2440_growth_genes()
+for i in ls_gene_tags:
+    if i in dict_growth_genes_biocyc['cell_cycle']:
+        print('Gene ',i, ' is in biocyc cell cycle list')
+    elif i in dict_growth_genes_biocyc['cell_division']:
+        print('Gene ',i, ' is in biocyc cell division list')
+    else:
+        print('Gene ', i, ' is not in biocyc list')
+
+
+# Eigenvalue plot
+fig = plt.figure(figsize=(7,7))
+ax = fig.add_subplot(1, 1, 1)
+circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
+ax.add_patch(circ)
+ax.plot(np.real(E_complex),np.imag(E_complex),'x',linewidth=5,color='g',markersize =12)
+ax.set_xlabel('$Re(\lambda)$')
+ax.set_ylabel('$Im(\lambda)$')
+ax.set_xticks([-1.0,-0.5,0,0.5,1.0])
+ax.set_yticks([-1.0,-0.5,0,0.5,1.0])
+ax.set_xlim([-1.1,1.1])
+ax.set_ylim([-1.1,1.1])
+plt.show()
+
 #
-# # Plotting the eigenfunctions
-#
-# run = 29
-# sess = tf.InteractiveSession()
-# run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
-# saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-# saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-# dict_params = {}
-# dict_params['psixpT'] = tf.get_collection('psixpT')[0]
-# dict_params['psixfT'] = tf.get_collection('psixfT')[0]
-# dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
-# dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
-# dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
-# Kx = dict_params['KxT_num'].T
-# e_in,W_in = np.linalg.eig(Kx)
-# E_in = np.diag(e_in)
-# E, W, comp_modes, comp_modes_conj = rnaf.resolve_complex_right_eigenvalues(copy.deepcopy(E_in), copy.deepcopy(W_in))
-# Winv = np.linalg.inv(W)
-#
-# # Plot for the K
-# Kx = dict_params['KxT_num'].T
-# E_complex = np.linalg.eigvals(Kx)
-# # K matrix heatmap
-# plt.figure(figsize=(12,10))
-# a = sb.heatmap(Kx, cmap="RdYlGn",center=0,vmax=np.abs(Kx).max(),vmin=-np.abs(Kx).max())
-# b, t = a.axes.get_ylim()  # discover the values for bottom and top
-# b += 0.5  # Add 0.5 to the bottom
-# t -= 0.5  # Subtract 0.5 from the top
-# cbar = a.collections[0].colorbar
-# ls_gene_tags = list(dict_data_original['MX'][0]['df_X_TPM'].index)
-# p = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags = ls_gene_tags,search_columns='genes(OLN),genes(PREFERRED)')
-# ls_genes = []
-# for i in range(len(ls_gene_tags)):
-#     if p[p['Gene names  (ordered locus )']==ls_gene_tags[i]].iloc[0,1] == '':
-#         ls_genes.append(p[p['Gene names  (ordered locus )']==ls_gene_tags[i]].iloc[0, 0])
-#     else:
-#         ls_genes.append(p[p['Gene names  (ordered locus )'] == ls_gene_tags[i]].iloc[0, 1])
-# for i in range(len(Kx) - len(ls_genes)-1):
-#     ls_genes.append('$\\varphi_{{{}}}(x)$'.format(i+1))
-# ls_genes.append('$\\varphi_{0}(x)$')
-# a.set_xticks(np.arange(0.5,len(ls_genes),1))
-# a.set_yticks(np.arange(0.5,len(ls_genes),1))
-# a.set_xticklabels(ls_genes,rotation =90,fontsize =19)
-# a.set_yticklabels(ls_genes,rotation =0,fontsize =19)
-# a.axes.set_ylim(b, t)
-# # here set the labelsize by 20
-# # cbar.ax.tick_params(labelsize=FONTSIZE)
-# # a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
-# # a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
-# plt.show()
-#
-#
-# dict_growth_genes_biocyc = rnaf.get_PputidaKT2440_growth_genes()
-# for i in ls_gene_tags:
-#     if i in dict_growth_genes_biocyc['cell_cycle']:
-#         print('Gene ',i, ' is in biocyc cell cycle list')
-#     elif i in dict_growth_genes_biocyc['cell_division']:
-#         print('Gene ',i, ' is in biocyc cell division list')
-#     else:
-#         print('Gene ', i, ' is not in biocyc list')
-#
-#
-# # Eigenvalue plot
-# fig = plt.figure(figsize=(7,7))
-# ax = fig.add_subplot(1, 1, 1)
-# circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
-# ax.add_patch(circ)
-# ax.plot(np.real(E_complex),np.imag(E_complex),'x',linewidth=5,color='g',markersize =12)
-# ax.set_xlabel('$Re(\lambda)$')
-# ax.set_ylabel('$Im(\lambda)$')
-# ax.set_xticks([-1.0,-0.5,0,0.5,1.0])
-# ax.set_yticks([-1.0,-0.5,0,0.5,1.0])
-# ax.set_xlim([-1.1,1.1])
-# ax.set_ylim([-1.1,1.1])
-# plt.show()
-#
-# #
-# index = 0
-# n_funcs = 8
-# XT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['XpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['XfT']],axis=0)
-# XTs = dict_ALLDATA['X_scaler'].transform(XT)
-# psiXTs_true = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: XTs})
-# psiXTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['scaled']['MX'][index]['XpT'][0:1,:]})
-# for i in range(len(dict_ALLDATA['unscaled']['MX'][index]['XfT'])):
-#     psiXTs = np.concatenate([psiXTs,np.matmul(psiXTs[-1:],dict_params['KxT_num'])])
-# Phis = np.matmul(Winv, psiXTs.T)
-# # Phis = np.matmul(Winv, psiXTs_true.T)
-# YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
-# YTs = dict_ALLDATA['Y_scaler'].transform(YT)
-#
-# x_ticks = np.array([1,2,3,4,5,6,7])
-# f,ax_o = plt.subplots(np.int(np.ceil(n_funcs/2)),2,sharex=True,figsize=(10,n_funcs*1.5))
-# # f,ax = plt.subplots(n_funcs,1,sharex=True,figsize=(5,n_funcs*1.5))
-# ax = ax_o.reshape(-1)
-# eig_func_index = 0
-# for i in range(n_funcs):
-#     try:
-#         if eig_func_index in comp_modes:
-#             ax[i].plot(x_ticks, Phis[eig_func_index, :],label = 'Real')
-#             ax[i].plot(x_ticks, Phis[eig_func_index+1, :],label = 'Imaginary')
-#             # ax[i].legend()
-#             real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
-#             imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
-#             ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
-#             eig_func_index = eig_func_index + 2
+index = 0
+n_funcs = 10
+XT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['XpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['XfT']],axis=0)
+XTs = dict_ALLDATA['X_scaler'].transform(XT)
+psiXTs_true = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: XTs})
+psiXTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['scaled']['MX'][index]['XpT'][0:1,:]})
+for i in range(len(dict_ALLDATA['unscaled']['MX'][index]['XfT'])):
+    psiXTs = np.concatenate([psiXTs,np.matmul(psiXTs[-1:],dict_params['KxT_num'])])
+Phis = np.matmul(Winv, psiXTs.T)
+# Phis = np.matmul(Winv, psiXTs_true.T)
+YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
+YTs = dict_ALLDATA['Y_scaler'].transform(YT)
+
+x_ticks = np.array([1,2,3,4,5,6,7])
+f,ax_o = plt.subplots(np.int(np.ceil(n_funcs/2)),2,sharex=True,figsize=(10,n_funcs*1.5))
+# f,ax = plt.subplots(n_funcs,1,sharex=True,figsize=(5,n_funcs*1.5))
+ax = ax_o.reshape(-1)
+eig_func_index = 0
+for i in range(n_funcs):
+    try:
+        if eig_func_index in comp_modes:
+            ax[i].plot(x_ticks, Phis[eig_func_index, :],label = 'Real')
+            ax[i].plot(x_ticks, Phis[eig_func_index+1, :],label = 'Imaginary')
+            # ax[i].legend()
+            real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
+            imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
+            ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
+            eig_func_index = eig_func_index + 2
+        else:
+            ax[i].plot(x_ticks, Phis[eig_func_index, :])
+            real_part = round(np.abs(E[eig_func_index, eig_func_index]), 3)
+            # print(real_part)
+            # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
+            ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
+            eig_func_index = eig_func_index + 1
+    except:
+        break
+ax_o[-1,0].set_xlabel('time (hrs)')
+ax_o[-1,1].set_xlabel('time (hrs)')
+ax_o[-1,0].set_xticks([0,3,6])
+ax_o[-1,1].set_xticks([0,3,6])
+f.show()
+
+ls_gene_max_var_index = sorted(range(len(XT.var(axis=0))), key=lambda i: XT.var(axis=0)[i])
+ls_gene_max_var_index.reverse()
+plt.figure(figsize=(10,6))
+for i in range(n_funcs):
+    try:
+        plt.plot(x_ticks,XTs[:,ls_gene_max_var_index[i]],label = 'gene_' + str(i))
+    except:
+        break
+plt.legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=4)
+plt.show()
+
+plt.figure(figsize=(10,6))
+for i in range(len(psiXTs[0])-len(XTs[0])):
+    if i == len(psiXTs[0]):
+        plt.plot(x_ticks, psiXTs[:,len(XTs[0])+i ], label='$\phi_{0}(x)$')
+    else:
+        plt.plot(x_ticks,psiXTs[:,len(XTs[0])+i],label = '$\phi_{{{}}}(x)$'.format(i + 1) )
+plt.legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=4)
+plt.show()
+
+
+print(r2_score(psiXTs_true,psiXTs,multioutput='raw_values'))
+
+# dict_x_index ={'MX': np.array([2,3,4,5,6,7]),'MN': np.array([4,5,6,7]),'NC': np.array([4,5,6,7])}
+# for COND_NO in range(len(ALL_CONDITIONS)):
+#     COND = ALL_CONDITIONS[COND_NO]
+#     Xs = dict_ALLDATA['X_scaler'].transform(X)
+#     Phis = np.matmul(Winv, Xps)
+#     Phis = Phis[0:-1,:]
+#     Phi = oc.inverse_transform_X(Phis.T,SYSTEM_NO).T
+#     for i in range(n_funcs):
+#         if i==0:
+#             ax[i].plot(dict_x_index[COND], Phi[i, :],label = COND)
 #         else:
-#             ax[i].plot(x_ticks, Phis[eig_func_index, :])
-#             real_part = round(np.abs(E[eig_func_index, eig_func_index]), 3)
-#             # print(real_part)
-#             # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
-#             ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
-#             eig_func_index = eig_func_index + 1
-#     except:
-#         break
-# ax_o[-1,0].set_xlabel('time (hrs)')
-# ax_o[-1,1].set_xlabel('time (hrs)')
-# ax_o[-1,0].set_xticks([0,3,6])
-# ax_o[-1,1].set_xticks([0,3,6])
+#             ax[i].plot(dict_x_index[COND], Phi[i,:])
+#         ax[i].set_title('$\lambda = $'+ str(E[i][i]))
+#
+# ax[0].legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
+# ax[-1].set_xlabel('Time [hrs]')
 # f.show()
-#
-# ls_gene_max_var_index = sorted(range(len(XT.var(axis=0))), key=lambda i: XT.var(axis=0)[i])
-# ls_gene_max_var_index.reverse()
-# plt.figure(figsize=(10,6))
-# for i in range(n_funcs):
-#     try:
-#         plt.plot(x_ticks,XTs[:,ls_gene_max_var_index[i]],label = 'gene_' + str(i))
-#     except:
-#         break
-# plt.legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=4)
-# plt.show()
-#
-# plt.figure(figsize=(10,6))
-# for i in range(len(psiXTs[0])-len(XTs[0])):
-#     if i == len(psiXTs[0]):
-#         plt.plot(x_ticks, psiXTs[:,len(XTs[0])+i ], label='$\phi_{0}(x)$')
-#     else:
-#         plt.plot(x_ticks,psiXTs[:,len(XTs[0])+i],label = '$\phi_{{{}}}(x)$'.format(i + 1) )
-# plt.legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=4)
-# plt.show()
-#
-#
-# print(r2_score(psiXTs_true,psiXTs,multioutput='raw_values'))
-#
-# # dict_x_index ={'MX': np.array([2,3,4,5,6,7]),'MN': np.array([4,5,6,7]),'NC': np.array([4,5,6,7])}
-# # for COND_NO in range(len(ALL_CONDITIONS)):
-# #     COND = ALL_CONDITIONS[COND_NO]
-# #     Xs = dict_ALLDATA['X_scaler'].transform(X)
-# #     Phis = np.matmul(Winv, Xps)
-# #     Phis = Phis[0:-1,:]
-# #     Phi = oc.inverse_transform_X(Phis.T,SYSTEM_NO).T
-# #     for i in range(n_funcs):
-# #         if i==0:
-# #             ax[i].plot(dict_x_index[COND], Phi[i, :],label = COND)
-# #         else:
-# #             ax[i].plot(dict_x_index[COND], Phi[i,:])
-# #         ax[i].set_title('$\lambda = $'+ str(E[i][i]))
-# #
-# # ax[0].legend(loc = "lower center",bbox_to_anchor=(0.5,1.005),fontsize = 22,ncol=3)
-# # ax[-1].set_xlabel('Time [hrs]')
-# # f.show()
-#
-#
-# tf.reset_default_graph()
-# sess.close()
-#
-# ##
-# # run = 13
-#
-# sess = tf.InteractiveSession()
-# run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
-# saver = tf.compat.v1.train.import_meta_graph(
-#     run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-# saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-# dict_params = {}
-# dict_params['psixfT'] = tf.get_collection('psixfT')[0]
-# dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
-# dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
-#
-#
-# # Wh matrix heatmap
-# Wh = dict_params['WhT_num'].T
-# plt.figure(figsize=(20,20))
-# a = sb.heatmap(Wh, cmap="RdYlGn",center=0,vmax=np.abs(Wh).max(),vmin=-np.abs(Wh).max())
-# b, t = a.axes.get_ylim()  # discover the values for bottom and top
-# b += 0.5  # Add 0.5 to the bottom
-# t -= 0.5  # Subtract 0.5 from the top
-# a.axes.set_ylim(b, t)
-# cbar = a.collections[0].colorbar
-# # here set the labelsize by 20
-# # cbar.ax.tick_params(labelsize=FONTSIZE)
-# # a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
-# # a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
-# plt.show()
-#
-#
-# B = np.matmul(Wh,W)
-# plt.figure(figsize=(20,20))
-# a = sb.heatmap(B, cmap="RdYlGn",center=0,vmax=np.abs(B).max(),vmin=-np.abs(B).max())
-# b, t = a.axes.get_ylim()  # discover the values for bottom and top
-# b += 0.5  # Add 0.5 to the bottom
-# t -= 0.5  # Subtract 0.5 from the top
-# a.axes.set_ylim(b, t)
-# cbar = a.collections[0].colorbar
-# # here set the labelsize by 20
-# # cbar.ax.tick_params(labelsize=FONTSIZE)
-# # a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
-# # a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
-# plt.show()
-#
-# Bmean = B.mean(axis=0)
-# ls_modes_ordered_by_output = sorted(range(len(np.abs(Bmean))), key=lambda i: np.abs(Bmean)[i])
-# ls_modes_ordered_by_output.reverse()
-#
-# x_ticks = np.array([1,2,3,4,5,6,7])
-# f,ax = plt.subplots(5,2,sharex=True,figsize=(10,n_funcs*1.5))
-# ax = ax.reshape(-1)
-# eig_func_index = 0
-# for i in range(n_funcs):
-#     try:
-#         # if eig_func_index in comp_modes:
-#         #     ax[i].plot(x_ticks, Phis[i, :],label = 'Real')
-#         #     ax[i].plot(x_ticks, Phis[i+1, :],label = 'Imaginary')
-#         #     # ax[i].legend()
-#         #     real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
-#         #     imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
-#         #     ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
-#         #     eig_func_index = eig_func_index + 2
-#         # else:
-#         ax[i].plot(x_ticks, Phis[ls_modes_ordered_by_output[i], :])
-#         real_part = round(np.abs(E[ls_modes_ordered_by_output[i], ls_modes_ordered_by_output[i]]), 3)
-#         # print(real_part)
-#         # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
-#         ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
-#         eig_func_index = eig_func_index + 1
-#     except:
-#         break
-# f.show()
-#
-# YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
-# YTs = dict_ALLDATA['Y_scaler'].transform(YT)
-# plt.figure()
-# plt.plot(x_ticks,YTs)
-# plt.show()
-#
-#
-#
-# tf.reset_default_graph()
-# sess.close()
 
 
+tf.reset_default_graph()
+sess.close()
+
+#
+# run = 13
+
+sess = tf.InteractiveSession()
+run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
+saver = tf.compat.v1.train.import_meta_graph(
+    run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+dict_params = {}
+dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
+
+
+# Wh matrix heatmap
+Wh = dict_params['WhT_num'].T
+plt.figure(figsize=(20,20))
+a = sb.heatmap(Wh, cmap="RdYlGn",center=0,vmax=np.abs(Wh).max(),vmin=-np.abs(Wh).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+a.axes.set_ylim(b, t)
+cbar = a.collections[0].colorbar
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+
+B = np.matmul(Wh,W)
+plt.figure(figsize=(20,20))
+a = sb.heatmap(B, cmap="RdYlGn",center=0,vmax=np.abs(B).max(),vmin=-np.abs(B).max())
+b, t = a.axes.get_ylim()  # discover the values for bottom and top
+b += 0.5  # Add 0.5 to the bottom
+t -= 0.5  # Subtract 0.5 from the top
+a.axes.set_ylim(b, t)
+cbar = a.collections[0].colorbar
+# here set the labelsize by 20
+# cbar.ax.tick_params(labelsize=FONTSIZE)
+# a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+# a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+plt.show()
+
+Bmean = B.mean(axis=0)
+ls_modes_ordered_by_output = sorted(range(len(np.abs(Bmean))), key=lambda i: np.abs(Bmean)[i])
+ls_modes_ordered_by_output.reverse()
+
+x_ticks = np.array([1,2,3,4,5,6,7])
+f,ax = plt.subplots(5,2,sharex=True,figsize=(10,n_funcs*1.5))
+ax = ax.reshape(-1)
+eig_func_index = 0
+for i in range(n_funcs):
+    try:
+        # if eig_func_index in comp_modes:
+        #     ax[i].plot(x_ticks, Phis[i, :],label = 'Real')
+        #     ax[i].plot(x_ticks, Phis[i+1, :],label = 'Imaginary')
+        #     # ax[i].legend()
+        #     real_part = round(np.abs(E[eig_func_index,eig_func_index]),3)
+        #     imag_part = round(np.abs(E[eig_func_index,eig_func_index+1]),3)
+        #     ax[i].set_title('$\phi_{{{},{}}}(x)$'.format(eig_func_index+1,eig_func_index+2) + ', $\lambda =$' + str(real_part) +'$\pm$j' +  str(imag_part))
+        #     eig_func_index = eig_func_index + 2
+        # else:
+        ax[i].plot(x_ticks, Phis[ls_modes_ordered_by_output[i], :])
+        real_part = round(np.abs(E[ls_modes_ordered_by_output[i], ls_modes_ordered_by_output[i]]), 3)
+        # print(real_part)
+        # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
+        ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $'+ str(real_part))
+        eig_func_index = eig_func_index + 1
+    except:
+        break
+f.show()
+
+YT = np.concatenate([dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1,:],dict_ALLDATA['unscaled']['MX'][index]['YfT']],axis=0)
+YTs = dict_ALLDATA['Y_scaler'].transform(YT)
+plt.figure()
+plt.plot(x_ticks,YTs)
+plt.show()
+
+
+
+tf.reset_default_graph()
+sess.close()
+
+##
 # Training result plot
 
 ls_obs = list(df_resultable2.loc[:,'x_obs'].unique())
@@ -622,7 +622,7 @@ df_results3_OCdeepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 ##
 ls_colors =['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 plt.figure()
-ls_obs_select =[0,1,2,3,4,5,6,7]
+ls_obs_select =[0,1,2,3,4,5,6,7,8,9]
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'OCdeepDMD xf train', capsize=9,color=ls_colors[0])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'OCdeepDMD xf valid', capsize=5,color=ls_colors[1])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'OCdeepDMD xf test', capsize=2,color=ls_colors[2])

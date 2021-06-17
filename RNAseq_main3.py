@@ -112,3 +112,38 @@ for condition,items in itertools.product(ls_conditions,range(16)):
 
 
 plot_gene_expression(dict_data_temp )
+
+## Gene ontologies of the various genes
+
+for gene_locus_tag in ls_genes_temp2:
+    print('Gene Locus Tag :',gene_locus_tag)
+    ls_GO_locustag_temp = df_GO[df_GO['locus tag']== gene_locus_tag].iloc[-1,-1]
+    print('Biological Gene Ontologies :')
+    for items in ls_GO_locustag_temp:
+        print(items,' : ',dict_GOkey[items])
+
+##
+ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+n_genes_uniprot_biocyc = len(ls_genes_temp2 )
+n_rows = 1#np.int(np.ceil(np.sqrt(n_genes_uniprot_biocyc)))
+n_cols = np.int(np.ceil(n_genes_uniprot_biocyc/ n_rows))
+f,ax = plt.subplots(n_rows, n_cols, figsize =(15,3))
+ax_l = ax.reshape(-1)
+for i in range(n_genes_uniprot_biocyc):
+    df_gene_replicates_MAX = pd.DataFrame([])
+    df_gene_replicates_MIN = pd.DataFrame([])
+    df_gene_replicates_NC = pd.DataFrame([])
+    for j in range(16):
+        try:
+            df_gene_replicates_MAX = pd.concat([df_gene_replicates_MAX,dict_data_temp['MX'][j]['df_X_TPM'].iloc[i:i+1,:]],axis=0)
+            df_gene_replicates_MIN = pd.concat([df_gene_replicates_MIN, dict_data_temp['MN'][j]['df_X_TPM'].iloc[i:i + 1, :]], axis=0)
+            df_gene_replicates_NC = pd.concat([df_gene_replicates_NC, dict_data_temp['NC'][j]['df_X_TPM'].iloc[i:i + 1, :]], axis=0)
+        except:
+            df_gene_replicates_MAX = dict_data_temp['MX'][j]['df_X_TPM'].iloc[i:i + 1, :]
+            df_gene_replicates_MIN = dict_data_temp['MN'][j]['df_X_TPM'].iloc[i:i + 1, :]
+            df_gene_replicates_NC = dict_data_temp['NC'][j]['df_X_TPM'].iloc[i:i + 1, :]
+    ax_l[i].errorbar(np.array([1,2,3,4,5,6,7]), df_gene_replicates_MAX.mean(axis=0),yerr =df_gene_replicates_MAX.std(axis=0),color = ls_colors[0],capsize =8)
+    ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_MIN.mean(axis=0), yerr=df_gene_replicates_MIN.std(axis=0),color = ls_colors[1],capsize =8)
+    ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_NC.mean(axis=0),yerr=df_gene_replicates_NC.std(axis=0), color=ls_colors[2],capsize =8)
+    ax_l[i].set_title(ls_genes_temp2[i])
+f.show()
