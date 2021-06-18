@@ -9,7 +9,7 @@ DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 701
 
 dict_hp={}
 dict_hp['x']={}
-dict_hp['x']['ls_dict_size'] = [1]
+dict_hp['x']['ls_dict_size'] = [1,2,3,4,5,6,7,8]
 dict_hp['x']['ls_nn_layers'] = [5]
 dict_hp['x']['ls_nn_nodes'] = [10]
 dict_hp['y']={}
