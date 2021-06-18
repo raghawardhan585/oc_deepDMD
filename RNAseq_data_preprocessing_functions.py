@@ -11,6 +11,9 @@ import pickle
 import matplotlib.pyplot as plt
 import random
 import ocdeepdmd_simulation_examples_helper_functions as oc
+import tensorflow as tf
+from sklearn.metrics import r2_score
+import seaborn as sb
 
 # Constants
 MAX_REPLICATES = 2
@@ -213,7 +216,7 @@ def get_dataframe_with_differenced_data(df_IN):
     df_OUT = pd.DataFrame(np_diff.reshape(len(df_columns),len(df_indices)).T,columns = df_columns,index = df_indices)
     return df_OUT
 
-def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True):
+def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs =-1):
     # Processing the OD data - Inupts are IGNORED
     # TODO - Include the inputs of Casein and Glucose if need be for later
     df_OD_RAW = process_microplate_reader_txtfile(OD_FILE)
@@ -225,10 +228,12 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True):
             for well in dict_well[COND][REP]:
                 df_temp = copy.deepcopy(pd.DataFrame(df_OD_RAW.loc[:,well]))
                 # Formulate  and assign the new matrix
-                n_outputs = np.sum(np.array(df_temp.index)<1) # We assume that the measurement starts at t=0
+                n_outputs_per_hour = np.sum(np.array(df_temp.index)<1) # We assume that the measurement starts at t=0
                 y_temp = np.asarray(df_temp.iloc[:, :], dtype='f').reshape(-1)
-                N_samples = np.int(np.floor(len(y_temp)/n_outputs))
-                dict_OD[COND][i] = pd.DataFrame(y_temp[0:N_samples*n_outputs].reshape((-1,n_outputs)).T)
+                N_samples = np.int(np.floor(len(y_temp)/n_outputs_per_hour))
+                if not((type(n_outputs) == int) and (n_outputs>0)):
+                    n_outputs = n_outputs_per_hour
+                dict_OD[COND][i] = pd.DataFrame(y_temp[0:N_samples*n_outputs].reshape((-1,n_outputs)).T).iloc[0:n_outputs,:]
                 i = i+1
 
     # Processing the RNAseq data
@@ -697,7 +702,303 @@ def get_Uniprot_cell_division_genes_and_cell_cycle_genes(species_id='KT2440', se
 
 
 
+# ====================================================================================================================
+# Prediction Functions
+# ====================================================================================================================
 
+def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'Sequential'):
+    ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+    original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
+    indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
+    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO)
+    dict_predict_STATS_file = root_run_file + '/dict_predict_STATS.pickle'
+
+    # Indices [train, validation and test]
+    with open(indices_path, 'rb') as handle:
+        ls_data_indices = pickle.load(handle)
+    ls_train_indices = ls_data_indices[0:12]
+    ls_valid_indices = ls_data_indices[12:14]
+    ls_test_indices = ls_data_indices[14:16]
+    # Datasets [sorted as scaled and unscaled] and Conditions
+    with open(original_data_path, 'rb') as handle:
+        dict_data_original = pickle.load(handle)
+
+    n_genes = len(dict_data_original[ALL_CONDITIONS[0]][ls_data_indices[0]]['df_X_TPM'])
+
+    dict_empty_all_conditions = {}
+    for COND in ALL_CONDITIONS:
+        dict_empty_all_conditions[COND] = {}
+
+    dict_temp = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=['MX'])
+    dict_scaled_data = dict_temp['scaled']
+    dict_unscaled_data = dict_temp['unscaled']
+
+    # Generate predictions for each curve and write down the error statistics for each run
+    ls_all_run_indices = []
+    for folder in os.listdir(root_run_file + '/' + METHOD):
+        if folder[0:4] == 'RUN_':  # It is a RUN folder
+            ls_all_run_indices.append(int(folder[4:]))
+    ls_runs1 = set(ls_runs1).intersection(set(ls_all_run_indices))
+    # Open the predictions folder or create one if it doesn't exist
+    try:
+        with open(dict_predict_STATS_file, 'rb') as handle:
+            dict_predict_STATS = pickle.load(handle)
+    except:
+        dict_predict_STATS = {}
+
+    dict_resultable1 = {}
+    # Generate the predictions for each run
+    for run in ls_runs1:
+        dict_resultable1[run] = {}
+        print('RUN: ', run)
+        sess = tf.InteractiveSession()
+        run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
+        saver = tf.compat.v1.train.import_meta_graph(
+            run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+        saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+        dict_params = {}
+        dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+        dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+        dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+        dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+        dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+        dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
+        for items in dict_instant_run_result.keys():
+            dict_instant_run_result[items] = {'train_Xf_1step': [], 'train_Xf_nstep': [], 'valid_Xf_1step': [],
+                                              'valid_Xf_nstep': [], 'test_Xf_1step': [], 'test_Xf_nstep': []}
+        for COND, data_index in itertools.product(ALL_CONDITIONS, ls_data_indices):
+            # Figure out if the index belongs to train, test or validation
+            if data_index in ls_train_indices:
+                key2_start = 'train_'
+            elif data_index in ls_valid_indices:
+                key2_start = 'valid_'
+            else:
+                key2_start = 'test_'
+            # --- *** Generate prediction *** ---
+
+            # Xf - 1 step
+            psiXpT = dict_params['psixpT'].eval(
+                feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
+            psiXfT_hat = np.matmul(psiXpT, dict_params['KxT_num'])
+            XfT_hat = oc.inverse_transform_X(psiXfT_hat[:, 0:n_genes], SYSTEM_NO)
+            dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat))#, multioutput='variance_weighted'))
+            # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(np.mean(np.square(XfT_hat)))
+            # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfT_hat[:,0:n_genes], multioutput='variance_weighted'))
+            # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_params['psixfT'].eval(
+            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfT_hat,
+            #                                                                        multioutput='variance_weighted'))
+
+            # Xf - n step
+            psiXfTn_hat = psiXpT[0:1, :]  # get the initial condition
+            for i in range(len(dict_scaled_data[COND][data_index]['XfT'])):  # predict n - steps
+                psiXfTn_hat = np.concatenate([psiXfTn_hat, np.matmul(psiXfTn_hat[-1:], dict_params['KxT_num'])], axis=0)
+            psiXfTn_hat = psiXfTn_hat[1:, :]
+            # Remove the initial condition and the lifted states; then unscale the variables
+            XfTn_hat = oc.inverse_transform_X(psiXfTn_hat[:, 0:n_genes], SYSTEM_NO)
+            dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat))#, multioutput='variance_weighted'))
+            # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(np.mean(np.square(XfTn_hat)))
+            # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfTn_hat[:, 0:n_genes],multioutput='variance_weighted'))
+            # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_params['psixfT'].eval(
+            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfTn_hat,
+            #                                                                        multioutput='variance_weighted'))
+
+            # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
+        # Save the stats to the dictionary - for MX,MN and NC, we save (train, test, valid) * (Xf1step, Xfnstep, Yf1step, Yfnstep)
+        for COND in dict_instant_run_result.keys():
+            for items in dict_instant_run_result[COND].keys():
+                dict_instant_run_result[COND][items] = np.mean(dict_instant_run_result[COND][items])
+        dict_predict_STATS[run] = pd.DataFrame(dict_instant_run_result).T
+        dict_resultable1[run]['train_Xf_1step'] = dict_predict_STATS[run].loc[:, 'train_Xf_1step'].mean()
+        dict_resultable1[run]['valid_Xf_1step'] = dict_predict_STATS[run].loc[:, 'valid_Xf_1step'].mean()
+        dict_resultable1[run]['test_Xf_1step'] = dict_predict_STATS[run].loc[:, 'test_Xf_1step'].mean()
+        dict_resultable1[run]['train_Xf_nstep'] = dict_predict_STATS[run].loc[:, 'train_Xf_nstep'].mean()
+        dict_resultable1[run]['valid_Xf_nstep'] = dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean()
+        dict_resultable1[run]['test_Xf_nstep'] = dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean()
+        tf.reset_default_graph()
+        sess.close()
+
+    print('============================================================================')
+    print('RESULT TABLE 1')
+    df_resultable1 = pd.DataFrame(dict_resultable1).T
+    print(df_resultable1)
+    print('============================================================================')
+
+    # Need a plot of the results
+
+    dict_resultable_2 = {}
+    for run in dict_predict_STATS.keys():
+        with open(root_run_file + '/' + METHOD + '/Run_' + str(run) + '/dict_hyperparameters.pickle', 'rb') as handle:
+            dict_hp = pickle.load(handle)
+        dict_resultable_2[run] = {'x_obs': dict_hp['x_obs'],
+                                  'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_X_nstep_train':
+                                      dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), 'r2_X_nstep_valid':
+                                      dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), 'r2_X_nstep_test':
+                                      dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean(),
+                                  'lambda': dict_hp['regularization factor']}
+        # dict_resultable_2[run] = {'x_obs': dict_hp['x_obs'],
+        #                           'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_X_1step_train':
+        #                               dict_predict_STATS[run].loc[:, 'valid_Xf_1step'].mean(), 'r2_X_1step_valid':
+        #                               dict_predict_STATS[run].loc[:, 'valid_Xf_1step'].mean(), 'r2_X_1step_test':
+        #                               dict_predict_STATS[run].loc[:, 'test_Xf_1step'].mean()}
+    df_resultable2 = pd.DataFrame(dict_resultable_2).T.sort_values(by='x_obs')
+    print('============================================================================')
+    print('RESULT TABLE 2')
+    print(df_resultable2)
+    print('============================================================================')
+    return df_resultable2
+
+
+def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
+    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
+    with open(original_data_path, 'rb') as handle:
+        dict_data_original = pickle.load(handle)
+    sess = tf.InteractiveSession()
+    run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
+    saver = tf.compat.v1.train.import_meta_graph(
+        run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+    dict_params = {}
+    dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+    dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+    dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+    dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+    dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+    Kx = dict_params['KxT_num'].T
+    e_in, W_in = np.linalg.eig(Kx)
+    E_in = np.diag(e_in)
+    E, W, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(copy.deepcopy(E_in), copy.deepcopy(W_in))
+    Winv = np.linalg.inv(W)
+
+    # Plot for the K
+    Kx = dict_params['KxT_num'].T
+    E_complex = np.linalg.eigvals(Kx)
+    # K matrix heatmap
+    plt.figure(figsize=(12, 10))
+    a = sb.heatmap(Kx, cmap="RdYlGn", center=0, vmax=np.abs(Kx).max(), vmin=-np.abs(Kx).max())
+    b, t = a.axes.get_ylim()  # discover the values for bottom and top
+    b += 0.5  # Add 0.5 to the bottom
+    t -= 0.5  # Subtract 0.5 from the top
+    cbar = a.collections[0].colorbar
+    ls_gene_tags = list(dict_data_original['MX'][0]['df_X_TPM'].index)
+    p = get_gene_Uniprot_DATA(ls_all_locus_tags=ls_gene_tags, search_columns='genes(OLN),genes(PREFERRED)')
+    ls_genes = []
+    for i in range(len(ls_gene_tags)):
+        if p[p['Gene names  (ordered locus )'] == ls_gene_tags[i]].iloc[0, 1] == '':
+            ls_genes.append(p[p['Gene names  (ordered locus )'] == ls_gene_tags[i]].iloc[0, 0])
+        else:
+            ls_genes.append(p[p['Gene names  (ordered locus )'] == ls_gene_tags[i]].iloc[0, 1])
+    for i in range(len(Kx) - len(ls_genes) - 1):
+        ls_genes.append('$\\varphi_{{{}}}(x)$'.format(i + 1))
+    ls_genes.append('$\\varphi_{0}(x)$')
+    a.set_xticks(np.arange(0.5, len(ls_genes), 1))
+    a.set_yticks(np.arange(0.5, len(ls_genes), 1))
+    a.set_xticklabels(ls_genes, rotation=90, fontsize=19)
+    a.set_yticklabels(ls_genes, rotation=0, fontsize=19)
+    a.axes.set_ylim(b, t)
+    # here set the labelsize by 20
+    # cbar.ax.tick_params(labelsize=FONTSIZE)
+    # a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
+    # a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+    plt.show()
+
+    # Eigenvalue plot
+    fig = plt.figure(figsize=(7, 7))
+    ax = fig.add_subplot(1, 1, 1)
+    circ = plt.Circle((0, 0), radius=1, edgecolor='None', facecolor='cyan')
+    ax.add_patch(circ)
+    ax.plot(np.real(E_complex), np.imag(E_complex), 'x', linewidth=5, color='g', markersize=12)
+    ax.set_xlabel('$Re(\lambda)$')
+    ax.set_ylabel('$Im(\lambda)$')
+    ax.set_xticks([-1.0, -0.5, 0, 0.5, 1.0])
+    ax.set_yticks([-1.0, -0.5, 0, 0.5, 1.0])
+    ax.set_xlim([-1.1, 1.1])
+    ax.set_ylim([-1.1, 1.1])
+    plt.show()
+
+    # Eigenfunction plot
+    dict_ALLDATA = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=ALL_CONDITIONS)
+    index = 0
+    n_funcs = len(E) - len(comp_modes)
+    n_funcs = n_funcs + np.mod(n_funcs,2)
+    XT = np.concatenate(
+        [dict_ALLDATA['unscaled']['MX'][index]['XpT'][0:1, :], dict_ALLDATA['unscaled']['MX'][index]['XfT']], axis=0)
+    XTs = dict_ALLDATA['X_scaler'].transform(XT)
+    psiXTs_true = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: XTs})
+    psiXTs = dict_params['psixpT'].eval(
+        feed_dict={dict_params['xpT_feed']: dict_ALLDATA['scaled']['MX'][index]['XpT'][0:1, :]})
+    for i in range(len(dict_ALLDATA['unscaled']['MX'][index]['XfT'])):
+        psiXTs = np.concatenate([psiXTs, np.matmul(psiXTs[-1:], dict_params['KxT_num'])])
+    Phis = np.matmul(Winv, psiXTs.T)
+    # Phis = np.matmul(Winv, psiXTs_true.T)
+    YT = np.concatenate(
+        [dict_ALLDATA['unscaled']['MX'][index]['YpT'][0:1, :], dict_ALLDATA['unscaled']['MX'][index]['YfT']], axis=0)
+    YTs = dict_ALLDATA['Y_scaler'].transform(YT)
+
+    x_ticks = np.array([1, 2, 3, 4, 5, 6, 7])
+    f, ax_o = plt.subplots(np.int(np.ceil(n_funcs / 2)), 2, sharex=True, sharey= True,figsize=(10, n_funcs * 1.5))
+    # f,ax = plt.subplots(n_funcs,1,sharex=True,figsize=(5,n_funcs*1.5))
+    ax = ax_o.reshape(-1)
+    eig_func_index = 0
+    for i in range(n_funcs):
+        try:
+            if eig_func_index in comp_modes:
+                ax[i].plot(x_ticks, Phis[eig_func_index, :]/np.max(np.abs(Phis[eig_func_index, :])), label='Real')
+                ax[i].plot(x_ticks, Phis[eig_func_index + 1, :]/np.max(np.abs(Phis[eig_func_index + 1, :])), label='Imaginary')
+                # ax[i].legend()
+                real_part = round(np.abs(E[eig_func_index, eig_func_index]), 3)
+                imag_part = round(np.abs(E[eig_func_index, eig_func_index + 1]), 3)
+                ax[i].set_title(
+                    '$\phi_{{{},{}}}(x)$'.format(eig_func_index + 1, eig_func_index + 2) + ', $\lambda =$' + str(
+                        real_part) + '$\pm$j' + str(imag_part))
+                eig_func_index = eig_func_index + 2
+            else:
+                ax[i].plot(x_ticks, Phis[eig_func_index, :]/np.max(np.abs(Phis[eig_func_index, :])),linewidth =2)
+                real_part = round(np.abs(E[eig_func_index, eig_func_index]), 3)
+                # print(real_part)
+                # ax[i].set_title('$\phi_{{{}}}(x), \lambda = {{{}}}$'.format(eig_func_index+1,real_part))
+                ax[i].set_title('$\phi_{{{}}}(x)$'.format(eig_func_index + 1) + ', $\lambda = $' + str(real_part))
+                eig_func_index = eig_func_index + 1
+            ax[i].set_ylim([-1, 1])
+        except:
+            break
+    ax_o[-1, 0].set_xlabel('time (hrs)')
+    ax_o[-1, 1].set_xlabel('time (hrs)')
+    ax_o[-1, 0].set_xticks([0, 3, 6])
+    ax_o[-1, 1].set_xticks([0, 3, 6])
+    f.show()
+
+    # Plot of the genes - base states
+    ls_gene_max_var_index = sorted(range(len(XT.var(axis=0))), key=lambda i: XT.var(axis=0)[i])
+    ls_gene_max_var_index.reverse()
+    plt.figure(figsize=(10, 6))
+    for i in range(n_funcs):
+        try:
+            plt.plot(x_ticks, XTs[:, ls_gene_max_var_index[i]], label='gene_' + str(i))
+        except:
+            break
+    plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=4)
+    plt.show()
+
+    # Plot of the observables
+    plt.figure(figsize=(10, 6))
+    for i in range(len(psiXTs[0]) - len(XTs[0])):
+        if i == len(psiXTs[0]):
+            plt.plot(x_ticks, psiXTs[:, len(XTs[0]) + i], label='$\psi_{0}(x)$')
+        else:
+            plt.plot(x_ticks, psiXTs[:, len(XTs[0]) + i], label='$\psi_{{{}}}(x)$'.format(i + 1))
+    plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=4)
+    plt.show()
+
+    tf.reset_default_graph()
+    sess.close()
+
+    return
 
 
 

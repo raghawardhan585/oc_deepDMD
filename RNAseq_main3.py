@@ -44,6 +44,7 @@ def plot_gene_expression(dict_data):
     f.show()
     return
 
+rnaf.organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs= 1)
 gene_ontology_file = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/Gene_Ontologies_map.pickle'
 with open(gene_ontology_file, 'rb') as handle:
     dict_gene_ontology = pickle.load(handle)
@@ -100,8 +101,13 @@ plot_gene_expression(dict_data_GO_filtered)
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 701, ALL_CONDITIONS= ['MX'])
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_max_denoised), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 702, ALL_CONDITIONS= ['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_max_denoised), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 702, ALL_CONDITIONS= ['MX'])
+
+
+# With 1 output instead of 20
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 703, ALL_CONDITIONS= ['MX'])
 ##
 
 ls_genes_temp2 = list(dict_data['MX'][0]['df_X_TPM'].index)
