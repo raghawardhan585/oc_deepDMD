@@ -27,14 +27,14 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 65
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 701
 NO_OF_ITERATIONS_PER_GPU = 1
 NO_OF_ITERATIONS_IN_CPU = 1
 
 dict_hp={}
-dict_hp['ls_dict_size'] = [2,3,4]
-dict_hp['ls_nn_layers'] = [3,4,8]
-dict_hp['ls_nn_nodes'] = [6,9]
+dict_hp['ls_dict_size'] = [0,1,2,3,4,5,6,7]
+dict_hp['ls_nn_layers'] = [4]
+dict_hp['ls_nn_nodes'] = [10,10]
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
 
 ls_dict_size = dict_hp['ls_dict_size']
@@ -48,78 +48,34 @@ for i in range(len(a)):
 print(dict_all_run_conditions)
 # Scheduling
 mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
-gt = open('/Users/shara/Desktop/oc_deepDMD/goldentensor_run.sh','w')
-ot = open('/Users/shara/Desktop/oc_deepDMD/optictensor_run.sh','w')
-ls_files  = [mt,gt,ot]
-for items in ls_files:
-    items.write('#!/bin/bash \n')
-    items.write('rm -rf _current_run_saved_files \n')
-    items.write('mkdir _current_run_saved_files \n')
-    items.write('rm -rf Run_info \n')
-    items.write('mkdir Run_info \n')
-    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] \n')
+
+mt.write('#!/bin/bash \n')
+mt.write('rm -rf _current_run_saved_files \n')
+mt.write('mkdir _current_run_saved_files \n')
+mt.write('rm -rf Run_info \n')
+mt.write('mkdir Run_info \n')
+mt.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] \n')
 running_code = 'deepDMD.py'
-ls_run_no =[0,0,0]
+ls_run_no = 0
 for i in dict_all_run_conditions.keys():
-    if np.mod(i,10) ==0 or np.mod(i,10) ==1: # Microtensor CPU 0
-        general_run = 'python3 ' + running_code + ' \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[0]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[0]) + '.txt &\n'
-        ls_files[0].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_files[0].write('wait \n')
-        ls_run_no[0] = ls_run_no[0] + 1
-    elif np.mod(i,10)==9: # Goldentensor GPU 3
-        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_files[1].write('wait \n')
-        ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,10) == 8: # Goldentensor GPU 2
-        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,10) == 7: # Goldentensor GPU 1
-        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,10)==6: # Goldentensor GPU 0
-        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
-    elif np.mod(i,10) == 5: # Optictensor GPU 3
-        general_run = 'python3 ' + running_code + ' \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-        ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_files[2].write('wait \n')
-        ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,10) == 4: # Optictensor GPU 2
-        general_run = 'python3 ' + running_code + ' \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-        ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,10)==3: # Optictensor GPU 1
-        general_run = 'python3 ' + running_code + ' \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-        ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[2] = ls_run_no[2] + 1
-    elif np.mod(i,10) == 2: # Optictensor GPU 0
-        general_run = 'python3 ' + running_code + ' \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-        ls_files[2].write(general_run + dict_all_run_conditions[i] + write_to_file)
-        ls_run_no[2] = ls_run_no[2] + 1
-for items in ls_files:
-    items.write('wait \n')
-    items.write('echo "All sessions are complete" \n')
-    items.write('echo "=======================================================" \n')
-    items.write('cd .. \n')
-    items.write('rm -R _current_run_saved_files \n')
-    items.write('rm -R Run_info \n')
-    items.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
-    items.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
-    items.write('cd oc_deepDMD/ \n')
-    items.close()
+    # Microtensor CPU 0
+    general_run = 'python3 ' + running_code + ' \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no) + ' '
+    write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no) + '.txt &\n'
+    mt.write(general_run + dict_all_run_conditions[i] + write_to_file)
+    mt.write('wait \n')
+    ls_run_no = ls_run_no + 1
+
+
+mt.write('wait \n')
+mt.write('echo "All sessions are complete" \n')
+mt.write('echo "=======================================================" \n')
+mt.write('cd .. \n')
+mt.write('rm -R _current_run_saved_files \n')
+mt.write('rm -R Run_info \n')
+mt.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
+mt.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
+mt.write('cd oc_deepDMD/ \n')
+mt.close()
 
 ##
 import deepDMD_helper_functions as dp
