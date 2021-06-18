@@ -27,7 +27,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 701#406
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 702#406
 NO_OF_ITERATIONS_PER_GPU = 1
 NO_OF_ITERATIONS_IN_CPU = 1
 

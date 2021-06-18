@@ -97,8 +97,11 @@ plot_gene_expression(dict_data_GO_filtered)
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 700, ALL_CONDITIONS= ['MX'])
 
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 701, ALL_CONDITIONS= ['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 701, ALL_CONDITIONS= ['MX'])
+
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_DATA_max_denoised), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 702, ALL_CONDITIONS= ['MX'])
 ##
 
 ls_genes_temp2 = list(dict_data['MX'][0]['df_X_TPM'].index)
@@ -114,13 +117,15 @@ for condition,items in itertools.product(ls_conditions,range(16)):
 plot_gene_expression(dict_data_temp )
 
 ## Gene ontologies of the various genes
-
+df_gene_name = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags = ls_genes_temp2,search_columns='genes(OLN),genes(PREFERRED)')
+print('-----------------------')
 for gene_locus_tag in ls_genes_temp2:
-    print('Gene Locus Tag :',gene_locus_tag)
+    print('Gene Locus Tag :',gene_locus_tag,' | Gene Name :',df_gene_name[df_gene_name['Gene names  (ordered locus )']== gene_locus_tag].iloc[-1,-1])
     ls_GO_locustag_temp = df_GO[df_GO['locus tag']== gene_locus_tag].iloc[-1,-1]
     print('Biological Gene Ontologies :')
     for items in ls_GO_locustag_temp:
         print(items,' : ',dict_GOkey[items])
+    print('-----------------------')
 
 ##
 ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
