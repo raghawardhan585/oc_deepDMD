@@ -105,7 +105,7 @@ BATCH_SIZE = 72
 ls_dict_training_params = []
 # dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 1000, 'batch_size': BATCH_SIZE} #20000
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': BATCH_SIZE} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 100000, 'batch_size': BATCH_SIZE} #20000
 ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': BATCH_SIZE}
 ls_dict_training_params.append(dict_training_params)

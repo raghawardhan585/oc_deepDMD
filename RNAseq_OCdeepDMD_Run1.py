@@ -92,15 +92,21 @@ dict_empty_all_conditions ={}
 for COND in ALL_CONDITIONS:
     dict_empty_all_conditions[COND] = {}
 
-dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
-dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
-for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
-    dict_intermediate = oc.scale_data_using_existing_scaler_folder(
-        {'Xp': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
-         'Xf': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T}, SYSTEM_NO)
-    dict_scaled_data[COND][i] = {'XpT': dict_intermediate['Xp'], 'XfT': dict_intermediate['Xf']}
-    dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
-                                   'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T}
+
+
+dict_temp = rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX'])
+dict_scaled_data = dict_temp['scaled']
+dict_unscaled_data = dict_temp['unscaled']
+
+# dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
+# dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
+# for COND,i in itertools.product(ALL_CONDITIONS,ls_data_indices):
+#     dict_intermediate = oc.scale_data_using_existing_scaler_folder(
+#         {'Xp': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
+#          'Xf': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T}, SYSTEM_NO)
+#     dict_scaled_data[COND][i] = {'XpT': dict_intermediate['Xp'], 'XfT': dict_intermediate['Xf']}
+#     dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
+#                                    'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T}
 
 # Generate predictions for each curve and write down the error statistics for each run
 ls_all_run_indices = []
@@ -227,32 +233,10 @@ print('=========================================================================
 # with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
 #     pickle.dump(d,handle)
 
-# ## TESTING OUT OUTPUT
-# run = 2
-# sess = tf.InteractiveSession()
-# run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
-# saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-# saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-# dict_params = {}
-# dict_params['psixpT'] = tf.get_collection('psixpT')[0]
-# dict_params['psixfT'] = tf.get_collection('psixfT')[0]
-# dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
-# dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
-# dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
-#
+##
+
 dict_ALLDATA = rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ALL_CONDITIONS)
-#
-#
-# for phase in ['train','valid','test']:
-#     psiXfTs = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA[phase]['XfTs']})
-#     YfTs = dict_ALLDATA[phase]['YfTs']
-#     if phase == 'train':
-#         model_Y = LinearRegression(fit_intercept=True)
-#         model_Y.fit(psiXfTs, YfTs)
-#     print(phase, 'score [scaled]: ', r2_score(YfTs.reshape(-1),model_Y.predict(psiXfTs).reshape(-1)))
-#     print(phase, 'score [unscaled]: ', r2_score(dict_ALLDATA['Y_scaler'].inverse_transform(dict_ALLDATA[phase]['YfTs']).reshape(-1),dict_ALLDATA['Y_scaler'].inverse_transform(model_Y.predict(psiXfTs)).reshape(-1)))
-# tf.reset_default_graph()
-# sess.close()
+
 
 ## Output predictions
 # #
@@ -613,13 +597,13 @@ for i in ls_obs:
     dict_result3[i]['r2_X_nstep_valid_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_valid']).std()
     dict_result3[i]['r2_X_nstep_test_mean'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).mean()
     dict_result3[i]['r2_X_nstep_test_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).std()
-    df_temp = copy.deepcopy(df_resultable2_Y[df_resultable2_Y['x_obs'] == i])
-    dict_result3[i]['r2_Y_train_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_train']).mean()
-    dict_result3[i]['r2_Y_train_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_train']).std()
-    dict_result3[i]['r2_Y_valid_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_valid']).mean()
-    dict_result3[i]['r2_Y_valid_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_valid']).std()
-    dict_result3[i]['r2_Y_test_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_test']).mean()
-    dict_result3[i]['r2_Y_test_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_test']).std()
+    # df_temp = copy.deepcopy(df_resultable2_Y[df_resultable2_Y['x_obs'] == i])
+    # dict_result3[i]['r2_Y_train_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_train']).mean()
+    # dict_result3[i]['r2_Y_train_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_train']).std()
+    # dict_result3[i]['r2_Y_valid_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_valid']).mean()
+    # dict_result3[i]['r2_Y_valid_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_valid']).std()
+    # dict_result3[i]['r2_Y_test_mean'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_test']).mean()
+    # dict_result3[i]['r2_Y_test_std'] = np.maximum(0,df_temp.loc[:, 'r2_Yf_test']).std()
 
 # df_results3_deepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 df_results3_OCdeepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
@@ -660,47 +644,46 @@ plt.show()
 # plt.show()
 
 ## Do outputs lie in the span of the observables ?
-
-run = 16 #18
-print('RUN: ', run)
-sess = tf.InteractiveSession()
-run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
-saver = tf.compat.v1.train.import_meta_graph(
-    run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-dict_params = {}
-dict_params['psixpT'] = tf.get_collection('psixpT')[0]
-dict_params['psixfT'] = tf.get_collection('psixfT')[0]
-dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
-dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
-dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
-
-
-# psiXpT_train = np.empty(shape=(0,len(psiXpT[0])))
-Yps_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
-Yp_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
-for COND,data_index in itertools.product(ALL_CONDITIONS,ls_train_indices):
-    try:
-        psiXpT_train = np.concatenate([psiXpT_train,dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})],axis=0)
-    except:
-        psiXpT_train = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
-    Yps_train = np.concatenate([Yps_train, dict_scaled_data[COND][data_index]['YpT']], axis=0)
-    Yp_train = np.concatenate([Yp_train, dict_unscaled_data[COND][data_index]['YpT']], axis=0)
-
-lin_model_Y = LinearRegression(fit_intercept=False).fit(psiXpT_train,Yps_train)
-print(r2_score(Yps_train.reshape(-1),lin_model_Y.predict(psiXpT_train).reshape(-1)))
-print(r2_score(Yp_train.reshape(-1),oc.inverse_transform_Y(lin_model_Y.predict(psiXpT_train),SYSTEM_NO).reshape(-1)))
-
-dict_indices = {'Train': ls_train_indices, 'Validation': ls_valid_indices, 'Test': ls_test_indices}
-for items in dict_indices.keys():
-    print('===============================================')
-    print(items)
-    print('===============================================')
-    for COND,data_index in itertools.product(ALL_CONDITIONS,dict_indices[items]):
-        print('COND: ', COND, 'Curve: ', data_index)
-        psiXpT = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
-        Yp_hat = oc.inverse_transform_Y(lin_model_Y.predict(psiXpT),SYSTEM_NO)
-        print('Fit Score r2 = ',r2_score(dict_unscaled_data[COND][data_index]['YpT'].reshape(-1), Yp_hat.reshape(-1)) )
-
-tf.reset_default_graph()
-sess.close()
+#
+# run = 16 #18
+# print('RUN: ', run)
+# sess = tf.InteractiveSession()
+# run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+# saver = tf.compat.v1.train.import_meta_graph(
+#     run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+# saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+# dict_params = {}
+# dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+# dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+# dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+# dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+# dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+#
+#
+# # psiXpT_train = np.empty(shape=(0,len(psiXpT[0])))
+# Yps_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
+# Yp_train = np.empty(shape=(0,len(dict_scaled_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['YpT'][0])))
+# for COND,data_index in itertools.product(ALL_CONDITIONS,ls_train_indices):
+#     try:
+#         psiXpT_train = np.concatenate([psiXpT_train,dict_params['psixpT'].eval(feed_dict ={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})],axis=0)
+#     except:
+#         psiXpT_train = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
+#     Yps_train = np.concatenate([Yps_train, dict_scaled_data[COND][data_index]['YpT']], axis=0)
+#     Yp_train = np.concatenate([Yp_train, dict_unscaled_data[COND][data_index]['YpT']], axis=0)
+#
+# lin_model_Y = LinearRegression(fit_intercept=False).fit(psiXpT_train,Yps_train)
+# print(r2_score(Yps_train.reshape(-1),lin_model_Y.predict(psiXpT_train).reshape(-1)))
+# print(r2_score(Yp_train.reshape(-1),oc.inverse_transform_Y(lin_model_Y.predict(psiXpT_train),SYSTEM_NO).reshape(-1)))
+#
+# dict_indices = {'Train': ls_train_indices, 'Validation': ls_valid_indices, 'Test': ls_test_indices}
+# for items in dict_indices.keys():
+#     print('===============================================')
+#     print(items)
+#     print('===============================================')
+#     for COND,data_index in itertools.product(ALL_CONDITIONS,dict_indices[items]):
+#         print('COND: ', COND, 'Curve: ', data_index)
+#         psiXpT = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
+#         Yp_hat = oc.inverse_transform_Y(lin_model_Y.predict(psiXpT),SYSTEM_NO)
+#         print('Fit Score r2 = ',r2_score(dict_unscaled_data[COND][data_index]['YpT'].reshape(-1), Yp_hat.reshape(-1)) )
+# tf.reset_default_graph()
+# sess.close()
