@@ -66,8 +66,8 @@ ls_runs1 = list(range(0,50)) # SYSTEM 408
 # ls_runs1 = list(range(0,72)) # SYSTEM 406 - Direct deepDMD
 
 
-# METHOD = 'Sequential'
-METHOD = 'deepDMD'
+METHOD = 'Sequential'
+# METHOD = 'deepDMD'
 
 # ls_runs1 = list(range(4,60)) # SYSTEM 304
 ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
@@ -192,11 +192,16 @@ dict_resultable_2 = {}
 for run in dict_predict_STATS.keys():
     with open(root_run_file + '/' + METHOD+ '/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
         dict_hp = pickle.load(handle)
-    dict_resultable_2[run] = { 'x_obs': dict_hp['x_obs'],
-                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],  'r2_X_nstep_train':
-                             dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(),'r2_X_nstep_valid':
-                             dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), 'r2_X_nstep_test':
-                             dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean(),'lambda': dict_hp['regularization factor']}
+    # dict_resultable_2[run] = { 'x_obs': dict_hp['x_obs'],
+    #                           'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']],  'r2_X_nstep_train':
+    #                          dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(),'r2_X_nstep_valid':
+    #                          dict_predict_STATS[run].loc[:, 'valid_Xf_nstep'].mean(), 'r2_X_nstep_test':
+    #                          dict_predict_STATS[run].loc[:, 'test_Xf_nstep'].mean(),'lambda': dict_hp['regularization factor']}
+    dict_resultable_2[run] = {'x_obs': dict_hp['x_obs'],
+                              'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_X_1step_train':
+                                  dict_predict_STATS[run].loc[:, 'valid_Xf_1step'].mean(), 'r2_X_1step_valid':
+                                  dict_predict_STATS[run].loc[:, 'valid_Xf_1step'].mean(), 'r2_X_1step_test':
+                                  dict_predict_STATS[run].loc[:, 'test_Xf_1step'].mean()}
 df_resultable2 = pd.DataFrame(dict_resultable_2).T.sort_values(by ='x_obs')
 print('============================================================================')
 print('RESULT TABLE 2')
@@ -250,94 +255,94 @@ dict_ALLDATA = rnaf.get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ALL_CO
 # sess.close()
 
 ## Output predictions
-#
-# # SYSTEM_NO = 402
+# #
+# # # SYSTEM_NO = 402
+# # # ALL_CONDITIONS = ['MX']
+# # # ls_runs1 = list(range(28,36)) # SYSTEM 402
+# # SYSTEM_NO = 406
 # # ALL_CONDITIONS = ['MX']
-# # ls_runs1 = list(range(28,36)) # SYSTEM 402
-# SYSTEM_NO = 406
-# ALL_CONDITIONS = ['MX']
-# ls_runs1 = list(range(8,16)) # SYSTEM 402
+# # ls_runs1 = list(range(8,16)) # SYSTEM 402
+# #
+# # Generate predictions for each curve and write down the error statistics for each run
+# ls_all_run_indices = []
+# for folder in os.listdir(root_run_file + '/' + METHOD):
+#     if folder[0:4] == 'RUN_':  # It is a RUN folder
+#         ls_all_run_indices.append(int(folder[4:]))
+# ls_runs1 = set(ls_runs1).intersection(set(ls_all_run_indices))
+# dict_predict_STATS_Y = {}
 #
-# Generate predictions for each curve and write down the error statistics for each run
-ls_all_run_indices = []
-for folder in os.listdir(root_run_file + '/' + METHOD):
-    if folder[0:4] == 'RUN_':  # It is a RUN folder
-        ls_all_run_indices.append(int(folder[4:]))
-ls_runs1 = set(ls_runs1).intersection(set(ls_all_run_indices))
-dict_predict_STATS_Y = {}
-
-dict_resultable1_Y ={}
-# Generate the predictions for each run
-for run in ls_runs1:
-    dict_resultable1_Y[run] = {}
-    print('RUN: ', run)
-    sess = tf.InteractiveSession()
-    run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
-    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
-    saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
-    dict_params = {}
-    dict_params['psixfT'] = tf.get_collection('psixfT')[0]
-    dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
-    dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
-    dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
-    for items in dict_instant_run_result.keys():
-        dict_instant_run_result[items] = {'train_Yf': [], 'valid_Yf': [], 'test_Yf': []}
-    for COND,data_index in itertools.product(ALL_CONDITIONS, ls_data_indices):
-        # Figure out if the index belongs to train, test or validation
-        if data_index in ls_train_indices:
-            key2_start = 'train_'
-        elif data_index in ls_valid_indices:
-            key2_start = 'valid_'
-        else:
-            key2_start = 'test_'
-        # --- *** Generate prediction *** ---
-        # Xf - 1 step
-        psiXpT = dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']: dict_ALLDATA['scaled'][COND][data_index]['XfT']})
-        YfTs_hat = np.matmul(psiXpT,dict_params['WhT_num'])
-        YfT_hat = oc.inverse_transform_Y(YfTs_hat,SYSTEM_NO)
-        dict_instant_run_result[COND][key2_start + 'Yf'].append(r2_score(dict_ALLDATA['unscaled'][COND][data_index]['YfT'].reshape(-1), YfT_hat.reshape(-1)))
-        # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
-    # Save the stats to the dictionary - for MX,MN and NC, we save (train, test, valid) * (Xf1step, Xfnstep, Yf1step, Yfnstep)
-    for COND in dict_instant_run_result.keys():
-        for items in dict_instant_run_result[COND].keys():
-            dict_instant_run_result[COND][items] =  np.mean(dict_instant_run_result[COND][items])
-    dict_predict_STATS_Y[run] = pd.DataFrame(dict_instant_run_result).T
-    dict_resultable1_Y[run]['train_Yf'] = dict_predict_STATS_Y[run].loc[:,'train_Yf'].mean()
-    dict_resultable1_Y[run]['valid_Yf'] = dict_predict_STATS_Y[run].loc[:,'valid_Yf'].mean()
-    dict_resultable1_Y[run]['test_Yf'] = dict_predict_STATS_Y[run].loc[:,'test_Yf'].mean()
-    tf.reset_default_graph()
-    sess.close()
-
-print('============================================================================')
-print('RESULT TABLE 1')
-df_resultable1_Y = pd.DataFrame(dict_resultable1_Y).T
-print(df_resultable1_Y)
-print('============================================================================')
-dict_resultable_2_Y = {}
-for run in dict_predict_STATS_Y.keys():
-    with open(root_run_file + '/' + METHOD + '/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
-        dict_hp = pickle.load(handle)
-    if METHOD == 'Sequential':
-        dict_resultable_2_Y[run] = {'y_obs': dict_hp['y_obs'],
-                                  'n_l & n_n': [dict_hp['y_layers'], dict_hp['y_nodes']],  ' r2_Yf_train':
-                                 dict_predict_STATS_Y[run].loc[:, 'train_Yf'].mean(),' r2_Yf_valid':
-                                 dict_predict_STATS_Y[run].loc[:, 'valid_Yf'].mean(), ' r2_Yf_test':
-                                 dict_predict_STATS_Y[run].loc[:, 'test_Yf'].mean(),'lambda': dict_hp['regularization factor']}
-    elif METHOD == 'deepDMD':
-        dict_resultable_2_Y[run] = {'x_obs': dict_hp['x_obs'],
-                                    'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_Yf_train':
-                                        dict_predict_STATS_Y[run].loc[:, 'train_Yf'].mean(), 'r2_Yf_valid':
-                                        dict_predict_STATS_Y[run].loc[:, 'valid_Yf'].mean(), 'r2_Yf_test':
-                                        dict_predict_STATS_Y[run].loc[:, 'test_Yf'].mean(),
-                                    'lambda': dict_hp['regularization factor']}
-if METHOD == 'Sequential':
-    df_resultable2_Y = pd.DataFrame(dict_resultable_2_Y).T.sort_values(by='y_obs')
-elif METHOD == 'deepDMD':
-    df_resultable2_Y = pd.DataFrame(dict_resultable_2_Y).T.sort_values(by='x_obs')
-print('============================================================================')
-print('RESULT TABLE 2')
-print(df_resultable2_Y)
-print('============================================================================')
+# dict_resultable1_Y ={}
+# # Generate the predictions for each run
+# for run in ls_runs1:
+#     dict_resultable1_Y[run] = {}
+#     print('RUN: ', run)
+#     sess = tf.InteractiveSession()
+#     run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
+#     saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+#     saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+#     dict_params = {}
+#     dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+#     dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+#     dict_params['WhT_num'] = sess.run(tf.get_collection('WhT')[0])
+#     dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
+#     for items in dict_instant_run_result.keys():
+#         dict_instant_run_result[items] = {'train_Yf': [], 'valid_Yf': [], 'test_Yf': []}
+#     for COND,data_index in itertools.product(ALL_CONDITIONS, ls_data_indices):
+#         # Figure out if the index belongs to train, test or validation
+#         if data_index in ls_train_indices:
+#             key2_start = 'train_'
+#         elif data_index in ls_valid_indices:
+#             key2_start = 'valid_'
+#         else:
+#             key2_start = 'test_'
+#         # --- *** Generate prediction *** ---
+#         # Xf - 1 step
+#         psiXpT = dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']: dict_ALLDATA['scaled'][COND][data_index]['XfT']})
+#         YfTs_hat = np.matmul(psiXpT,dict_params['WhT_num'])
+#         YfT_hat = oc.inverse_transform_Y(YfTs_hat,SYSTEM_NO)
+#         dict_instant_run_result[COND][key2_start + 'Yf'].append(r2_score(dict_ALLDATA['unscaled'][COND][data_index]['YfT'].reshape(-1), YfT_hat.reshape(-1)))
+#         # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
+#     # Save the stats to the dictionary - for MX,MN and NC, we save (train, test, valid) * (Xf1step, Xfnstep, Yf1step, Yfnstep)
+#     for COND in dict_instant_run_result.keys():
+#         for items in dict_instant_run_result[COND].keys():
+#             dict_instant_run_result[COND][items] =  np.mean(dict_instant_run_result[COND][items])
+#     dict_predict_STATS_Y[run] = pd.DataFrame(dict_instant_run_result).T
+#     dict_resultable1_Y[run]['train_Yf'] = dict_predict_STATS_Y[run].loc[:,'train_Yf'].mean()
+#     dict_resultable1_Y[run]['valid_Yf'] = dict_predict_STATS_Y[run].loc[:,'valid_Yf'].mean()
+#     dict_resultable1_Y[run]['test_Yf'] = dict_predict_STATS_Y[run].loc[:,'test_Yf'].mean()
+#     tf.reset_default_graph()
+#     sess.close()
+#
+# print('============================================================================')
+# print('RESULT TABLE 1')
+# df_resultable1_Y = pd.DataFrame(dict_resultable1_Y).T
+# print(df_resultable1_Y)
+# print('============================================================================')
+# dict_resultable_2_Y = {}
+# for run in dict_predict_STATS_Y.keys():
+#     with open(root_run_file + '/' + METHOD + '/Run_' + str(run) + '/dict_hyperparameters.pickle','rb') as handle:
+#         dict_hp = pickle.load(handle)
+#     if METHOD == 'Sequential':
+#         dict_resultable_2_Y[run] = {'y_obs': dict_hp['y_obs'],
+#                                   'n_l & n_n': [dict_hp['y_layers'], dict_hp['y_nodes']],  ' r2_Yf_train':
+#                                  dict_predict_STATS_Y[run].loc[:, 'train_Yf'].mean(),' r2_Yf_valid':
+#                                  dict_predict_STATS_Y[run].loc[:, 'valid_Yf'].mean(), ' r2_Yf_test':
+#                                  dict_predict_STATS_Y[run].loc[:, 'test_Yf'].mean(),'lambda': dict_hp['regularization factor']}
+#     elif METHOD == 'deepDMD':
+#         dict_resultable_2_Y[run] = {'x_obs': dict_hp['x_obs'],
+#                                     'n_l & n_n': [dict_hp['x_layers'], dict_hp['x_nodes']], 'r2_Yf_train':
+#                                         dict_predict_STATS_Y[run].loc[:, 'train_Yf'].mean(), 'r2_Yf_valid':
+#                                         dict_predict_STATS_Y[run].loc[:, 'valid_Yf'].mean(), 'r2_Yf_test':
+#                                         dict_predict_STATS_Y[run].loc[:, 'test_Yf'].mean(),
+#                                     'lambda': dict_hp['regularization factor']}
+# if METHOD == 'Sequential':
+#     df_resultable2_Y = pd.DataFrame(dict_resultable_2_Y).T.sort_values(by='y_obs')
+# elif METHOD == 'deepDMD':
+#     df_resultable2_Y = pd.DataFrame(dict_resultable_2_Y).T.sort_values(by='x_obs')
+# print('============================================================================')
+# print('RESULT TABLE 2')
+# print(df_resultable2_Y)
+# print('============================================================================')
 
 
 
@@ -509,7 +514,7 @@ print(r2_score(psiXTs_true,psiXTs,multioutput='raw_values'))
 tf.reset_default_graph()
 sess.close()
 
-#
+##
 # run = 13
 
 sess = tf.InteractiveSession()
