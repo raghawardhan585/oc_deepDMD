@@ -233,7 +233,7 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs =-1):
                 N_samples = np.int(np.floor(len(y_temp)/n_outputs_per_hour))
                 if not((type(n_outputs) == int) and (n_outputs>0)):
                     n_outputs = n_outputs_per_hour
-                dict_OD[COND][i] = pd.DataFrame(y_temp[0:N_samples*n_outputs].reshape((-1,n_outputs)).T).iloc[0:n_outputs,:]
+                dict_OD[COND][i] = pd.DataFrame(y_temp[0:N_samples*n_outputs_per_hour].reshape((-1,n_outputs_per_hour)).T).iloc[0:n_outputs,:]
                 i = i+1
 
     # Processing the RNAseq data

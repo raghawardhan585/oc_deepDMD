@@ -22,7 +22,7 @@ from sklearn.metrics import r2_score
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 407
+SYSTEM_NO = 703
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -47,8 +47,8 @@ n_x_nn_nodes = 0  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
-n_y_nn_layers = 3
-n_y_nn_nodes = 4
+n_y_nn_layers = 4
+n_y_nn_nodes = 10
 
 xy_deep_dict_size = 3
 n_xy_nn_layers = 2

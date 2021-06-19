@@ -86,6 +86,7 @@ ls_GO_filtered_genes = list(set_filtered_genes)
 with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYData_RAW.pickle', 'rb') as handle:
     dict_DATA_ORIGINAL = pickle.load(handle)
 
+
 ls_conditions = ['MX','MN','NC']
 dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
 dict_data_GO_filtered = {'MX':{},'MN':{},'NC':{}}
@@ -116,11 +117,7 @@ dict_data_temp = {'MX':{},'MN':{},'NC':{}}
 for condition,items in itertools.product(ls_conditions,range(16)):
     dict_data_temp[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes_temp2 ,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
-
-
-
-
-plot_gene_expression(dict_data_temp )
+plot_gene_expression(dict_data_temp)
 
 ## Gene ontologies of the various genes
 df_gene_name = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags = ls_genes_temp2,search_columns='genes(OLN),genes(PREFERRED)')
@@ -153,7 +150,7 @@ for i in range(n_genes_uniprot_biocyc):
             df_gene_replicates_MAX = dict_data_temp['MX'][j]['df_X_TPM'].iloc[i:i + 1, :]
             df_gene_replicates_MIN = dict_data_temp['MN'][j]['df_X_TPM'].iloc[i:i + 1, :]
             df_gene_replicates_NC = dict_data_temp['NC'][j]['df_X_TPM'].iloc[i:i + 1, :]
-    ax_l[i].errorbar(np.array([1,2,3,4,5,6,7]), df_gene_replicates_MAX.mean(axis=0),yerr =df_gene_replicates_MAX.std(axis=0),color = ls_colors[0],capsize =8)
+    ax_l[i].errorbar(np.array([1, 2, 3, 4, 5, 6, 7]), df_gene_replicates_MAX.mean(axis=0),yerr =df_gene_replicates_MAX.std(axis=0),color = ls_colors[0],capsize =8)
     ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_MIN.mean(axis=0), yerr=df_gene_replicates_MIN.std(axis=0),color = ls_colors[1],capsize =8)
     ax_l[i].errorbar(np.array([3, 4, 5, 6, 7]), df_gene_replicates_NC.mean(axis=0),yerr=df_gene_replicates_NC.std(axis=0), color=ls_colors[2],capsize =8)
     ax_l[i].set_title(ls_genes_temp2[i])
