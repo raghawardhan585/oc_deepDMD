@@ -211,17 +211,19 @@ print('=========================================================================
 # RUN_NO = 9 #25
 # SYSTEM_NO = 406
 # RUN_NO = 2
-# sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
-# run_folder_name = sys_folder_name + '/' + METHOD + '/RUN_' + str(RUN_NO)
-# with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
-#     d = pickle.load(handle)
-# with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
-#     d1 = pickle.load(handle)
-# for items in d1.keys():
-#     d[items] = d1[items]
-# # print(d.keys())
-# with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
-#     pickle.dump(d,handle)
+SYSTEM_NO = 703
+RUN_NO = 13
+sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+run_folder_name = sys_folder_name + '/' + METHOD + '/RUN_' + str(RUN_NO)
+with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+    d1 = pickle.load(handle)
+for items in d1.keys():
+    d[items] = d1[items]
+# print(d.keys())
+with open('/Users/shara/Desktop/oc_deepDMD/System_'+str(SYSTEM_NO)+'_BestRun_1.pickle','wb') as handle:
+    pickle.dump(d,handle)
 
 ##
 
