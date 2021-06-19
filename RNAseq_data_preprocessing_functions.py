@@ -1000,5 +1000,20 @@ def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
 
     return
 
+def save_best_run_of_Seq_OCdeepDMD_problem_1(SYSTEM_NO,RUN_NO):
+    METHOD = 'Sequential'
+    sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    run_folder_name = sys_folder_name + '/' + METHOD + '/RUN_' + str(RUN_NO)
+    with open(run_folder_name + '/constrainedNN-Model.pickle', 'rb') as handle:
+        d = pickle.load(handle)
+    with open(run_folder_name + '/dict_hyperparameters.pickle', 'rb') as handle:
+        d1 = pickle.load(handle)
+    for items in d1.keys():
+        d[items] = d1[items]
+    # print(d.keys())
+    with open('/Users/shara/Desktop/oc_deepDMD/System_' + str(SYSTEM_NO) + '_BestRun_1.pickle', 'wb') as handle:
+        pickle.dump(d, handle)
+    return
+
 
 

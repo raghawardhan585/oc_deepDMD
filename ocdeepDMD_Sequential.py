@@ -346,12 +346,12 @@ def generate_hyperparam_entry(feed_dict_train, feed_dict_valid, dict_model_metri
 def objective_func_output(dict_feed,dict_psi,dict_K):
     dict_model_perf_metrics ={}
     Yf_prediction_error = dict_feed['yfT'] - tf.matmul(dict_psi['xfT'], dict_K['WhT'])
-    try:
-        Yp_prediction_error = dict_feed['ypT'] - tf.matmul(dict_psi['xpT'], dict_K['WhT'])
-        Y_prediction_error = tf.concat([Yp_prediction_error,Yf_prediction_error],axis=1)
-    except:
-        Y_prediction_error = Yf_prediction_error
-
+    # try:
+    #     Yp_prediction_error = dict_feed['ypT'] - tf.matmul(dict_psi['xpT'], dict_K['WhT'])
+    #     Y_prediction_error = tf.concat([Yp_prediction_error,Yf_prediction_error],axis=1)
+    # except:
+    #     Y_prediction_error = Yf_prediction_error
+    Y_prediction_error = Yf_prediction_error
     dict_model_perf_metrics['MSE'] = tf.math.reduce_mean(tf.math.square(Y_prediction_error))
     dict_model_perf_metrics['loss_fn'] = dict_model_perf_metrics['MSE'] + regularization_lambda * tf.math.reduce_sum(tf.math.square(dict_K['WhT']))
     dict_model_perf_metrics['optimizer'] = tf.train.AdagradOptimizer(dict_feed['step_size']).minimize(dict_model_perf_metrics ['loss_fn'])
@@ -673,7 +673,15 @@ num_x_observables_total = x_deep_dict_size + num_bas_obs
 print("[INFO] Number of total samples: " + repr(num_all_samples))
 print("[INFO] Observable dimension of a sample: " + repr(num_bas_obs))
 print("[INFO] Xp.shape (E-DMD): " + repr(Xp.shape))
-print("[INFO] Yf.shape (E-DMD): " + repr(Xf.shape))
+print("[INFO] Xf.shape (E-DMD): " + repr(Xf.shape))
+try:
+    print("[INFO] Yp.shape (E-DMD): " + repr(Yp.shape))
+except:
+    print("Yp does not exist")
+try:
+    print("[INFO] Yf.shape (E-DMD): " + repr(Yf.shape))
+except:
+    print("Yf does not exist")
 print("Number of training snapshots: " + repr(len(train_indices)))
 print("Number of validation snapshots: " + repr(len(valid_indices)))
 # print("[INFO] STATE - hidden_vars_list: " + repr(x_hidden_vars_list))
