@@ -65,93 +65,62 @@ print('[INFO] TOTAL NUMBER OF RUNS SCHEDULED : ',len(a))
 dict_all_run_conditions ={}
 for i in range(len(a)):
     dict_all_run_conditions[i] ={}
-    for items in ['x','y','xy']:
-        if items != process_variable:
-            dict_all_run_conditions[i][items] = {'dict_size': 1, 'nn_layers': 1,'nn_nodes': 1}
+    for gt in ['x','y','xy']:
+        if gt != process_variable:
+            dict_all_run_conditions[i][gt] = {'dict_size': 1, 'nn_layers': 1,'nn_nodes': 1}
         else:
             dict_all_run_conditions[i][process_variable] = {'dict_size': a[i][0], 'nn_layers': a[i][1],'nn_nodes': a[i][2]}
     dict_all_run_conditions[i]['regularization lambda'] = a[i][-1]
 print(dict_all_run_conditions)
 # Scheduling
-mt = open('/Users/shara/Desktop/oc_deepDMD/microtensor_run.sh','w')
 gt = open('/Users/shara/Desktop/oc_deepDMD/goldentensor_run.sh','w')
-ot = open('/Users/shara/Desktop/oc_deepDMD/optictensor_run.sh','w')
-ls_files  = [mt,gt,ot]
-# ls_files  = [gt]
-for items in ls_files:
-    items.write('#!/bin/bash \n')
-    items.write('rm -rf _current_run_saved_files \n')
-    items.write('mkdir _current_run_saved_files \n')
-    items.write('rm -rf Run_info \n')
-    items.write('mkdir Run_info \n')
-    items.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
+gt.write('#!/bin/bash \n')
+gt.write('rm -rf _current_run_saved_files \n')
+gt.write('mkdir _current_run_saved_files \n')
+gt.write('rm -rf Run_info \n')
+gt.write('mkdir Run_info \n')
+gt.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
 
 ls_run_no =[0,0]
 for i in dict_all_run_conditions.keys():
     run_params = ''
-    for items in ['x','y','xy']:
-        for sub_items in dict_all_run_conditions[i][items].keys():
-            run_params = run_params + ' ' + str(dict_all_run_conditions[i][items][sub_items])
+    for gt in ['x','y','xy']:
+        for sub_gt in dict_all_run_conditions[i][gt].keys():
+            run_params = run_params + ' ' + str(dict_all_run_conditions[i][gt][sub_gt])
     run_params = run_params + ' ' + str(dict_all_run_conditions[i]['regularization lambda'])
-    # if np.mod(i,10) ==0 or np.mod(i,10) ==1: # Microtensor CPU 0
-    #     general_run = 'python3 ocdeepDMD_Sequential.py \'/cpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[0]) + ' '
-    #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[0]) + '.txt &\n'
-    #     ls_files[0].write(general_run + run_params + write_to_file)
-    #     ls_files[0].write('wait \n')
-    #     ls_run_no[0] = ls_run_no[0] + 1
     if np.mod(i,4) ==3: # Goldentensor GPU 3
-        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + run_params + write_to_file)
-        ls_files[1].write('wait \n')
-        ls_run_no[1] = ls_run_no[1] + 1
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(run_no) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(run_no) + '.txt &\n'
+        gt.write(general_run + run_params + write_to_file)
+        gt.write('wait \n')
+        run_no = run_no + 1
     elif np.mod(i,4) == 2: # Goldentensor GPU 2
-        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + run_params + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(run_no) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(run_no) + '.txt &\n'
+        gt.write(general_run + run_params + write_to_file)
+        run_no = run_no + 1
     elif np.mod(i,4) == 1: # Goldentensor GPU 1
-        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + run_params + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(run_no) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(run_no) + '.txt &\n'
+        gt.write(general_run + run_params + write_to_file)
+        run_no = run_no + 1
     elif np.mod(i,4)==0: # Goldentensor GPU 0
-        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[1]) + ' '
-        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[1]) + '.txt &\n'
-        ls_files[1].write(general_run + run_params + write_to_file)
-        ls_run_no[1] = ls_run_no[1] + 1
-    # elif np.mod(i,10) == 5: # Optictensor GPU 3
-    #     general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-    #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-    #     ls_files[2].write(general_run + run_params + write_to_file)
-    #     ls_files[2].write('wait \n')
-    #     ls_run_no[2] = ls_run_no[2] + 1
-    # elif np.mod(i,10) == 4: # Optictensor GPU 2
-    #     general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:2\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-    #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-    #     ls_files[2].write(general_run + run_params + write_to_file)
-    #     ls_run_no[2] = ls_run_no[2] + 1
-    # elif np.mod(i,10)==3: # Optictensor GPU 1
-    #     general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:1\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-    #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-    #     ls_files[2].write(general_run + run_params + write_to_file)
-    #     ls_run_no[2] = ls_run_no[2] + 1
-    # elif np.mod(i,10) == 2: # Optictensor GPU 0
-    #     general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(ls_run_no[2]) + ' '
-    #     write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(ls_run_no[2]) + '.txt &\n'
-    #     ls_files[2].write(general_run + run_params + write_to_file)
-    #     ls_run_no[2] = ls_run_no[2] + 1
-for items in ls_files:
-    items.write('wait \n')
-    items.write('echo "All sessions are complete" \n')
-    items.write('echo "=======================================================" \n')
-    items.write('cd .. \n')
-    items.write('rm -R _current_run_saved_files \n')
-    items.write('rm -R Run_info \n')
-    items.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
-    items.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
-    items.write('cd oc_deepDMD/ \n')
-    items.close()
+        general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:0\' ' + str(SYSTEM_NO) + ' ' + str(run_no) + ' '
+        write_to_file = ' > Run_info/SYS_' + str(SYSTEM_NO) + '_RUN_' + str(run_no) + '.txt &\n'
+        gt.write(general_run + run_params + write_to_file)
+        run_no = run_no + 1
+
+
+gt.write('wait \n')
+gt.write('echo "All sessions are complete" \n')
+gt.write('echo "=======================================================" \n')
+gt.write('cd .. \n')
+gt.write('rm -R _current_run_saved_files \n')
+gt.write('rm -R Run_info \n')
+gt.write('cp -a oc_deepDMD/_current_run_saved_files/. _current_run_saved_files \n')
+gt.write('cp -a oc_deepDMD/Run_info/ Run_info \n')
+gt.write('cd oc_deepDMD/ \n')
+gt.close()
 
 ## Transfer the oc deepDMD files
 import Sequential_Helper_Functions as seq
