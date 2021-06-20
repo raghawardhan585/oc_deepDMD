@@ -25,7 +25,7 @@ plt.rcParams["font.family"] = "Times"
 plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
-SYSTEM_NO = 703 #410,411,412
+SYSTEM_NO = 702 #410,411,412
 ALL_CONDITIONS = ['MX']
 ls_runs1 = list(range(0,60)) # SYSTEM 408
 
@@ -82,6 +82,12 @@ plt.show()
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 702,run =4,METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 701,run =45, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 701,run =21, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
+
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 702, run = 17, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
+rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 702,run = 0, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
+
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 703, run = 26, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 703,run =3, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
 
 # run =21
 # root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)

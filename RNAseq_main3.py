@@ -107,8 +107,12 @@ plot_gene_expression(dict_data_GO_filtered)
 
 
 # With 1 output instead of 20
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 703, ALL_CONDITIONS= ['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 703, ALL_CONDITIONS= ['MX'])
+
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX','NC','MN'])
+rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 704, ALL_CONDITIONS= ['MX','NC','MN'])
+
 ##
 
 ls_genes_temp2 = list(dict_data['MX'][0]['df_X_TPM'].index)
@@ -135,7 +139,7 @@ ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
 n_genes_uniprot_biocyc = len(ls_genes_temp2 )
 n_rows = 1#np.int(np.ceil(np.sqrt(n_genes_uniprot_biocyc)))
 n_cols = np.int(np.ceil(n_genes_uniprot_biocyc/ n_rows))
-f,ax = plt.subplots(n_rows, n_cols, figsize =(15,3))
+f,ax = plt.subplots(n_rows, n_cols, figsize =(30,3))
 ax_l = ax.reshape(-1)
 for i in range(n_genes_uniprot_biocyc):
     df_gene_replicates_MAX = pd.DataFrame([])
