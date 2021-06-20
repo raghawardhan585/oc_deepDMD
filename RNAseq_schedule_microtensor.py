@@ -5,13 +5,13 @@ import itertools
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 701
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 703
 
 dict_hp={}
 dict_hp['x']={}
 dict_hp['x']['ls_dict_size'] = [0,1,2,3,4,5,6,7]
-dict_hp['x']['ls_nn_layers'] = [4,4]
-dict_hp['x']['ls_nn_nodes'] = [10]
+dict_hp['x']['ls_nn_layers'] = [3]
+dict_hp['x']['ls_nn_nodes'] = [10,10]
 dict_hp['y']={}
 dict_hp['y']['ls_dict_size'] = [20]
 dict_hp['y']['ls_nn_layers'] = [3,4]
