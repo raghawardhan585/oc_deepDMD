@@ -27,7 +27,7 @@ colors = np.asarray(colors);  # defines a color palette
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 703
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 704
 NO_OF_ITERATIONS_PER_GPU = 2
 NO_OF_ITERATIONS_IN_CPU = 2
 
@@ -44,7 +44,7 @@ dict_hp['xy']={}
 dict_hp['xy']['ls_dict_size'] = [2,3,4]
 dict_hp['xy']['ls_nn_layers'] = [8,9]
 dict_hp['xy']['ls_nn_nodes'] = [6,8]
-process_variable = 'y'
+process_variable = 'x'
 # process_variable = 'y'
 # process_variable = 'xy'
 SYSTEM_NO = DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR
@@ -81,12 +81,12 @@ gt.write('rm -rf Run_info \n')
 gt.write('mkdir Run_info \n')
 gt.write('# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] \n')
 
-ls_run_no =[0,0]
+run_no = 0
 for i in dict_all_run_conditions.keys():
     run_params = ''
-    for gt in ['x','y','xy']:
-        for sub_gt in dict_all_run_conditions[i][gt].keys():
-            run_params = run_params + ' ' + str(dict_all_run_conditions[i][gt][sub_gt])
+    for items in ['x','y','xy']:
+        for sub_items in dict_all_run_conditions[i][items].keys():
+            run_params = run_params + ' ' + str(dict_all_run_conditions[i][items][sub_items])
     run_params = run_params + ' ' + str(dict_all_run_conditions[i]['regularization lambda'])
     if np.mod(i,4) ==3: # Goldentensor GPU 3
         general_run = 'python3 ocdeepDMD_Sequential.py \'/gpu:3\' ' + str(SYSTEM_NO) + ' ' + str(run_no) + ' '
