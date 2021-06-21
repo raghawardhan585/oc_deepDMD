@@ -51,14 +51,15 @@ rnaf.save_best_run_of_Seq_OCdeepDMD_problem_1(SYSTEM_NO=703,RUN_NO=13)
 ## Performance of the output
 
 ## Output predictions
-#
-# # SYSTEM_NO = 402
-# # ALL_CONDITIONS = ['MX']
-# # ls_runs1 = list(range(28,36)) # SYSTEM 402
+
+# SYSTEM_NO = 402
+# ALL_CONDITIONS = ['MX']
+# ls_runs1 = list(range(28,36)) # SYSTEM 402
+
 SYSTEM_NO = 703
 ALL_CONDITIONS = ['MX']
 ls_runs1 = list(range(8,16)) # SYSTEM 402
-#
+
 # Generate predictions for each curve and write down the error statistics for each run
 METHOD = 'Sequential'
 root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)

@@ -26,7 +26,7 @@ plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
 SYSTEM_NO = 704 #410,411,412
-ALL_CONDITIONS = ['MX']
+# ALL_CONDITIONS = ['MX']
 ls_runs1 = list(range(0,60)) # SYSTEM 408
 
 # df_results2_deepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'Sequential')
@@ -45,7 +45,8 @@ ls_runs1 = list(range(0,60)) # SYSTEM 408
 # df_results3_deepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 
 
-df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
+# df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
+df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX','NC','MN'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
 ls_obs_OCdeepDMD = list(df_results2_OCdeepDMD.loc[:,'x_obs'].unique())
 dict_result3 = {}
 for i in ls_obs_OCdeepDMD:

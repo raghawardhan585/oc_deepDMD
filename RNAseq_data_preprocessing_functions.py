@@ -115,26 +115,19 @@ def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0
 
     dict_DMD_train = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
                       'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
-    # for COND,i in itertools.product(ALL_CONDITIONS,ls_train_indices):
     for i, COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
         dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
         dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
         dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
         dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
-    # dict_DMD_valid = {'Xp' : np.empty(shape=(0,n_states)), 'Xf': np.empty(shape=(0,n_states)),'Yp' : np.empty(shape=(0,n_outputs)), 'Yf' : np.empty(shape=(0,n_outputs))}
-    # for i in ls_valid_indices:
-    #     dict_DMD_valid['Xp'] = np.concatenate([dict_DMD_valid['Xp'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:,0:-1]).T],axis=0)
-    #     dict_DMD_valid['Xf'] = np.concatenate([dict_DMD_valid['Xf'], np.array(dict_MAX[i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
-    #     dict_DMD_valid['Yp'] = np.concatenate([dict_DMD_valid['Yp'], np.array(dict_MAX[i]['Y'].iloc[:, 0:-1]).T], axis=0)
-    #     dict_DMD_valid['Yf'] = np.concatenate([dict_DMD_valid['Yf'], np.array(dict_MAX[i]['Y'].iloc[:, 1:]).T], axis=0)
 
-    dict_DMD_test = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
-                     'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
-    for i, COND in itertools.product(ls_test_indices, ALL_CONDITIONS):
-        dict_DMD_test['Xp'] = np.concatenate([dict_DMD_test['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
-        dict_DMD_test['Xf'] = np.concatenate([dict_DMD_test['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
-        dict_DMD_test['Yp'] = np.concatenate([dict_DMD_test['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T],axis=0)
-        dict_DMD_test['Yf'] = np.concatenate([dict_DMD_test['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T],axis=0)
+    # dict_DMD_test = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
+    #                  'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
+    # for i, COND in itertools.product(ls_test_indices, ALL_CONDITIONS):
+    #     dict_DMD_test['Xp'] = np.concatenate([dict_DMD_test['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
+    #     dict_DMD_test['Xf'] = np.concatenate([dict_DMD_test['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+    #     dict_DMD_test['Yp'] = np.concatenate([dict_DMD_test['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T],axis=0)
+    #     dict_DMD_test['Yf'] = np.concatenate([dict_DMD_test['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T],axis=0)
 
     storage_folder = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing' + '/System_' + str(SYSTEM_NO)
     if os.path.exists(storage_folder):
@@ -161,8 +154,7 @@ def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle', 'wb') as handle:
         pickle.dump(ls_all_indices, handle)  # Only training and validation indices are stored
     # Store the data in Koopman
-    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle',
-              'wb') as handle:
+    with open('/Users/shara/Desktop/oc_deepDMD/koopman_data/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle','wb') as handle:
         pickle.dump(dict_DATA_OUT, handle)
     return
 
@@ -323,7 +315,7 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
 
     dict_scaled_data = copy.deepcopy(dict_empty_all_conditions)
     dict_unscaled_data = copy.deepcopy(dict_empty_all_conditions)
-    for COND, i in itertools.product(ALL_CONDITIONS, ls_data_indices):
+    for i,COND in itertools.product(ls_data_indices, ALL_CONDITIONS):
         dict_unscaled_data[COND][i] = {'XpT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T,
                                        'XfT': np.array(dict_data_original[COND][i]['df_X_TPM'].iloc[:, 1:]).T,
                                        'YpT': np.array(dict_data_original[COND][i]['Y'].iloc[:, 0:-1]).T,
@@ -335,7 +327,7 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
 
     XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = []
     YpTs_train = YfTs_train = YpTs_valid = YfTs_valid = YpTs_test = YfTs_test = []
-    for COND, i in itertools.product(ALL_CONDITIONS, ls_train_indices):
+    for i,COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
         try:
             XpTs_train = np.concatenate([XpTs_train, dict_scaled_data[COND][i]['XpT']], axis=0)
             XfTs_train = np.concatenate([XfTs_train, dict_scaled_data[COND][i]['XfT']], axis=0)
@@ -347,19 +339,19 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             YpTs_train = dict_scaled_data[COND][i]['YpT']
             YfTs_train = dict_scaled_data[COND][i]['YfT']
 
-    for COND, i in itertools.product(ALL_CONDITIONS, ls_valid_indices):
+    for i,COND in itertools.product(ls_valid_indices, ALL_CONDITIONS):
         try:
             XpTs_valid = np.concatenate([XpTs_valid, dict_scaled_data[COND][i]['XpT']], axis=0)
             XfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['XfT']], axis=0)
-            YpTs_valid = np.concatenate([XpTs_valid, dict_scaled_data[COND][i]['YpT']], axis=0)
-            YfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['YfT']], axis=0)
+            YpTs_valid = np.concatenate([YpTs_valid, dict_scaled_data[COND][i]['YpT']], axis=0)
+            YfTs_valid = np.concatenate([YfTs_valid, dict_scaled_data[COND][i]['YfT']], axis=0)
         except:
             XpTs_valid = dict_scaled_data[COND][i]['XpT']
             XfTs_valid = dict_scaled_data[COND][i]['XfT']
             YpTs_valid = dict_scaled_data[COND][i]['YpT']
             YfTs_valid = dict_scaled_data[COND][i]['YfT']
 
-    for COND, i in itertools.product(ALL_CONDITIONS, ls_test_indices):
+    for i,COND in itertools.product(ls_test_indices, ALL_CONDITIONS):
         try:
             XpTs_test = np.concatenate([XpTs_test, dict_scaled_data[COND][i]['XpT']], axis=0)
             XfTs_test = np.concatenate([XfTs_test, dict_scaled_data[COND][i]['XfT']], axis=0)
@@ -370,7 +362,6 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             XfTs_test = dict_scaled_data[COND][i]['XfT']
             YpTs_test = dict_scaled_data[COND][i]['YpT']
             YfTs_test = dict_scaled_data[COND][i]['YfT']
-
     dict_return = {'unscaled':dict_unscaled_data, 'scaled':dict_scaled_data, 'train':{}, 'valid':{}, 'test':{}}
     dict_return['train'] = {'XpTs': XpTs_train, 'XfTs': XfTs_train, 'YpTs': YpTs_train, 'YfTs': YfTs_train, 'indices': ls_train_indices}
     dict_return['valid'] = {'XpTs': XpTs_valid, 'XfTs': XfTs_valid, 'YpTs': YpTs_valid, 'YfTs': YfTs_valid, 'indices': ls_valid_indices}
@@ -707,16 +698,11 @@ def get_Uniprot_cell_division_genes_and_cell_cycle_genes(species_id='KT2440', se
 # ====================================================================================================================
 
 def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'Sequential'):
-    ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
-        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
-    original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
-        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
-    indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
-        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
-    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
-        SYSTEM_NO)
+    ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+    original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
+    indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
+    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
     dict_predict_STATS_file = root_run_file + '/dict_predict_STATS.pickle'
-
     # Indices [train, validation and test]
     with open(indices_path, 'rb') as handle:
         ls_data_indices = pickle.load(handle)
@@ -733,7 +719,7 @@ def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=li
     for COND in ALL_CONDITIONS:
         dict_empty_all_conditions[COND] = {}
 
-    dict_temp = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=['MX'])
+    dict_temp = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=ALL_CONDITIONS)
     dict_scaled_data = dict_temp['scaled']
     dict_unscaled_data = dict_temp['unscaled']
 
@@ -766,6 +752,7 @@ def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=li
         dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
         dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
         dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+
         dict_instant_run_result = copy.deepcopy(dict_empty_all_conditions)
         for items in dict_instant_run_result.keys():
             dict_instant_run_result[items] = {'train_Xf_1step': [], 'train_Xf_nstep': [], 'valid_Xf_1step': [],
@@ -776,21 +763,22 @@ def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=li
                 key2_start = 'train_'
             elif data_index in ls_valid_indices:
                 key2_start = 'valid_'
-            else:
+            elif data_index in ls_test_indices:
                 key2_start = 'test_'
+            # else:
+            #     print('ERROR!!!')
+            #     return 0
             # --- *** Generate prediction *** ---
 
             # Xf - 1 step
-            psiXpT = dict_params['psixpT'].eval(
-                feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
+            psiXpT = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_scaled_data[COND][data_index]['XpT']})
             psiXfT_hat = np.matmul(psiXpT, dict_params['KxT_num'])
-            XfT_hat = oc.inverse_transform_X(psiXfT_hat[:, 0:n_genes], SYSTEM_NO)
+            XfT_hat = dict_temp['X_scaler'].inverse_transform(psiXfT_hat[:, 0:n_genes])
             dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfT_hat))#, multioutput='variance_weighted'))
             # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(np.mean(np.square(XfT_hat)))
-            # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfT_hat[:,0:n_genes], multioutput='variance_weighted'))
+            # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfT_hat[:,0:n_genes]))#, multioutput='variance_weighted'))
             # dict_instant_run_result[COND][key2_start + 'Xf_1step'].append(r2_score(dict_params['psixfT'].eval(
-            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfT_hat,
-            #                                                                        multioutput='variance_weighted'))
+            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfT_hat, multioutput='variance_weighted'))
 
             # Xf - n step
             psiXfTn_hat = psiXpT[0:1, :]  # get the initial condition
@@ -798,13 +786,12 @@ def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=li
                 psiXfTn_hat = np.concatenate([psiXfTn_hat, np.matmul(psiXfTn_hat[-1:], dict_params['KxT_num'])], axis=0)
             psiXfTn_hat = psiXfTn_hat[1:, :]
             # Remove the initial condition and the lifted states; then unscale the variables
-            XfTn_hat = oc.inverse_transform_X(psiXfTn_hat[:, 0:n_genes], SYSTEM_NO)
+            XfTn_hat = dict_temp['X_scaler'].inverse_transform(psiXfTn_hat[:, 0:n_genes])
             dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_unscaled_data[COND][data_index]['XfT'], XfTn_hat))#, multioutput='variance_weighted'))
             # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(np.mean(np.square(XfTn_hat)))
             # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_scaled_data[COND][data_index]['XfT'], psiXfTn_hat[:, 0:n_genes],multioutput='variance_weighted'))
             # dict_instant_run_result[COND][key2_start + 'Xf_nstep'].append(r2_score(dict_params['psixfT'].eval(
-            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfTn_hat,
-            #                                                                        multioutput='variance_weighted'))
+            #     feed_dict={dict_params['xfT_feed']: dict_scaled_data[COND][data_index]['XfT']}), psiXfTn_hat, multioutput='variance_weighted'))
 
             # --- *** Compute the stats *** --- [for training, validation and test data sets separately]
         # Save the stats to the dictionary - for MX,MN and NC, we save (train, test, valid) * (Xf1step, Xfnstep, Yf1step, Yfnstep)
