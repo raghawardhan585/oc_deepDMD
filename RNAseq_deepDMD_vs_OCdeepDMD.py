@@ -25,28 +25,28 @@ plt.rcParams["font.family"] = "Times"
 plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
-SYSTEM_NO = 704 #410,411,412
+SYSTEM_NO = 406 #704 #410,411,412
 # ALL_CONDITIONS = ['MX']
 ls_runs1 = list(range(0,60)) # SYSTEM 408
 
-# df_results2_deepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'Sequential')
-# ls_obs_deepDMD = list(df_results2_deepDMD.loc[:,'x_obs'].unique())
-# # ls_obs=[0,1,2,3,4]
-# dict_result3 = {}
-# for i in ls_obs_deepDMD:
-#     df_temp = copy.deepcopy(df_results2_deepDMD[df_results2_deepDMD['x_obs'] ==i])
-#     dict_result3[i] = {}
-#     dict_result3[i]['r2_X_nstep_train_mean'] = np.maximum(0,df_temp.loc[:,'r2_X_nstep_train']).mean()
-#     dict_result3[i]['r2_X_nstep_train_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_train']).std()
-#     dict_result3[i]['r2_X_nstep_valid_mean'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_valid']).mean()
-#     dict_result3[i]['r2_X_nstep_valid_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_valid']).std()
-#     dict_result3[i]['r2_X_nstep_test_mean'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).mean()
-#     dict_result3[i]['r2_X_nstep_test_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).std()
-# df_results3_deepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
+df_results2_deepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'Sequential')
+ls_obs_deepDMD = list(df_results2_deepDMD.loc[:,'x_obs'].unique())
+# ls_obs=[0,1,2,3,4]
+dict_result3 = {}
+for i in ls_obs_deepDMD:
+    df_temp = copy.deepcopy(df_results2_deepDMD[df_results2_deepDMD['x_obs'] ==i])
+    dict_result3[i] = {}
+    dict_result3[i]['r2_X_nstep_train_mean'] = np.maximum(0,df_temp.loc[:,'r2_X_nstep_train']).mean()
+    dict_result3[i]['r2_X_nstep_train_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_train']).std()
+    dict_result3[i]['r2_X_nstep_valid_mean'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_valid']).mean()
+    dict_result3[i]['r2_X_nstep_valid_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_valid']).std()
+    dict_result3[i]['r2_X_nstep_test_mean'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).mean()
+    dict_result3[i]['r2_X_nstep_test_std'] = np.maximum(0,df_temp.loc[:, 'r2_X_nstep_test']).std()
+df_results3_deepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 
 
-# df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
-df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX','NC','MN'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
+df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
+# df_results2_OCdeepDMD = rnaf.generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX','NC','MN'],ls_runs1=list(range(0,100)),METHOD = 'deepDMD')
 ls_obs_OCdeepDMD = list(df_results2_OCdeepDMD.loc[:,'x_obs'].unique())
 dict_result3 = {}
 for i in ls_obs_OCdeepDMD:
@@ -65,11 +65,11 @@ df_results3_OCdeepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 ls_colors =['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 plt.figure()
 # ls_obs_select =[0,1,2,3,4,5,6,7]
-# ls_obs_select = list(set(ls_obs_deepDMD).intersection(set(ls_obs_OCdeepDMD)))
-ls_obs_select = ls_obs_OCdeepDMD
-# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'deepDMD xf train', capsize=9,linestyle='--',color=ls_colors[0],linewidth=1)
-# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'deepDMD xf valid', capsize=5,linestyle='--',color=ls_colors[1])
-# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'deepDMD xf test', capsize=2,linestyle='--',color=ls_colors[2])
+ls_obs_select = list(set(ls_obs_deepDMD).intersection(set(ls_obs_OCdeepDMD)))
+# ls_obs_select = ls_obs_OCdeepDMD
+plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'deepDMD xf train', capsize=9,linestyle='--',color=ls_colors[0],linewidth=1)
+plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'deepDMD xf valid', capsize=5,linestyle='--',color=ls_colors[1])
+plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'deepDMD xf test', capsize=2,linestyle='--',color=ls_colors[2])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'OCdeepDMD xf train', capsize=9,color=ls_colors[0],linewidth=2)
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'OCdeepDMD xf valid', capsize=5,color=ls_colors[1],linewidth=2)
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'OCdeepDMD xf test', capsize=2,color=ls_colors[2],linewidth=2)
@@ -80,6 +80,9 @@ plt.ylabel('$r^2$')
 plt.show()
 
 ##
+
+rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 406, run = 29, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 406,run =3, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
 
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 702,run =4,METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 701,run =45, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
