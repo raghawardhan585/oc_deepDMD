@@ -91,9 +91,8 @@ mt.close()
 
 
 ## Transfer the oc deepDMD files
-
+import Sequential_Helper_Functions as seq
 seq.transfer_current_ocDeepDMD_run_files()
-
 
 ##
 
