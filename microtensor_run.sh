@@ -3,38 +3,54 @@ rm -rf _current_run_saved_files
 mkdir _current_run_saved_files 
 rm -rf Run_info 
 mkdir Run_info 
-# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [x_dict] [x_layers] [x_nodes] [y_dict] [y_layers] [y_nodes] [xy_dict] [xy_layers] [xy_nodes] [regularization lambda] [write_to_file] 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 0  0 1 0 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_0.txt &
+# Gen syntax: [interpreter] [code.py] [device] [sys_no] [run_no] [n_observables] [n_layers] [n_nodes] [write_to_file] 
+python3 deepDMD.py '/cpu:0' 800 0 0 3 10 > Run_info/SYS_800_RUN_0.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 1  0 1 0 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_1.txt &
+python3 deepDMD.py '/cpu:0' 800 1 0 3 10 > Run_info/SYS_800_RUN_1.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 2  1 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_2.txt &
+python3 deepDMD.py '/cpu:0' 800 2 0 3 10 > Run_info/SYS_800_RUN_2.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 3  1 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_3.txt &
+python3 deepDMD.py '/cpu:0' 800 3 1 3 10 > Run_info/SYS_800_RUN_3.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 4  2 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_4.txt &
+python3 deepDMD.py '/cpu:0' 800 4 1 3 10 > Run_info/SYS_800_RUN_4.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 5  2 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_5.txt &
+python3 deepDMD.py '/cpu:0' 800 5 1 3 10 > Run_info/SYS_800_RUN_5.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 6  3 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_6.txt &
+python3 deepDMD.py '/cpu:0' 800 6 2 3 10 > Run_info/SYS_800_RUN_6.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 7  3 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_7.txt &
+python3 deepDMD.py '/cpu:0' 800 7 2 3 10 > Run_info/SYS_800_RUN_7.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 8  4 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_8.txt &
+python3 deepDMD.py '/cpu:0' 800 8 2 3 10 > Run_info/SYS_800_RUN_8.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 9  4 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_9.txt &
+python3 deepDMD.py '/cpu:0' 800 9 3 3 10 > Run_info/SYS_800_RUN_9.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 10  5 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_10.txt &
+python3 deepDMD.py '/cpu:0' 800 10 3 3 10 > Run_info/SYS_800_RUN_10.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 11  5 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_11.txt &
+python3 deepDMD.py '/cpu:0' 800 11 3 3 10 > Run_info/SYS_800_RUN_11.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 12  6 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_12.txt &
+python3 deepDMD.py '/cpu:0' 800 12 4 3 10 > Run_info/SYS_800_RUN_12.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 13  6 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_13.txt &
+python3 deepDMD.py '/cpu:0' 800 13 4 3 10 > Run_info/SYS_800_RUN_13.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 14  7 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_14.txt &
+python3 deepDMD.py '/cpu:0' 800 14 4 3 10 > Run_info/SYS_800_RUN_14.txt &
 wait 
-python3 ocdeepDMD_Sequential.py '/cpu:0' 706 15  7 3 10 1 1 1 1 1 1 0 > Run_info/SYS_706_RUN_15.txt &
+python3 deepDMD.py '/cpu:0' 800 15 5 3 10 > Run_info/SYS_800_RUN_15.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 16 5 3 10 > Run_info/SYS_800_RUN_16.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 17 5 3 10 > Run_info/SYS_800_RUN_17.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 18 6 3 10 > Run_info/SYS_800_RUN_18.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 19 6 3 10 > Run_info/SYS_800_RUN_19.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 20 6 3 10 > Run_info/SYS_800_RUN_20.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 21 7 3 10 > Run_info/SYS_800_RUN_21.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 22 7 3 10 > Run_info/SYS_800_RUN_22.txt &
+wait 
+python3 deepDMD.py '/cpu:0' 800 23 7 3 10 > Run_info/SYS_800_RUN_23.txt &
 wait 
 wait 
 echo "All sessions are complete" 

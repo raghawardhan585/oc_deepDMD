@@ -113,19 +113,27 @@ plot_gene_expression(dict_data_GO_filtered)
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 704, ALL_CONDITIONS= ['MX'])
 
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.025,ALL_CONDITIONS=['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.04,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 705, ALL_CONDITIONS= ['MX'])
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0143,ALL_CONDITIONS=['MX'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 706, ALL_CONDITIONS= ['MX'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0143,ALL_CONDITIONS=['MX'])
+# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 706, ALL_CONDITIONS= ['MX'])
 
-# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX','NC','MN'])
-# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 800, ALL_CONDITIONS= ['MX','NC','MN'])
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX','MN'])
+rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 800, ALL_CONDITIONS= ['MX','MN'])
 
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 850, ALL_CONDITIONS= ['MX','NC'])
 
-
+##
+# SYSTEM_NO = 800
+# ocdeepDMD_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle'
+# with open(ocdeepDMD_data_path, 'rb') as handle:
+#     dict_d = pickle.load(handle)
+#
+# p = np.empty(shape=(10,4,0))
+# for i in range(14):
+#     p = np.concatenate([p,np.expand_dims(dict_d['Xp'][10*i:10*(i+1)],axis =2)],axis=2)
 ##
 
 ls_genes_temp2 = list(dict_data['NC'][0]['df_X_TPM'].index)
