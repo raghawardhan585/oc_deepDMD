@@ -14,6 +14,7 @@ import ocdeepdmd_simulation_examples_helper_functions as oc
 import tensorflow as tf
 from sklearn.metrics import r2_score
 import seaborn as sb
+from sklearn.linear_model import LinearRegression
 
 # Constants
 MAX_REPLICATES = 2
@@ -1002,5 +1003,39 @@ def save_best_run_of_Seq_OCdeepDMD_problem_1(SYSTEM_NO,RUN_NO):
         pickle.dump(d, handle)
     return
 
-
-
+def generate_linear_output_predictions(SYSTEM_NO,ALL_CONDITIONS = ['MX'],ls_runs1 = [0]):
+    root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    dict_temp = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=ALL_CONDITIONS)
+    dict_results_Y = {}
+    for run in ls_runs1:
+        try:
+            with open(root_run_file + '/' + 'Sequential' + '/Run_' + str(run) + '/dict_hyperparameters.pickle',
+                      'rb') as handle:
+                dict_hp = pickle.load(handle)
+            dict_results_Y[run] = {'x_obs': dict_hp['x_obs']}
+        except:
+            continue
+        print('RUN: ', run)
+        sess = tf.InteractiveSession()
+        run_folder_name = root_run_file + '/Sequential/RUN_' + str(run)
+        saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+        saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
+        dict_params = {}
+        dict_params['psixpT'] = tf.get_collection('psixpT')[0]
+        dict_params['psixfT'] = tf.get_collection('psixfT')[0]
+        dict_params['xpT_feed'] = tf.get_collection('xpT_feed')[0]
+        dict_params['xfT_feed'] = tf.get_collection('xfT_feed')[0]
+        dict_params['KxT_num'] = sess.run(tf.get_collection('KxT')[0])
+        psiXfT_train = dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']:dict_temp['train']['XfTs'] })
+        lin_model_Y = LinearRegression(fit_intercept=False).fit(psiXfT_train, dict_temp['train']['YfTs'])
+        Y_hat_train = dict_temp['Y_scaler'].inverse_transform(lin_model_Y.predict(psiXfT_train))
+        Y_hat_valid = dict_temp['Y_scaler'].inverse_transform(lin_model_Y.predict(dict_params['psixfT'].eval(feed_dict ={dict_params['xfT_feed']:dict_temp['valid']['XfTs']})))
+        Y_hat_test = dict_temp['Y_scaler'].inverse_transform(lin_model_Y.predict(dict_params['psixfT'].eval(feed_dict={dict_params['xfT_feed']: dict_temp['test']['XfTs']})))
+        dict_results_Y[run]['train'] = r2_score(dict_temp['Y_scaler'].inverse_transform(dict_temp['train']['YfTs']), Y_hat_train)
+        dict_results_Y[run]['valid'] = r2_score(dict_temp['Y_scaler'].inverse_transform(dict_temp['valid']['YfTs']), Y_hat_valid)
+        dict_results_Y[run]['test'] = r2_score(dict_temp['Y_scaler'].inverse_transform(dict_temp['test']['YfTs']), Y_hat_test)
+        tf.reset_default_graph()
+        sess.close()
+    df_results_Y = pd.DataFrame(dict_results_Y).T.sort_values(by='x_obs')
+    print(df_results_Y)
+    return df_results_Y

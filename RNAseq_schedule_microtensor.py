@@ -5,7 +5,7 @@ import itertools
 
 
 ## Bash Script Generation
-DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 704
+DATA_SYSTEM_TO_WRITE_BASH_SCRIPT_FOR = 706
 
 dict_hp={}
 dict_hp['x']={}

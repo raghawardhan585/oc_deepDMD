@@ -66,11 +66,11 @@ df_results3_OCdeepDMD = copy.deepcopy(pd.DataFrame(dict_result3).T)
 ls_colors =['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 plt.figure()
 # ls_obs_select =[0,1,2,3,4,5,6,7]
-ls_obs_select = list(set(ls_obs_deepDMD).intersection(set(ls_obs_OCdeepDMD)))
-# ls_obs_select = ls_obs_OCdeepDMD
-plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'deepDMD xf train', capsize=9,linestyle='--',color=ls_colors[0],linewidth=1)
-plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'deepDMD xf valid', capsize=5,linestyle='--',color=ls_colors[1])
-plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'deepDMD xf test', capsize=2,linestyle='--',color=ls_colors[2])
+# ls_obs_select = list(set(ls_obs_deepDMD).intersection(set(ls_obs_OCdeepDMD)))
+ls_obs_select = ls_obs_OCdeepDMD
+# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'deepDMD xf train', capsize=9,linestyle='--',color=ls_colors[0],linewidth=1)
+# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'deepDMD xf valid', capsize=5,linestyle='--',color=ls_colors[1])
+# plt.errorbar(ls_obs_select,df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_deepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'deepDMD xf test', capsize=2,linestyle='--',color=ls_colors[2])
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_train_std'],label = 'OCdeepDMD xf train', capsize=9,color=ls_colors[0],linewidth=2)
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_valid_std'],label = 'OCdeepDMD xf valid', capsize=5,color=ls_colors[1],linewidth=2)
 plt.errorbar(ls_obs_select,df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_mean'],yerr=df_results3_OCdeepDMD.loc[ls_obs_select,'r2_X_nstep_test_std'],label = 'OCdeepDMD xf test', capsize=2,color=ls_colors[2],linewidth=2)
@@ -95,8 +95,8 @@ plt.show()
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 703, run = 26, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
 # rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 703,run =3, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
 
-rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 704, run = 27, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
-rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 704, run = 43, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 704, run = 27, METHOD = 'deepDMD',ALL_CONDITIONS=['MX'])
+# rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 704, run = 43, METHOD = 'Sequential',ALL_CONDITIONS=['MX'])
 
 # run =21
 # root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
@@ -153,5 +153,6 @@ rnaf.plot_dynamics_related_graphs(SYSTEM_NO = 704, run = 43, METHOD = 'Sequentia
 #         print('Fit Score r2 = ',r2_score(dict_unscaled_data[COND][data_index]['YpT'].reshape(-1), Yp_hat.reshape(-1)) )
 # tf.reset_default_graph()
 # sess.close()
-
-
+#
+#
+rnaf.generate_linear_output_predictions(SYSTEM_NO= SYSTEM_NO, ALL_CONDITIONS=['MX'], ls_runs1 = list(range(0,60)))
