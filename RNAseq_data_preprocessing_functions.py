@@ -457,7 +457,7 @@ def filter_gene_by_coefficient_of_variation(dict_GrowthCurve, CV_THRESHOLD = np.
     print('The number of removed genes:', len(ls_GENE_REMOVE2))
     print('Remaining Genes:', len(ls_GENE_ALLOW2))
     print('---------------------------------------------------')
-    for COND in ALL_CONDITIONS:
+    for COND in ['MX','MN','NC']:
         for CURVE in dict_GrowthCurve[COND]:
             dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE1,axis=0)
             dict_GrowthCurve[COND][CURVE]['df_X_TPM'] = dict_GrowthCurve[COND][CURVE]['df_X_TPM'].drop(ls_GENE_REMOVE2,axis=0)

@@ -119,8 +119,8 @@ plot_gene_expression(dict_data_GO_filtered)
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX','NC','MN'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 800, ALL_CONDITIONS= ['MX','NC','MN'])
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['NC'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 850, ALL_CONDITIONS= ['NC'])
+dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
+rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 850, ALL_CONDITIONS= ['MX','NC'])
 
 
 ##
