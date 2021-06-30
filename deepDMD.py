@@ -17,7 +17,7 @@ import pandas as pd
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 705
+SYSTEM_NO = 91
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6;
@@ -25,7 +25,7 @@ SYSTEM_NO = 705
 
 ##  Deep Learning Optimization Parameters ##
 
-activation_flag = 3;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
+activation_flag = 2;  # sets the activation function type to RELU[0], ELU[1], SELU[2] (initialized a certain way,dropout has to be done differently) , or tanh()
 
 DISPLAY_SAMPLE_RATE_EPOCH = 500
 TRAIN_PERCENT = 85.71429
@@ -35,9 +35,9 @@ res_net = 0;  # Boolean condition on whether to use a resnet connection.
 ## Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 0
-n_x_nn_layers = 1  # x_max_layers 3 works well
-n_x_nn_nodes = 0  # max width_limit -4 works well
+x_deep_dict_size = 3
+n_x_nn_layers = 4  # x_max_layers 3 works well
+n_x_nn_nodes = 4  # max width_limit -4 works well
 
 best_test_error = np.inf
 
@@ -45,20 +45,20 @@ best_test_error = np.inf
 regularization_lambda =0
 
 ## Learning Parameters
-batch_size = 72#40#24#36
+batch_size = 1000#72#40#24#36
 ls_dict_training_params = []
-dict_training_params = {'step_size_val': 0.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 100000, 'batch_size': batch_size} #80000
+dict_training_params = {'step_size_val': 0.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 5000, 'batch_size': batch_size} #80000
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-10),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': batch_size}
+dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-10),'valid_error_threshold': float(1e-6), 'max_epochs': 10000, 'batch_size': batch_size}
 ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': batch_size}
+dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-7), 'max_epochs': 10000, 'batch_size': batch_size}
 ls_dict_training_params.append(dict_training_params)
 # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': batch_size}
 # ls_dict_training_params.append(dict_training_params)
 dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': batch_size}
 ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': batch_size}
-# ls_dict_training_params.append(dict_training_params)
+dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-10), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': batch_size}
+ls_dict_training_params.append(dict_training_params)
 
 sess = tf.InteractiveSession()
 

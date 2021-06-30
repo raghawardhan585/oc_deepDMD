@@ -215,8 +215,8 @@ df_opt_stat = seq.get_run_performance_stats(SYSTEM_NO,opt_run)
 # opt_run = 1
 # dict_predictions_opt_run = seq.get_prediction_data(SYSTEM_NO,opt_run)
 plot_params ={}
-plot_params['individual_fig_height'] = 4 #2
-plot_params['individual_fig_width'] = 4#2.4
+plot_params['individual_fig_height'] = 4 # 2
+plot_params['individual_fig_width'] = 4 # 2.4
 with open(sys_folder_name + '/System_' + str(SYSTEM_NO) + '_SimulatedData.pickle','rb') as handle:
     var_i = pickle.load(handle)
 N_CURVES = len(var_i.keys())
@@ -312,14 +312,14 @@ print(dict_hp)
 # ls_process_runs = list(range(316,348))
 # SYSTEM_NO = 60
 # ls_process_runs = list(range(60,78))
-SYSTEM_NO = 61
-ls_process_runs = list(range(32,64))
+# SYSTEM_NO = 61
+# ls_process_runs = list(range(32,64))
 # SYSTEM_NO = 70
 # ls_process_runs = list(range(110,170))
 # SYSTEM_NO = 80
 # ls_process_runs = list(range(0,0))
-# SYSTEM_NO = 91
-# ls_process_runs  = list(range(145,181))
+SYSTEM_NO = 91
+ls_process_runs  = list(range(145,181))
 # ls_process_runs  = list(range(193,205))
 sys_folder_name = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
 seq.generate_predictions_pickle_file(SYSTEM_NO,state_only =False,ls_process_runs=ls_process_runs)

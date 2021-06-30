@@ -15,6 +15,7 @@ import tensorflow as tf
 from sklearn.metrics import r2_score
 import seaborn as sb
 from sklearn.linear_model import LinearRegression
+from scipy.signal import savgol_filter as sf
 
 # Constants
 MAX_REPLICATES = 2
@@ -105,6 +106,13 @@ def Pputida_R2A_RNAseq_metadata():
                  'NC': {1: NC1_WELL, 2: NC2_WELL}}
     return dict_input,dict_well
 
+def sf_filter(data_raw, n_data_pts = 5, polyorder = 3):
+    # Import the transposed data XT
+    data_filtered = np.empty(shape=(data_raw.shape[0], 0))
+    for i in range(data_raw.shape[1]):
+        data_filtered = np.concatenate([data_filtered, sf(data_raw[:, i], n_data_pts, polyorder).reshape((-1, 1))], axis=1)
+    return data_filtered
+
 def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0):
     ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
     random.shuffle(ls_all_indices)
@@ -114,11 +122,15 @@ def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0
     n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
     n_outputs = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['Y'].shape[0]
 
+
+
     dict_DMD_train = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
                       'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
     for i, COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
-        dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 0:-1]).T], axis=0)
-        dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], np.array(dict_data[COND][i]['df_X_TPM'].iloc[:, 1:]).T], axis=0)
+        data_inter = sf_filter(np.array(dict_data[COND][i]['df_X_TPM']).T)
+        dict_data[COND][i]['df_X_TPM'] = pd.DataFrame(data_inter.T,columns=dict_data[COND][i]['df_X_TPM'].columns,index=dict_data[COND][i]['df_X_TPM'].index)
+        dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], data_inter[0:-1,:]], axis=0)
+        dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], data_inter[1:,:]], axis=0)
         dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
         dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
 
@@ -209,7 +221,7 @@ def get_dataframe_with_differenced_data(df_IN):
     df_OUT = pd.DataFrame(np_diff.reshape(len(df_columns),len(df_indices)).T,columns = df_columns,index = df_indices)
     return df_OUT
 
-def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs =-1):
+def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = False, n_outputs =-1):
     # Processing the OD data - Inupts are IGNORED
     # TODO - Include the inputs of Casein and Glucose if need be for later
     df_OD_RAW = process_microplate_reader_txtfile(OD_FILE)
@@ -263,6 +275,7 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs =-1):
             # dict_DATA[cond_name][curve_no]['df_X_RPKM'] = df_RPKM
 
     # Sort the dataframes and join the state and output data
+    ls_all_time_pts = [1,2,3,4,5,6,7]
     for cond in dict_DATA.keys():
         for curve_no in dict_DATA[cond].keys():
             # Sort the dataframes
@@ -270,12 +283,19 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs =-1):
             # Assign the output
             dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].iloc[0,0]
             # dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].loc[:,np.int(np.min(dict_DATA[cond][curve_no]['df_X_TPM'].columns))-1].to_numpy()[-1]
+
             if get_fitness_output:
-                dict_DATA[cond][curve_no]['Y'] = np.log2(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns]/dict_DATA[cond][curve_no]['Y0'])
+                if get_full_output:
+                    dict_DATA[cond][curve_no]['Y'] = np.log2(dict_OD[cond][curve_no].loc[:, ls_all_time_pts]/dict_DATA[cond][curve_no]['Y0'])
+                else:
+                    dict_DATA[cond][curve_no]['Y'] = np.log2(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns]/dict_DATA[cond][curve_no]['Y0'])
                 # df_intermediate = get_dataframe_with_differenced_data(dict_OD[cond][curve_no])
                 # dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(df_intermediate.loc[:,dict_DATA[cond][curve_no]['df_X_TPM'].columns])
             else:
-                dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns])
+                if get_full_output:
+                    dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:, ls_all_time_pts])
+                else:
+                    dict_DATA[cond][curve_no]['Y'] = copy.deepcopy(dict_OD[cond][curve_no].loc[:, dict_DATA[cond][curve_no]['df_X_TPM'].columns])
     # Saving the data
     with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYData_RAW.pickle','wb') as handle:
         pickle.dump(dict_DATA,handle)
@@ -842,14 +862,17 @@ def generate_n_step_prediction_table(SYSTEM_NO,ALL_CONDITIONS=['MX'],ls_runs1=li
 
 def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
     root_run_file = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(SYSTEM_NO)
+    indices_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
+        SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_OrderedIndices.pickle'
+    with open(indices_path, 'rb') as handle:
+        ls_data_indices = pickle.load(handle)
     original_data_path = '/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_' + str(
         SYSTEM_NO) + '/System_' + str(SYSTEM_NO) + '_Data.pickle'
     with open(original_data_path, 'rb') as handle:
         dict_data_original = pickle.load(handle)
     sess = tf.InteractiveSession()
     run_folder_name = root_run_file + '/' + METHOD + '/RUN_' + str(run)
-    saver = tf.compat.v1.train.import_meta_graph(
-        run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
+    saver = tf.compat.v1.train.import_meta_graph(run_folder_name + '/System_' + str(SYSTEM_NO) + '_ocDeepDMDdata.pickle.ckpt.meta', clear_devices=True)
     saver.restore(sess, tf.train.latest_checkpoint(run_folder_name))
     dict_params = {}
     dict_params['psixpT'] = tf.get_collection('psixpT')[0]
@@ -862,6 +885,10 @@ def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
     E_in = np.diag(e_in)
     E, W, comp_modes, comp_modes_conj = resolve_complex_right_eigenvalues(copy.deepcopy(E_in), copy.deepcopy(W_in))
     Winv = np.linalg.inv(W)
+
+
+
+
 
     # Plot for the K
     Kx = dict_params['KxT_num'].T
@@ -893,6 +920,29 @@ def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
     # cbar.ax.tick_params(labelsize=FONTSIZE)
     # a.axes.set_xticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation=90)
     # a.axes.set_yticklabels(ls_gene_names,{'fontsize':FONTSIZE},rotation = 0)
+    plt.show()
+
+    # Plot n-step prediction of the states
+    dict_ALLDATA = get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS=ALL_CONDITIONS)
+    CURVE = ls_data_indices[-1]
+    n_genes = len(dict_ALLDATA['unscaled']['MX'][CURVE]['XpT'][0])
+    # Xf - 1 step
+    psiXpT = dict_params['psixpT'].eval(feed_dict={dict_params['xpT_feed']: dict_ALLDATA['scaled']['MX'][CURVE]['XpT']})
+    psiXfTn_hat = psiXpT[0:1, :]  # get the initial condition
+    for i in range(len(dict_ALLDATA['unscaled']['MX'][CURVE]['XpT'])):  # predict n - steps
+        psiXfTn_hat = np.concatenate([psiXfTn_hat, np.matmul(psiXfTn_hat[-1:], dict_params['KxT_num'])], axis=0)
+    psiXfTn_hat = psiXfTn_hat[1:, :]
+    XfTn_hat = dict_ALLDATA['X_scaler'].inverse_transform(psiXfTn_hat[:, 0:n_genes])
+
+    ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
+                 '#17becf']
+    plt.figure()
+    for i in range(n_genes):
+        plt.plot(np.array([2,3,4,5,6,7]),dict_ALLDATA['unscaled']['MX'][CURVE]['XfT'][:,i],'--',color = ls_colors[i])
+        plt.plot(np.array([2,3,4,5,6,7]),XfTn_hat[:,i],color = ls_colors[i],label = 'gene: '+ str(ls_genes[i]))
+    plt.xlabel('time')
+    plt.legend()
+    plt.title('n-step predictions')
     plt.show()
 
     # Eigenvalue plot
@@ -971,6 +1021,16 @@ def plot_dynamics_related_graphs(SYSTEM_NO,run,METHOD,ALL_CONDITIONS=['MX']):
         except:
             break
     plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=4)
+    plt.title('Scaled')
+    plt.show()
+    plt.figure(figsize=(10, 6))
+    for i in range(n_funcs):
+        try:
+            plt.plot(x_ticks, XT[:, ls_gene_max_var_index[i]], label='gene_' + str(i))
+        except:
+            break
+    plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=4)
+    plt.title('Unscaled gene plot')
     plt.show()
 
     # Plot of the observables

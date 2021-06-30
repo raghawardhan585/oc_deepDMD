@@ -1288,9 +1288,6 @@ for row_i in range(3):
         E = E_SEQ
         y0_title = 'Sequential \n OC-deepDMD \n '
 
-
-
-
     # Sort the eigenvalues
     epsil = 0.02
     LAMBDA_SORT = np.array([-0.8,0.81,0.9,1,-0.72,0.73])

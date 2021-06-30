@@ -22,7 +22,7 @@ from sklearn.metrics import r2_score
 # Default Parameters
 DEVICE_NAME = '/cpu:0'
 RUN_NUMBER = 0
-SYSTEM_NO = 705
+SYSTEM_NO = 708
 # max_epochs = 2000
 # train_error_threshold = 1e-6
 # valid_error_threshold = 1e-6
@@ -41,9 +41,9 @@ regularization_lambda = 1e-10
 # Neural network parameters
 
 # ---- STATE OBSERVABLE PARAMETERS -------
-x_deep_dict_size = 0
-n_x_nn_layers = 1  # x_max_layers 3 works well
-n_x_nn_nodes = 0  # max width_limit -4 works well
+x_deep_dict_size = 1
+n_x_nn_layers = 4  # x_max_layers 3 works well
+n_x_nn_nodes = 4  # max width_limit -4 works well
 
 # ---- OUTPUT CONSTRAINED OBSERVABLE PARAMETERS ----
 y_deep_dict_size = 2
@@ -103,24 +103,24 @@ if RUN_OPTIMIZATION ==3:
 # Learning Parameters
 BATCH_SIZE = 72
 ls_dict_training_params = []
-# dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': BATCH_SIZE} #20000
+dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 20000, 'batch_size': BATCH_SIZE} #20000
+ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 100000, 'batch_size': BATCH_SIZE} #20000
 # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.5, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 100000, 'batch_size': BATCH_SIZE} #20000
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': BATCH_SIZE}
-ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': BATCH_SIZE}
-ls_dict_training_params.append(dict_training_params)
-# # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': BATCH_SIZE}
+# dict_training_params = {'step_size_val': 00.3, 'train_error_threshold': float(1e-20),'valid_error_threshold': float(1e-6), 'max_epochs': 50000, 'batch_size': BATCH_SIZE}
+# ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.1, 'train_error_threshold': float(1e-7), 'valid_error_threshold': float(1e-7), 'max_epochs': 50000, 'batch_size': BATCH_SIZE}
+# ls_dict_training_params.append(dict_training_params)
+# # # dict_training_params = {'step_size_val': 0.09, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': BATCH_SIZE}
+# # # ls_dict_training_params.append(dict_training_params)
+# # # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': BATCH_SIZE}
+# # # ls_dict_training_params.append(dict_training_params)
+# dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': BATCH_SIZE}
+# ls_dict_training_params.append(dict_training_params)
+# # dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': BATCH_SIZE}
 # # ls_dict_training_params.append(dict_training_params)
-# # dict_training_params = {'step_size_val': 0.08, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 30000, 'batch_size': BATCH_SIZE}
+# # dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': BATCH_SIZE}
 # # ls_dict_training_params.append(dict_training_params)
-dict_training_params = {'step_size_val': 0.05, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 5000, 'batch_size': BATCH_SIZE}
-ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.01, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 20000, 'batch_size': BATCH_SIZE}
-# ls_dict_training_params.append(dict_training_params)
-# dict_training_params = {'step_size_val': 0.001, 'train_error_threshold': float(1e-8), 'valid_error_threshold': float(1e-8), 'max_epochs': 10000, 'batch_size': BATCH_SIZE}
-# ls_dict_training_params.append(dict_training_params)
 
 ls_dict_training_params1 = ls_dict_training_params
 

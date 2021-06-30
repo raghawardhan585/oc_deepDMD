@@ -20,6 +20,7 @@ plt.rcParams["font.family"] = "Times"
 plt.rcParams["mathtext.fontset"] = "cm"
 plt.rcParams["font.size"] = 22
 
+
 def plot_gene_expression(dict_data):
     # Plotting the states as a function of time
     ls_colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
@@ -44,13 +45,15 @@ def plot_gene_expression(dict_data):
     f.show()
     return
 
-rnaf.organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True,n_outputs= 1)
+rnaf.organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output= True,n_outputs= -1)
 gene_ontology_file = '/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/Gene_Ontologies_map.pickle'
 with open(gene_ontology_file, 'rb') as handle:
     dict_gene_ontology = pickle.load(handle)
 df_GO = dict_gene_ontology['gene ontology']
 dict_GOkey = dict_gene_ontology['key for gene ontology']
 dict_GOgenes = dict_gene_ontology['gene ontology genes']
+
+
 # ##
 # dict_GOgenes = {}
 # for items in dict_GOkey:
@@ -65,20 +68,20 @@ dict_GOgenes = dict_gene_ontology['gene ontology genes']
 #     pickle.dump(dict_gene_ontology,handle)
 ##
 # keywords =['protein']
-keywords = ['carbohydrate','protein','amino acid','glucose', 'cell cycle','division']
-# keywords = [keywords[0]]
-ls_GO_keywords_filtered = []
-for items in dict_GOkey:
-    if np.sum([i in dict_GOkey[items] for i in keywords]) > 0:
-        ls_GO_keywords_filtered.append(items)
-
-set_filtered_genes = set()
-for items in ls_GO_keywords_filtered:
-    print(dict_GOkey[items],' # genes :', len(dict_GOgenes[items]))
-    print(dict_GOgenes[items])
-    set_filtered_genes = set_filtered_genes.union(set(dict_GOgenes[items]))
-
-ls_GO_filtered_genes = list(set_filtered_genes)
+# keywords = ['carbohydrate','protein','amino acid','glucose', 'cell cycle','division']
+# # keywords = [keywords[0]]
+# ls_GO_keywords_filtered = []
+# for items in dict_GOkey:
+#     if np.sum([i in dict_GOkey[items] for i in keywords]) > 0:
+#         ls_GO_keywords_filtered.append(items)
+#
+# set_filtered_genes = set()
+# for items in ls_GO_keywords_filtered:
+#     print(dict_GOkey[items],' # genes :', len(dict_GOgenes[items]))
+#     print(dict_GOgenes[items])
+#     set_filtered_genes = set_filtered_genes.union(set(dict_GOgenes[items]))
+#
+# ls_GO_filtered_genes = list(set_filtered_genes)
 
 
 ## Get the GO filtered data
@@ -86,14 +89,19 @@ ls_GO_filtered_genes = list(set_filtered_genes)
 with open('/Users/shara/Desktop/oc_deepDMD/DATA/RNA_1_Pput_R2A_Cas_Glu/dict_XYData_RAW.pickle', 'rb') as handle:
     dict_DATA_ORIGINAL = pickle.load(handle)
 
-
-ls_conditions = ['MX','MN','NC']
-dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
-dict_data_GO_filtered = {'MX':{},'MN':{},'NC':{}}
-for condition,items in itertools.product(ls_conditions,range(16)):
-    dict_data_GO_filtered[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_GO_filtered_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
-
-plot_gene_expression(dict_data_GO_filtered)
+ls_conditions = ['MX']
+# ls_conditions = ['MX','MN','NC']
+# dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+# dict_data_GO_filtered = {'MX':{},'MN':{},'NC':{}}
+# for condition,items in itertools.product(ls_conditions,range(16)):
+#     dict_data_GO_filtered[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_GO_filtered_genes,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
+#
+#
+#
+#
+#
+#
+# plot_gene_expression(dict_data_GO_filtered)
 ##
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.02,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 700, ALL_CONDITIONS= ['MX'])
@@ -119,11 +127,71 @@ plot_gene_expression(dict_data_GO_filtered)
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0143,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 706, ALL_CONDITIONS= ['MX'])
 
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.02,ALL_CONDITIONS=['MX'])
+
+
+# ls_genes_choice = ['PP_4191','PP_1342']
+# dict_data = {'MX':{},'MN':{},'NC':{}}
+# for COND in ['MX', 'MN', 'NC']:
+#     for CURVE in dict_DATA_ORIGINAL[COND]:
+#         dict_data[COND][CURVE] = {}
+#         dict_data[COND][CURVE]['df_X_TPM'] = dict_DATA_ORIGINAL[COND][CURVE]['df_X_TPM'].loc[ls_genes_choice,:]
+#         dict_data[COND][CURVE]['df_X_TPM'] = dict_DATA_ORIGINAL[COND][CURVE]['df_X_TPM'].loc[ls_genes_choice,:]
+#         dict_data[COND][CURVE]['Y0'] = dict_DATA_ORIGINAL[COND][CURVE]['Y0']
+#         dict_data[COND][CURVE]['Y'] = dict_DATA_ORIGINAL[COND][CURVE]['Y']
+
+# dict_data_copy1 = copy.deepcopy(dict_DATA_ORIGINAL)
+# ls_genes_choice = ['PP_4191','PP_1342']
+# dict_data = {'MX':{}}
+# for CURVE in dict_data_copy1['MX']:
+#     # Add data points to the MIN condition
+#     dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].insert(0, 2, list(dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+#     dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].insert(0, 1, list(dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+#     dict_data_copy1['MN'][CURVE]['df_X_TPM'].insert(0, 2, list(dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+#     dict_data_copy1['MN'][CURVE]['df_X_TPM'].insert(0, 1, list(dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+#     dict_data['MX'][CURVE] = {}
+#     dict_data['MX'][CURVE]['df_X_TPM'] = dict_data_copy1['MX'][CURVE]['df_X_TPM'].loc[ls_genes_choice,:] - dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[ls_genes_choice,:]
+#     dict_data['MX'][CURVE]['Y0'] = dict_data_copy1['MX'][CURVE]['Y0']
+#     dict_data['MX'][CURVE]['Y'] = dict_data_copy1['MX'][CURVE]['Y'] - dict_DATA_ORIGINAL['MN'][CURVE]['Y']
+# rnaf.formulate_and_save_Koopman_Data(dict_data, SYSTEM_NO=707, ALL_CONDITIONS=['MX'])
+
+dict_data_copy1 = copy.deepcopy(dict_DATA_ORIGINAL)
+ls_genes_choice = ['PP_1223','PP_1342']
+dict_data = {'MX':{}}
+for CURVE in dict_data_copy1['MX']:
+    # Add data points to the MIN condition
+    dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].insert(0, 2, list(dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+    dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].insert(0, 1, list(dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+    dict_data_copy1['MN'][CURVE]['df_X_TPM'].insert(0, 2, list(dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+    dict_data_copy1['MN'][CURVE]['df_X_TPM'].insert(0, 1, list(dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[:, 0:3].mean(axis=1)), True)
+    dict_data['MX'][CURVE] = {}
+    dict_data['MX'][CURVE]['df_X_TPM'] = dict_data_copy1['MX'][CURVE]['df_X_TPM'].loc[ls_genes_choice,:] - dict_data_copy1['MN'][CURVE]['df_X_TPM'].loc[ls_genes_choice,:]
+    dict_data['MX'][CURVE]['Y0'] = dict_data_copy1['MX'][CURVE]['Y0']
+    dict_data['MX'][CURVE]['Y'] = dict_data_copy1['MX'][CURVE]['Y'] - dict_DATA_ORIGINAL['MN'][CURVE]['Y']
+# rnaf.formulate_and_save_Koopman_Data(dict_data, SYSTEM_NO=708, ALL_CONDITIONS=['MX'])
+
+# Raw gene plot
+CURVE = 0
+ls_colors =['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+x_ticks = np.array([1, 2, 3, 4, 5, 6, 7])
+plt.figure(figsize=(10, 6))
+for i in range(len(ls_genes_choice)):
+    plt.plot(x_ticks, dict_DATA_ORIGINAL['MX'][CURVE]['df_X_TPM'].loc[ls_genes_choice[i],:], label='[MX] gene_' + ls_genes_choice[i], color = ls_colors[i])
+    plt.plot(x_ticks, dict_DATA_ORIGINAL['MN'][CURVE]['df_X_TPM'].loc[ls_genes_choice[i], :],'--',label='[MN] gene_' + ls_genes_choice[i], color=ls_colors[i])
+plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=2)
+plt.show()
+
+plt.figure()
+plt.plot(x_ticks, dict_DATA_ORIGINAL['MX'][CURVE]['Y'].iloc[0,:], label='MAX')
+plt.plot(x_ticks, dict_DATA_ORIGINAL['MN'][CURVE]['Y'].iloc[0,:], label='MIN')
+plt.plot(x_ticks, dict_DATA_ORIGINAL['MX'][CURVE]['Y'].iloc[0,:]-dict_DATA_ORIGINAL['MN'][CURVE]['Y'].iloc[0,:], label='difference')
+plt.legend(loc="lower center", bbox_to_anchor=(0.5, 1.005), fontsize=22, ncol=2)
+plt.show()
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.015,ALL_CONDITIONS=['MX','MN'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 800, ALL_CONDITIONS= ['MX','MN'])
 
-dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.018,ALL_CONDITIONS=['MX','MN'])
-rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 801, ALL_CONDITIONS= ['MX','MN'])
+# dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.018,ALL_CONDITIONS=['MX','MN'])
+# rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 801, ALL_CONDITIONS= ['MX','MN'])
 
 # dict_data = rnaf.filter_gene_by_coefficient_of_variation(copy.deepcopy(dict_data_GO_filtered), CV_THRESHOLD = 0.0175,ALL_CONDITIONS=['MX'])
 # rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 850, ALL_CONDITIONS= ['MX','NC'])
@@ -139,13 +207,13 @@ rnaf.formulate_and_save_Koopman_Data(dict_data,SYSTEM_NO= 801, ALL_CONDITIONS= [
 #     p = np.concatenate([p,np.expand_dims(dict_d['Xp'][10*i:10*(i+1)],axis =2)],axis=2)
 ##
 
-ls_genes_temp2 = list(dict_data['NC'][0]['df_X_TPM'].index)
+ls_genes_temp2 = list(dict_data['MX'][0]['df_X_TPM'].index)
 dict_data_temp = {'MX':{},'MN':{},'NC':{}}
-
-for condition,items in itertools.product(ls_conditions,range(16)):
+dict_DATA_max_denoised = copy.deepcopy(dict_DATA_ORIGINAL)
+for condition,items in itertools.product(['MX','NC','MN'],range(16)):
     dict_data_temp[condition][items] = {'df_X_TPM': dict_DATA_max_denoised[condition][items]['df_X_TPM'].loc[ls_genes_temp2 ,:], 'Y0': dict_DATA_max_denoised[condition][items]['Y0'], 'Y': dict_DATA_max_denoised[condition][items]['Y']}
 
-plot_gene_expression(dict_data_temp)
+# plot_gene_expression(dict_data_temp)
 
 ## Gene ontologies of the various genes
 df_gene_name = rnaf.get_gene_Uniprot_DATA(ls_all_locus_tags = ls_genes_temp2,search_columns='genes(OLN),genes(PREFERRED)')
