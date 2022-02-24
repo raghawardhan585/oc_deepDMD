@@ -17,6 +17,7 @@ import seaborn as sb
 from sklearn.linear_model import LinearRegression
 from scipy.signal import savgol_filter as sf
 
+
 # Constants
 MAX_REPLICATES = 2
 MAX_LANES = 4
@@ -106,30 +107,46 @@ def Pputida_R2A_RNAseq_metadata():
                  'NC': {1: NC1_WELL, 2: NC2_WELL}}
     return dict_input,dict_well
 
-def sf_filter(data_raw, n_data_pts = 5, polyorder = 3):
-    # Import the transposed data XT
-    data_filtered = np.empty(shape=(data_raw.shape[0], 0))
-    for i in range(data_raw.shape[1]):
-        data_filtered = np.concatenate([data_filtered, sf(data_raw[:, i], n_data_pts, polyorder).reshape((-1, 1))], axis=1)
+def sf_filter(data_raw, n_data_pts = 5, polyorder = 3,axis = 0):
+    if isinstance(data_raw, np.ndarray):
+        # data_filtered = sf(data_raw, n_data_pts, polyorder, axis=axis)
+        # Import the transposed data XT
+        data_filtered = np.empty(shape=(data_raw.shape[0], 0))
+        for i in range(data_raw.shape[1]):
+            data_filtered = np.concatenate([data_filtered, sf(data_raw[:, i], n_data_pts, polyorder).reshape((-1, 1))], axis=1)
+    elif isinstance(data_raw, pd.DataFrame):
+        try:
+            data_raw = pd.DataFrame(data_raw,dtype='float')
+        except:
+            print('[WARNING]: The given dataframe is not suitable to apply savgol filter to')
+            return
+        np_filtered = sf(data_raw, n_data_pts, polyorder, axis=axis)
+        data_filtered = pd.DataFrame(np_filtered,index=data_raw.index, columns=data_raw.columns)
     return data_filtered
 
-def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0):
+def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0, X_method = 'standard', U_method = 'standard', Y_method = 'standard', WITH_MEAN_FOR_STANDARD_SCALER_X=True, WITH_MEAN_FOR_STANDARD_SCALER_U=True, WITH_MEAN_FOR_STANDARD_SCALER_Y=True, WITH_STD_FOR_STANDARD_SCALER_X = True, WITH_STD_FOR_STANDARD_SCALER_U = True, WITH_STD_FOR_STANDARD_SCALER_Y = True):
     ls_all_indices = list(dict_data[ALL_CONDITIONS[0]].keys())
     random.shuffle(ls_all_indices)
     ls_train_indices = ls_all_indices[0:14]
-    # ls_valid_indices = ls_all_indices[12:14]
+    ls_valid_indices = ls_all_indices[12:14]
     ls_test_indices = ls_all_indices[14:16]
     n_states = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['df_X_TPM'].shape[0]
     n_outputs = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['Y'].shape[0]
 
-
-
     dict_DMD_train = {'Xp': np.empty(shape=(0, n_states)), 'Xf': np.empty(shape=(0, n_states)),
                       'Yp': np.empty(shape=(0, n_outputs)), 'Yf': np.empty(shape=(0, n_outputs))}
+    try:
+        n_inputs = dict_data[ALL_CONDITIONS[0]][ls_train_indices[0]]['U'].shape[0]
+        dict_DMD_train['Up'] =np.empty(shape=(0, n_inputs))
+    except:
+        print('No input detected!')
     for i, COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
+        # dict_data[COND][i]['df_X_TPM'] = sf_filter(dict_data[COND][i]['df_X_TPM'],axis=0)
+        # data_inter = np.array(dict_data[COND][i]['df_X_TPM'],dtype='float').T
         data_inter = sf_filter(np.array(dict_data[COND][i]['df_X_TPM']).T)
         dict_data[COND][i]['df_X_TPM'] = pd.DataFrame(data_inter.T,columns=dict_data[COND][i]['df_X_TPM'].columns,index=dict_data[COND][i]['df_X_TPM'].index)
         dict_DMD_train['Xp'] = np.concatenate([dict_DMD_train['Xp'], data_inter[0:-1,:]], axis=0)
+        dict_DMD_train['Up'] = np.concatenate([dict_DMD_train['Up'], np.array(dict_data[COND][i]['U'].iloc[:, 0:-1]).T], axis=0)
         dict_DMD_train['Xf'] = np.concatenate([dict_DMD_train['Xf'], data_inter[1:,:]], axis=0)
         dict_DMD_train['Yp'] = np.concatenate([dict_DMD_train['Yp'], np.array(dict_data[COND][i]['Y'].iloc[:, 0:-1]).T], axis=0)
         dict_DMD_train['Yf'] = np.concatenate([dict_DMD_train['Yf'], np.array(dict_data[COND][i]['Y'].iloc[:, 1:]).T], axis=0)
@@ -155,7 +172,9 @@ def formulate_and_save_Koopman_Data(dict_data,ALL_CONDITIONS =['MX'],SYSTEM_NO=0
         os.mkdir(storage_folder)
 
     # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
-    _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'min max', WITH_MEAN_FOR_STANDARD_SCALER_X=True, WITH_MEAN_FOR_STANDARD_SCALER_Y=True)
+    # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'standard', WITH_MEAN_FOR_STANDARD_SCALER_X=True, WITH_MEAN_FOR_STANDARD_SCALER_Y=False, WITH_STD_FOR_STANDARD_SCALER_Y = False)
+    # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, method, WITH_MEAN_FOR_STANDARD_SCALER_X, WITH_MEAN_FOR_STANDARD_SCALER_U, WITH_MEAN_FOR_STANDARD_SCALER_Y, WITH_STD_FOR_STANDARD_SCALER_X, WITH_STD_FOR_STANDARD_SCALER_U, WITH_STD_FOR_STANDARD_SCALER_Y)
+    _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, X_method=X_method, U_method=U_method, Y_method=Y_method, WITH_MEAN_FOR_STANDARD_SCALER_X=WITH_MEAN_FOR_STANDARD_SCALER_X, WITH_MEAN_FOR_STANDARD_SCALER_U=WITH_MEAN_FOR_STANDARD_SCALER_U, WITH_MEAN_FOR_STANDARD_SCALER_Y=WITH_MEAN_FOR_STANDARD_SCALER_Y, WITH_STD_FOR_STANDARD_SCALER_X=WITH_STD_FOR_STANDARD_SCALER_X, WITH_STD_FOR_STANDARD_SCALER_U=WITH_STD_FOR_STANDARD_SCALER_U, WITH_STD_FOR_STANDARD_SCALER_Y=WITH_STD_FOR_STANDARD_SCALER_Y) #, WITH_MEAN_FOR_STANDARD_SCALER_X=True, WITH_MEAN_FOR_STANDARD_SCALER_Y=True)
     # _, dict_Scaler, _ = oc.scale_train_data(dict_DMD_train, 'none',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True)
     with open(storage_folder + '/System_' + str(SYSTEM_NO) + '_DataScaler.pickle', 'wb') as handle:
         pickle.dump(dict_Scaler, handle)
@@ -221,17 +240,22 @@ def get_dataframe_with_differenced_data(df_IN):
     df_OUT = pd.DataFrame(np_diff.reshape(len(df_columns),len(df_indices)).T,columns = df_columns,index = df_indices)
     return df_OUT
 
-def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = False, n_outputs =-1):
+def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = False, n_outputs =-1, n_start = -20, sf_filter_window_length = 19, sf_filter_polyorder = 7):
     # Processing the OD data - Inupts are IGNORED
     # TODO - Include the inputs of Casein and Glucose if need be for later
     df_OD_RAW = process_microplate_reader_txtfile(OD_FILE)
+    try:
+        df_OD_RAW = sf_filter(df_OD_RAW, n_data_pts = sf_filter_window_length, polyorder = sf_filter_polyorder, axis = 0)
+    except:
+        print('[WARNING] Compatable savgol filter parameters are not supplied. It is skipped!')
     dict_OD = {'MX':{},'MN':{},'NC':{}}
-    _ , dict_well = Pputida_R2A_RNAseq_metadata()
+    dict_input = {'MX': {}, 'MN': {}, 'NC': {}}
+    dict_input_meta, dict_well = Pputida_R2A_RNAseq_metadata()
     for COND in dict_well.keys():
         i = 0
         for REP in range(1,3):
             for well in dict_well[COND][REP]:
-                df_temp = copy.deepcopy(pd.DataFrame(df_OD_RAW.loc[:,well]))
+                df_temp = copy.deepcopy(df_OD_RAW.loc[:,[well]])
                 # Formulate  and assign the new matrix
                 n_outputs_per_hour = np.sum(np.array(df_temp.index)<1) # We assume that the measurement starts at t=0
                 y_temp = np.asarray(df_temp.iloc[:, :], dtype='f').reshape(-1)
@@ -239,6 +263,7 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = F
                 if not((type(n_outputs) == int) and (n_outputs>0)):
                     n_outputs = n_outputs_per_hour
                 dict_OD[COND][i] = pd.DataFrame(y_temp[0:N_samples*n_outputs_per_hour].reshape((-1,n_outputs_per_hour)).T).iloc[0:n_outputs,:]
+                dict_input[COND][i] = copy.deepcopy(dict_input_meta[COND])
                 i = i+1
 
     # Processing the RNAseq data
@@ -258,6 +283,8 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = F
         df_temp.index = df_temp.locus_tag
         df_TPM = copy.deepcopy(pd.DataFrame(df_temp.loc[:, 'TPM']))
         df_TPM = df_TPM.rename(columns={'TPM': time_pt})
+        df_FPKM = copy.deepcopy(pd.DataFrame(df_temp.loc[:, 'Raw Fragment Count']))
+        df_FPKM = df_FPKM.rename(columns={'FPKM': time_pt})
         # df_FPKM = copy.deepcopy(pd.DataFrame(df_temp.loc[:, 'FPKM']))
         # df_FPKM = df_FPKM.rename(columns={'FPKM': time_pt})
         # df_RPKM = copy.deepcopy(pd.DataFrame(df_temp.loc[:, 'RPKM']))
@@ -274,12 +301,20 @@ def organize_RNAseq_OD_to_RAWDATA(get_fitness_output = True, get_full_output = F
             # dict_DATA[cond_name][curve_no]['df_X_FPKM'] = df_FPKM
             # dict_DATA[cond_name][curve_no]['df_X_RPKM'] = df_RPKM
 
-    # Sort the dataframes and join the state and output data
-    ls_all_time_pts = [1,2,3,4,5,6,7]
+    # Sort the dataframes and join the state, input and output data
+    ls_all_time_pts = [1,2,3,4,5,6,7] # TODO need to generalize this
+    ls_inputs = ['Casein', 'Glucose'] # TODO need to generalize this
     for cond in dict_DATA.keys():
         for curve_no in dict_DATA[cond].keys():
             # Sort the dataframes
             dict_DATA[cond][curve_no]['df_X_TPM'] = dict_DATA[cond][curve_no]['df_X_TPM'].reindex(sorted( dict_DATA[cond][curve_no]['df_X_TPM'].columns),axis=1)
+            # Assign the input
+            dict_input_data = {}
+            for items in ls_inputs:
+                dict_input_data[items] = {}
+                for time_pt in dict_DATA[cond][curve_no]['df_X_TPM'].columns:
+                    dict_input_data[items][time_pt] = dict_input[cond][curve_no][items]
+            dict_DATA[cond][curve_no]['U'] = pd.DataFrame(dict_input_data).T
             # Assign the output
             dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].iloc[0,0]
             # dict_DATA[cond][curve_no]['Y0'] = dict_OD[cond][curve_no].loc[:,np.int(np.min(dict_DATA[cond][curve_no]['df_X_TPM'].columns))-1].to_numpy()[-1]
@@ -319,6 +354,10 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
         All_Scalers = pickle.load(handle)
     X_scaler = All_Scalers['X Scale']
     Y_scaler = All_Scalers['Y Scale']
+    try:
+        U_scaler = All_Scalers['U Scale']
+    except:
+        print('No input detected')
 
     # Indices [train, validation and test]
     with open(indices_path, 'rb') as handle:
@@ -345,20 +384,34 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
                                      'XfT': X_scaler.transform(dict_unscaled_data[COND][i]['XfT']),
                                      'YpT': Y_scaler.transform(dict_unscaled_data[COND][i]['YpT']),
                                      'YfT': Y_scaler.transform(dict_unscaled_data[COND][i]['YfT'])}
+        try:
+            dict_unscaled_data[COND][i]['UpT'] = np.array(dict_data_original[COND][i]['U'].iloc[:, 0:-1]).T
+            dict_scaled_data[COND][i]['UpT'] = U_scaler.transform(dict_unscaled_data[COND][i]['UpT'])
+        except:
+            print('No input detected!')
 
-    XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = []
-    YpTs_train = YfTs_train = YpTs_valid = YfTs_valid = YpTs_test = YfTs_test = []
+    XpTs_train = XfTs_train = XpTs_valid = XfTs_valid = XpTs_test = XfTs_test = UpTs_train = []
+    YpTs_train = YfTs_train = YpTs_valid = YfTs_valid = YpTs_test = YfTs_test = UpTs_test = []
+
     for i,COND in itertools.product(ls_train_indices, ALL_CONDITIONS):
         try:
             XpTs_train = np.concatenate([XpTs_train, dict_scaled_data[COND][i]['XpT']], axis=0)
             XfTs_train = np.concatenate([XfTs_train, dict_scaled_data[COND][i]['XfT']], axis=0)
             YpTs_train = np.concatenate([YpTs_train, dict_scaled_data[COND][i]['YpT']], axis=0)
             YfTs_train = np.concatenate([YfTs_train, dict_scaled_data[COND][i]['YfT']], axis=0)
+            try:
+                UpTs_train = np.concatenate([UpTs_train, dict_scaled_data[COND][i]['UpT']], axis=0)
+            except:
+                print('No input detected!')
         except:
             XpTs_train = dict_scaled_data[COND][i]['XpT']
             XfTs_train = dict_scaled_data[COND][i]['XfT']
             YpTs_train = dict_scaled_data[COND][i]['YpT']
             YfTs_train = dict_scaled_data[COND][i]['YfT']
+            try:
+                UpTs_train = dict_scaled_data[COND][i]['UpT']
+            except:
+                print('No input detected!')
 
     for i,COND in itertools.product(ls_valid_indices, ALL_CONDITIONS):
         try:
@@ -366,11 +419,19 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             XfTs_valid = np.concatenate([XfTs_valid, dict_scaled_data[COND][i]['XfT']], axis=0)
             YpTs_valid = np.concatenate([YpTs_valid, dict_scaled_data[COND][i]['YpT']], axis=0)
             YfTs_valid = np.concatenate([YfTs_valid, dict_scaled_data[COND][i]['YfT']], axis=0)
+            try:
+                UpTs_valid = np.concatenate([UpTs_valid, dict_scaled_data[COND][i]['UpT']], axis=0)
+            except:
+                print('No input detected!')
         except:
             XpTs_valid = dict_scaled_data[COND][i]['XpT']
             XfTs_valid = dict_scaled_data[COND][i]['XfT']
             YpTs_valid = dict_scaled_data[COND][i]['YpT']
             YfTs_valid = dict_scaled_data[COND][i]['YfT']
+            try:
+                UpTs_valid = dict_scaled_data[COND][i]['UpT']
+            except:
+                print('No input detected!')
 
     for i,COND in itertools.product(ls_test_indices, ALL_CONDITIONS):
         try:
@@ -378,17 +439,32 @@ def get_train_test_valid_data(SYSTEM_NO, ALL_CONDITIONS = ['MX']):
             XfTs_test = np.concatenate([XfTs_test, dict_scaled_data[COND][i]['XfT']], axis=0)
             YpTs_test = np.concatenate([YpTs_test, dict_scaled_data[COND][i]['YpT']], axis=0)
             YfTs_test = np.concatenate([YfTs_test, dict_scaled_data[COND][i]['YfT']], axis=0)
+            try:
+                UpTs_test = np.concatenate([UpTs_test, dict_scaled_data[COND][i]['UpT']], axis=0)
+            except:
+                print('No input detected!')
         except:
             XpTs_test = dict_scaled_data[COND][i]['XpT']
             XfTs_test = dict_scaled_data[COND][i]['XfT']
             YpTs_test = dict_scaled_data[COND][i]['YpT']
             YfTs_test = dict_scaled_data[COND][i]['YfT']
+            try:
+                UpTs_test = dict_scaled_data[COND][i]['UpT']
+            except:
+                print('No input detected!')
     dict_return = {'unscaled':dict_unscaled_data, 'scaled':dict_scaled_data, 'train':{}, 'valid':{}, 'test':{}}
     dict_return['train'] = {'XpTs': XpTs_train, 'XfTs': XfTs_train, 'YpTs': YpTs_train, 'YfTs': YfTs_train, 'indices': ls_train_indices}
     dict_return['valid'] = {'XpTs': XpTs_valid, 'XfTs': XfTs_valid, 'YpTs': YpTs_valid, 'YfTs': YfTs_valid, 'indices': ls_valid_indices}
     dict_return['test'] = {'XpTs': XpTs_test, 'XfTs': XfTs_test, 'YpTs': YpTs_test, 'YfTs': YfTs_test, 'indices': ls_test_indices}
     dict_return['X_scaler'] = X_scaler
     dict_return['Y_scaler'] = Y_scaler
+    try:
+        dict_return['train']['UpTs'] = UpTs_train
+        dict_return['valid']['UpTs'] = UpTs_valid
+        dict_return['test']['UpTs'] = UpTs_test
+        dict_return['U_scaler'] = U_scaler
+    except:
+        print('No input detected!')
     return dict_return
 
 def resolve_complex_right_eigenvalues(E, W):

@@ -221,6 +221,12 @@ def objective_func(dict_feed,dict_psi,dict_K):
     sess.run(tf.global_variables_initializer())
     return dict_model_perf_metrics
 
+psiXf_predicted = tf.matmul(dict_psi['xpT'], dict_K['KxT'])
+psiXf_prediction_error = dict_psi['xfT'] - psiXf_predicted
+SST_X = tf.math.reduce_sum(tf.math.square(dict_psi['xfT'] - tf.math.reduce_mean(dict_psi['xfT'], axis=0)))
+SSE_X = tf.math.reduce_sum(tf.math.square(psiXf_prediction_error))
+dict_model_perf_metrics['accuracy_X'] = (1 - tf.divide(SSE_X, SST_X)) * 100
+
 def static_train_net(dict_train, dict_valid, dict_feed, ls_dict_training_params, dict_model_metrics, all_histories = {'train error': [], 'validation error': []}, dict_run_info = {}):
     feed_dict_train = {dict_feed['xpT']: dict_train['Xp'],dict_feed['xfT']: dict_train['Xf'],dict_feed['ypT']: dict_train['Yp'],dict_feed['yfT']: dict_train['Yf']}
     feed_dict_valid = {dict_feed['xpT']: dict_valid['Xp'],dict_feed['xfT']: dict_valid['Xf'],dict_feed['ypT']: dict_valid['Yp'],dict_feed['yfT']: dict_valid['Yf']}

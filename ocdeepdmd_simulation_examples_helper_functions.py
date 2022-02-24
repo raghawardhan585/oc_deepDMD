@@ -305,7 +305,7 @@ class NoTransform(TransformerMixin):
         return X
 
 
-def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True):
+def scale_train_data(dict_DATA_IN, X_method ='standard', U_method ='standard', Y_method ='standard', WITH_MEAN_FOR_STANDARD_SCALER_X = True, WITH_MEAN_FOR_STANDARD_SCALER_U = True, WITH_MEAN_FOR_STANDARD_SCALER_Y = True, WITH_STD_FOR_STANDARD_SCALER_X = True, WITH_STD_FOR_STANDARD_SCALER_U = True, WITH_STD_FOR_STANDARD_SCALER_Y = True):
     dict_DATA_OUT = {}
     dict_Scaler = {}
     dict_transform_matrices = {}
@@ -317,24 +317,28 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
     X_n_vars = X_all.shape[1]
     X_PT = np.zeros(shape = (X_n_vars,X_n_vars))
     X_bT = np.zeros(shape = (1,X_n_vars))
-    if method == 'standard':
-        X_Scale = StandardScaler(with_mean = WITH_MEAN_FOR_STANDARD_SCALER_X).fit(X_all)
+    if X_method == 'standard':
+        X_Scale = StandardScaler(with_mean = WITH_MEAN_FOR_STANDARD_SCALER_X, with_std=WITH_STD_FOR_STANDARD_SCALER_X).fit(X_all)
+        # TODO - replace the coefficients with scaling coefficients and intercepts - NO need to write your own
         X_mean = X_all.mean(axis=0)
         X_std = X_all.std(axis=0)
         for i in range(X_n_vars):
             X_PT[i, i] = 1 / (X_std[i])
             X_bT[0, i] = -X_mean[i] / (X_std[i])
-    elif method == 'min max':
+    elif X_method == 'min max':
+        # TODO - replace the coefficients with scaling coefficients and intercepts - NO need to write your own
         X_max = X_all.max(axis=0)
         X_min = X_all.min(axis=0)
-        X_Scale = MinMaxScaler(feature_range=(0,1)).fit(X_all)
+        X_Scale = MinMaxScaler(feature_range=(-1,1)).fit(X_all)
         for i in range(X_n_vars):
             X_PT[i,i] = 1/(X_max[i]-X_min[i])
             X_bT[0, i] = -X_min[i] / (X_max[i] - X_min[i])
-    elif method == 'normalizer':
-        X_Scale  = Normalizer().fit(np.append(dict_DATA_IN['Xp'],dict_DATA_IN['Xf'],axis=0))
+    elif X_method == 'normalizer':
+        X_Scale  = Normalizer().fit(X_all)
     else:
-        X_Scale = NoTransform().fit(X_all)
+        X_Scale = StandardScaler(with_mean=False, with_std=False).fit(X_all)
+        # X_PT = X_Scale.coef_
+        # X_bT = X_Scale.intercept
         print('Error in the method name specified')
         print('No transformation done')
     dict_Scaler['X Scale'] = X_Scale
@@ -345,32 +349,64 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
         dict_transform_matrices['X_bT'] = X_bT
     except:
         print('[WARNING]: State did not identify scaling matrices')
+
+
+    # Input scaling if input is supplied
+    if U_method == 'standard':
+        try:
+            U_Scale = StandardScaler(with_mean=WITH_MEAN_FOR_STANDARD_SCALER_U, with_std=WITH_STD_FOR_STANDARD_SCALER_U).fit(dict_DATA_IN['Up'])
+        except:
+            print('No input detected')
+    elif U_method == 'min max':
+        try:
+            U_Scale = MinMaxScaler(feature_range=(-1,1)).fit(dict_DATA_IN['Up'])
+        except:
+            print('No input detected')
+    elif U_method == 'normalizer':
+        try:
+            U_Scale = Normalizer().fit(dict_DATA_IN['Up'])
+        except:
+            print('No input detected')
+    else:
+        try:
+            U_Scale = StandardScaler(with_mean=False, with_std=False).fit(dict_DATA_IN['Up'])
+        except:
+            print('No input detected')
+        print('Error in the method name specified')
+        print('No transformation done')
+    try:
+        dict_Scaler['U Scale'] = U_Scale
+        dict_DATA_OUT['Up'] = U_Scale.transform(dict_DATA_IN['Up'])
+    except:
+        print('No input detected')
+
+    # Output scaling if output is provided
     try:
         # Y_all = np.append(dict_DATA_IN['Yp'],dict_DATA_IN['Yf'],axis=0) # If we want to include all the variables
         Y_all = copy.deepcopy(dict_DATA_IN['Yp'])
         Y_n_vars = Y_all.shape[1]
         Y_PT = np.zeros(shape=(Y_n_vars, Y_n_vars))
         Y_bT = np.zeros(shape=(1, Y_n_vars))
-        if method == 'standard':
-            Y_Scale= StandardScaler(with_mean = WITH_MEAN_FOR_STANDARD_SCALER_Y).fit(Y_all)
+        if Y_method == 'standard':
+            Y_Scale= StandardScaler(with_mean = WITH_MEAN_FOR_STANDARD_SCALER_Y,with_std = WITH_STD_FOR_STANDARD_SCALER_Y).fit(Y_all)
             Y_mean = Y_all.mean(axis=0)
             Y_std = Y_all.std(axis=0)
             for i in range(Y_n_vars):
                 Y_PT[i, i] = 1 / (Y_std[i])
                 Y_bT[0, i] = -Y_mean[i] / (Y_std[i])
-        elif method == 'min max':
-            Y_Scale = MinMaxScaler(feature_range=(0,1)).fit(Y_all)
+        elif Y_method == 'min_max':
+            Y_Scale = MinMaxScaler(feature_range=(-1,1)).fit(Y_all)
             Y_max = Y_all.max(axis=0)
             Y_min = Y_all.min(axis=0)
             for i in range(Y_n_vars):
                 Y_PT[i, i] = 1 / (Y_max[i] - Y_min[i])
                 Y_bT[0, i] = -Y_min[i] / (Y_max[i] - Y_min[i])
-        elif method == 'normalizer':
+        elif Y_method == 'min max':
             Y_Scale = Normalizer().fit(Y_all)
         else:
-            Y_Scale = NoTransform().fit(Y_all)
+            Y_Scale = StandardScaler(with_mean=False, with_std=False).fit(Y_all)
             print('Error in the method name specified')
-            print('No transformation done')
+            print('No transformation done in Y')
         dict_Scaler['Y Scale'] = Y_Scale
         dict_DATA_OUT['Yp'] = Y_Scale.transform(Y_all)
         dict_DATA_OUT['Yf'] = Y_Scale.transform(Y_all)
@@ -381,7 +417,11 @@ def scale_train_data(dict_DATA_IN,method ='standard',WITH_MEAN_FOR_STANDARD_SCAL
             print('[WARNING]: Output did not identify scaling matrices')
     except:
         print('[WARNING] No output provided')
-    return dict_DATA_OUT,dict_Scaler,dict_transform_matrices
+    return dict_DATA_OUT, dict_Scaler, dict_transform_matrices
+
+
+
+
 
 def inverse_transform_X(X_in,SYSTEM_NUMBER):
     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
@@ -406,6 +446,15 @@ def inverse_transform_Y(Y_in,SYSTEM_NUMBER):
         Y_out = Y_in
     return Y_out
 
+def inverse_transform_U(U_in,SYSTEM_NUMBER):
+    with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
+        TheScaler = pickle.load(handle)
+    if 'U Scale' in TheScaler.keys():
+        U_out = TheScaler['U Scale'].inverse_transform(U_in)
+    else:
+        U_out = U_in
+    return U_out
+
 def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
     dict_DATA_OUT = {}
     with open('/Users/shara/Box/YeungLabUCSBShare/Shara/DoE_Pputida_RNASeq_DataProcessing/System_'+ str(SYSTEM_NUMBER) +'/System_' + str(SYSTEM_NUMBER) + '_DataScaler.pickle', 'rb') as handle:
@@ -419,6 +468,11 @@ def scale_data_using_existing_scaler_folder(dict_DATA_IN,SYSTEM_NUMBER):
                         dict_DATA_OUT[item][step] = TheScaler['X Scale'].transform(dict_DATA_IN[item][step])
                 else:
                     dict_DATA_OUT[item] = TheScaler['X Scale'].transform(dict_DATA_IN[item])
+            else:
+                dict_DATA_OUT[item] = dict_DATA_IN[item]
+        elif item in ['Up','U']:
+            if 'U Scale' in TheScaler.keys():
+                dict_DATA_OUT[item] = TheScaler['U Scale'].transform(dict_DATA_IN[item])
             else:
                 dict_DATA_OUT[item] = dict_DATA_IN[item]
         elif item in ['Yp', 'Yf','Y']:

@@ -31,7 +31,7 @@ plt.rcParams["font.size"] = 22
 
 SYS_NO = 91
 # RUN_DIRECT_DEEPDMD_SUBOPT = 6
-RUN_DIRECT_DEEPDMD = 3 # 3,6,32,   13
+RUN_DIRECT_DEEPDMD = 72 #3 # 3,6,32,   13
 RUN_SEQ_DEEPDMD = 194 #194 #156#41
 RUN_DEEPDMD_X = 4 # 91
 RUN_NN = 4
@@ -208,9 +208,9 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
     Phi0 = dict_params_curr['psixpT'].eval(feed_dict={dict_params_curr['xpT_feed']: dict_data_curr['X']})
     # For Eigenfunctions and Observables
     n_observables = len(psiX)
-    sampling_resolution = 0.5
-    x1 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
-    x2 = np.arange(-10, 10 + sampling_resolution, sampling_resolution)
+    sampling_resolution = 0.1
+    x1 = np.arange(-5, 5 + sampling_resolution, sampling_resolution)
+    x2 = np.arange(-6, 6 + sampling_resolution, sampling_resolution)
     X1, X2 = np.meshgrid(x1, x2)
     H = np.zeros(shape=X2.shape)
     if SHOW_PCA_X:
@@ -278,7 +278,8 @@ def modal_analysis(dict_oc_data,dict_data_curr,dict_params_curr,REDUCED_MODES,Se
                 PHI[i, j, :] = np.matmul(Winv, psiXT_i.T).reshape((1, 1, -1))
                 PSI[i, j, :] = psiXT_i.reshape((1, 1, -1))
                 try:
-                    H[i, j] = oc.inverse_transform_Y(np.matmul(psiXT_i,dict_params_curr['WhT_num']), 91).reshape(-1)
+                    # H[i, j] = oc.inverse_transform_Y(np.matmul(psiXT_i,dict_params_curr['WhT_num']), 91).reshape(-1)
+                    H[i, j] = np.matmul(psiXT_i, dict_params_curr['WhT_num']).reshape(-1)
                 except:
                     H[i,j] =0
         else:
@@ -893,7 +894,139 @@ PHI_CORR
 
 # plt.show()
 
+##
 
+NORMALIZE = True
+title = ''
+FONT_SIZE = 32
+max_eigs = 9
+f,ax = plt.subplots(2,7,sharex=True,sharey=True,figsize=(3*max_eigs,10), gridspec_kw={'hspace': 0.35})
+for row_i in range(2):
+    if row_i ==0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_DEEP_X
+        comp_modes = comp_modes_DEEP_X
+        PHI = PHI_DEEP_X
+        PSI = PSI_DEEP_X
+        X1 = X1_DEEP_X
+        X2 = X2_DEEP_X
+        E = E_DEEP_X
+        y0_title = '\n deepDMD \n \n'
+    elif row_i ==1:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        PSI = PSI_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+        H = H_DEEPDMD
+        y0_title = 'Direct \n OC-deepDMD \n \n'
+    for i in range(6):
+            c = ax[row_i, i].pcolor(X1, X2, PSI[:, :, i] / np.max(np.abs(PSI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            # f.colorbar(c, ax=ax[row_i,p])
+            # ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i, i].set_title(title + '$\psi_{{{}}}(x)$'.format(i + 1), fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+            # ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+            ax[row_i, i].set_xticks([-3, 0, 3])
+            ax[row_i, i].set_xticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+            ax[row_i, i].set_yticks([-3, 0, 3])
+            ax[row_i, i].set_yticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+            if i==0:
+                ax[row_i, i].set_ylabel(y0_title + '$x_2$', fontsize=FONT_SIZE)
+            if row_i ==1:
+                ax[row_i, i].set_xlabel('$x_1$', fontsize=FONT_SIZE)
+    if row_i == 1:
+        ax[row_i,6].pcolor(X1, X2, H[:, :] / np.max(np.abs(H[:, :])), cmap='rainbow', vmin=-1,vmax=1)
+        ax[row_i, 6].set_title(title + '$h(x)$', fontsize=FONT_SIZE)
+        ax[row_i, 6].set_xticks([-3, 0, 3])
+        ax[row_i, 6].set_xticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        ax[row_i, 6].set_yticks([-3, 0, 3])
+        ax[row_i, 6].set_yticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        ax[row_i, 6].set_xlabel('$x_1$', fontsize=FONT_SIZE)
+    else:
+        ax[row_i, 6].axis('off')
+cbar = f.colorbar(c, ax=ax.ravel().tolist(), shrink=0.95,  ticks = [-1.,-0.5,0,0.5,1.])
+plt.savefig('Plots/eg2_MEMS_obs.png')
+
+f.show()
+
+
+##
+
+NORMALIZE = True
+title = ''
+FONT_SIZE = 32
+max_eigs = 9
+f,ax = plt.subplots(2,5,sharex=True,sharey=True,figsize=(3*max_eigs,10), gridspec_kw={'hspace': 0.35})
+for row_i in range(2):
+    if row_i ==0:
+        # x DMD modes
+        comp_modes_conj = comp_modes_conj_DEEP_X
+        comp_modes = comp_modes_DEEP_X
+        PHI = PHI_DEEP_X
+        PSI = PSI_DEEP_X
+        X1 = X1_DEEP_X
+        X2 = X2_DEEP_X
+        E = E_DEEP_X
+        y0_title = '\n deepDMD \n \n'
+    elif row_i ==1:
+        # Dir ocdDMD modes
+        comp_modes_conj = comp_modes_conj_DEEPDMD
+        comp_modes = comp_modes_DEEPDMD
+        PHI = PHI_DEEPDMD
+        PSI = PSI_DEEPDMD
+        X1 = X1_DEEPDMD
+        X2 = X2_DEEPDMD
+        E = E_DEEPDMD
+        H = H_DEEPDMD
+        y0_title = 'Direct \n OC-deepDMD \n \n'
+    p = 0
+    for i in range(PHI.shape[-1]):
+        if i in comp_modes_conj:
+            continue
+        elif i in comp_modes:
+            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            # f.colorbar(c, ax=ax[row_i,p])
+            # ax[row_i,p].set_xlabel('$x_1$ \n' + '$\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i, p].set_title(title + '$\phi_{{{},{}}}(x)$'.format(i + 1, comp_modes_conj[
+                comp_modes.index(i)] + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)) + r'$\pm$' + 'j' + str(
+                round(np.imag(E[i]), 2)), fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)) + r'$\pm$' + str(round(np.imag(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+            # ax[row_i, p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+        else:
+            c = ax[row_i, p].pcolor(X1, X2, PHI[:, :, i] / np.max(np.abs(PHI[:, :, i])), cmap='rainbow', vmin=-1,vmax=1)
+            # f.colorbar(c, ax=ax[row_i,p])
+            # ax[row_i,p].set_xlabel('$x_1$\n' + '$\lambda=$' + str(round(np.real(E[i]), 2)), fontsize=FONT_SIZE)
+            ax[row_i, p].set_title(
+                title + '$\phi_{{{}}}(x)$'.format(i + 1) + '\n $\lambda=$' + str(round(np.real(E[i]), 2)),
+                fontsize=FONT_SIZE)
+            # plt.text(-3.5,3.5,'$\lambda=$' + str(round(np.real(E_SEQ[i]),2)), fontsize=FONT_SIZE)
+            # ax[row_i,p].set_ylabel('$x_2$', fontsize=FONT_SIZE)
+        if p == 0:
+            ax[row_i, p].set_ylabel(y0_title + '$x_2$', fontsize=FONT_SIZE)
+        if row_i == 1:
+            ax[row_i, p].set_xlabel('$x_1$', fontsize=FONT_SIZE)
+        ax[row_i, p].set_xticks([-3, 0, 3])
+        ax[row_i, p].set_xticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        ax[row_i, p].set_yticks([-3, 0, 3])
+        ax[row_i, p].set_yticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        p = p + 1
+    if row_i == 1:
+        ax[row_i, 4].pcolor(X1, X2, H[:, :] / np.max(np.abs(H[:, :])), cmap='rainbow', vmin=-1,vmax=1)
+        ax[row_i, 4].set_title(title + '$h(x)$ \n', fontsize=FONT_SIZE)
+        ax[row_i, 4].set_xticks([-3, 0, 3])
+        ax[row_i, 4].set_xticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        ax[row_i, 4].set_yticks([-3, 0, 3])
+        ax[row_i, 4].set_yticklabels([-3, 0, 3], fontsize=FONT_SIZE)
+        ax[row_i, 4].set_xlabel('$x_1$', fontsize=FONT_SIZE)
+    else:
+        ax[row_i, 4].axis('off')
+cbar = f.colorbar(c, ax=ax.ravel().tolist(), shrink=0.95,  ticks = [-1.,-0.5,0,0.5,1.])
+f.savefig('Plots/eg2_MEMS_eigfunc.png')
+f.show()
 
 ######
 
